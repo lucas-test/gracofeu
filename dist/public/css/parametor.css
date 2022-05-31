@@ -1,0 +1,31 @@
+
+
+#params_loaded {
+    background-color:#333333;
+    position: fixed;
+    top: 5;
+    right: 5;
+    margin: 5px;
+    border-radius: 5px;
+    color: #dddddd;
+    font-family: sans-serif;
+}
+
+#params_available {
+    background-color:#333333;
+    position: fixed;
+    top: 5;
+    right: 50%;
+    margin: 5px;
+    border-radius: 5px;
+    color: #dddddd;
+    font-family: sans-serif;
+    display: none;
+}
+
+.param {
+    margin: 8px;
+    padding: 6px;
+    background-color: #1e1e1e;
+}
+

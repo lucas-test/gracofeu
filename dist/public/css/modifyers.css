@@ -1,0 +1,28 @@
+#modifyor {
+    background-color:#333333;
+    position: fixed;
+    top: 5;
+    left: 5;
+    margin: 5px;
+    border-radius: 5px;
+    color: #dddddd;
+    font-family: sans-serif;
+}
+
+#modifyers_list {
+    background-color:#333333;
+    position: fixed;
+    top: 5;
+    right: 50%;
+    margin: 5px;
+    border-radius: 5px;
+    color: #dddddd;
+    font-family: sans-serif;
+    display: none;
+}
+
+.modifyer {
+    margin: 8px;
+    padding: 6px;
+    background-color: #1e1e1e;
+}

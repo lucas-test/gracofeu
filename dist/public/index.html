@@ -1,13 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <title>Draco Bingo</title>
+    <meta charset="utf-8" />
+    <title>Gracofeu</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modifyers.css">
+    <link rel="stylesheet" href="css/parametor.css">
+
 </head>
 
 <body>
-Hello
+    <canvas id="main"></canvas>
+    <div id="interaction_mode_selector"></div>
+    <div id="params_loaded"><button onclick="params_available_turn_on_div()">+</button></div>
+    <div id="params_available">Parameters:<button onclick="params_available_turn_off_div()">Close</button></div>
+    <div id="modifyor"><button onclick="modifyers_list_turn_on_div()">Modify</button></div>
+    <div id="modifyers_list"><h3>Modifyers:</h3><button onclick="modifyers_list_turn_off_div()">Close</button></div>
+
+    <script src="src/draw.js"></script>
+    <script src="src/graph.js"></script>
+    <script src="src/parametor.js"></script>
+    <script src="src/interact.js"></script>
+    <script src="src/modifyors.js"></script>
+    <script src="src/setup.js"></script>
 </body>
 
 </html>

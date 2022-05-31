@@ -1,0 +1,40 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+#interaction_mode_selector {
+  border-radius: 5px;
+  background-color: white;
+  position: fixed;
+  top: 50%;
+  left: 7px;
+}
+
+.interactor {
+  margin: 8px;
+  padding: 6px;
+  transition: 250ms;
+  background-color: white;
+}
+
+.interactor:hover {
+  background-color: lightcoral;
+}
+
+.interactor.selected {
+  background-color: lightblue;
+}
+
+.interactor_recap {
+  position: fixed;
+  left: 60px;
+  top: 50px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 10px;
+  transition: 250ms;
+  display: none;
+}
