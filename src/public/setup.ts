@@ -9,6 +9,7 @@ function setup(){
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
     document.addEventListener('contextmenu', event => event.preventDefault());
+    setup_interactions(canvas,ctx,g);
     draw(canvas,ctx,g);
 }
 

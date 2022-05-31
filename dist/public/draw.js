@@ -6,13 +6,17 @@ function draw_background(canvas, ctx) {
     ctx.rect(0, 0, canvas.width, canvas.height);
     ctx.fill();
 }
+function draw_line(v, x, y, ctx) {
+    ctx.strokeStyle = "white";
+    ctx.beginPath();
+    ctx.moveTo(v.pos.x, v.pos.y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
 // DRAW VERTICES
 function draw_vertices(ctx, g) {
     for (let vertex of g.vertices.values()) {
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(vertex.pos.x, vertex.pos.y, 8, 0, 2 * Math.PI);
-        ctx.fill();
+        vertex.draw(ctx);
     }
 }
 function draw(canvas, ctx, g) {

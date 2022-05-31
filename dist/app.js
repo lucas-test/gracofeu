@@ -11,4 +11,9 @@ const io = require('socket.io')(server);
 app.use(express_1.default.static('dist/public'));
 app.get('/', function (req, res) { res.sendFile('index.html'); });
 console.log('Server started at http://localhost:' + port);
+// gestion des rooms
+/*
+par room crée un graphe
+
+*/
 //# sourceMappingURL=app.js.map
