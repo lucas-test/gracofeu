@@ -1,51 +1,61 @@
-class Coord {
-    x: number;
-    y: number;
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    
-}
-
-class Vertex {
-    pos: Coord;
-    selected: boolean;
-
-    constructor(x: number, y: number){
-        this.pos = new Coord(x,y)
-        this.selected = false;
-    }
-
-    draw(ctx: CanvasRenderingContext2D){
-        ctx.fillStyle = "white";
-        ctx.beginPath();
-        ctx.arc(this.pos.x, this.pos.y, 8, 0, 2 * Math.PI);
-        ctx.fill();
-    }
-
-    dist2(x: number, y:number){
-        return  (this.pos.x - x)**2 + (this.pos.y-y)**2
-    }
-}
-
-
 class Graph {
-    vertices: Map<number,Vertex>;
-    
-    constructor(){
+    vertices: Map < number, Vertex > ;
+    edges: Array < Edge > ;
+
+    constructor() {
         this.vertices = new Map();
+        this.edges = new Array();
     }
 
-    add_vertex(x: number, y:number){
+
+    get_next_available_index() {
         let index = 0;
-        while ( this.vertices.has(index)){
+        while (this.vertices.has(index)) {
             index += 1;
         }
-        this.vertices.set(index, new Vertex(x,y));
         return index;
     }
-}
 
+
+    get_index(v: Vertex) {
+        for (let [index, vertex] of this.vertices.entries()) {
+            if (vertex === v) {
+                return index;
+            }
+        }
+        return;
+    }
+
+
+    add_vertex(x: number, y: number) {
+        let index = this.get_next_available_index();
+        this.vertices.set(index, new Vertex(x, y));
+        return index;
+    }
+
+
+    add_edge(i: number, j: number) {
+
+        for (let e of this.edges) {
+            if ((e.start_vertex == i && e.end_vertex == j) || (e.start_vertex == j && e.end_vertex == i)) {
+                return
+            }
+        }
+
+        this.edges.push(new Edge(i, j));
+    }
+
+
+    get_neighbors_list(i: number) {
+        let neighbors = [];
+        for (let e of this.edges) {
+            if (e.start_vertex == i) {
+                neighbors.push(e.end_vertex);
+            } else if (e.end_vertex == i) {
+                neighbors.push(e.start_vertex);
+            }
+        }
+    }
+
+    
+}
