@@ -16,6 +16,8 @@ draw:
 
 color picker ???
 
+## Interactor
+
 interactor_selection:
     - selection au clic
     - selection au rectangle
@@ -27,11 +29,15 @@ interactor_edge:
 interactor_arc:
     tout
 
+## Parameter
+
 parametor:
     mettre en place la structure sans attribut
     selection de parametre
     update parametre
     attributs
+
+## Modifyer
 
 modifyer:
     pareil

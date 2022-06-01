@@ -70,10 +70,10 @@ function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
 
     canvas.addEventListener('mouseup', function (e) {
         if (e.which == 1) { // left click
+            interactor_loaded.mouseup(canvas, ctx, g, e);
             interactor_loaded.last_down = null;
             interactor_loaded.last_down_index = null;
             interactor_loaded.last_down_pos = null;
-            interactor_loaded.mouseup(canvas, ctx, g, e);
             //update_params_loaded(g)
             requestAnimationFrame(function () {
                 draw(canvas, ctx, g)
