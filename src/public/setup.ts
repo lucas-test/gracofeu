@@ -12,6 +12,8 @@ function setup(){
     ctx.canvas.height = window.innerHeight;
     document.addEventListener('contextmenu', event => event.preventDefault());
     setup_interactions(canvas,ctx,g);
+    setup_interactors_div();
+    select_interactor(interactor_selection);
     draw(canvas,ctx,g);
 }
 
