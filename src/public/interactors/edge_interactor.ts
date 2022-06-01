@@ -10,7 +10,6 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
         let index = g.add_vertex(e.pageX, e.pageY);
         index_last_created_vertex = index;
-        interactor_edge.last_down_index = index;
     }
     if (d === DOWN_TYPE.VERTEX_NON_SELECTED || d === DOWN_TYPE.VERTEX_SELECTED) {
         console.log(k);
@@ -22,14 +21,14 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
 interactor_edge.mousemove = ((canvas, ctx, g, e) => {
     // console.log("mousemove " , interactor_edge.last_down);
     console.log("mousemove");
-    if (interactor_edge.last_down == DOWN_TYPE.EMPTY ) {
+    if (interactor_edge.last_down == DOWN_TYPE.EMPTY) {
         let vertex = g.vertices.get(index_last_created_vertex);
         draw(canvas, ctx, g);
         draw_line(vertex, e.pageX, e.pageY, ctx);
         draw_circle(e.pageX, e.pageY, ctx);
         return false;
     }
-    else if ( interactor_edge.last_down == DOWN_TYPE.VERTEX_NON_SELECTED ||  interactor_edge.last_down == DOWN_TYPE.VERTEX_SELECTED){
+    else if (interactor_edge.last_down == DOWN_TYPE.VERTEX_NON_SELECTED || interactor_edge.last_down == DOWN_TYPE.VERTEX_SELECTED) {
         let vertex = g.vertices.get(interactor_edge.last_down_index);
         draw(canvas, ctx, g);
         draw_line(vertex, e.pageX, e.pageY, ctx);
@@ -41,22 +40,25 @@ interactor_edge.mousemove = ((canvas, ctx, g, e) => {
 
 interactor_edge.mouseup = ((canvas, ctx, g, e) => {
     console.log("mouseup ", interactor_edge.last_down);
-    
-    if ( interactor_edge.last_down == DOWN_TYPE.VERTEX_NON_SELECTED ||  interactor_edge.last_down == DOWN_TYPE.VERTEX_SELECTED || interactor_edge.last_down === DOWN_TYPE.EMPTY){
+    if (interactor_edge.last_down == DOWN_TYPE.VERTEX_NON_SELECTED || interactor_edge.last_down == DOWN_TYPE.VERTEX_SELECTED) {
         let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
         console.log(index, interactor_edge.last_down_index);
-        if (index && interactor_edge.last_down_index) {
-            if(interactor_edge.last_down_index != index){
-                g.add_edge(interactor_edge.last_down_index, index);
-            }
-        }
-        if(!index && interactor_edge.last_down_index){
+        if (index && interactor_edge.last_down_index != index) {
+            g.add_edge(interactor_edge.last_down_index, index);
+        } else {
             let index = g.add_vertex(e.pageX, e.pageY);
-            index_last_created_vertex = index;
             g.add_edge(interactor_edge.last_down_index, index);
         }
     }
+    else if (interactor_edge.last_down === DOWN_TYPE.EMPTY) {
+        let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
+        if (index && index != index_last_created_vertex) {
+            g.add_edge(index_last_created_vertex, index);
+        } else {
+            let new_vertex_index = g.add_vertex(e.pageX, e.pageY);
+            g.add_edge(index_last_created_vertex, new_vertex_index);
+        }
+    }
 
-    interactor_edge.last_down_index = null;
-
+    //interactor_edge.last_down_index = null; // déjà fait à la fin de interactor mouseup
 })
