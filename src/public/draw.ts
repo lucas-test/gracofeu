@@ -17,6 +17,14 @@ function draw_line(v: Vertex, x: number, y: number, ctx: CanvasRenderingContext2
 }
 
 
+function draw_circle(x: number, y: number, ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = "grey";
+    ctx.beginPath();
+    ctx.arc(x, y, 10, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
+
 // DRAW VERTICES
 function draw_vertices(ctx: CanvasRenderingContext2D, g: Graph) {
     for (let vertex of g.vertices.values()) {
