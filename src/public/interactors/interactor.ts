@@ -74,10 +74,8 @@ function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
             interactor_loaded.last_down = null;
             interactor_loaded.last_down_index = null;
             interactor_loaded.last_down_pos = null;
-            //update_params_loaded(g)
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
+            update_params_loaded(g)
+            requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
     })
 

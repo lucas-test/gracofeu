@@ -14,6 +14,10 @@ function setup(){
     setup_interactions(canvas,ctx,g);
     setup_interactors_div();
     select_interactor(interactor_edge);
+
+    setup_parametors_available();
+    update_params_available_div(canvas,ctx,g);
+
     draw(canvas,ctx,g);
 }
 
