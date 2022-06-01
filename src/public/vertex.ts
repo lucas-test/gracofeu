@@ -23,5 +23,9 @@ class Vertex {
         this.pos.y = this.old_pos.y + dy;
     }
 
+    is_nearby(x:number, y:number, r:number){
+        return this.dist2(x, y) <= r;
+    }
+
 
 }

@@ -13,7 +13,7 @@ function setup(){
     document.addEventListener('contextmenu', event => event.preventDefault());
     setup_interactions(canvas,ctx,g);
     setup_interactors_div();
-    select_interactor(interactor_selection);
+    select_interactor(interactor_edge);
     draw(canvas,ctx,g);
 }
 
