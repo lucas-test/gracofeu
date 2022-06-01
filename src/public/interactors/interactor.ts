@@ -94,7 +94,7 @@ function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderingConte
             interactor_loaded.last_down_pos = new Coord(e.pageX, e.pageY)
 
             let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
-            if (index) {
+            if (index !== null) {
                 let v = g.vertices.get(index);
                 if (v.selected) {
                     interactor_loaded.last_down = DOWN_TYPE.VERTEX_SELECTED;

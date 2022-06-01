@@ -60,7 +60,7 @@ class Graph {
     get_vertex_index_nearby(x:number, y:number) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
-            if (v.is_nearby(x,y, 100)) {
+            if (v.is_nearby(x,y, 150)) {
                return index;
             }
         }

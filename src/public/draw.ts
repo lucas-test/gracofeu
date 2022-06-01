@@ -24,16 +24,30 @@ function draw_circle(x: number, y: number, ctx: CanvasRenderingContext2D) {
     ctx.fill();
 }
 
+function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D){
+    ctx.fillStyle = COLOR_BACKGROUND ;
+    ctx.beginPath();
+    ctx.arc(vertex.pos.x, vertex.pos.y, 10, 0, 2 * Math.PI);
+    ctx.fill();
+
+
+    ctx.fillStyle = "white";
+    ctx.beginPath();
+    ctx.arc(vertex.pos.x, vertex.pos.y, 8, 0, 2 * Math.PI);
+    ctx.fill();
+
+
+    ctx.fillStyle = COLOR_BACKGROUND ;
+    ctx.beginPath();
+    ctx.arc(vertex.pos.x, vertex.pos.y, 6, 0, 2 * Math.PI);
+    ctx.fill();
+}
+
 
 // DRAW VERTICES
 function draw_vertices(ctx: CanvasRenderingContext2D, g: Graph) {
     for (let vertex of g.vertices.values()) {
-
-        ctx.fillStyle = "white";
-
-        ctx.beginPath();
-        ctx.arc(vertex.pos.x, vertex.pos.y, 10, 0, 2 * Math.PI);
-        ctx.fill();
+       draw_vertex(vertex, ctx);
     }
 }
 
@@ -55,6 +69,6 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
 
 function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
-    draw_vertices(ctx, g);
     draw_edges(ctx, g);
+    draw_vertices(ctx, g);
 }
