@@ -1,1 +1,45 @@
 # gracofeu
+
+## todo
+
+interactor/parameter/modifyer:
+    les mettre dans des fichiers séparés
+
+les constantes:
+    dans un fichier .json ?
+
+draw:
+    arc
+    selected
+    label/index ?
+
+
+color picker ???
+
+interactor_selection:
+    - selection au clic
+    - selection au rectangle
+    - bouger une selection
+
+interactor_edge:
+    quasi tout
+
+interactor_arc:
+    tout
+
+parametor:
+    mettre en place la structure sans attribut
+    selection de parametre
+    update parametre
+    attributs
+
+modifyer:
+    pareil
+
+gestion multigraphe:
+    tout
+
+collaboration:
+    rooms
+    mode test pour que ça lance direct une room
+    changement
