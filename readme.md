@@ -43,3 +43,9 @@ collaboration:
     rooms
     mode test pour que ça lance direct une room
     changement
+
+heroku
+
+faire tester par des gens pour trouver la disposition majoritairement intuitive
+
+trouver un truc pour pouvoir mettre les .html .css et .svg dans public et que ça soit copié dans dist/ avec npm start
