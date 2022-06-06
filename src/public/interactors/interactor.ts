@@ -1,4 +1,18 @@
-class Interactor {
+
+import { Coord } from '../../server/coord';
+import { Vertex } from '../../server/vertex';
+import { Edge } from '../../server/edge';
+import { Graph } from '../../server/graph';
+
+
+export enum DOWN_TYPE {
+    EMPTY,
+    VERTEX_NON_SELECTED,
+    VERTEX_SELECTED
+}
+
+
+export class Interactor {
     name: string;
     shortcut: string;
     img_src: string;
@@ -21,97 +35,3 @@ class Interactor {
 }
 
 
-
-
-
-
-
-
-
-
-// INTERACTOR MANAGER
-
-
-
-enum DOWN_TYPE {
-    EMPTY,
-    VERTEX_NON_SELECTED,
-    VERTEX_SELECTED
-}
-
-var interactor_loaded: Interactor = null;
-
-
-function select_interactor(interactor: Interactor) {
-    interactor_loaded = interactor;
-    select_interactor_div(interactor);
-}
-
-
-function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
-
-
-    window.addEventListener('keydown', function (e) {
-        if (e.key == "Delete") {
-            // remove_selected_elements(g)
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
-            return;
-        }
-        for (let interactor of interactors_available) {
-            if (interactor.shortcut == e.key) {
-                deselect_all_interactor_div()
-                select_interactor(interactor);
-                return;
-            }
-        }
-    });
-
-    canvas.addEventListener('mouseup', function (e) {
-        if (e.which == 1) { // left click
-            interactor_loaded.mouseup(canvas, ctx, g, e);
-            interactor_loaded.last_down = null;
-            interactor_loaded.last_down_index = null;
-            interactor_loaded.last_down_pos = null;
-            update_params_loaded(g)
-            requestAnimationFrame(function () { draw(canvas, ctx, g) });
-        }
-    })
-
-    canvas.addEventListener('mousemove', function (e) {
-        interactor_loaded.has_moved = true;
-        if (interactor_loaded.mousemove(canvas, ctx, g, e)) {
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
-        }
-    })
-
-    canvas.addEventListener('mousedown', function (e) {
-        if (e.which == 1) { // Left click 
-            interactor_loaded.has_moved = false;
-            interactor_loaded.last_down_pos = new Coord(e.pageX, e.pageY)
-
-            let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
-            if (index !== null) {
-                let v = g.vertices.get(index);
-                if (v.selected) {
-                    interactor_loaded.last_down = DOWN_TYPE.VERTEX_SELECTED;
-                } else {
-                    interactor_loaded.last_down = DOWN_TYPE.VERTEX_NON_SELECTED;
-                    interactor_loaded.last_down_index = index;
-                    interactor_loaded.mousedown(interactor_loaded.last_down, index, canvas, ctx, g, e)
-                    return
-                }
-            }
-
-            interactor_loaded.last_down = DOWN_TYPE.EMPTY;
-            interactor_loaded.mousedown(interactor_loaded.last_down, null, canvas, ctx, g, e)
-            //update_params_loaded(g)
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
-        }
-    })
-}

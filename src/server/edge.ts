@@ -1,4 +1,6 @@
-class Edge {
+
+
+export class Edge {
     start_vertex: number;
     end_vertex: number;
     selected: boolean;
@@ -8,6 +10,5 @@ class Edge {
         this.end_vertex = j;
         this.selected = false;
     }
-
-
 }
+

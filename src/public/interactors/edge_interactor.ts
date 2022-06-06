@@ -1,9 +1,19 @@
+
+import { Coord } from '../../server/coord';
+import { Vertex } from '../../server/vertex';
+import { Edge } from '../../server/edge';
+import { Graph } from '../../server/graph';
+
+import { Interactor, DOWN_TYPE } from './interactor'
+import { draw, draw_line, draw_circle, draw_vertex } from '../draw';
+
+
 // INTERACTOR EDGE
 
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 
 
-var interactor_edge = new Interactor("edge", "e", "edition.svg");
+export var interactor_edge = new Interactor("edge", "e", "edition.svg");
 
 interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
 

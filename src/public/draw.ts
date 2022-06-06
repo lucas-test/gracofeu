@@ -1,6 +1,11 @@
 const SELECTION_COLOR = 'green' // avant c'était '#00ffff'
 const COLOR_BACKGROUND = "#1e1e1e"
 
+import { Coord } from '../server/coord';
+import { Vertex } from '../server/vertex';
+import { Edge } from '../server/edge';
+import { Graph } from '../server/graph';
+
 function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = COLOR_BACKGROUND;
@@ -8,7 +13,7 @@ function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2
     ctx.fill();
 }
 
-function draw_line(v: Vertex, x: number, y: number, ctx: CanvasRenderingContext2D) {
+export function draw_line(v: Vertex, x: number, y: number, ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "white";
     ctx.beginPath();
     ctx.moveTo(v.pos.x, v.pos.y);
@@ -17,14 +22,14 @@ function draw_line(v: Vertex, x: number, y: number, ctx: CanvasRenderingContext2
 }
 
 
-function draw_circle(x: number, y: number, ctx: CanvasRenderingContext2D) {
+export function draw_circle(x: number, y: number, ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "grey";
     ctx.beginPath();
     ctx.arc(x, y, 10, 0, 2 * Math.PI);
     ctx.fill();
 }
 
-function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D){
+export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D){
     ctx.fillStyle = COLOR_BACKGROUND ;
     ctx.beginPath();
     ctx.arc(vertex.pos.x, vertex.pos.y, 10, 0, 2 * Math.PI);
@@ -67,7 +72,7 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
 }
 
 
-function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
     draw_edges(ctx, g);
     draw_vertices(ctx, g);

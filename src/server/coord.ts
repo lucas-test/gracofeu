@@ -1,4 +1,4 @@
-class Coord {
+export class Coord {
     x: number;
     y: number;
 
@@ -6,6 +6,5 @@ class Coord {
         this.x = x;
         this.y = y;
     }
-
-
 }
+

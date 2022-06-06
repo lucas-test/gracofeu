@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Gracofeu</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/modifyers.css">
+    <link rel="stylesheet" href="css/parametor.css">
+
+
+    <script type="module" src="draw.ts"></script>
+    <script type="module" src="interactors/interactor.ts"></script>
+    <script type="module" src="interactors/edge_interactor.ts"></script>
+    <script type="module" src="interactors/selection_interactor.ts"></script>
+    <script type="module" src="interactors/interactor_manager.ts"></script>
+
+
+
+
+    <script type="module" src="setup.ts"></script>
+
+</head>
+
+<body>
+    <image href="img/interactor/edition.svg"></image>
+    <canvas id="main"></canvas>
+    <div id="interaction_mode_selector"></div>
+    <div id="params_loaded"><button id="params_loaded_button">+</button></div>
+    <div id="params_available">Parameters:<button id="params_available_button">Close</button></div>
+    <div id="modifyor"><button onclick="modifyers_list_turn_on_div()">Modify</button></div>
+    <div id="modifyers_list">
+        <h3>Modifyers:</h3><button onclick="modifyers_list_turn_off_div()">Close</button>
+    </div>
+</body>
+
+</html>

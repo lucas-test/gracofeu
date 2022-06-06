@@ -1,6 +1,10 @@
-class Graph {
-    vertices: Map < number, Vertex > ;
-    edges: Array < Edge > ;
+
+import { Edge } from './edge';
+import { Vertex } from './vertex';
+
+export class Graph {
+    vertices: Map<number, Vertex>;
+    edges: Array<Edge>;
 
     constructor() {
         this.vertices = new Map();
@@ -57,14 +61,16 @@ class Graph {
         }
     }
 
-    get_vertex_index_nearby(x:number, y:number) {
+    get_vertex_index_nearby(x: number, y: number) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
-            if (v.is_nearby(x,y, 150)) {
-               return index;
+            if (v.is_nearby(x, y, 150)) {
+                return index;
             }
         }
         return null;
     }
 
 }
+
+

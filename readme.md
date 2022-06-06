@@ -1,17 +1,23 @@
 # gracofeu
 
+Routine :
+
+npm run clean
+npm run build-client
+npm start
+
 ## todo
 
 interactor/parameter/modifyer:
-    les mettre dans des fichiers séparés
+- [ ] les mettre dans des fichiers séparés
 
 les constantes:
-    dans un fichier .json ?
+- [ ] dans un fichier .json ?
 
 draw:
-    arc
-    selected
-    label/index ?
+- [ ] arc
+- [ ] selected
+- [ ] label/index ?
 
 
 color picker ???
@@ -19,39 +25,40 @@ color picker ???
 ## Interactor
 
 interactor_selection:
-    - selection au clic
-    - selection au rectangle
-    - bouger une selection
+- [ ] selection au clic
+- [ ] selection au rectangle
+- [ ] bouger une selection
 
 interactor_edge:
-    quasi tout
+- [ ] uasi tout
 
 interactor_arc:
-    tout
+- [ ] tout
 
 ## Parameter
 
 parametor:
-    mettre en place la structure sans attribut
-    selection de parametre
-    update parametre
-    attributs
+- [ ] mettre en place la structure sans attribut
+- [ ] selection de parametre
+- [ ] update parametre
+- [ ] attributs
 
 ## Modifyer
 
 modifyer:
-    pareil
+- [ ] pareil
 
 gestion multigraphe:
-    tout
+- [ ] tout
 
 collaboration:
-    rooms
-    mode test pour que ça lance direct une room
-    changement
+- [ ] rooms
+- [ ] mode test pour que ça lance direct une room
+- [ ] changement
 
-heroku
+[ ] heroku
 
-faire tester par des gens pour trouver la disposition majoritairement intuitive
+[ ] faire tester par des gens pour trouver la disposition majoritairement intuitive
 
-trouver un truc pour pouvoir mettre les .html .css et .svg dans public et que ça soit copié dans dist/ avec npm start
+- [X] trouver un truc pour pouvoir mettre les .html .css et dans public et que ça soit copié dans dist/ avec npm start
+- [ ] gérer les svg

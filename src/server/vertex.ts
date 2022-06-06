@@ -1,4 +1,6 @@
-class Vertex {
+import { Coord } from './coord';
+
+export class Vertex {
     pos: Coord;
     old_pos: Coord;
     selected: boolean;
@@ -29,3 +31,4 @@ class Vertex {
 
 
 }
+
