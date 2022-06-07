@@ -31,13 +31,3 @@ export function params_available_turn_on_div() {
 
 
 
-
-export function remove_loaded_param(param_name: string) {
-    for (var i = 0; i < params_loaded.length; i++) {
-        if (params_loaded[i].name == param_name) {
-            params_loaded.splice(i, 1)
-            document.getElementById("param_" + param_name).remove()
-            return
-        }
-    }
-}

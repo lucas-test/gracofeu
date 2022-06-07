@@ -24,7 +24,16 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
     let newDiv = document.createElement("div");
     newDiv.classList.add("param");
     newDiv.id = "param_" + param.name;
-    newDiv.innerHTML = "<button onclick=\"remove_loaded_param('" + param.name + "')\">-</button> " + param.name + " : "
+
+
+    let button = document.createElement('button');
+    button.innerHTML = "-";
+    button.addEventListener('click', () => { remove_loaded_param(param.name); });
+    newDiv.appendChild(button);
+
+    let span_name = document.createElement('span');
+    span_name.innerHTML = " " + param.name + " : ";
+    newDiv.appendChild(span_name);
 
     let span_result = document.createElement("span");
     span_result.id = "span_result_" + param.name;
@@ -44,6 +53,17 @@ export function update_params_loaded(g: Graph) {
     for (let param of params_loaded) {
         var result = param.compute(g)
         document.getElementById("span_result_" + param.name).innerHTML = result
+    }
+}
+
+
+function remove_loaded_param(param_name: string) {
+    for (var i = 0; i < params_loaded.length; i++) {
+        if (params_loaded[i].name == param_name) {
+            params_loaded.splice(i, 1)
+            document.getElementById("param_" + param_name).remove()
+            return
+        }
     }
 }
 

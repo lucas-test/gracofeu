@@ -57,16 +57,16 @@ interactor_arc:
 
 ## Parameter
 
-- [ ] bouton remove parametor marche pas
-- [ ] mettre en place la structure sans attribut
+- [X] bouton remove parametor marche pas
+- [X] mettre en place la structure sans attribut
 - [ ] selection de parametre
 - [ ] update parametre
 - [ ] attributs
 
 ## Modifyer
 
-modifyer:
-- [ ] pareil
+- [ ] structure
+- [ ] attributs
 
 ## Gestion plusieurs graphes
 
@@ -79,9 +79,17 @@ modifyer:
 - [ ] rooms
 - [ ] mode test pour que ça lance direct une room
 - [ ] une meta fonction pour faire des modifs sur le graphe avec socket ??
+- [ ] nom utilisateur
+- [ ] suivre la fleche de l'utilisateur
 
 ## Production
 
 - [ ] heroku
 - [ ] faire tester par des gens pour trouver la disposition majoritairement intuitive
+
+## Compte
+
+
+- [ ] sauvegarder
+- [ ] exporter
 
