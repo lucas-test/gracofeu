@@ -40,24 +40,34 @@ io.sockets.on('connection', function (client) {
     client.on('message', handleSalut);
     client.on('save_pos', handle_save_pos);
     client.on('update_pos_from_old', handle_update_pos_from_old);
+    client.on('add_vertex', handle_add_vertex);
+    client.on('add_edge', handle_add_edge);
 
 
-    function handleSalut(message: any){
+    function handleSalut(message: any) {
         console.log(message)
     }
 
-    function handle_save_pos(vertexIndex: number){
-        console.log("I get save_pos", vertexIndex)
+    function handle_save_pos(vertexIndex: number) {
         let vertex = the_graph.vertices.get(vertexIndex);
         vertex.save_pos();
         client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
     }
 
-
-    function handle_update_pos_from_old(vertexIndex: number, x: number, y:number){
+    function handle_update_pos_from_old(vertexIndex: number, x: number, y: number) {
         //console.log("handle_update_pos_from_old", vertexIndex,x,y)
         let vertex = the_graph.vertices.get(vertexIndex);
-        vertex.update_pos_from_old(x,y);
+        vertex.update_pos_from_old(x, y);
+        client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+    }
+
+    function handle_add_vertex(x: number, y: number) {
+        the_graph.add_vertex(x, y);
+        client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+    }
+
+    function handle_add_edge(vindex: number, windex: number) {
+        the_graph.add_edge(vindex, windex);
         client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
     }
 })

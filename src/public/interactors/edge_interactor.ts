@@ -6,6 +6,7 @@ import { Graph } from '../../server/graph';
 
 import { Interactor, DOWN_TYPE } from './interactor'
 import { draw, draw_line, draw_circle, draw_vertex } from '../draw';
+import { socket } from '../socket';
 
 
 // INTERACTOR EDGE
@@ -19,6 +20,7 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
 
     if (d == DOWN_TYPE.EMPTY) {
         let index = g.add_vertex(e.pageX, e.pageY);
+        socket.emit("add_vertex", e.pageX, e.pageY);
         index_last_created_vertex = index;
     }
     if (d === DOWN_TYPE.VERTEX_NON_SELECTED || d === DOWN_TYPE.VERTEX_SELECTED) {
@@ -56,20 +58,26 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
         console.log(index, interactor_edge.last_down_index);
         if (index !== null && interactor_edge.last_down_index != index) { // there is a vertex nearby and it is not the previous one
             g.add_edge(interactor_edge.last_down_index, index);
+            socket.emit("add_edge", interactor_edge.last_down_index, index);
         } else {
             if (interactor_edge.last_down_index !== index) { // We check if we are not creating a vertex on another one
                 let index = g.add_vertex(e.pageX, e.pageY);
+                socket.emit("add_vertex", e.pageX, e.pageY);
                 g.add_edge(interactor_edge.last_down_index, index);
+                socket.emit("add_edge", interactor_edge.last_down_index, index);
             }
         }
     } else if (interactor_edge.last_down === DOWN_TYPE.EMPTY) {
         let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
         if (index !== null && index != index_last_created_vertex) {
             g.add_edge(index_last_created_vertex, index);
+            socket.emit("add_edge", index_last_created_vertex, index);
         } else {
             if (index_last_created_vertex !== index) { // We check if we are not creating another vertex where we created the one with the mousedown 
                 let new_vertex_index = g.add_vertex(e.pageX, e.pageY);
+                socket.emit("add_vertex", e.pageX, e.pageY);
                 g.add_edge(index_last_created_vertex, new_vertex_index);
+                socket.emit("add_edge", index_last_created_vertex, new_vertex_index);
             }
         }
     }
