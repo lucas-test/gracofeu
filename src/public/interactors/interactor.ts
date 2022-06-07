@@ -7,8 +7,10 @@ import { Graph } from '../../server/graph';
 
 export enum DOWN_TYPE {
     EMPTY,
-    VERTEX_NON_SELECTED,
-    VERTEX_SELECTED
+    VERTEX,
+    EDGE,
+    ARC,
+    CONTROL_POINT
 }
 
 

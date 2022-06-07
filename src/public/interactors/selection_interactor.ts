@@ -12,7 +12,7 @@ import { socket } from '../socket';
 export var interactor_selection = new Interactor("selection", "s", "selection.svg")
 
 interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) => {
-    if (down_type == DOWN_TYPE.VERTEX_NON_SELECTED) {
+    if (down_type == DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(down_element_index);
         vertex.save_pos();
         socket.emit("save_pos",  down_element_index)
@@ -21,7 +21,7 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
 
 interactor_selection.mousemove = ((canvas, ctx, g, e) => {
     console.log("mousemove");
-    if (interactor_selection.last_down == DOWN_TYPE.VERTEX_NON_SELECTED) {
+    if (interactor_selection.last_down == DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(interactor_selection.last_down_index);
         vertex.update_pos_from_old(e.pageX - interactor_selection.last_down_pos.x, e.pageY - interactor_selection.last_down_pos.y)
         socket.emit("update_pos_from_old", interactor_selection.last_down_index,  e.pageX - interactor_selection.last_down_pos.x, e.pageY - interactor_selection.last_down_pos.y );

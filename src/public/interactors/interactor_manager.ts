@@ -70,9 +70,9 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             if (index !== null) {
                 let v = g.vertices.get(index);
                 if (v.selected) {
-                    interactor_loaded.last_down = DOWN_TYPE.VERTEX_SELECTED;
+                    interactor_loaded.last_down = DOWN_TYPE.VERTEX;
                 } else {
-                    interactor_loaded.last_down = DOWN_TYPE.VERTEX_NON_SELECTED;
+                    interactor_loaded.last_down = DOWN_TYPE.VERTEX;
                     interactor_loaded.last_down_index = index;
                     interactor_loaded.mousedown(interactor_loaded.last_down, index, canvas, ctx, g, e)
                     return

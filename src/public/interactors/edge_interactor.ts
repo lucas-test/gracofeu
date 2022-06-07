@@ -23,7 +23,7 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
         socket.emit("add_vertex", e.pageX, e.pageY);
         index_last_created_vertex = index;
     }
-    if (d === DOWN_TYPE.VERTEX_NON_SELECTED || d === DOWN_TYPE.VERTEX_SELECTED) {
+    if (d === DOWN_TYPE.VERTEX) {
         console.log(k);
     }
 
@@ -40,7 +40,7 @@ interactor_edge.mousemove = ((canvas, ctx, g, e) => {
         draw_circle(e.pageX, e.pageY, ctx);
         draw_vertex(vertex, ctx); // for esthetic reasons
         return false;
-    } else if (interactor_edge.last_down == DOWN_TYPE.VERTEX_NON_SELECTED || interactor_edge.last_down == DOWN_TYPE.VERTEX_SELECTED) {
+    } else if (interactor_edge.last_down == DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(interactor_edge.last_down_index);
         draw(canvas, ctx, g);
         draw_line(vertex, e.pageX, e.pageY, ctx);
@@ -53,7 +53,7 @@ interactor_edge.mousemove = ((canvas, ctx, g, e) => {
 
 interactor_edge.mouseup = ((canvas, ctx, g, e) => {
     console.log("mouseup ", interactor_edge.last_down);
-    if (interactor_edge.last_down == DOWN_TYPE.VERTEX_NON_SELECTED || interactor_edge.last_down == DOWN_TYPE.VERTEX_SELECTED) {
+    if (interactor_edge.last_down == DOWN_TYPE.VERTEX) {
         let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
         console.log(index, interactor_edge.last_down_index);
         if (index !== null && interactor_edge.last_down_index != index) { // there is a vertex nearby and it is not the previous one
