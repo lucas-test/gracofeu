@@ -10,5 +10,11 @@ export class Edge {
         this.end_vertex = j;
         this.selected = false;
     }
+
+    copy_from(edge: Edge) {
+        this.start_vertex = edge.start_vertex;
+        this.end_vertex = edge.end_vertex;
+        this.selected = edge.selected;
+    }
 }
 

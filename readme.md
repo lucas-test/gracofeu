@@ -2,9 +2,17 @@
 
 Routine :
 
+```
 npm run clean
+```
+
+```
 npm run build-client
+```
+
+```
 npm start
+```
 
 ## todo
 
@@ -15,6 +23,8 @@ les constantes:
 - [ ] dans un fichier .json ?
 
 draw:
+- [x] edge
+- [ ] control_point
 - [ ] arc
 - [ ] selected
 - [ ] label/index ?
@@ -30,7 +40,7 @@ interactor_selection:
 - [ ] bouger une selection
 
 interactor_edge:
-- [ ] uasi tout
+- [ ] quasi tout
 
 interactor_arc:
 - [ ] tout
@@ -51,10 +61,12 @@ modifyer:
 gestion multigraphe:
 - [ ] tout
 
-collaboration:
+## Collaboration
+
+- [X] move vertices
+- [ ] create vertices and edges
 - [ ] rooms
 - [ ] mode test pour que ça lance direct une room
-- [ ] changement
 
 [ ] heroku
 

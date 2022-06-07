@@ -1,13 +1,13 @@
+import { Edge } from "../server/edge";
 import { Graph } from "../server/graph";
+import { Vertex } from "../server/vertex";
 import { draw } from "./draw";
 import { interactor_edge } from "./interactors/edge_interactor";
 import { setup_interactions, select_interactor, setup_interactors_div } from "./interactors/interactor_manager";
-
-
-import { io } from "socket.io-client";
 import { params_available_turn_off_div, params_available_turn_on_div, update_params_available_div } from "./parametors/div_parametor";
 import { setup_parametors_available } from "./parametors/parametor_manager";
-const socket = io("http://localhost:5000")
+import { setup_socket, socket } from "./socket";
+
 socket.emit("message", "hello from new client");
 
 
@@ -15,14 +15,11 @@ socket.emit("message", "hello from new client");
 
 function setup() {
     let g = new Graph();
-    g.add_vertex(100, 100);
-    g.add_vertex(300, 200);
-    g.add_edge(0, 1);
-
-
 
     let canvas = document.getElementById('main') as HTMLCanvasElement;
     let ctx = canvas.getContext('2d');
+
+    setup_socket(canvas,ctx,g);
 
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
@@ -31,9 +28,9 @@ function setup() {
     setup_interactors_div();
     select_interactor(interactor_edge);
 
-    
+
     setup_parametors_available();
-    update_params_available_div(canvas,ctx,g);
+    update_params_available_div(canvas, ctx, g);
 
     let params_loaded_button = document.getElementById("params_loaded_button");
     params_loaded_button?.addEventListener('click', () => {
@@ -44,7 +41,7 @@ function setup() {
     params_available_button?.addEventListener('click', () => {
         params_available_turn_off_div();
     });
-    
+
 
 
     draw(canvas, ctx, g);

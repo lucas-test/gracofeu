@@ -5,6 +5,7 @@ import { Edge } from '../../server/edge';
 import { Graph } from '../../server/graph';
 
 import {Interactor, DOWN_TYPE} from './interactor'
+import { socket } from '../socket';
 
 // INTERACTOR SELECTION
 
@@ -14,6 +15,7 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
     if (down_type == DOWN_TYPE.VERTEX_NON_SELECTED) {
         let vertex = g.vertices.get(down_element_index);
         vertex.save_pos();
+        socket.emit("save_pos",  down_element_index)
     }
 })
 
@@ -22,6 +24,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
     if (interactor_selection.last_down == DOWN_TYPE.VERTEX_NON_SELECTED) {
         let vertex = g.vertices.get(interactor_selection.last_down_index);
         vertex.update_pos_from_old(e.pageX - interactor_selection.last_down_pos.x, e.pageY - interactor_selection.last_down_pos.y)
+        socket.emit("update_pos_from_old", interactor_selection.last_down_index,  e.pageX - interactor_selection.last_down_pos.x, e.pageY - interactor_selection.last_down_pos.y );
         return true;
     }
     return false;

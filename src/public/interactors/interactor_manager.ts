@@ -1,9 +1,10 @@
-import {Interactor, DOWN_TYPE} from './interactor'
-import { interactor_selection} from './selection_interactor';
-import { interactor_edge} from './edge_interactor';
+import { Interactor, DOWN_TYPE } from './interactor'
+import { interactor_selection } from './selection_interactor';
+import { interactor_edge } from './edge_interactor';
 import { Coord } from '../../server/coord';
 import { Graph } from '../../server/graph';
 import { draw } from '../draw';
+import { update_params_loaded } from '../parametors/parametor_manager';
 
 
 // INTERACTOR MANAGER
@@ -46,7 +47,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.last_down = null;
             interactor_loaded.last_down_index = null;
             interactor_loaded.last_down_pos = null;
-            //update_params_loaded(g)
+            update_params_loaded(g)
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
     })
@@ -80,10 +81,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
             interactor_loaded.last_down = DOWN_TYPE.EMPTY;
             interactor_loaded.mousedown(interactor_loaded.last_down, null, canvas, ctx, g, e)
-            //update_params_loaded(g)
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
+            update_params_loaded(g)
+            requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
     })
 }
