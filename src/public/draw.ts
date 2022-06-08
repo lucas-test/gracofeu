@@ -29,20 +29,20 @@ export function draw_circle(x: number, y: number, ctx: CanvasRenderingContext2D)
     ctx.fill();
 }
 
-export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D){
-    ctx.fillStyle = COLOR_BACKGROUND ;
+export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
     ctx.arc(vertex.pos.x, vertex.pos.y, 10, 0, 2 * Math.PI);
     ctx.fill();
 
-
     ctx.fillStyle = "white";
+    if (vertex.selected) { ctx.fillStyle = SELECTION_COLOR; }
     ctx.beginPath();
     ctx.arc(vertex.pos.x, vertex.pos.y, 8, 0, 2 * Math.PI);
     ctx.fill();
 
 
-    ctx.fillStyle = COLOR_BACKGROUND ;
+    ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
     ctx.arc(vertex.pos.x, vertex.pos.y, 6, 0, 2 * Math.PI);
     ctx.fill();
@@ -52,7 +52,7 @@ export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D){
 // DRAW VERTICES
 function draw_vertices(ctx: CanvasRenderingContext2D, g: Graph) {
     for (let vertex of g.vertices.values()) {
-       draw_vertex(vertex, ctx);
+        draw_vertex(vertex, ctx);
     }
 }
 

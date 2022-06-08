@@ -18,6 +18,7 @@ par room crée un graphe
 import { Graph } from './graph';
 
 import { Coord } from './coord';
+import { socket } from '../public/socket';
 
 // TEMPORAIRE pour les tests
 var the_graph = new Graph();
@@ -42,7 +43,12 @@ io.sockets.on('connection', function (client) {
     client.on('update_pos_from_old', handle_update_pos_from_old);
     client.on('add_vertex', handle_add_vertex);
     client.on('add_edge', handle_add_edge);
+    client.on('select_vertex', handle_select_vertex);
 
+    function handle_select_vertex(vertex_index){
+        the_graph.select_vertex(vertex_index);
+        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+    }
 
     function handleSalut(message: any) {
         console.log(message)

@@ -32,4 +32,9 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 
 interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     console.log("mouseup", interactor_selection.has_moved);
+    if ( interactor_selection.last_down === DOWN_TYPE.VERTEX){
+        if ( interactor_selection.has_moved === false ){
+            socket.emit('select_vertex',interactor_selection.last_down_index);
+        }
+    }
 })

@@ -68,15 +68,10 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
             let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
             if (index !== null) {
-                let v = g.vertices.get(index);
-                if (v.selected) {
-                    interactor_loaded.last_down = DOWN_TYPE.VERTEX;
-                } else {
-                    interactor_loaded.last_down = DOWN_TYPE.VERTEX;
-                    interactor_loaded.last_down_index = index;
-                    interactor_loaded.mousedown(interactor_loaded.last_down, index, canvas, ctx, g, e)
-                    return
-                }
+                interactor_loaded.last_down = DOWN_TYPE.VERTEX;
+                interactor_loaded.last_down_index = index;
+                interactor_loaded.mousedown(interactor_loaded.last_down, index, canvas, ctx, g, e)
+                return
             }
 
             interactor_loaded.last_down = DOWN_TYPE.EMPTY;

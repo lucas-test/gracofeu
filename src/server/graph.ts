@@ -40,6 +40,11 @@ export class Graph {
         return index;
     }
 
+    select_vertex(index:number){
+        let v = this.vertices.get(index);
+        v.selected = true;
+    }
+
 
     add_edge(i: number, j: number) {
         for (let e of this.edges) {
