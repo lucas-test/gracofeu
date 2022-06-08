@@ -21,6 +21,13 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
         let index = g.add_vertex(e.pageX, e.pageY);
         socket.emit("add_vertex", e.pageX, e.pageY);
+        // faudrait remplacer les deux instructions précédentes par :
+        // let index = socket.add_vertex(..) pour chaque fonction de Graph 
+        // on fait pas l'action en local
+        // mais l'envoie au serveur
+        // le serveur le fait
+        // le serveur renvoie le résultat
+        // chaque fonction de Graph serait automatiquement traitée en méthode sur socket
         index_last_created_vertex = index;
     }
     if (d === DOWN_TYPE.VERTEX) {

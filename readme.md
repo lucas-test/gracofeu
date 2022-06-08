@@ -7,7 +7,7 @@ npm run clean
 ```
 
 ```
-npm run build-client
+npm run build
 ```
 
 ```
@@ -25,14 +25,15 @@ npm start
 
 ## Organisation backend
 
-- [X] trouver un truc pour pouvoir mettre les .html .css et dans public et que ça soit copié dans dist/ avec npm start
+- [X] trouver un truc pour pouvoir mettre les .html .css et dans public et que ça soit copié dans dist/ avec npm start (avec parcel)
 - [ ] gérer les svg
 - [ ] interactor/parameter/modifyer: les mettre dans des fichiers séparés
+- [ ] amélioration code pour demander une modification sur le graphe (et que toutes les fonctions sur le graphe soit automatiquement restranscrite)
 
 
 ## Draw
 
-- [ ] dans un fichier .json ?
+- [ ] constantes dans un fichier .json ?
 - [x] edge
 - [ ] control_point
 - [ ] arc
@@ -40,20 +41,23 @@ npm start
 - [ ] label/index ?
 
 
-color picker ???
-
 ## Interactor
 
 interactor_selection:
 - [ ] selection au clic
 - [ ] selection au rectangle
 - [ ] bouger une selection
+- [ ] changer la couleur d'un élément
 
 interactor_edge:
-- [ ] quasi tout
+- [X] structure Edge
+- [X] ajout Edge
+- [ ] suppression d'edge
 
 interactor_arc:
-- [ ] tout
+- [X] structure Arc
+- [ ] ajout
+- [ ] suppression d'arc
 
 ## Parameter
 
@@ -84,7 +88,7 @@ interactor_arc:
 
 ## Production
 
-- [ ] heroku
+- [X] heroku
 - [ ] faire tester par des gens pour trouver la disposition majoritairement intuitive
 
 ## Compte
