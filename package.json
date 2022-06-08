@@ -5,9 +5,9 @@
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
     "clean": "rimraf dist/*",
-    "build": "tsc && parcel build src/public/index.html --no-optimize --dist-dir dist/public", 
-    "build-client": "parcel build src/public/index.html --no-optimize --dist-dir dist/public",
+    "build": "tsc && cp -r src/public/img dist/public/ && parcel build src/public/index.html --no-optimize --dist-dir dist/public", 
     "start": "node dist/server/app.js",
+    "dev": " npm run clean && npm run build && npm start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

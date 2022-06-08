@@ -3,15 +3,7 @@
 Routine :
 
 ```
-npm run clean
-```
-
-```
-npm run build
-```
-
-```
-npm start
+npm run dev
 ```
 
 # todo
@@ -26,7 +18,7 @@ npm start
 ## Organisation backend
 
 - [X] trouver un truc pour pouvoir mettre les .html .css et dans public et que ça soit copié dans dist/ avec npm start (avec parcel)
-- [ ] gérer les svg
+- [X] gérer les svg (le dossier img est copié dans dist durant "npm run build")
 - [ ] interactor/parameter/modifyer: les mettre dans des fichiers séparés
 - [ ] amélioration code pour demander une modification sur le graphe (et que toutes les fonctions sur le graphe soit automatiquement restranscrite)
 
