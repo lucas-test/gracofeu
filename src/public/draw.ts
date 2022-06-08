@@ -5,6 +5,7 @@ import { Coord } from '../server/coord';
 import { Vertex } from '../server/vertex';
 import { Edge } from '../server/edge';
 import { Graph } from '../server/graph';
+import { camera } from './camera';
 
 function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
@@ -16,7 +17,7 @@ function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2
 export function draw_line(v: Vertex, x: number, y: number, ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "white";
     ctx.beginPath();
-    ctx.moveTo(v.pos.x, v.pos.y);
+    ctx.moveTo(v.pos.x + camera.x, v.pos.y + camera.y);
     ctx.lineTo(x, y);
     ctx.stroke();
 }
@@ -32,19 +33,19 @@ export function draw_circle(x: number, y: number, ctx: CanvasRenderingContext2D)
 export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
-    ctx.arc(vertex.pos.x, vertex.pos.y, 10, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 10, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.fillStyle = "white";
     if (vertex.selected) { ctx.fillStyle = SELECTION_COLOR; }
     ctx.beginPath();
-    ctx.arc(vertex.pos.x, vertex.pos.y, 8, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 8, 0, 2 * Math.PI);
     ctx.fill();
 
 
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
-    ctx.arc(vertex.pos.x, vertex.pos.y, 6, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 6, 0, 2 * Math.PI);
     ctx.fill();
 }
 
@@ -65,8 +66,8 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(u.pos.x, u.pos.y);
-        ctx.lineTo(v.pos.x, v.pos.y);
+        ctx.moveTo(u.pos.x + camera.x, u.pos.y + camera.y);
+        ctx.lineTo(v.pos.x + camera.x, v.pos.y + camera.y);
         ctx.stroke();
     }
 }

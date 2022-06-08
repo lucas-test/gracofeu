@@ -76,10 +76,10 @@ export class Graph {
         }
     }
 
-    get_vertex_index_nearby(x: number, y: number) {
+    get_vertex_index_nearby(x: number, y: number, dx: number, dy:number) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
-            if (v.is_nearby(x, y, 150)) {
+            if (v.is_nearby(x-dx, y-dy, 150)) {
                 return index;
             }
         }

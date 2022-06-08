@@ -5,7 +5,7 @@ import { Coord } from '../../server/coord';
 import { Graph } from '../../server/graph';
 import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
-
+import { camera } from '../camera';
 
 // INTERACTOR MANAGER
 
@@ -66,7 +66,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = new Coord(e.pageX, e.pageY)
 
-            let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
+            let index = g.get_vertex_index_nearby(e.pageX, e.pageY, camera.x, camera.y);
             if (index !== null) {
                 interactor_loaded.last_down = DOWN_TYPE.VERTEX;
                 interactor_loaded.last_down_index = index;

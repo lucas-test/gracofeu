@@ -7,6 +7,7 @@ import { Graph } from '../../server/graph';
 import { Interactor, DOWN_TYPE } from './interactor'
 import { draw, draw_line, draw_circle, draw_vertex } from '../draw';
 import { socket } from '../socket';
+import { camera } from '../camera';
 
 
 // INTERACTOR EDGE
@@ -19,8 +20,8 @@ export var interactor_edge = new Interactor("edge", "e", "edition.svg");
 interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
 
     if (d == DOWN_TYPE.EMPTY) {
-        let index = g.add_vertex(e.pageX, e.pageY);
-        socket.emit("add_vertex", e.pageX, e.pageY);
+        let index = g.add_vertex(e.pageX - camera.x, e.pageY - camera.y);
+        socket.emit("add_vertex", e.pageX - camera.x, e.pageY - camera.y);
         // faudrait remplacer les deux instructions précédentes par :
         // let index = socket.add_vertex(..) pour chaque fonction de Graph 
         // on fait pas l'action en local
@@ -61,28 +62,28 @@ interactor_edge.mousemove = ((canvas, ctx, g, e) => {
 interactor_edge.mouseup = ((canvas, ctx, g, e) => {
     console.log("mouseup ", interactor_edge.last_down);
     if (interactor_edge.last_down == DOWN_TYPE.VERTEX) {
-        let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
+        let index = g.get_vertex_index_nearby(e.pageX, e.pageY, camera.x, camera.y);
         console.log(index, interactor_edge.last_down_index);
         if (index !== null && interactor_edge.last_down_index != index) { // there is a vertex nearby and it is not the previous one
             g.add_edge(interactor_edge.last_down_index, index);
             socket.emit("add_edge", interactor_edge.last_down_index, index);
         } else {
             if (interactor_edge.last_down_index !== index) { // We check if we are not creating a vertex on another one
-                let index = g.add_vertex(e.pageX, e.pageY);
-                socket.emit("add_vertex", e.pageX, e.pageY);
+                let index = g.add_vertex(e.pageX - camera.x, e.pageY - camera.y);
+                socket.emit("add_vertex", e.pageX - camera.x, e.pageY - camera.y);
                 g.add_edge(interactor_edge.last_down_index, index);
                 socket.emit("add_edge", interactor_edge.last_down_index, index);
             }
         }
     } else if (interactor_edge.last_down === DOWN_TYPE.EMPTY) {
-        let index = g.get_vertex_index_nearby(e.pageX, e.pageY);
+        let index = g.get_vertex_index_nearby(e.pageX, e.pageY, camera.x, camera.y);
         if (index !== null && index != index_last_created_vertex) {
             g.add_edge(index_last_created_vertex, index);
             socket.emit("add_edge", index_last_created_vertex, index);
         } else {
             if (index_last_created_vertex !== index) { // We check if we are not creating another vertex where we created the one with the mousedown 
-                let new_vertex_index = g.add_vertex(e.pageX, e.pageY);
-                socket.emit("add_vertex", e.pageX, e.pageY);
+                let new_vertex_index = g.add_vertex(e.pageX - camera.x, e.pageY - camera.y);
+                socket.emit("add_vertex", e.pageX - camera.x, e.pageY - camera.y);
                 g.add_edge(index_last_created_vertex, new_vertex_index);
                 socket.emit("add_edge", index_last_created_vertex, new_vertex_index);
             }

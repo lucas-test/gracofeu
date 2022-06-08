@@ -10,7 +10,7 @@ npm run dev
 
 ## Ecran
 
-- [ ] déplacer caméra
+- [X] déplacer caméra
 - [ ] recentrer
 - [ ] zoomer
 - [ ] grille
