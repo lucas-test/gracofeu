@@ -3,7 +3,7 @@ import { Graph } from "../server/graph";
 import { Vertex } from "../server/vertex";
 import { Edge } from "../server/edge";
 import { draw } from "./draw";
-export const socket = io("http://localhost:5000")
+export const socket = io()
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     socket.on('graph', (new_graph: Graph, vertices_entries: [number, Vertex][]) => {
