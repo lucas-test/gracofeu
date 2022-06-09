@@ -6,6 +6,7 @@ import { Graph } from '../../server/graph';
 import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
 import { camera, view } from '../camera';
+import { socket } from '../socket';
 
 // INTERACTOR MANAGER
 
@@ -66,6 +67,11 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 draw(canvas, ctx, g)
             });
         }
+
+        socket.emit("moving_cursor", e.pageX, e.pageY, camera.x, camera.y);
+        requestAnimationFrame(function () {
+            draw(canvas, ctx, g)
+        });
     })
 
     canvas.addEventListener('mousedown', function (e) {

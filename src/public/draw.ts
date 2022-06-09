@@ -8,7 +8,7 @@ import { Edge } from '../server/edge';
 import { Graph } from '../server/graph';
 import { camera, view } from './camera';
 
-function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.rect(0, 0, canvas.width, canvas.height);
@@ -68,6 +68,12 @@ export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 6, 0, 2 * Math.PI);
     ctx.fill();
+}
+
+export function draw_label(label:string, x:number, y:number, ctx:CanvasRenderingContext2D){
+    ctx.font = "12px serif";
+    ctx.fillStyle = "white";
+    ctx.fillText(label, x + camera.x, y + camera.y);
 }
 
 

@@ -44,6 +44,12 @@ io.sockets.on('connection', function (client) {
     client.on('add_vertex', handle_add_vertex);
     client.on('add_edge', handle_add_edge);
     client.on('select_vertex', handle_select_vertex);
+    client.on('moving_cursor', handle_moving_cursor);
+
+
+    function handle_moving_cursor(x:number, y:number, dx:number, dy:number) {
+        client.broadcast.emit('other_moving_cursor', client.id, x+dx, y+dy);
+    }
 
     function handle_select_vertex(vertex_index){
         the_graph.select_vertex(vertex_index);
@@ -77,5 +83,7 @@ io.sockets.on('connection', function (client) {
         client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
     }
 })
+
+
 
 
