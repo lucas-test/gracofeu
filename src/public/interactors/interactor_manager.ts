@@ -5,7 +5,7 @@ import { Coord } from '../../server/coord';
 import { Graph } from '../../server/graph';
 import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
-import { camera } from '../camera';
+import { camera, view } from '../camera';
 
 // INTERACTOR MANAGER
 
@@ -27,6 +27,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     window.addEventListener('keydown', function (e) {
         if (e.key == "Delete") {
             // remove_selected_elements(g)
+            requestAnimationFrame(function () {
+                draw(canvas, ctx, g)
+            });
+            return;
+        }
+        else if(e.key == "g"){
+            view.toggle_grid();
             requestAnimationFrame(function () {
                 draw(canvas, ctx, g)
             });

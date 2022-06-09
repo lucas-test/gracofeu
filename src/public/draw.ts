@@ -1,17 +1,38 @@
 const SELECTION_COLOR = 'green' // avant c'était '#00ffff'
-const COLOR_BACKGROUND = "#1e1e1e"
+const COLOR_BACKGROUND = "#1e1e1e";
+const GRID_COLOR = '#777777';
 
 import { Coord } from '../server/coord';
 import { Vertex } from '../server/vertex';
 import { Edge } from '../server/edge';
 import { Graph } from '../server/graph';
-import { camera } from './camera';
+import { camera, view } from './camera';
 
 function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.rect(0, 0, canvas.width, canvas.height);
     ctx.fill();
+
+    if(view.grid_show){
+        for(let i = camera.x%view.grid_size; i <  canvas.width; i+=view.grid_size){
+            ctx.strokeStyle = GRID_COLOR;     
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(i, 0);
+            ctx.lineTo(i, canvas.height);
+            ctx.stroke();
+        }
+
+        for(let i = camera.y%view.grid_size; i <  canvas.height; i+=view.grid_size){
+            ctx.strokeStyle = GRID_COLOR;     
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, i);
+            ctx.lineTo(canvas.width, i);
+            ctx.stroke();
+        }
+    }
 }
 
 export function draw_line(v: Vertex, x: number, y: number, ctx: CanvasRenderingContext2D) {
