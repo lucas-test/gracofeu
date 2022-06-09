@@ -44,11 +44,11 @@ io.sockets.on('connection', function (client) {
     client.on('add_vertex', handle_add_vertex);
     client.on('add_edge', handle_add_edge);
     client.on('select_vertex', handle_select_vertex);
-    client.on('moving_cursor', handle_moving_cursor);
+    client.on('moving_cursor', update_user);
 
 
-    function handle_moving_cursor(x:number, y:number, dx:number, dy:number) {
-        client.broadcast.emit('other_moving_cursor', client.id, x+dx, y+dy);
+    function update_user(x:number, y:number) {
+        client.broadcast.emit('update_user', client.id, client.id.substring(0,5), "white", x, y);
     }
 
     function handle_select_vertex(vertex_index){

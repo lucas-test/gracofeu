@@ -7,6 +7,7 @@ import { Vertex } from '../server/vertex';
 import { Edge } from '../server/edge';
 import { Graph } from '../server/graph';
 import { camera, view } from './camera';
+import { User, users } from './user';
 
 export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
@@ -70,10 +71,26 @@ export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D) {
     ctx.fill();
 }
 
-export function draw_label(label:string, x:number, y:number, ctx:CanvasRenderingContext2D){
-    ctx.font = "12px serif";
-    ctx.fillStyle = "white";
-    ctx.fillText(label, x + camera.x, y + camera.y);
+export function draw_user(user:User, ctx:CanvasRenderingContext2D){
+    ctx.font = "15px serif";
+    ctx.beginPath();
+    ctx.fillStyle =  user.color;
+    let text = ctx.measureText(user.label);
+    ctx.rect(user.pos.x + camera.x - 5, user.pos.y + camera.y - 17, text.width + 10, 19);
+    ctx.fill();
+
+
+    ctx.beginPath();
+    ctx.fillStyle = "black";
+    ctx.fillText(user.label, user.pos.x + camera.x, user.pos.y + camera.y);
+    ctx.fill();
+}
+
+// DRAW USERS
+function draw_users(ctx: CanvasRenderingContext2D){
+    users.forEach(user => {
+        draw_user(user, ctx);
+    });
 }
 
 
@@ -104,4 +121,5 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_background(canvas, ctx);
     draw_edges(ctx, g);
     draw_vertices(ctx, g);
+    draw_users(ctx);
 }

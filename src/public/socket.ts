@@ -2,9 +2,11 @@ import { io } from "socket.io-client";
 import { Graph } from "../server/graph";
 import { Vertex } from "../server/vertex";
 import { Edge } from "../server/edge";
-import { draw, draw_circle, draw_vertex, draw_background, draw_label } from "./draw";
+import { draw, draw_circle, draw_vertex } from "./draw";
 import { Arc } from "../server/arc";
 import { camera } from "./camera";
+import { User, users } from "./user";
+import { Coord } from "../server/coord";
 export const socket = io()
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -39,12 +41,15 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     })
 
 
-    socket.on('other_moving_cursor', update_other_cursor);
+    socket.on('update_user', update_user);
 
-    function update_other_cursor(label:string, x:number, y:number){
-        requestAnimationFrame(function () { 
-            draw_background(canvas, ctx);
-            draw_label(label, x + camera.x, y + camera.y, ctx);});
-       
+    function update_user(id:string, label:string, color:string, x:number, y:number){
+       if(users.has(id)){
+           users.get(id).pos = new Coord(x, y);
+       }
+       else{
+           users.set(id, new User(label, color, new Coord(x, y)));
+       }
+       requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 }

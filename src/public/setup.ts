@@ -8,9 +8,9 @@ import { params_available_turn_off_div, params_available_turn_on_div, update_par
 import { setup_parametors_available } from "./parametors/parametor_manager";
 import { setup_socket, socket } from "./socket";
 
+
+
 socket.emit("message", "hello from new client");
-
-
 
 
 function setup() {
@@ -18,6 +18,7 @@ function setup() {
 
     let canvas = document.getElementById('main') as HTMLCanvasElement;
     let ctx = canvas.getContext('2d');
+
 
     setup_socket(canvas,ctx,g);
 
