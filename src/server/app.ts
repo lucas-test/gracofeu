@@ -35,52 +35,58 @@ io.sockets.on('connection', function (client) {
     client.emit('myId', client.id, Date.now());
     client.emit('graph', the_graph, [...the_graph.vertices.entries()]);
 
-    // emitRoomsAvailable()
+    // emitRoomsAvailable() TODO
 
-    // SETUP CLIENT ACTIONS
+    // SETUP NON GRAPH ACTIONS
     client.on('message', handleSalut);
-    client.on('save_pos', handle_save_pos);
-    client.on('update_pos_from_old', handle_update_pos_from_old);
-    client.on('add_vertex', handle_add_vertex);
-    client.on('add_edge', handle_add_edge);
-    client.on('select_vertex', handle_select_vertex);
     client.on('moving_cursor', update_user);
 
-
-    function update_user(x:number, y:number) {
-        client.broadcast.emit('update_user', client.id, client.id.substring(0,5), "white", x, y);
+    function update_user(x: number, y: number) {
+        client.broadcast.emit('update_user', client.id, client.id.substring(0, 5), "white", x, y);
     }
 
-    function handle_select_vertex(vertex_index){
-        the_graph.select_vertex(vertex_index);
-        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
-    }
 
     function handleSalut(message: any) {
         console.log(message)
     }
 
+    // GRAPH API
+    client.on('save_pos', handle_save_pos);
+    client.on('update_pos_from_old', handle_update_pos_from_old);
+    client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
+    client.on('add_edge', handle_add_edge);
+    client.on('select_vertex', handle_select_vertex);
+
+
+
+
+
+    function handle_select_vertex(vertex_index: number) {
+        the_graph.select_vertex(vertex_index);
+        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+    }
+
     function handle_save_pos(vertexIndex: number) {
         let vertex = the_graph.vertices.get(vertexIndex);
         vertex.save_pos();
-        client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
     }
 
     function handle_update_pos_from_old(vertexIndex: number, x: number, y: number) {
-        //console.log("handle_update_pos_from_old", vertexIndex,x,y)
         let vertex = the_graph.vertices.get(vertexIndex);
         vertex.update_pos_from_old(x, y);
-        client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
     }
 
     function handle_add_vertex(x: number, y: number) {
-        the_graph.add_vertex(x, y);
-        client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+        let index = the_graph.add_vertex(x, y);
+        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+        return index;
     }
 
     function handle_add_edge(vindex: number, windex: number) {
         the_graph.add_edge(vindex, windex);
-        client.broadcast.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
     }
 })
 
