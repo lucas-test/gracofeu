@@ -7,7 +7,7 @@ import { Graph } from '../../server/graph';
 import { Interactor, DOWN_TYPE } from './interactor'
 import { draw, draw_line, draw_circle, draw_vertex } from '../draw';
 import { socket } from '../socket';
-import { camera } from '../camera';
+import { camera, view } from '../camera';
 
 
 // INTERACTOR EDGE
@@ -19,33 +19,36 @@ export var interactor_edge = new Interactor("edge", "e", "edition.svg");
 
 interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
+        view.is_edge_creating = true;
+        view.edge_creating_start = new Coord(e.pageX - camera.x, e.pageY - camera.y)
+        view.edge_creating_end = {x: e.pageX, y : e.pageY};
         socket.emit("add_vertex", e.pageX - camera.x, e.pageY - camera.y, (response) => { index_last_created_vertex = response});
     }
     if (d === DOWN_TYPE.VERTEX) {
-        console.log(k);
+        let vertex = g.vertices.get(interactor_edge.last_down_index);
+        view.is_edge_creating = true;
+        view.edge_creating_start = vertex.pos;
+        view.edge_creating_end = {x: e.pageX, y : e.pageY};
     }
 })
 
 interactor_edge.mousemove = ((canvas, ctx, g, e) => {
     if (interactor_edge.last_down == DOWN_TYPE.EMPTY) {
-        let vertex = g.vertices.get(index_last_created_vertex);
+        view.edge_creating_end = {x: e.pageX, y : e.pageY};
         draw(canvas, ctx, g);
-        draw_line(vertex, e.pageX, e.pageY, ctx);
-        draw_circle(e.pageX, e.pageY, ctx);
-        draw_vertex(vertex, ctx); // for esthetic reasons
+
+
         return false;
     } else if (interactor_edge.last_down == DOWN_TYPE.VERTEX) {
-        let vertex = g.vertices.get(interactor_edge.last_down_index);
+        view.edge_creating_end = {x: e.pageX, y : e.pageY};
         draw(canvas, ctx, g);
-        draw_line(vertex, e.pageX, e.pageY, ctx);
-        draw_circle(e.pageX, e.pageY, ctx);
-        draw_vertex(vertex, ctx); // for esthetic reasons
         return false;
     }
     return false;
 })
 
 interactor_edge.mouseup = ((canvas, ctx, g, e) => {
+    view.is_edge_creating = false;
     if (interactor_edge.last_down == DOWN_TYPE.VERTEX) {
         let index = g.get_vertex_index_nearby(e.pageX, e.pageY, camera.x, camera.y);
         if (index !== null && interactor_edge.last_down_index != index) { // there is a vertex nearby and it is not the previous one

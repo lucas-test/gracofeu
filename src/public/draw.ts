@@ -36,19 +36,19 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     }
 }
 
-export function draw_line(v: Vertex, x: number, y: number, ctx: CanvasRenderingContext2D) {
+export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "white";
     ctx.beginPath();
-    ctx.moveTo(v.pos.x + camera.x, v.pos.y + camera.y);
-    ctx.lineTo(x, y);
+    ctx.moveTo(start.x + camera.x, start.y + camera.y);
+    ctx.lineTo(end.x, end.y);
     ctx.stroke();
 }
 
 
-export function draw_circle(x: number, y: number, ctx: CanvasRenderingContext2D) {
+export function draw_circle( center: Coord, ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "grey";
     ctx.beginPath();
-    ctx.arc(x, y, 10, 0, 2 * Math.PI);
+    ctx.arc(center.x, center.y, 10, 0, 2 * Math.PI);
     ctx.fill();
 }
 
@@ -116,10 +116,18 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
     }
 }
 
+function draw_edge_creating(ctx : CanvasRenderingContext2D){
+    if (view.is_edge_creating){
+        draw_line(view.edge_creating_start, view.edge_creating_end, ctx);
+        draw_circle(view.edge_creating_end, ctx);
+        //draw_vertex(vertex, ctx); // for esthetic reasons // on peut plus faire ça maintenant
+    }
+}
 
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
     draw_edges(ctx, g);
+    draw_edge_creating(ctx);
     draw_vertices(ctx, g);
     draw_users(ctx);
 }

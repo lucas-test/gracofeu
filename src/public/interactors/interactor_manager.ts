@@ -69,9 +69,6 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         }
 
         socket.emit("moving_cursor", e.pageX - camera.x, e.pageY - camera.y);
-        requestAnimationFrame(function () {
-            draw(canvas, ctx, g)
-        });
     })
 
     canvas.addEventListener('mousedown', function (e) {
