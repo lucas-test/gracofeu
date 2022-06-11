@@ -52,4 +52,12 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
        }
        requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
+
+    socket.on('update_vertex_position', update_vertex_position);
+
+    function update_vertex_position(index:number, x:number, y:number){
+        const v = g.vertices.get(index); 
+        v.pos.x = x;
+        v.pos.y = y; 
+    }
 }

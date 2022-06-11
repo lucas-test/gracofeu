@@ -75,7 +75,7 @@ io.sockets.on('connection', function (client) {
     function handle_update_pos_from_old(vertexIndex: number, x: number, y: number) {
         let vertex = the_graph.vertices.get(vertexIndex);
         vertex.update_pos_from_old(x, y);
-        io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
+        io.emit('update_vertex_position', vertexIndex, vertex.pos.x, vertex.pos.y);
     }
 
     function handle_add_vertex(x: number, y: number) {
