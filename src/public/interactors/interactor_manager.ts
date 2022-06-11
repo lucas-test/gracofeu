@@ -7,6 +7,7 @@ import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
 import { camera, view } from '../camera';
 import { socket } from '../socket';
+import { get_vertex_index_nearby } from '../local_graph';
 
 // INTERACTOR MANAGER
 
@@ -76,7 +77,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = new Coord(e.pageX, e.pageY)
 
-            let index = g.get_vertex_index_nearby(e.pageX, e.pageY, camera.x, camera.y);
+            let index = get_vertex_index_nearby(e.pageX - camera.x, e.pageY - camera.y);
             if (index !== null) {
                 interactor_loaded.last_down = DOWN_TYPE.VERTEX;
                 interactor_loaded.last_down_index = index;

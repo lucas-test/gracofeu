@@ -8,6 +8,7 @@ import { Edge } from '../server/edge';
 import { Graph } from '../server/graph';
 import { camera, view } from './camera';
 import { User, users } from './user';
+import { local_vertices } from './local_graph';
 
 export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
@@ -52,14 +53,17 @@ export function draw_circle( center: Coord, ctx: CanvasRenderingContext2D) {
     ctx.fill();
 }
 
-export function draw_vertex(vertex: Vertex, ctx: CanvasRenderingContext2D) {
+export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
+    const vertex = local_vertices.get(index);
+
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
     ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 10, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.fillStyle = "white";
-    if (vertex.selected) { ctx.fillStyle = SELECTION_COLOR; }
+
+    if (local_vertices.get(index).is_selected) { ctx.fillStyle = SELECTION_COLOR; }
     ctx.beginPath();
     ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 8, 0, 2 * Math.PI);
     ctx.fill();
@@ -96,16 +100,16 @@ function draw_users(ctx: CanvasRenderingContext2D){
 
 // DRAW VERTICES
 function draw_vertices(ctx: CanvasRenderingContext2D, g: Graph) {
-    for (let vertex of g.vertices.values()) {
-        draw_vertex(vertex, ctx);
+    for (const index of local_vertices.keys()) {
+        draw_vertex(index, g, ctx);
     }
 }
 
 // DRAW EDGES
 function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
     for (let edge of g.edges) {
-        let u = g.vertices.get(edge.start_vertex);
-        let v = g.vertices.get(edge.end_vertex);
+        let u = local_vertices.get(edge.start_vertex);
+        let v = local_vertices.get(edge.end_vertex);
 
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
