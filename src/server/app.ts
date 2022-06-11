@@ -37,6 +37,12 @@ io.sockets.on('connection', function (client) {
 
     // emitRoomsAvailable() TODO
 
+    // DISCONNECTED USER
+    client.on('disconnect', handle_disconnect);
+    function handle_disconnect(){
+        client.broadcast.emit('remove_user', client.id);
+    }
+
     // SETUP NON GRAPH ACTIONS
     client.on('message', handleSalut);
     client.on('moving_cursor', update_user);
@@ -89,6 +95,8 @@ io.sockets.on('connection', function (client) {
         io.emit('graph', the_graph, [...the_graph.vertices.entries()]);
     }
 })
+
+
 
 
 

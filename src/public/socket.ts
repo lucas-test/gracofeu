@@ -60,4 +60,11 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         v.pos.x = x;
         v.pos.y = y; 
     }
+
+    socket.on('remove_user', remove_user);
+
+    function remove_user(userid:string){
+        users.delete(userid);  
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    }
 }
