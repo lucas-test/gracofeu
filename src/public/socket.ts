@@ -11,6 +11,9 @@ import { LocalVertex, local_vertices } from "./local_graph";
 export const socket = io()
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+
+    socket.on('myId', handle_my_id);
+
     socket.on('graph', (new_graph: Graph, vertices_entries: [number, Vertex][]) => {
         console.log("I get a new graph");
 
@@ -49,40 +52,51 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     socket.on('update_user', update_user);
 
-    function update_user(id:string, label:string, color:string, x:number, y:number){
-       if(users.has(id)){
-           users.get(id).pos = new Coord(x, y);
-       }
-       else{
-           users.set(id, new User(label, color, new Coord(x, y)));
-       }
-       requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    function update_user(id: string, label: string, color: string, x: number, y: number) {
+        if (users.has(id)) {
+            users.get(id).pos = new Coord(x, y);
+        }
+        else {
+            users.set(id, new User(label, color, new Coord(x, y)));
+        }
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
     socket.on('update_vertex_position', update_vertex_position);
 
-    function update_vertex_position(index:number, x:number, y:number){
-        const v = local_vertices.get(index); 
+    function update_vertex_position(index: number, x: number, y: number) {
+        const v = local_vertices.get(index);
         v.pos.x = x;
-        v.pos.y = y; 
+        v.pos.y = y;
     }
 
 
     socket.on('update_vertex_positions', update_vertex_positions);
 
-    function update_vertex_positions(data){
-        for(const e of data){
-            const v = local_vertices.get(e.index); 
+    function update_vertex_positions(data) {
+        for (const e of data) {
+            const v = local_vertices.get(e.index);
             v.pos.x = e.x;
-            v.pos.y = e.y; 
+            v.pos.y = e.y;
         }
     }
 
 
     socket.on('remove_user', remove_user);
 
-    function remove_user(userid:string){
-        users.delete(userid);  
+    function remove_user(userid: string) {
+        users.delete(userid);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
+
+    function handle_my_id(id: string) {
+        let url = new URL(document.URL);
+        let urlsp = url.searchParams;
+        let room_id = encodeURI(urlsp.get("room_id"));
+        if (room_id != "null") {
+            console.log("room_id : ", room_id);
+            socket.emit("change_room_to", room_id);
+        }
+    }
+
 }

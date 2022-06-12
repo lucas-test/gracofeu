@@ -38,3 +38,11 @@ body {
   transition: 250ms;
   display: none;
 }
+
+#share_link{
+  background-color:#333333;
+  position: fixed;
+  top: 40;
+  left: 5;
+  color: white;
+}

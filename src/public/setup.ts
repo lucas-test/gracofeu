@@ -43,6 +43,13 @@ function setup() {
         params_available_turn_off_div();
     });
 
+    let share_link_div = document.getElementById("share_link");
+    share_link_div?.addEventListener('click',()=>{
+        socket.emit("get_room_id", (room_id: string) => { 
+            navigator.clipboard.writeText(document.URL + "?room_id=" + room_id);
+        });
+    });
+
 
 
     draw(canvas, ctx, g);

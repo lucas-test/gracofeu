@@ -29,35 +29,43 @@ npm run dev
 - [x] edge
 - [ ] control_point
 - [ ] arc
-- [ ] selected
+- [X] selected
 - [ ] label/index ?
 
 
 ## Interactor
 
+- [ ] suppression des élements sélectionnés
+- [ ] delete edge et arc selected
+
 interactor_selection:
-- [ ] selection au clic
+- [X] selection au clic
+- [ ] sélection au clic d'arête
+- [ ] sélection au clic d'arête courbée
 - [ ] selection au rectangle
-- [ ] bouger une selection
+- [X] bouger une selection
 - [ ] changer la couleur d'un élément
+- [ ] copier/coller le sous-graphe induit par la sélection de sommets
+
 
 interactor_edge:
 - [X] structure Edge
 - [X] ajout Edge
-- [ ] suppression d'edge
+
 
 interactor_arc:
 - [X] structure Arc
 - [ ] ajout
-- [ ] suppression d'arc
 
 ## Parameter
 
 - [X] bouton remove parametor marche pas
 - [X] mettre en place la structure sans attribut
+- [ ] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
 - [ ] selection de parametre
 - [ ] update parametre
 - [ ] attributs
+- [ ] déplacer les calculs dans le serveur
 
 ## Modifyer
 
@@ -72,8 +80,8 @@ interactor_arc:
 
 - [X] move vertices
 - [X] create vertices and edges
-- [ ] rooms
-- [ ] mode test pour que ça lance direct une room
+- [X] rooms
+- [X] mode test pour que ça lance direct une unique room
 - [ ] nom utilisateur
 - [X] suivre la fleche de l'utilisateur
 
@@ -82,9 +90,9 @@ interactor_arc:
 - [X] heroku
 - [ ] faire tester par des gens pour trouver la disposition majoritairement intuitive
 
-## Compte
-
+## Sauvegarde/Export
 
 - [ ] sauvegarder -> juste vers un fichier du type .json
-- [ ] exporter
-
+- [ ] charger .json
+- [ ] exporter Latex
+- [ ] exporter pdf
