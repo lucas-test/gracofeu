@@ -40,7 +40,7 @@ export class Graph {
         return index;
     }
 
-    select_vertex(index:number){
+    select_vertex(index: number) {
         let v = this.vertices.get(index);
         v.selected = true;
     }
@@ -55,9 +55,9 @@ export class Graph {
         this.edges.push(new Edge(i, j));
     }
 
-    add_arc(start_vertex_index : number, end_vertex_index: number){
-        for (let arc of this.arcs){
-            if ( arc.start_vertex == start_vertex_index && arc.end_vertex == end_vertex_index){
+    add_arc(start_vertex_index: number, end_vertex_index: number) {
+        for (let arc of this.arcs) {
+            if (arc.start_vertex == start_vertex_index && arc.end_vertex == end_vertex_index) {
                 return;
             }
         }

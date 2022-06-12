@@ -16,9 +16,9 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     ctx.rect(0, 0, canvas.width, canvas.height);
     ctx.fill();
 
-    if(view.grid_show){
-        for(let i = camera.x%view.grid_size; i <  canvas.width; i+=view.grid_size){
-            ctx.strokeStyle = GRID_COLOR;     
+    if (view.grid_show) {
+        for (let i = camera.x % view.grid_size; i < canvas.width; i += view.grid_size) {
+            ctx.strokeStyle = GRID_COLOR;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(i, 0);
@@ -26,8 +26,8 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
             ctx.stroke();
         }
 
-        for(let i = camera.y%view.grid_size; i <  canvas.height; i+=view.grid_size){
-            ctx.strokeStyle = GRID_COLOR;     
+        for (let i = camera.y % view.grid_size; i < canvas.height; i += view.grid_size) {
+            ctx.strokeStyle = GRID_COLOR;
             ctx.lineWidth = 1;
             ctx.beginPath();
             ctx.moveTo(0, i);
@@ -46,7 +46,7 @@ export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2
 }
 
 
-export function draw_circle( center: Coord, ctx: CanvasRenderingContext2D) {
+export function draw_circle(center: Coord, ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = "grey";
     ctx.beginPath();
     ctx.arc(center.x, center.y, 10, 0, 2 * Math.PI);
@@ -75,10 +75,10 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     ctx.fill();
 }
 
-export function draw_user(user:User, ctx:CanvasRenderingContext2D){
+export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.font = "15px serif";
     ctx.beginPath();
-    ctx.fillStyle =  user.color;
+    ctx.fillStyle = user.color;
     let text = ctx.measureText(user.label);
     ctx.rect(user.pos.x + camera.x - 5, user.pos.y + camera.y - 17, text.width + 10, 19);
     ctx.fill();
@@ -91,7 +91,7 @@ export function draw_user(user:User, ctx:CanvasRenderingContext2D){
 }
 
 // DRAW USERS
-function draw_users(ctx: CanvasRenderingContext2D){
+function draw_users(ctx: CanvasRenderingContext2D) {
     users.forEach(user => {
         draw_user(user, ctx);
     });
@@ -120,8 +120,8 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
     }
 }
 
-function draw_edge_creating(ctx : CanvasRenderingContext2D){
-    if (view.is_edge_creating){
+function draw_edge_creating(ctx: CanvasRenderingContext2D) {
+    if (view.is_edge_creating) {
         draw_line(view.edge_creating_start, view.edge_creating_end, ctx);
         draw_circle(view.edge_creating_end, ctx);
         //draw_vertex(vertex, ctx); // for esthetic reasons // on peut plus faire ça maintenant

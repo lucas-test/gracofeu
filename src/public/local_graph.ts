@@ -5,12 +5,12 @@ import { Coord } from "../server/coord";
 // export const selected_vertices_last_pos = new Map<number, Coord>();
 
 
-export class LocalVertex{
-    pos:Coord;
-    old_pos:Coord;
-    is_selected:boolean;
+export class LocalVertex {
+    pos: Coord;
+    old_pos: Coord;
+    is_selected: boolean;
 
-    constructor(pos:Coord){
+    constructor(pos: Coord) {
         this.pos = pos;
         this.old_pos = pos;
         this.is_selected = false;
@@ -21,13 +21,13 @@ export class LocalVertex{
     }
 
 
-    is_nearby(x:number, y:number, r:number){
+    is_nearby(x: number, y: number, r: number) {
         return this.dist2(x, y) <= r;
     }
 
 }
 
-export function deselect_all_vertices(){
+export function deselect_all_vertices() {
     local_vertices.forEach(vertex => {
         vertex.is_selected = false;
     });

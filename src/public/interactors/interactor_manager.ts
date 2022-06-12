@@ -34,7 +34,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             });
             return;
         }
-        else if(e.key == "g"){
+        else if (e.key == "g") {
             view.toggle_grid();
             requestAnimationFrame(function () {
                 draw(canvas, ctx, g)

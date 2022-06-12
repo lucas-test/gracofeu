@@ -20,7 +20,7 @@ function setup() {
     let ctx = canvas.getContext('2d');
 
 
-    setup_socket(canvas,ctx,g);
+    setup_socket(canvas, ctx, g);
 
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
@@ -44,8 +44,8 @@ function setup() {
     });
 
     let share_link_div = document.getElementById("share_link");
-    share_link_div?.addEventListener('click',()=>{
-        socket.emit("get_room_id", (room_id: string) => { 
+    share_link_div?.addEventListener('click', () => {
+        socket.emit("get_room_id", (room_id: string) => {
             navigator.clipboard.writeText(document.URL + "?room_id=" + room_id);
         });
     });

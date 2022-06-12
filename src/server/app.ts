@@ -31,13 +31,13 @@ function makeid(length: number) {
 const the_room = "theroom";
 const the_graph = new Graph();
 the_graph.add_vertex(300, 300);
-the_graph.add_vertex(200,300);
-the_graph.add_vertex(200,200);
-the_graph.add_vertex(300,200);
-the_graph.add_edge(0,1);
-the_graph.add_edge(1,2);
-the_graph.add_edge(2,3);
-the_graph.add_edge(3,0);
+the_graph.add_vertex(200, 300);
+the_graph.add_vertex(200, 200);
+the_graph.add_vertex(300, 200);
+the_graph.add_edge(0, 1);
+the_graph.add_edge(1, 2);
+the_graph.add_edge(2, 3);
+the_graph.add_edge(3, 0);
 room_graphs.set(the_room, the_graph);
 
 
@@ -62,7 +62,7 @@ io.sockets.on('connection', function (client) {
     room_graphs.set(room_id, g);
     io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
 
-    if (ENV.mode == "dev"){
+    if (ENV.mode == "dev") {
         room_id = the_room;
         client.join(room_id);
         g = the_graph;
@@ -101,7 +101,7 @@ io.sockets.on('connection', function (client) {
     }
 
     function update_user(x: number, y: number) {
-       client.to(room_id).emit('update_user', client.id, client.id.substring(0, 5), "white", x, y);
+        client.to(room_id).emit('update_user', client.id, client.id.substring(0, 5), "white", x, y);
     }
 
 
