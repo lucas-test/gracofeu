@@ -28,9 +28,16 @@ function makeid(length: number) {
 
 
 
-const the_room = "abcde";
+const the_room = "theroom";
 const the_graph = new Graph();
 the_graph.add_vertex(300, 300);
+the_graph.add_vertex(200,300);
+the_graph.add_vertex(200,200);
+the_graph.add_vertex(300,200);
+the_graph.add_edge(0,1);
+the_graph.add_edge(1,2);
+the_graph.add_edge(2,3);
+the_graph.add_edge(3,0);
 room_graphs.set(the_room, the_graph);
 
 
@@ -48,7 +55,7 @@ io.sockets.on('connection', function (client) {
     let room_id = makeid(5);
     client.join(room_id);
     clientRooms[client.id] = room_id;
-    client.emit('room_id', room_id); // useless TODO remove
+    client.emit('room_id', room_id); // useless ? TODO remove
     console.log("new room : ", room_id);
     let g = new Graph();
     g.add_vertex(200, 100);
@@ -90,11 +97,11 @@ io.sockets.on('connection', function (client) {
     }
 
     function handle_disconnect() {
-        client.broadcast.emit('remove_user', client.id);
+        io.sockets.in(room_id).emit('remove_user', client.id);
     }
 
     function update_user(x: number, y: number) {
-        client.broadcast.emit('update_user', client.id, client.id.substring(0, 5), "white", x, y);
+       client.to(room_id).emit('update_user', client.id, client.id.substring(0, 5), "white", x, y);
     }
 
 
