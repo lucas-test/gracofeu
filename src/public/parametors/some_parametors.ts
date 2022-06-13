@@ -1,7 +1,5 @@
-import { Coord } from '../../server/coord';
-import { Vertex } from '../../server/vertex';
-import { Edge } from '../../server/edge';
-import { Graph } from '../../server/graph';
+
+import { Graph } from '../local_graph';
 import { Parametor } from './parametor';
 
 export let param_nb_vertices = new Parametor("Vertices number");

@@ -1,8 +1,5 @@
+import { Coord, Graph } from "../local_graph";
 
-import { Coord } from '../../server/coord';
-import { Vertex } from '../../server/vertex';
-import { Edge } from '../../server/edge';
-import { Graph } from '../../server/graph';
 
 
 export enum DOWN_TYPE {

@@ -1,8 +1,13 @@
-import { Coord } from "../server/coord";
+export class Coord {
+    x: number;
+    y: number;
 
-// export const selected_vertices_indices = new Set<number>();
-// // export const 
-// export const selected_vertices_last_pos = new Map<number, Coord>();
+    constructor(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
 
 
 export class LocalVertex {
@@ -27,21 +32,52 @@ export class LocalVertex {
 
 }
 
-export function deselect_all_vertices() {
-    local_vertices.forEach(vertex => {
-        vertex.is_selected = false;
-    });
-}
 
 
-export function get_vertex_index_nearby(x: number, y: number) {
-    for (let index of local_vertices.keys()) {
-        let v = local_vertices.get(index);
-        if (v.is_nearby(x, y, 150)) {
-            return index;
-        }
+
+
+
+
+
+export class Edge {
+    start_vertex: number;
+    end_vertex: number;
+    selected: boolean;
+
+    constructor(i: number, j: number) {
+        this.start_vertex = i;
+        this.end_vertex = j;
+        this.selected = false;
     }
-    return null;
 }
 
-export const local_vertices = new Map<number, LocalVertex>();
+export class Graph {
+    vertices: Map<number, LocalVertex>;
+    edges: Array<Edge>;
+
+    constructor() {
+        this.vertices = new Map();
+        this.edges = new Array();
+    }
+
+
+     deselect_all_vertices() {
+        this.vertices.forEach(vertex => {
+            vertex.is_selected = false;
+        });
+    }
+
+      get_vertex_index_nearby(x: number, y: number) {
+        for (let index of this.vertices.keys()) {
+            let v = this.vertices.get(index);
+            if (v.is_nearby(x, y, 150)) {
+                return index;
+            }
+        }
+        return null;
+    }
+
+}
+
+
+export const local_graph = new Graph();

@@ -1,4 +1,5 @@
-import { Coord } from "../server/coord";
+import { Coord } from "./local_graph";
+
 
 export class User {
     label: string;

@@ -21,11 +21,11 @@ npm run dev
 - [X] gérer les svg (le dossier img est copié dans dist durant "npm run build")
 - [ ] interactor/parameter/modifyer: les mettre dans des fichiers séparés
 - [X] amélioration code pour demander une modification sur le graphe (et que toutes les fonctions sur le graphe soit automatiquement restranscrite)
-- [ ] faire une classe Graph local pour qu'il n'y ait pas d'utilisation de données serveur (conseil Charly). Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
+- [X] faire une classe Graph local pour qu'il n'y ait pas d'utilisation de données serveur (conseil Charly). - [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
 
 ## Draw
 
-- [ ] constantes dans un fichier .json ?
+- [ ] constantes dans un fichier .json ou juste .ts ?
 - [x] edge
 - [ ] control_point
 - [ ] arc
@@ -54,7 +54,7 @@ interactor_edge:
 
 
 interactor_arc:
-- [X] structure Arc
+- [ ] structure Arc
 - [ ] ajout
 
 ## Parameter
@@ -62,7 +62,7 @@ interactor_arc:
 - [X] bouton remove parametor marche pas
 - [X] mettre en place la structure sans attribut
 - [ ] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
-- [ ] selection de parametre
+- [ ] selection et parametre (genre s'il y a une sélection, nb_vertices renvoie la taille de la sélection)
 - [ ] update parametre
 - [ ] attributs
 - [ ] déplacer les calculs dans le serveur

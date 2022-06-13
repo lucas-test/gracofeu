@@ -1,14 +1,9 @@
 
-import { Coord } from '../../server/coord';
-import { Vertex } from '../../server/vertex';
-import { Edge } from '../../server/edge';
-import { Graph } from '../../server/graph';
-
 import { Interactor, DOWN_TYPE } from './interactor'
 import { draw, draw_line, draw_circle, draw_vertex } from '../draw';
 import { socket } from '../socket';
 import { camera, view } from '../camera';
-import { get_vertex_index_nearby, local_vertices } from '../local_graph';
+import { Coord, local_graph } from '../local_graph';
 
 
 // INTERACTOR EDGE
@@ -26,7 +21,7 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
         socket.emit("add_vertex", e.pageX - camera.x, e.pageY - camera.y, (response) => { index_last_created_vertex = response });
     }
     if (d === DOWN_TYPE.VERTEX) {
-        let vertex = local_vertices.get(interactor_edge.last_down_index);
+        let vertex = g.vertices.get(interactor_edge.last_down_index);
         view.is_edge_creating = true;
         view.edge_creating_start = vertex.pos;
         view.edge_creating_end = { x: e.pageX, y: e.pageY };
@@ -36,13 +31,13 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
 interactor_edge.mousemove = ((canvas, ctx, g, e) => {
     if (interactor_edge.last_down == DOWN_TYPE.EMPTY) {
         view.edge_creating_end = { x: e.pageX, y: e.pageY };
-        draw(canvas, ctx, g);
+        draw(canvas, ctx, local_graph);
 
 
         return false;
     } else if (interactor_edge.last_down == DOWN_TYPE.VERTEX) {
         view.edge_creating_end = { x: e.pageX, y: e.pageY };
-        draw(canvas, ctx, g);
+        draw(canvas, ctx, local_graph);
         return false;
     }
     return false;
@@ -51,7 +46,7 @@ interactor_edge.mousemove = ((canvas, ctx, g, e) => {
 interactor_edge.mouseup = ((canvas, ctx, g, e) => {
     view.is_edge_creating = false;
     if (interactor_edge.last_down == DOWN_TYPE.VERTEX) {
-        let index = get_vertex_index_nearby(e.pageX - camera.x, e.pageY - camera.y);
+        let index = g.get_vertex_index_nearby(e.pageX - camera.x, e.pageY - camera.y);
         if (index !== null && interactor_edge.last_down_index != index) { // there is a vertex nearby and it is not the previous one
             socket.emit("add_edge", interactor_edge.last_down_index, index);
         } else {
@@ -66,7 +61,7 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
             }
         }
     } else if (interactor_edge.last_down === DOWN_TYPE.EMPTY) {
-        let index = get_vertex_index_nearby(e.pageX - camera.x, e.pageY - camera.y);
+        let index = g.get_vertex_index_nearby(e.pageX - camera.x, e.pageY - camera.y);
         if (index !== null && index != index_last_created_vertex) {
             socket.emit("add_edge", index_last_created_vertex, index);
         } else {

@@ -1,8 +1,4 @@
-
-import { Coord } from '../../server/coord';
-import { Vertex } from '../../server/vertex';
-import { Edge } from '../../server/edge';
-import { Graph } from '../../server/graph';
+import { Graph } from '../local_graph';
 import { load_param, params_available, params_loaded } from './parametor_manager';
 
 export function update_params_available_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
