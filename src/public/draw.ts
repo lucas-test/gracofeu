@@ -14,29 +14,13 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     ctx.fill();
 
     if (view.grid_show) {
-        for (let i = view.camera.x % view.grid_size; i < canvas.width; i += view.grid_size) {
-            ctx.strokeStyle = GRID_COLOR;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(i, 0);
-            ctx.lineTo(i, canvas.height);
-            ctx.stroke();
-        }
-
-        for (let i = view.camera.y % view.grid_size; i < canvas.height; i += view.grid_size) {
-            ctx.strokeStyle = GRID_COLOR;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(0, i);
-            ctx.lineTo(canvas.width, i);
-            ctx.stroke();
-        }
+        draw_grid(canvas, ctx);
     }
 }
 
 export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2D) {
-    ctx.strokeStyle = "white";
     ctx.beginPath();
+    ctx.strokeStyle = "white";
     ctx.moveTo(start.x + view.camera.x, start.y + view.camera.y);
     ctx.lineTo(end.x, end.y);
     ctx.stroke();
@@ -44,8 +28,8 @@ export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2
 
 
 export function draw_circle(center: Coord, ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = "grey";
     ctx.beginPath();
+    ctx.fillStyle = "grey";
     ctx.arc(center.x, center.y, 10, 0, 2 * Math.PI);
     ctx.fill();
 }
@@ -90,8 +74,35 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
 
 function draw_rectangular_selection(ctx: CanvasRenderingContext2D) {
     if (view.is_rectangular_selecting) {
+        ctx.beginPath();
         ctx.strokeStyle = SELECTION_COLOR;
         ctx.rect(view.selection_corner_1.x, view.selection_corner_1.y, view.selection_corner_2.x -view.selection_corner_1.x,view.selection_corner_2.y-view.selection_corner_1.y);
+        ctx.stroke();
+        
+        ctx.globalAlpha = 0.05;
+        ctx.fillStyle = SELECTION_COLOR;
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
+    }
+}
+
+function draw_grid(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
+    for (let i = view.camera.x % view.grid_size; i < canvas.width; i += view.grid_size) {
+        ctx.beginPath();
+        ctx.strokeStyle = GRID_COLOR;
+        ctx.lineWidth = 1;
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let i = view.camera.y % view.grid_size; i < canvas.height; i += view.grid_size) {
+        ctx.beginPath();
+        ctx.strokeStyle = GRID_COLOR;
+        ctx.lineWidth = 1;
+        ctx.moveTo(0, i);
+        ctx.lineTo(canvas.width, i);
         ctx.stroke();
     }
 }
@@ -118,9 +129,9 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
         let u = g.vertices.get(edge.start_vertex);
         let v = g.vertices.get(edge.end_vertex);
 
+        ctx.beginPath();
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
-        ctx.beginPath();
         ctx.moveTo(u.pos.x + view.camera.x, u.pos.y + view.camera.y);
         ctx.lineTo(v.pos.x + view.camera.x, v.pos.y + view.camera.y);
         ctx.stroke();

@@ -4,6 +4,7 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
 import { Coord } from '../local_graph';
+import { draw } from '../draw';
 
 // INTERACTOR SELECTION
 
@@ -98,6 +99,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
         if ( view.is_rectangular_selecting){
             view.is_rectangular_selecting = false;
             g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
+            
         }else {
             previous_camera = null;
             down_coord = null;
