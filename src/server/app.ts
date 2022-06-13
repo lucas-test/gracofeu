@@ -117,7 +117,32 @@ io.sockets.on('connection', function (client) {
     client.on('select_vertex', handle_select_vertex); // TODO : Remove
     client.on('update_position', handle_update_pos);
     client.on('update_positions', handle_update_positions);
+    client.on('delete_selected_vertices', delete_selected_vertices);
 
+    function delete_selected_vertices(data) {
+
+        for (const e of data) {
+            if(g.vertices.has(e.index)){
+                g.vertices.delete(e.index);
+            }
+
+            for(let i = g.edges.length - 1; i>=0; i--){
+                const edge = g.edges[i];
+                if(edge.end_vertex === e.index || edge.start_vertex === e.index){
+                    g.edges.splice(i, 1);
+                }
+            }
+
+            for(let i = g.arcs.length - 1; i>=0; i--){
+                const arc = g.arcs[i];
+                if(arc.end_vertex === e.index || arc.start_vertex === e.index){
+                    g.arcs.splice(i, 1);
+                }
+            }
+        }
+
+        io.sockets.in(room_id).emit('delete_selected_vertices', data);
+    }
 
     function handle_update_pos(vertexIndex: number, x: number, y: number) {
         let vertex = g.vertices.get(vertexIndex);
@@ -164,6 +189,8 @@ io.sockets.on('connection', function (client) {
         io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
     }
 })
+
+
 
 
 

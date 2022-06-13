@@ -26,10 +26,20 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     window.addEventListener('keydown', function (e) {
         if (e.key == "Delete") {
-            // remove_selected_elements(g)
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
+
+            const data_socket = new Array();
+            for (const index of g.vertices.keys()) {
+                const v = g.vertices.get(index);
+                if (v.is_selected) {
+                    data_socket.push({ index: index });
+                }
+            }
+
+            socket.emit("delete_selected_vertices", data_socket);
+            
+            // requestAnimationFrame(function () {
+            //     draw(canvas, ctx, g)
+            // });
             return;
         }
         else if (e.key == "g") {
