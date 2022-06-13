@@ -45,4 +45,11 @@ body {
   top: 40;
   left: 5;
   color: white;
+  padding: 3px 5px;
+  border: 1px solid white;
+  border-radius: 5px;
+}
+
+#share_link:hover{
+  cursor: pointer;
 }
