@@ -26,7 +26,11 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
             g.vertices.get(down_element_index).old_pos = g.vertices.get(down_element_index).pos;
             // socket.emit("save_pos", down_element_index);
         }
-    } else if (down_type === DOWN_TYPE.EMPTY) {
+    } else if(down_type === DOWN_TYPE.EDGE){
+        console.log("down edge")
+        // TODO : what to do ? 
+    }
+     else if (down_type === DOWN_TYPE.EMPTY) {
         
         if (e.ctrlKey) {
             view.is_rectangular_selecting = true;
@@ -79,7 +83,6 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     console.log("mouseup", interactor_selection.has_moved);
     if (interactor_selection.last_down === DOWN_TYPE.VERTEX) {
         if (interactor_selection.has_moved === false) {
-            // socket.emit('select_vertex', interactor_selection.last_down_index);
             if (g.vertices.get(interactor_selection.last_down_index).is_selected) {
                 if (e.ctrlKey) {
                     g.vertices.get(interactor_selection.last_down_index).is_selected = false;
@@ -95,7 +98,27 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                 }
             }
         }
-    } else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
+      
+    } else if(interactor_selection.last_down === DOWN_TYPE.EDGE){
+        if (interactor_selection.has_moved === false) {
+            if (g.edges[interactor_selection.last_down_index].is_selected) {
+                if (e.ctrlKey) {
+                    g.edges[interactor_selection.last_down_index].is_selected = false;
+                }
+            }
+            else {
+                if (e.ctrlKey) {
+                    g.edges[interactor_selection.last_down_index].is_selected = true;
+                }
+                else {
+                    g.clear_all_selections();
+                    g.edges[interactor_selection.last_down_index].is_selected = true;
+                }
+            }
+        }
+
+    }
+    else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
         if ( view.is_rectangular_selecting){
             view.is_rectangular_selecting = false;
             g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);

@@ -88,6 +88,14 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             let index = g.get_vertex_index_nearby(e.pageX - view.camera.x, e.pageY - view.camera.y);
             if (index !== null) {
                 interactor_loaded.last_down = DOWN_TYPE.VERTEX;
+            }
+            else{
+                index = g.get_edge_index_nearby(e.pageX - view.camera.x, e.pageY - view.camera.y);
+                if(index !== null){
+                    interactor_loaded.last_down = DOWN_TYPE.EDGE;
+                } 
+            }
+            if(index != null){
                 interactor_loaded.last_down_index = index;
                 interactor_loaded.mousedown(interactor_loaded.last_down, index, canvas, ctx, g, e)
                 return

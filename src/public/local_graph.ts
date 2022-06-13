@@ -71,6 +71,24 @@ export class Edge {
 
         return local_graph.vertices.get(this.start_vertex).is_in_rect(c1, c2) || local_graph.vertices.get(this.end_vertex).is_in_rect(c1, c2);
     }
+
+    is_nearby(x:number, y:number, r:number) {
+        // TODO: bend edges
+        const start = local_graph.vertices.get(this.start_vertex);
+        const end = local_graph.vertices.get(this.end_vertex);
+        const x1 = start.pos.x;
+        const y1 = start.pos.y;
+        const x2 = end.pos.x;
+        const y2 = end.pos.y;
+    
+        const den = start.dist2(x2, y2);
+        if (den == 0) {
+          return true;
+        }
+        const num = Math.abs((x2 - x1) * (y1 - y) - (x1 - x) * (y2 - y1))
+    
+        return (num / den)<r;
+      }
 }
 
 export class Graph {
@@ -104,6 +122,16 @@ export class Graph {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
             if (v.is_nearby(x, y, 150)) {
+                return index;
+            }
+        }
+        return null;
+    }
+
+    get_edge_index_nearby(x: number, y: number) {
+        for (let index=0; index<this.edges.length; index++) {
+            let e = this.edges[index];
+            if (e.is_nearby(x, y, 0.01)) {
                 return index;
             }
         }
