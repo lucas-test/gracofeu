@@ -39,17 +39,30 @@ body {
   display: none;
 }
 
-#share_link{
-  background-color:#333333;
+.action_button {
+  background-color: #333333;
   position: fixed;
-  top: 40;
-  left: 5;
   color: white;
   padding: 3px 5px;
   border: 1px solid white;
   border-radius: 5px;
 }
 
-#share_link:hover{
+.action_button:hover {
   cursor: pointer;
+}
+
+#share_link {
+  top: 40;
+  left: 5;
+}
+
+#save_file {
+  top: 70;
+  left: 5;
+}
+
+#load_file {
+  top: 100;
+  left: 5;
 }

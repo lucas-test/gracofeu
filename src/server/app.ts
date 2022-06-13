@@ -1,6 +1,7 @@
 import express from 'express';
 import { Graph } from './graph';
 import ENV from './.env.json';
+import { Vertex } from './vertex';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -118,24 +119,48 @@ io.sockets.on('connection', function (client) {
     client.on('update_position', handle_update_pos);
     client.on('update_positions', handle_update_positions);
     client.on('delete_selected_vertices', delete_selected_vertices);
+    client.on('get_json', handle_get_json);
+    client.on('load_json', handle_load_json);
+    
+    function handle_load_json(s){
+        g = new Graph();
+        const data = JSON.parse(s);
+        for (var vdata of data.vertices){
+            const new_vertex = new Vertex(vdata[1]["pos"]["x"], vdata[1]["pos"]["y"]);
+            g.vertices.set(vdata[0], new_vertex)
+        }
+        for (var edge of data.edges){
+            g.add_edge(edge.start_vertex, edge.end_vertex)
+        }
+        io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
+    }
+
+    function handle_get_json(callback) {
+        const graph_stringifiable = {
+            vertices: Array.from(g.vertices.entries()),
+            edges: g.edges,
+            arcs: g.arcs
+        }
+        callback(JSON.stringify(graph_stringifiable));
+    }
 
     function delete_selected_vertices(data) {
 
         for (const e of data) {
-            if(g.vertices.has(e.index)){
+            if (g.vertices.has(e.index)) {
                 g.vertices.delete(e.index);
             }
 
-            for(let i = g.edges.length - 1; i>=0; i--){
+            for (let i = g.edges.length - 1; i >= 0; i--) {
                 const edge = g.edges[i];
-                if(edge.end_vertex === e.index || edge.start_vertex === e.index){
+                if (edge.end_vertex === e.index || edge.start_vertex === e.index) {
                     g.edges.splice(i, 1);
                 }
             }
 
-            for(let i = g.arcs.length - 1; i>=0; i--){
+            for (let i = g.arcs.length - 1; i >= 0; i--) {
                 const arc = g.arcs[i];
-                if(arc.end_vertex === e.index || arc.start_vertex === e.index){
+                if (arc.end_vertex === e.index || arc.start_vertex === e.index) {
                     g.arcs.splice(i, 1);
                 }
             }
