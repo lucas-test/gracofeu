@@ -6,6 +6,10 @@ export class Coord {
         this.x = x;
         this.y = y;
     }
+
+    sub(c:Coord) {
+        return new Coord(this.x - c.x, this.y - c.y);
+    }
 }
 
 
@@ -30,6 +34,17 @@ export class LocalVertex {
         return this.dist2(x, y) <= r;
     }
 
+    is_in_rect(c1: Coord, c2: Coord) {
+        if (c1.x <= c2.x && c1.y <= c2.y) {
+            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c1.y  <= this.pos.y && this.pos.y <= c2.y)
+        } else if (c1.x <= c2.x && c2.y <= c1.y ) {
+            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c2.y <= this.pos.y && this.pos.y <= c1.y )
+        } else if (c2.x <= c1.x && c2.y <= c1.y ) {
+            return (c2.x <= this.pos.x && this.pos.x <= c1.x && c2.y <= this.pos.y && this.pos.y <= c1.y )
+        } else if (c2.x <= c1.x && c1.y  <= c2.y) {
+            return (c2.x <=this.pos.x && this.pos.x <= c1.x && c1.y  <= this.pos.y && this.pos.y <= c2.y)
+        }
+    }
 }
 
 
@@ -61,13 +76,13 @@ export class Graph {
     }
 
 
-     deselect_all_vertices() {
+    deselect_all_vertices() {
         this.vertices.forEach(vertex => {
             vertex.is_selected = false;
         });
     }
 
-      get_vertex_index_nearby(x: number, y: number) {
+    get_vertex_index_nearby(x: number, y: number) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
             if (v.is_nearby(x, y, 150)) {
@@ -75,6 +90,14 @@ export class Graph {
             }
         }
         return null;
+    }
+
+    select_vertices_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
+        for (const vertex of this.vertices.values()) {
+            if ( vertex.is_in_rect(corner1.sub(cam), corner2.sub(cam))){
+                vertex.is_selected = true;
+            }
+        }
     }
 
 }

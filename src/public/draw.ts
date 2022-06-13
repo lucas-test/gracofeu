@@ -60,7 +60,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
 
     ctx.fillStyle = "white";
 
-    if (g.vertices.get(index).is_selected) { ctx.fillStyle = SELECTION_COLOR; }
+    if (vertex.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
     ctx.beginPath();
     ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 8, 0, 2 * Math.PI);
     ctx.fill();
@@ -86,6 +86,16 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.fillText(user.label, user.pos.x + camera.x, user.pos.y + camera.y);
     ctx.fill();
 }
+
+
+function draw_rectangular_selection(ctx: CanvasRenderingContext2D) {
+    if (view.is_rectangular_selecting) {
+        ctx.strokeStyle = SELECTION_COLOR;
+        ctx.rect(view.selection_corner_1.x, view.selection_corner_1.y, view.selection_corner_2.x -view.selection_corner_1.x,view.selection_corner_2.y-view.selection_corner_1.y);
+        ctx.stroke();
+    }
+}
+
 
 // DRAW USERS
 function draw_users(ctx: CanvasRenderingContext2D) {
@@ -131,4 +141,5 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_edge_creating(ctx);
     draw_vertices(ctx, g);
     draw_users(ctx);
+    draw_rectangular_selection(ctx);
 }
