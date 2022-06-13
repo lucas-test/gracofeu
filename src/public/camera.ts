@@ -31,4 +31,4 @@ class View {
 
 export let view = new View();
 
-export let camera = new Coord(0, 0);
+// export let camera = new Coord(0, 0);

@@ -2,7 +2,7 @@
 
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
-import { camera, view } from '../camera';
+import { view } from '../camera';
 import { Coord } from '../local_graph';
 
 // INTERACTOR SELECTION
@@ -34,7 +34,7 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
         }
         else {
             down_coord = new Coord(e.pageX, e.pageY);
-            previous_camera = camera;
+            previous_camera = view.camera;
         }
     }
 })
@@ -49,22 +49,22 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             for (const index of g.vertices.keys()) {
                 const v = g.vertices.get(index);
                 if (v.is_selected) {
-                    data_socket.push({ index: index, x: e.pageX - camera.x + v.old_pos.x - origin_vertex.old_pos.x, y: e.pageY - camera.y + v.old_pos.y - origin_vertex.old_pos.y });
-                    // socket.emit("update_position", index, e.pageX - camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - camera.y + v.old_pos.y - origin_vertex.old_pos.y);
+                    data_socket.push({ index: index, x: e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, y: e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y });
+                    // socket.emit("update_position", index, e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y);
                 }
             }
             socket.emit("update_positions", data_socket);
         }
         else {
-            socket.emit("update_position", interactor_selection.last_down_index, e.pageX - camera.x, e.pageY - camera.y);
+            socket.emit("update_position", interactor_selection.last_down_index, e.pageX - view.camera.x, e.pageY - view.camera.y);
         }
         return true;
     } else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
         if (view.is_rectangular_selecting) {
             view.selection_corner_2 = new Coord(e.pageX, e.pageY);
         } else {
-            camera.x = previous_camera.x + e.pageX - down_coord.x;
-            camera.y = previous_camera.y + e.pageY - down_coord.y;
+            view.camera.x = previous_camera.x + e.pageX - down_coord.x;
+            view.camera.y = previous_camera.y + e.pageY - down_coord.y;
             down_coord = new Coord(e.pageX, e.pageY);
         }
 
@@ -97,7 +97,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     } else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
         if ( view.is_rectangular_selecting){
             view.is_rectangular_selecting = false;
-            g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2, camera);
+            g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
         }else {
             previous_camera = null;
             down_coord = null;

@@ -1,6 +1,5 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
-import { camera } from "./camera";
 import { User, users } from "./user";
 import { Coord, Edge, Graph, LocalVertex } from "./local_graph";
 export const socket = io()

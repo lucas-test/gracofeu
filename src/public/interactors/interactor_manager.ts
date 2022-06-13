@@ -3,7 +3,7 @@ import { interactor_selection } from './selection_interactor';
 import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
-import { camera, view } from '../camera';
+import { view } from '../camera';
 import { socket } from '../socket';
 import { Coord, Graph } from '../local_graph';
 
@@ -67,7 +67,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             });
         }
 
-        socket.emit("moving_cursor", e.pageX - camera.x, e.pageY - camera.y);
+        socket.emit("moving_cursor", e.pageX - view.camera.x, e.pageY - view.camera.y);
     })
 
     canvas.addEventListener('mousedown', function (e) {
@@ -75,7 +75,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = new Coord(e.pageX, e.pageY)
 
-            let index = g.get_vertex_index_nearby(e.pageX - camera.x, e.pageY - camera.y);
+            let index = g.get_vertex_index_nearby(e.pageX - view.camera.x, e.pageY - view.camera.y);
             if (index !== null) {
                 interactor_loaded.last_down = DOWN_TYPE.VERTEX;
                 interactor_loaded.last_down_index = index;

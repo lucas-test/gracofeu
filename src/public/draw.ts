@@ -3,7 +3,7 @@ const COLOR_BACKGROUND = "#1e1e1e";
 const GRID_COLOR = '#777777';
 
 
-import { camera, view } from './camera';
+import { view } from './camera';
 import { User, users } from './user';
 import { Coord, Graph } from './local_graph';
 
@@ -14,7 +14,7 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     ctx.fill();
 
     if (view.grid_show) {
-        for (let i = camera.x % view.grid_size; i < canvas.width; i += view.grid_size) {
+        for (let i = view.camera.x % view.grid_size; i < canvas.width; i += view.grid_size) {
             ctx.strokeStyle = GRID_COLOR;
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -23,7 +23,7 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
             ctx.stroke();
         }
 
-        for (let i = camera.y % view.grid_size; i < canvas.height; i += view.grid_size) {
+        for (let i = view.camera.y % view.grid_size; i < canvas.height; i += view.grid_size) {
             ctx.strokeStyle = GRID_COLOR;
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -37,7 +37,7 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = "white";
     ctx.beginPath();
-    ctx.moveTo(start.x + camera.x, start.y + camera.y);
+    ctx.moveTo(start.x + view.camera.x, start.y + view.camera.y);
     ctx.lineTo(end.x, end.y);
     ctx.stroke();
 }
@@ -55,20 +55,20 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
 
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
-    ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 10, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, 10, 0, 2 * Math.PI);
     ctx.fill();
 
     ctx.fillStyle = "white";
 
     if (vertex.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
     ctx.beginPath();
-    ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 8, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, 8, 0, 2 * Math.PI);
     ctx.fill();
 
 
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
-    ctx.arc(vertex.pos.x + camera.x, vertex.pos.y + camera.y, 6, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, 6, 0, 2 * Math.PI);
     ctx.fill();
 }
 
@@ -77,13 +77,13 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = user.color;
     let text = ctx.measureText(user.label);
-    ctx.rect(user.pos.x + camera.x - 5, user.pos.y + camera.y - 17, text.width + 10, 19);
+    ctx.rect(user.pos.x + view.camera.x - 5, user.pos.y + view.camera.y - 17, text.width + 10, 19);
     ctx.fill();
 
 
     ctx.beginPath();
     ctx.fillStyle = "black";
-    ctx.fillText(user.label, user.pos.x + camera.x, user.pos.y + camera.y);
+    ctx.fillText(user.label, user.pos.x + view.camera.x, user.pos.y + view.camera.y);
     ctx.fill();
 }
 
@@ -121,8 +121,8 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
         ctx.strokeStyle = "white";
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(u.pos.x + camera.x, u.pos.y + camera.y);
-        ctx.lineTo(v.pos.x + camera.x, v.pos.y + camera.y);
+        ctx.moveTo(u.pos.x + view.camera.x, u.pos.y + view.camera.y);
+        ctx.lineTo(v.pos.x + view.camera.x, v.pos.y + view.camera.y);
         ctx.stroke();
     }
 }
