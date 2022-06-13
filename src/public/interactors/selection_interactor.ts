@@ -90,7 +90,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                     g.vertices.get(interactor_selection.last_down_index).is_selected = true;
                 }
                 else {
-                    g.deselect_all_vertices();
+                    g.clear_all_selections();
                     g.vertices.get(interactor_selection.last_down_index).is_selected = true;
                 }
             }
@@ -99,11 +99,12 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
         if ( view.is_rectangular_selecting){
             view.is_rectangular_selecting = false;
             g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
+            g.select_edges_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
             
         }else {
             previous_camera = null;
             down_coord = null;
-            g.deselect_all_vertices();
+            g.clear_all_selections();
         }
         
     }

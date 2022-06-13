@@ -95,14 +95,12 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
             for(let i = g.edges.length - 1; i>=0; i--){
                 const edge = g.edges[i];
-                console.log(edge);
                 if(edge.end_vertex === e.index || edge.start_vertex === e.index){
                     g.edges.splice(i, 1);
                 }
             }
 
             // for(let i = g.arcs.length - 1; i>=0; i--){
-            //     console.log(i, g.arcs)
             //     const arc = g.arcs[i];
             //     if(arc.end_vertex === e.index || arc.start_vertex === e.index){
             //         g.arcs.splice(i, 1);

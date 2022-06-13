@@ -79,7 +79,7 @@ function draw_rectangular_selection(ctx: CanvasRenderingContext2D) {
         ctx.rect(view.selection_corner_1.x, view.selection_corner_1.y, view.selection_corner_2.x -view.selection_corner_1.x,view.selection_corner_2.y-view.selection_corner_1.y);
         ctx.stroke();
         
-        ctx.globalAlpha = 0.05;
+        ctx.globalAlpha = 0.07;
         ctx.fillStyle = SELECTION_COLOR;
         ctx.fill();
 
@@ -131,6 +131,8 @@ function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
 
         ctx.beginPath();
         ctx.strokeStyle = "white";
+        if (edge.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
+
         ctx.lineWidth = 3;
         ctx.moveTo(u.pos.x + view.camera.x, u.pos.y + view.camera.y);
         ctx.lineTo(v.pos.x + view.camera.x, v.pos.y + view.camera.y);
