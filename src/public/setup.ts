@@ -43,7 +43,7 @@ function setup() {
     let share_link_div = document.getElementById("share_link");
     share_link_div?.addEventListener('click', () => {
         socket.emit("get_room_id", (room_id: string) => {
-            navigator.clipboard.writeText(location.protocol + '//' + location.host + "/?room_id=" + room_id)
+            navigator.clipboard.writeText(location.origin + "/?room_id=" + room_id)
             .then(()=>{
                 const _sav = share_link_div.innerHTML;
                 share_link_div.innerHTML="Copied!";
