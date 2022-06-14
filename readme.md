@@ -8,57 +8,74 @@ npm run dev
 
 # todo
 
-## Ecran
-
-- [X] déplacer caméra
-- [ ] recentrer
-- [ ] zoomer
-- [ ] grille
-
-## Organisation backend
+## V0.1
 
 - [X] trouver un truc pour pouvoir mettre les .html .css et dans public et que ça soit copié dans dist/ avec npm start (avec parcel)
 - [X] gérer les svg (le dossier img est copié dans dist durant "npm run build")
-- [ ] interactor/parameter/modifyer: les mettre dans des fichiers séparés
 - [X] amélioration code pour demander une modification sur le graphe (et que toutes les fonctions sur le graphe soit automatiquement restranscrite)
-- [X] faire une classe Graph local pour qu'il n'y ait pas d'utilisation de données serveur (conseil Charly). - [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
+- [X] faire une classe Graph local pour qu'il n'y ait pas d'utilisation de données serveur (conseil Charly) 
 
-## Draw
+- [x] draw edge
+- [X] draw selected
 
-- [ ] constantes dans un fichier .json ou juste .ts ?
-- [x] edge
-- [ ] control_point
-- [ ] arc
-- [X] selected
-- [ ] label/index ?
+- [X] move vertices
+- [X] create vertices and edges
+- [X] rooms
+- [X] mode test pour que ça lance direct une unique room
+- [X] suivre la fleche de l'utilisateur
 
+- [X] selection au clic
+- [X] sélection au clic d'arête
+- [X] selection au rectangle
+- [X] bouger une selection
 
-## Interactor
+- [X] structure Edge
+- [X] ajout Edge
+
+- [X] sauvegarder/charger json
 
 - [ ] suppression des élements sélectionnés
 - [ ] delete edge et arc selected
 
-interactor_selection:
-- [X] selection au clic
-- [ ] sélection au clic d'arête
+## V0.3
+
+- [X] déplacer caméra
+- [ ] recentrer
+- [ ] zoomer
+
+- [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
+- [ ] control_point
 - [ ] sélection au clic d'arête courbée
-- [ ] selection au rectangle
-- [X] bouger une selection
-- [ ] changer la couleur d'un élément
-- [ ] copier/coller le sous-graphe induit par la sélection de sommets
+- [ ] arc
+- [ ] label/index ?
+- [ ] poids (nombre) sur sommets ou arêtes
+
+- [ ] nom utilisateur
+- [ ] curseur utilisateur
+- [ ] couleur utilisateur
+
+- [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
 
 
-interactor_edge:
-- [X] structure Edge
-- [X] ajout Edge
+## V0.5 Chercheurs proches
 
+- [ ] couleur sommet/arête
+- [ ] zone texte
+- [ ] dessin à main levée
+- [ ] grille magnétique
 
-interactor_arc:
-- [ ] structure Arc
-- [ ] ajout
+## V1 GDRIM
 
-## Parameter
+- [ ] control Z
+- [ ] copier coller
+- [ ] exporter Latex
+- [ ] exporter pdf
+- [ ] export graphviz ?
+- [ ] interactor/parameter/modifyer: les mettre dans des fichiers séparés
+- [ ] zone graphe
+- [ ] diapo graphe
 
+### Parameter
 - [X] bouton remove parametor marche pas
 - [X] mettre en place la structure sans attribut
 - [ ] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
@@ -67,32 +84,20 @@ interactor_arc:
 - [ ] attributs
 - [ ] déplacer les calculs dans le serveur
 
-## Modifyer
-
+### Modifyer
 - [ ] structure
 - [ ] attributs
 
-## Gestion plusieurs graphes
+## V2 DMANET
 
-- [ ] tout
+- [ ] copier/coller le sous-graphe induit par la sélection de sommets
+- [ ] turoriel
+- [ ] multi-arêtes
+- [ ] multi control point
+- [ ] loop
+- [ ] insertion de parametres ou modifiyer perso
 
-## Collaboration
 
-- [X] move vertices
-- [X] create vertices and edges
-- [X] rooms
-- [X] mode test pour que ça lance direct une unique room
-- [ ] nom utilisateur
-- [X] suivre la fleche de l'utilisateur
 
-## Production
 
-- [X] heroku
-- [ ] faire tester par des gens pour trouver la disposition majoritairement intuitive
 
-## Sauvegarde/Export
-
-- [ ] sauvegarder -> juste vers un fichier du type .json
-- [ ] charger .json
-- [ ] exporter Latex
-- [ ] exporter pdf

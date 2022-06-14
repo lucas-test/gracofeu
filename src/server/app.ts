@@ -111,11 +111,9 @@ io.sockets.on('connection', function (client) {
     }
 
     // GRAPH API
-    client.on('save_pos', handle_save_pos);
-    client.on('update_pos_from_old', handle_update_pos_from_old); //TODO : remove
+
     client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
     client.on('add_edge', handle_add_edge);
-    client.on('select_vertex', handle_select_vertex); // TODO : Remove
     client.on('update_position', handle_update_pos);
     client.on('update_positions', handle_update_positions);
     client.on('delete_selected_vertices', delete_selected_vertices);
@@ -186,22 +184,10 @@ io.sockets.on('connection', function (client) {
     }
 
 
-    function handle_select_vertex(vertex_index: number) {
-        g.select_vertex(vertex_index);
-        io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
-    }
 
-    function handle_save_pos(vertexIndex: number) {
-        let vertex = g.vertices.get(vertexIndex);
-        vertex.save_pos();
-        io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
-    }
 
-    function handle_update_pos_from_old(vertexIndex: number, x: number, y: number) {
-        let vertex = g.vertices.get(vertexIndex);
-        vertex.update_pos_from_old(x, y);
-        io.sockets.in(room_id).emit('update_vertex_position', vertexIndex, vertex.pos.x, vertex.pos.y);
-    }
+
+
 
     function handle_add_vertex(x: number, y: number) {
         let index = g.add_vertex(x, y);

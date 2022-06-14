@@ -19,12 +19,10 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
             for (const index of g.vertices.keys()) {
                 const vertex = g.vertices.get(index);
                 vertex.old_pos = vertex.pos;
-                // socket.emit("save_pos", index);
             }
         }
         else {
             g.vertices.get(down_element_index).old_pos = g.vertices.get(down_element_index).pos;
-            // socket.emit("save_pos", down_element_index);
         }
     } else if(down_type === DOWN_TYPE.EDGE){
         console.log("down edge")
