@@ -61,19 +61,26 @@ io.sockets.on('connection', function (client) {
     let g = new Graph();
     g.add_vertex(200, 100);
     room_graphs.set(room_id, g);
-    io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
+    emit_graph_to_room()
 
     if (ENV.mode == "dev") {
         room_id = the_room;
         client.join(room_id);
         g = the_graph;
         clientRooms[client.id] = room_id;
+        emit_graph_to_room()
+    }
+
+    function emit_graph_to_client(){
         client.emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
+    }
+
+    function emit_graph_to_room(){
+        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
     }
 
 
     // SETUP NON GRAPH ACTIONS
-    client.on('message', handleSalut);
     client.on('moving_cursor', update_user);
     client.on('disconnect', handle_disconnect);
     client.on('change_room_to', handle_change_room_to);
@@ -89,7 +96,7 @@ io.sockets.on('connection', function (client) {
             clientRooms[client.id] = new_room_id;
             room_id = new_room_id;
             g = room_graphs.get(room_id);
-            client.emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
+            emit_graph_to_client();
             console.log(clientRooms);
         }
         else {
@@ -108,9 +115,6 @@ io.sockets.on('connection', function (client) {
     }
 
 
-    function handleSalut(message: any) {
-        console.log(message)
-    }
 
     // GRAPH API
 
@@ -122,7 +126,7 @@ io.sockets.on('connection', function (client) {
     client.on('get_json', handle_get_json);
     client.on('load_json', handle_load_json);
     
-    function handle_load_json(s){
+    function handle_load_json(s: string){
         g = new Graph();
         const data = JSON.parse(s);
         for (var vdata of data.vertices){
@@ -132,7 +136,7 @@ io.sockets.on('connection', function (client) {
         for (var edge of data.edges){
             g.add_edge(edge.start_vertex, edge.end_vertex)
         }
-        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()]);
+        emit_graph_to_room();
     }
 
     function handle_get_json(callback) {
@@ -193,13 +197,13 @@ io.sockets.on('connection', function (client) {
 
     function handle_add_vertex(x: number, y: number) {
         let index = g.add_vertex(x, y);
-        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
+        emit_graph_to_room();
         return index;
     }
 
     function handle_add_edge(vindex: number, windex: number) {
         g.add_edge(vindex, windex);
-        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
+        emit_graph_to_room();
     }
 })
 

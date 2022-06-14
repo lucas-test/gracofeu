@@ -34,8 +34,8 @@ npm run dev
 
 - [X] sauvegarder/charger json
 
-- [ ] suppression des élements sélectionnés
-- [ ] delete edge et arc selected
+- [X] suppression des sommets
+- [ ] delete edge
 
 ## V0.3
 
