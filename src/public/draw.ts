@@ -60,18 +60,45 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
 }
 
 export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
-    ctx.font = "15px serif";
-    ctx.beginPath();
-    ctx.fillStyle = user.color;
-    let text = ctx.measureText(user.label);
-    ctx.rect(user.pos.x + view.camera.x - 5, user.pos.y + view.camera.y - 17, text.width + 10, 19);
-    ctx.fill();
+    // ctx.font = "15px serif";
+    // ctx.beginPath();
+    // ctx.fillStyle = user.color;
+    // let text = ctx.measureText(user.label);
+    // ctx.rect(user.pos.x + view.camera.x - 5, user.pos.y + view.camera.y - 17, text.width + 10, 19);
+    // ctx.fill();
 
 
+    // ctx.beginPath();
+    // ctx.fillStyle = "black";
+    // ctx.fillText(user.label, user.pos.x + view.camera.x, user.pos.y + view.camera.y);
+    // ctx.fill();
+
+
+    ctx.font = "400 17px Arial";
+    const text = ctx.measureText(user.label);
+
+    ctx.strokeStyle = user.color;  
+    ctx.fillStyle = user.color; 
+    drawRoundRect(ctx, user.pos.x+10 + view.camera.x, user.pos.y + 17 + view.camera.y, text.width + 10, 21, 5, user.color, user.color);
+
     ctx.beginPath();
-    ctx.fillStyle = "black";
-    ctx.fillText(user.label, user.pos.x + view.camera.x, user.pos.y + view.camera.y);
+        ctx.fillStyle = invertColor(user.color);
+        ctx.fillText(user.label, user.pos.x+10 + 5 + view.camera.x, user.pos.y + 17 + 16 + view.camera.y);
     ctx.fill();
+        
+        
+    ctx.beginPath();              
+    ctx.lineWidth = 2;
+    ctx.strokeStyle =  user.color; 
+    ctx.fillStyle = user.color;  
+    ctx.moveTo(user.pos.x, user.pos.y);
+    ctx.lineTo(user.pos.x+10, user.pos.y+10);
+    ctx.lineTo(user.pos.x+4, user.pos.y+10);
+    ctx.lineTo(user.pos.x, user.pos.y+15);
+    ctx.closePath();
+    ctx.stroke(); 
+    ctx.fill();
+
 }
 
 
@@ -159,3 +186,51 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_users(ctx);
     draw_rectangular_selection(ctx);
 }
+
+
+
+// Credits: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
+function invertColor(hex:string) {
+    if (hex.indexOf('#') === 0) {
+        hex = hex.slice(1);
+    }
+    // convert 3-digit hex to 6-digits.
+    if (hex.length === 3) {
+        hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    console.log(hex);
+    if (hex.length !== 6) {
+        throw new Error('Invalid HEX color.');
+    }
+    var r = parseInt(hex.slice(0, 2), 16),
+        g = parseInt(hex.slice(2, 4), 16),
+        b = parseInt(hex.slice(4, 6), 16);
+
+    return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+        ? '#000000'
+        : '#FFFFFF';
+}
+
+
+function drawRoundRect (ctx:CanvasRenderingContext2D, x:number, y:number, w:number, h:number, r:number, fillColor?:string, strokeColor?:string) {
+    if (w < 2 * r) r = w / 2;
+    if (h < 2 * r) r = h / 2;
+
+    ctx.beginPath();
+    if(typeof fillColor !== 'undefined'){
+        ctx.fillStyle = fillColor;
+    }
+    if(typeof strokeColor !== 'undefined'){
+        ctx.strokeStyle = strokeColor;
+    }
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y,   x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x,   y+h, r);
+    ctx.arcTo(x,   y+h, x,   y,   r);
+    ctx.arcTo(x,   y,   x+w, y,   r);
+
+    if(typeof fillColor !== 'undefined'){
+        ctx.fill();
+    }
+    ctx.closePath();
+  }

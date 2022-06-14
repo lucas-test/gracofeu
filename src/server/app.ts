@@ -102,7 +102,9 @@ io.sockets.on('connection', function (client) {
     }
 
     function update_user(x: number, y: number) {
-        client.to(room_id).emit('update_user', client.id, client.id.substring(0, 5), "white", x, y);
+        var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+
+        client.to(room_id).emit('update_user', client.id, client.id.substring(0, 5), randomColor, x, y);
     }
 
 
