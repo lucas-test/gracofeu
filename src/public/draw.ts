@@ -91,10 +91,10 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.lineWidth = 2;
     ctx.strokeStyle =  user.color; 
     ctx.fillStyle = user.color;  
-    ctx.moveTo(user.pos.x, user.pos.y);
-    ctx.lineTo(user.pos.x+10, user.pos.y+10);
-    ctx.lineTo(user.pos.x+4, user.pos.y+10);
-    ctx.lineTo(user.pos.x, user.pos.y+15);
+    ctx.moveTo(user.pos.x+ view.camera.x, user.pos.y+ view.camera.y);
+    ctx.lineTo(user.pos.x+10+ view.camera.x, user.pos.y+10+ view.camera.y);
+    ctx.lineTo(user.pos.x+4+ view.camera.x, user.pos.y+10+ view.camera.y);
+    ctx.lineTo(user.pos.x+ view.camera.x, user.pos.y+15+ view.camera.y);
     ctx.closePath();
     ctx.stroke(); 
     ctx.fill();
