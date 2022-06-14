@@ -2,6 +2,7 @@ import express from 'express';
 import { Graph } from './graph';
 import ENV from './.env.json';
 import { Vertex } from './vertex';
+import { Edge } from './edge';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -129,12 +130,15 @@ io.sockets.on('connection', function (client) {
     function handle_load_json(s: string){
         g = new Graph();
         const data = JSON.parse(s);
-        for (var vdata of data.vertices){
+        for (const vdata of data.vertices){
             const new_vertex = new Vertex(vdata[1]["pos"]["x"], vdata[1]["pos"]["y"]);
             g.vertices.set(vdata[0], new_vertex)
         }
-        for (var edge of data.edges){
-            g.add_edge(edge.start_vertex, edge.end_vertex)
+        for (const edge of data.edges){
+            g.add_edge(edge[1].start_vertex, edge[1].end_vertex)
+        }
+        for (const arc of data.arcs){
+            g.add_arc(arc[1].start_vertex, arc[1].end_vertex)
         }
         emit_graph_to_room();
     }
@@ -142,8 +146,8 @@ io.sockets.on('connection', function (client) {
     function handle_get_json(callback) {
         const graph_stringifiable = {
             vertices: Array.from(g.vertices.entries()),
-            edges: g.edges,
-            arcs: g.arcs
+            edges: Array.from(g.edges.entries()),
+            arcs: Array.from(g.arcs.entries())
         }
         callback(JSON.stringify(graph_stringifiable));
     }

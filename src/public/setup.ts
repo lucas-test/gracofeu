@@ -59,7 +59,7 @@ function setup() {
         socket.emit("get_json", (response: string) => {
             var a = document.createElement("a");
             a.href = window.URL.createObjectURL(new Blob([response], { type: "text/plain" }));
-            a.download = "file.gracoon";
+            a.download = "file.gco";
             a.click();
         })
     });
