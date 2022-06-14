@@ -57,12 +57,14 @@ export class LocalVertex {
 export class Edge {
     start_vertex: number;
     end_vertex: number;
+    cp: Coord;
     is_selected: boolean;
 
-    constructor(i: number, j: number) {
+    constructor(i: number, j: number, cp:Coord) {
         this.start_vertex = i;
         this.end_vertex = j;
         this.is_selected = false;
+        this.cp = cp;
     }
 
     is_in_rect(c1: Coord, c2: Coord){
