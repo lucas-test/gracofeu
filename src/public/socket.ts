@@ -76,7 +76,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
 
-    
+
     function update_vertex_position(index: number, x: number, y: number) {
         const v = g.vertices.get(index);
         v.pos.x = x;
@@ -84,7 +84,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     }
 
 
-   
+
     function update_vertex_positions(data) {
         for (const e of data) {
             const v = g.vertices.get(e.index);
@@ -94,22 +94,22 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     }
 
 
-  
+
     function handle_delete_selected_vertices(data) {
         for (const e of data) {
-            if(g.vertices.has(e.index)){
+            if (g.vertices.has(e.index)) {
                 g.vertices.delete(e.index);
             }
 
-            for(const index of g.edges.keys()){
+            for (const index of g.edges.keys()) {
                 const edge = g.edges.get(index);
-                if(edge.end_vertex === e.index || edge.start_vertex === e.index){
+                if (edge.end_vertex === e.index || edge.start_vertex === e.index) {
                     g.edges.delete(index);
                 }
             }
 
             // g.arcs = g.arcs.filter(function (arc) { return !(arc.start_vertex == vindex || arc.end_vertex == vindex);});
-            
+
             // for(let i = g.arcs.length - 1; i>=0; i--){
             //     const arc = g.arcs[i];
             //     if(arc.end_vertex === e.index || arc.start_vertex === e.index){
@@ -129,7 +129,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         }
     }
-    
+
 
 
 }

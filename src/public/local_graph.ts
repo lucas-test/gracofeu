@@ -7,7 +7,7 @@ export class Coord {
         this.y = y;
     }
 
-    sub(c:Coord) {
+    sub(c: Coord) {
         return new Coord(this.x - c.x, this.y - c.y);
     }
 }
@@ -36,13 +36,13 @@ export class LocalVertex {
 
     is_in_rect(c1: Coord, c2: Coord) {
         if (c1.x <= c2.x && c1.y <= c2.y) {
-            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c1.y  <= this.pos.y && this.pos.y <= c2.y)
-        } else if (c1.x <= c2.x && c2.y <= c1.y ) {
-            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c2.y <= this.pos.y && this.pos.y <= c1.y )
-        } else if (c2.x <= c1.x && c2.y <= c1.y ) {
-            return (c2.x <= this.pos.x && this.pos.x <= c1.x && c2.y <= this.pos.y && this.pos.y <= c1.y )
-        } else if (c2.x <= c1.x && c1.y  <= c2.y) {
-            return (c2.x <=this.pos.x && this.pos.x <= c1.x && c1.y  <= this.pos.y && this.pos.y <= c2.y)
+            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c1.y <= this.pos.y && this.pos.y <= c2.y)
+        } else if (c1.x <= c2.x && c2.y <= c1.y) {
+            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c2.y <= this.pos.y && this.pos.y <= c1.y)
+        } else if (c2.x <= c1.x && c2.y <= c1.y) {
+            return (c2.x <= this.pos.x && this.pos.x <= c1.x && c2.y <= this.pos.y && this.pos.y <= c1.y)
+        } else if (c2.x <= c1.x && c1.y <= c2.y) {
+            return (c2.x <= this.pos.x && this.pos.x <= c1.x && c1.y <= this.pos.y && this.pos.y <= c2.y)
         }
     }
 }
@@ -60,21 +60,21 @@ export class Edge {
     cp: Coord;
     is_selected: boolean;
 
-    constructor(i: number, j: number, cp:Coord) {
+    constructor(i: number, j: number, cp: Coord) {
         this.start_vertex = i;
         this.end_vertex = j;
         this.is_selected = false;
         this.cp = cp;
     }
 
-    is_in_rect(c1: Coord, c2: Coord){
+    is_in_rect(c1: Coord, c2: Coord) {
         //V1: is in rect if one of its extremities is in the rectangle
         //TODO: be more clever and select also when there is an intersection between the edge and the rectangle
 
         return local_graph.vertices.get(this.start_vertex).is_in_rect(c1, c2) || local_graph.vertices.get(this.end_vertex).is_in_rect(c1, c2);
     }
 
-    is_nearby(x:number, y:number, r:number) {
+    is_nearby(x: number, y: number, r: number) {
         // TODO: bend edges
         const start = local_graph.vertices.get(this.start_vertex);
         const end = local_graph.vertices.get(this.end_vertex);
@@ -82,15 +82,15 @@ export class Edge {
         const y1 = start.pos.y;
         const x2 = end.pos.x;
         const y2 = end.pos.y;
-    
+
         const den = start.dist2(x2, y2);
         if (den == 0) {
-          return true;
+            return true;
         }
         const num = Math.abs((x2 - x1) * (y1 - y) - (x1 - x) * (y2 - y1))
-    
-        return (num / den)<r;
-      }
+
+        return (num / den) < r;
+    }
 }
 
 export class Graph {
@@ -117,7 +117,7 @@ export class Graph {
         });
     }
 
-    clear_all_selections(){
+    clear_all_selections() {
         this.deselect_all_vertices();
         this.deselect_all_edges();
     }
@@ -144,16 +144,16 @@ export class Graph {
 
     select_vertices_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
         for (const vertex of this.vertices.values()) {
-            if ( vertex.is_in_rect(corner1.sub(cam), corner2.sub(cam))){
+            if (vertex.is_in_rect(corner1.sub(cam), corner2.sub(cam))) {
                 vertex.is_selected = true;
             }
         }
     }
 
-    select_edges_in_rect(corner1:Coord, corner2:Coord, cam: Coord){
-        for(const index of this.edges.keys()){
+    select_edges_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
+        for (const index of this.edges.keys()) {
             const edge = this.edges.get(index);
-            if( edge.is_in_rect(corner1.sub(cam), corner2.sub(cam))){
+            if (edge.is_in_rect(corner1.sub(cam), corner2.sub(cam))) {
                 edge.is_selected = true;
             }
         }

@@ -72,11 +72,11 @@ io.sockets.on('connection', function (client) {
         emit_graph_to_room()
     }
 
-    function emit_graph_to_client(){
+    function emit_graph_to_client() {
         client.emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
     }
 
-    function emit_graph_to_room(){
+    function emit_graph_to_room() {
         io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
     }
 
@@ -110,7 +110,7 @@ io.sockets.on('connection', function (client) {
     }
 
     function update_user(x: number, y: number) {
-        var randomColor = "#" + Math.floor(Math.random()*16777215).toString(16);
+        var randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
 
         client.to(room_id).emit('update_user', client.id, client.id.substring(0, 5), randomColor, x, y);
     }
@@ -126,18 +126,18 @@ io.sockets.on('connection', function (client) {
     client.on('delete_selected_vertices', delete_selected_vertices);
     client.on('get_json', handle_get_json);
     client.on('load_json', handle_load_json);
-    
-    function handle_load_json(s: string){
+
+    function handle_load_json(s: string) {
         g = new Graph();
         const data = JSON.parse(s);
-        for (const vdata of data.vertices){
+        for (const vdata of data.vertices) {
             const new_vertex = new Vertex(vdata[1]["pos"]["x"], vdata[1]["pos"]["y"]);
             g.vertices.set(vdata[0], new_vertex)
         }
-        for (const edge of data.edges){
+        for (const edge of data.edges) {
             g.add_edge(edge[1].start_vertex, edge[1].end_vertex)
         }
-        for (const arc of data.arcs){
+        for (const arc of data.arcs) {
             g.add_arc(arc[1].start_vertex, arc[1].end_vertex)
         }
         emit_graph_to_room();
@@ -159,16 +159,16 @@ io.sockets.on('connection', function (client) {
                 g.vertices.delete(e.index);
             }
 
-            for(const index of g.edges.keys()){
+            for (const index of g.edges.keys()) {
                 const edge = g.edges.get(index);
-                if(edge.end_vertex === e.index || edge.start_vertex === e.index){
+                if (edge.end_vertex === e.index || edge.start_vertex === e.index) {
                     g.edges.delete(index);
                 }
             }
 
-            for(const index of g.arcs.keys()){
+            for (const index of g.arcs.keys()) {
                 const arc = g.arcs.get(index);
-                if(arc.end_vertex === e.index || arc.start_vertex === e.index){
+                if (arc.end_vertex === e.index || arc.start_vertex === e.index) {
                     g.arcs.delete(index);
                 }
             }

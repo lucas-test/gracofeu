@@ -70,7 +70,7 @@ export class Graph {
         const index = this.get_next_available_index_edges();
         const v1 = this.vertices.get(i);
         const v2 = this.vertices.get(j);
-        this.edges.set(index, new Edge(i, j, middle(v1.pos, v2.pos) ));
+        this.edges.set(index, new Edge(i, j, middle(v1.pos, v2.pos)));
     }
 
     add_arc(start_vertex_index: number, end_vertex_index: number) {
@@ -82,7 +82,7 @@ export class Graph {
 
         const index = this.get_next_available_index_arcs();
         this.arcs.set(index, new Arc(start_vertex_index, end_vertex_index));
-        
+
     }
 
 
