@@ -61,14 +61,14 @@ io.sockets.on('connection', function (client) {
     let g = new Graph();
     g.add_vertex(200, 100);
     room_graphs.set(room_id, g);
-    io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
+    io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
 
     if (ENV.mode == "dev") {
         room_id = the_room;
         client.join(room_id);
         g = the_graph;
         clientRooms[client.id] = room_id;
-        client.emit('graph', g, [...g.vertices.entries()]);
+        client.emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
     }
 
 
@@ -89,7 +89,7 @@ io.sockets.on('connection', function (client) {
             clientRooms[client.id] = new_room_id;
             room_id = new_room_id;
             g = room_graphs.get(room_id);
-            client.emit('graph', g, [...g.vertices.entries()]);
+            client.emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
             console.log(clientRooms);
         }
         else {
@@ -130,7 +130,7 @@ io.sockets.on('connection', function (client) {
         for (var edge of data.edges){
             g.add_edge(edge.start_vertex, edge.end_vertex)
         }
-        io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
+        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()]);
     }
 
     function handle_get_json(callback) {
@@ -149,17 +149,17 @@ io.sockets.on('connection', function (client) {
                 g.vertices.delete(e.index);
             }
 
-            for (let i = g.edges.length - 1; i >= 0; i--) {
-                const edge = g.edges[i];
-                if (edge.end_vertex === e.index || edge.start_vertex === e.index) {
-                    g.edges.splice(i, 1);
+            for(const index of g.edges.keys()){
+                const edge = g.edges.get(index);
+                if(edge.end_vertex === e.index || edge.start_vertex === e.index){
+                    g.edges.delete(index);
                 }
             }
 
-            for (let i = g.arcs.length - 1; i >= 0; i--) {
-                const arc = g.arcs[i];
-                if (arc.end_vertex === e.index || arc.start_vertex === e.index) {
-                    g.arcs.splice(i, 1);
+            for(const index of g.arcs.keys()){
+                const arc = g.arcs.get(index);
+                if(arc.end_vertex === e.index || arc.start_vertex === e.index){
+                    g.arcs.delete(index);
                 }
             }
         }
@@ -191,13 +191,13 @@ io.sockets.on('connection', function (client) {
 
     function handle_add_vertex(x: number, y: number) {
         let index = g.add_vertex(x, y);
-        io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
+        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
         return index;
     }
 
     function handle_add_edge(vindex: number, windex: number) {
         g.add_edge(vindex, windex);
-        io.sockets.in(room_id).emit('graph', g, [...g.vertices.entries()]);
+        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
     }
 })
 

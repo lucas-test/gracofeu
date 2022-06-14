@@ -99,18 +99,18 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
       
     } else if(interactor_selection.last_down === DOWN_TYPE.EDGE){
         if (interactor_selection.has_moved === false) {
-            if (g.edges[interactor_selection.last_down_index].is_selected) {
+            if (g.edges.get(interactor_selection.last_down_index).is_selected) {
                 if (e.ctrlKey) {
-                    g.edges[interactor_selection.last_down_index].is_selected = false;
+                    g.edges.get(interactor_selection.last_down_index).is_selected = false;
                 }
             }
             else {
                 if (e.ctrlKey) {
-                    g.edges[interactor_selection.last_down_index].is_selected = true;
+                    g.edges.get(interactor_selection.last_down_index).is_selected = true;
                 }
                 else {
                     g.clear_all_selections();
-                    g.edges[interactor_selection.last_down_index].is_selected = true;
+                    g.edges.get(interactor_selection.last_down_index).is_selected = true;
                 }
             }
         }

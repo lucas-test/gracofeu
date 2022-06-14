@@ -31,7 +31,10 @@ export function draw_circle(center: Coord, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = "grey";
     ctx.arc(center.x, center.y, 10, 0, 2 * Math.PI);
+    ctx.globalAlpha = 0.5;
+
     ctx.fill();
+    ctx.globalAlpha = 1;
 }
 
 export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
@@ -125,7 +128,7 @@ function draw_vertices(ctx: CanvasRenderingContext2D, g: Graph) {
 
 // DRAW EDGES
 function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
-    for (let edge of g.edges) {
+    for (let edge of g.edges.values()) {
         let u = g.vertices.get(edge.start_vertex);
         let v = g.vertices.get(edge.end_vertex);
 

@@ -93,11 +93,13 @@ export class Edge {
 
 export class Graph {
     vertices: Map<number, LocalVertex>;
-    edges: Array<Edge>;
+    // edges: Array<Edge>;
+    edges: Map<number, Edge>;
 
     constructor() {
         this.vertices = new Map();
-        this.edges = new Array();
+        // this.edges = new Array();
+        this.edges = new Map();
     }
 
 
@@ -129,9 +131,9 @@ export class Graph {
     }
 
     get_edge_index_nearby(x: number, y: number) {
-        for (let index=0; index<this.edges.length; index++) {
-            let e = this.edges[index];
-            if (e.is_nearby(x, y, 0.01)) {
+        for (let index of this.edges.keys()) {
+            let e = this.edges.get(index);
+            if (e.is_nearby(x, y, 0.015)) {
                 return index;
             }
         }
@@ -147,7 +149,8 @@ export class Graph {
     }
 
     select_edges_in_rect(corner1:Coord, corner2:Coord, cam: Coord){
-        for(const edge of this.edges){
+        for(const index of this.edges.keys()){
+            const edge = this.edges.get(index);
             if( edge.is_in_rect(corner1.sub(cam), corner2.sub(cam))){
                 edge.is_selected = true;
             }

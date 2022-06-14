@@ -11,5 +11,5 @@ param_nb_vertices.compute = ((g: Graph) => {
 export let param_nb_edges = new Parametor("Edges number");
 
 param_nb_edges.compute = ((g: Graph) => {
-    return String(g.edges.length)
+    return String(g.edges.size);
 })

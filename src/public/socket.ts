@@ -45,21 +45,29 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_vertex_positions', update_vertex_positions);
     socket.on("delete_selected_vertices", handle_delete_selected_vertices);
 
-    socket.on('graph', (new_graph, vertices_entries) => {
+    socket.on('graph', (vertices_entries, edges_entries) => {
         console.log("I get a new graph");
 
         // pour les vertices_entries c'est parce que on peut pas envoyer des Map par socket ...
         // edges = new_graph.edges marche pas car bizarrement ça ne copie pas les méthodes ...
-        g.edges = new Array();
-        for (let edge of new_graph.edges) {
-            let new_edge = new Edge(edge.start_vertex, edge.end_vertex);
-            g.edges.push(new_edge);
-        }
+        // g.edges = new Array();
+        // for (let edge of new_graph.edges) {
+        //     let new_edge = new Edge(edge.start_vertex, edge.end_vertex);
+        //     g.edges.push(new_edge);
+        // }
+
+
 
         g.vertices = new Map();
         for (let data of vertices_entries) {
             let new_vertex = new LocalVertex(data[1].pos);
             g.vertices.set(data[0], new_vertex);
+        }
+
+        g.edges = new Map();
+        for (let data of edges_entries) {
+            let new_edge = new Edge(data[1].start_vertex, data[1].end_vertex);
+            g.edges.set(data[0], new_edge);
         }
 
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -93,17 +101,26 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 g.vertices.delete(e.index);
             }
 
-            for(let i = g.edges.length - 1; i>=0; i--){
-                const edge = g.edges[i];
+            for(const index of g.edges.keys()){
+                const edge = g.edges.get(index);
                 if(edge.end_vertex === e.index || edge.start_vertex === e.index){
-                    g.edges.splice(i, 1);
+                    g.edges.delete(index);
                 }
             }
 
+            // g.arcs = g.arcs.filter(function (arc) { return !(arc.start_vertex == vindex || arc.end_vertex == vindex);});
+            
             // for(let i = g.arcs.length - 1; i>=0; i--){
             //     const arc = g.arcs[i];
             //     if(arc.end_vertex === e.index || arc.start_vertex === e.index){
             //         g.arcs.splice(i, 1);
+            //     }
+            // }
+
+            // for(const index of g.arcs.keys()){
+            //     const arc = g.arcs.get(index);
+            //     if(arc.end_vertex === e.index || arc.start_vertex === e.index){
+            //         g.arcs.delete(index);
             //     }
             // }
 
@@ -112,6 +129,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         }
     }
+    
 
 
 }
