@@ -66,7 +66,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.edges = new Map();
         for (let data of edges_entries) {
-            let new_edge = new Edge(data[1].start_vertex, data[1].end_vertex);
+            let new_edge = new Edge(data[1].start_vertex, data[1].end_vertex, data[1].cp);
             g.edges.set(data[0], new_edge);
         }
 
