@@ -2,11 +2,10 @@
 import { Edge } from './edge';
 import { Vertex } from './vertex';
 import { Arc } from './arc';
+import { middle } from './coord';
 
 export class Graph {
     vertices: Map<number, Vertex>;
-    // edges: Array<Edge>;
-    // arcs: Array<Arc>;
     edges: Map<number, Edge>;
     arcs: Map<number, Arc>;
 
@@ -14,8 +13,6 @@ export class Graph {
         this.vertices = new Map();
         this.edges = new Map();
         this.arcs = new Map();
-        // this.edges = new Array();
-        // this.arcs = new Array();
     }
 
 
@@ -71,7 +68,9 @@ export class Graph {
         }
 
         const index = this.get_next_available_index_edges();
-        this.edges.set(index, new Edge(i, j));
+        const v1 = this.vertices.get(i);
+        const v2 = this.vertices.get(j);
+        this.edges.set(index, new Edge(i, j, middle(v1.pos, v2.pos) ));
     }
 
     add_arc(start_vertex_index: number, end_vertex_index: number) {

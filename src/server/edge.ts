@@ -1,20 +1,17 @@
+import { Coord } from "./coord";
 
 
 export class Edge {
     start_vertex: number;
     end_vertex: number;
-    selected: boolean;
+    cp: Coord; // control point
 
-    constructor(i: number, j: number) {
+    constructor(i: number, j: number, cp: Coord) {
         this.start_vertex = i;
         this.end_vertex = j;
-        this.selected = false;
+        this.cp = cp;
     }
 
-    copy_from(edge: Edge) {
-        this.start_vertex = edge.start_vertex;
-        this.end_vertex = edge.end_vertex;
-        this.selected = edge.selected;
-    }
+
 }
 
