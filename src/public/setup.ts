@@ -1,4 +1,4 @@
-import { draw } from "./draw";
+import { draw, resizeCanvas } from "./draw";
 import { interactor_edge } from "./interactors/edge_interactor";
 import { setup_interactions, select_interactor, setup_interactors_div } from "./interactors/interactor_manager";
 import { local_graph } from "./local_graph";
@@ -21,6 +21,7 @@ function setup() {
 
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
+    window.addEventListener('resize', function () { resizeCanvas(canvas, ctx, local_graph) }, false);
     document.addEventListener('contextmenu', event => event.preventDefault());
     setup_interactions(canvas, ctx, local_graph);
     setup_interactors_div();
@@ -87,3 +88,5 @@ function setup() {
 }
 
 setup()
+
+

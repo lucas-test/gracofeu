@@ -7,6 +7,13 @@ import { view } from './camera';
 import { User, users } from './user';
 import { Coord, Graph } from './local_graph';
 
+export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    requestAnimationFrame(function () { draw(canvas, ctx, g) })
+}
+
+
 export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = COLOR_BACKGROUND;
