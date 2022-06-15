@@ -123,7 +123,7 @@ io.sockets.on('connection', function (client) {
     client.on('add_edge', handle_add_edge);
     client.on('update_position', handle_update_pos);
     client.on('update_positions', handle_update_positions);
-    client.on('delete_selected_vertices', delete_selected_vertices);
+    client.on('delete_selected_elements', handle_delete_selected_elements);
     client.on('get_json', handle_get_json);
     client.on('load_json', handle_load_json);
 
@@ -152,29 +152,16 @@ io.sockets.on('connection', function (client) {
         callback(JSON.stringify(graph_stringifiable));
     }
 
-    function delete_selected_vertices(data) {
-
+    function handle_delete_selected_elements(data) {
         for (const e of data) {
-            if (g.vertices.has(e.index)) {
-                g.vertices.delete(e.index);
+            if ( e.type == "vertex"){
+                g.delete_vertex(e.index);
             }
-
-            for (const index of g.edges.keys()) {
-                const edge = g.edges.get(index);
-                if (edge.end_vertex === e.index || edge.start_vertex === e.index) {
-                    g.edges.delete(index);
-                }
-            }
-
-            for (const index of g.arcs.keys()) {
-                const arc = g.arcs.get(index);
-                if (arc.end_vertex === e.index || arc.start_vertex === e.index) {
-                    g.arcs.delete(index);
-                }
+            else if ( e.type == "edge"){
+                g.delete_edge(e.index);
             }
         }
-
-        io.sockets.in(room_id).emit('delete_selected_vertices', data);
+        emit_graph_to_room();
     }
 
     function handle_update_pos(vertexIndex: number, x: number, y: number) {

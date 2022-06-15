@@ -35,7 +35,7 @@ npm run dev
 - [X] sauvegarder/charger json
 
 - [X] suppression des sommets
-- [ ] delete edge
+- [X] delete edge
 
 ## V0.3
 
@@ -51,7 +51,7 @@ npm run dev
 - [ ] poids (nombre) sur sommets ou arêtes
 
 - [ ] nom utilisateur
-- [ ] curseur utilisateur
+- [X] curseur utilisateur
 - [ ] couleur utilisateur
 
 - [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)

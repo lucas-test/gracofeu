@@ -26,20 +26,19 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     window.addEventListener('keydown', function (e) {
         if (e.key == "Delete") {
-
             const data_socket = new Array();
             for (const index of g.vertices.keys()) {
                 const v = g.vertices.get(index);
                 if (v.is_selected) {
-                    data_socket.push({ index: index });
+                    data_socket.push({ type: "vertex", index: index });
                 }
             }
-
-            socket.emit("delete_selected_vertices", data_socket);
-            
-            // requestAnimationFrame(function () {
-            //     draw(canvas, ctx, g)
-            // });
+            g.edges.forEach((edge, index) => {
+                if (edge.is_selected) {
+                    data_socket.push({ type: "edge", index: index });
+                }
+            })
+            socket.emit("delete_selected_elements", data_socket);
             return;
         }
         else if (e.key == "g") {
@@ -89,13 +88,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             if (index !== null) {
                 interactor_loaded.last_down = DOWN_TYPE.VERTEX;
             }
-            else{
+            else {
                 index = g.get_edge_index_nearby(e.pageX - view.camera.x, e.pageY - view.camera.y);
-                if(index !== null){
+                if (index !== null) {
                     interactor_loaded.last_down = DOWN_TYPE.EDGE;
-                } 
+                }
             }
-            if(index != null){
+            if (index != null) {
                 interactor_loaded.last_down_index = index;
                 interactor_loaded.mousedown(interactor_loaded.last_down, index, canvas, ctx, g, e)
                 return

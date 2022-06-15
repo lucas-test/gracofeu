@@ -97,15 +97,19 @@ export class Graph {
         }
     }
 
-    // get_vertex_index_nearby(x: number, y: number, dx: number, dy:number) {
-    //     for (let index of this.vertices.keys()) {
-    //         let v = this.vertices.get(index);
-    //         if (v.is_nearby(x-dx, y-dy, 150)) {
-    //             return index;
-    //         }
-    //     }
-    //     return null;
-    // }
+    delete_vertex(vertex_index: number) {
+        this.vertices.delete(vertex_index);
+
+        this.edges.forEach((edge, edge_index) => {
+            if (edge.end_vertex === vertex_index || edge.start_vertex === vertex_index) {
+                this.edges.delete(edge_index);
+            }
+        })
+    }
+
+    delete_edge(edge_index: number) {
+        this.edges.delete(edge_index);
+    }
 
 }
 
