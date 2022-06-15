@@ -3,11 +3,11 @@ import { Coord, Graph } from "../local_graph";
 
 
 export enum DOWN_TYPE {
-    EMPTY,
-    VERTEX,
-    EDGE,
-    ARC,
-    CONTROL_POINT
+    EMPTY = "EMPTY",
+    VERTEX = "VERTEX",
+    EDGE = "EDGE",
+    ARC = "ARC",
+    CONTROL_POINT = "CONTROL_POINT"
 }
 
 

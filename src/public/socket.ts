@@ -43,6 +43,14 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     // GRAPH 
     socket.on('update_vertex_position', update_vertex_position);
     socket.on('update_vertex_positions', update_vertex_positions);
+    socket.on('update_control_point', handle_update_control_point);
+
+    function handle_update_control_point(index: number, c: Coord){
+        const edge = g.edges.get(index);
+        edge.cp.x = c.x;
+        edge.cp.y = c.y;
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    }
 
     socket.on('graph', (vertices_entries, edges_entries) => {
         console.log("I get a new graph");

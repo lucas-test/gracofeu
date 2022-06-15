@@ -1,3 +1,5 @@
+import { DOWN_TYPE } from "./interactors/interactor";
+
 export class Coord {
     x: number;
     y: number;
@@ -10,6 +12,18 @@ export class Coord {
     sub(c: Coord) {
         return new Coord(this.x - c.x, this.y - c.y);
     }
+
+    add(c: Coord) {
+        return new Coord(this.x + c.x, this.y + c.y);
+    }
+
+    dist2(pos: Coord) {
+        return (this.x - pos.x) ** 2 + (this.y - pos.y) ** 2;
+    }
+
+    is_nearby(pos: Coord, r: number) {
+        return this.dist2(pos) <= r;
+    }
 }
 
 
@@ -20,18 +34,19 @@ export class LocalVertex {
     is_selected: boolean;
 
     constructor(pos: Coord) {
-        this.pos = pos;
-        this.old_pos = pos;
+        this.pos = new Coord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
+        this.old_pos = new Coord(pos.x, pos.y);
         this.is_selected = false;
     }
+
 
     dist2(x: number, y: number) {
         return (this.pos.x - x) ** 2 + (this.pos.y - y) ** 2
     }
 
 
-    is_nearby(x: number, y: number, r: number) {
-        return this.dist2(x, y) <= r;
+    is_nearby(pos: Coord, r: number) {
+        return this.pos.dist2(pos) <= r;
     }
 
     is_in_rect(c1: Coord, c2: Coord) {
@@ -58,13 +73,15 @@ export class Edge {
     start_vertex: number;
     end_vertex: number;
     cp: Coord;
+    old_cp: Coord;
     is_selected: boolean;
 
     constructor(i: number, j: number, cp: Coord) {
         this.start_vertex = i;
         this.end_vertex = j;
         this.is_selected = false;
-        this.cp = cp;
+        this.cp = new Coord(cp.x, cp.y);
+        this.old_cp = new Coord(cp.x, cp.y);
     }
 
     is_in_rect(c1: Coord, c2: Coord) {
@@ -95,12 +112,10 @@ export class Edge {
 
 export class Graph {
     vertices: Map<number, LocalVertex>;
-    // edges: Array<Edge>;
     edges: Map<number, Edge>;
 
     constructor() {
         this.vertices = new Map();
-        // this.edges = new Array();
         this.edges = new Map();
     }
 
@@ -122,10 +137,29 @@ export class Graph {
         this.deselect_all_edges();
     }
 
+    get_element_nearby(pos: Coord) {
+        for (const [index, v] of this.vertices.entries()) {
+            if (v.pos.is_nearby(pos, 150)) {
+                return { type: DOWN_TYPE.VERTEX, index: index };
+            }
+        }
+
+        for (const [index, edge] of this.edges.entries()) {
+            if (edge.cp.is_nearby(pos, 150)) {
+                return { type: DOWN_TYPE.CONTROL_POINT, index: index };
+            }
+            if (edge.is_nearby(pos.x, pos.y, 0.2)) {
+                return { type: DOWN_TYPE.EDGE, index: index };
+            }
+        }
+
+        return { type: DOWN_TYPE.EMPTY, index: null };
+    }
+
     get_vertex_index_nearby(x: number, y: number) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
-            if (v.is_nearby(x, y, 150)) {
+            if (v.is_nearby(new Coord(x, y), 150)) {
                 return index;
             }
         }

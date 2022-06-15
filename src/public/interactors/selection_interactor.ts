@@ -44,36 +44,48 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
 
 interactor_selection.mousemove = ((canvas, ctx, g, e) => {
     // console.log("mousemove");
-    if (interactor_selection.last_down == DOWN_TYPE.VERTEX) {
-        if (g.vertices.get(interactor_selection.last_down_index).is_selected) {
-            const origin_vertex = g.vertices.get(interactor_selection.last_down_index);
-            const data_socket = new Array();
-
-            for (const index of g.vertices.keys()) {
-                const v = g.vertices.get(index);
-                if (v.is_selected) {
-                    data_socket.push({ index: index, x: e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, y: e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y });
-                    // socket.emit("update_position", index, e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y);
+    switch(interactor_selection.last_down){
+        case DOWN_TYPE.VERTEX:
+            if (g.vertices.get(interactor_selection.last_down_index).is_selected) {
+                const origin_vertex = g.vertices.get(interactor_selection.last_down_index);
+                const data_socket = new Array();
+    
+                for (const index of g.vertices.keys()) {
+                    const v = g.vertices.get(index);
+                    if (v.is_selected) {
+                        data_socket.push({ index: index, x: e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, y: e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y });
+                        // socket.emit("update_position", index, e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y);
+                    }
                 }
+                socket.emit("update_positions", data_socket);
             }
-            socket.emit("update_positions", data_socket);
-        }
-        else {
-            socket.emit("update_position", interactor_selection.last_down_index, e.pageX - view.camera.x, e.pageY - view.camera.y);
-        }
-        return true;
-    } else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
-        if (view.is_rectangular_selecting) {
-            view.selection_corner_2 = new Coord(e.pageX, e.pageY);
-        } else {
-            view.camera.x = previous_camera.x + e.pageX - down_coord.x;
-            view.camera.y = previous_camera.y + e.pageY - down_coord.y;
-            down_coord = new Coord(e.pageX, e.pageY);
-        }
+            else {
+                socket.emit("update_position", interactor_selection.last_down_index, e.pageX - view.camera.x, e.pageY - view.camera.y);
+            }
+            return true;
+        break;
 
+        case DOWN_TYPE.EMPTY:
+            if (view.is_rectangular_selecting) {
+                view.selection_corner_2 = new Coord(e.pageX, e.pageY);
+            } else {
+                view.camera.x = previous_camera.x + e.pageX - down_coord.x;
+                view.camera.y = previous_camera.y + e.pageY - down_coord.y;
+                down_coord = new Coord(e.pageX, e.pageY);
+            }
+            return true;
+        break;
 
-        return true;
+        case DOWN_TYPE.CONTROL_POINT:
+            var edge = g.edges.get(interactor_selection.last_down_index);
+            edge.cp.x =  e.pageX - view.camera.x; // TODO à changer avec edge.cp.sub()
+            edge.cp.y =  e.pageY - view.camera.y;
+            socket.emit("update_control_point", interactor_selection.last_down_index, edge.cp)
+            return true;
+        break;
     }
+
+
     return false;
 })
 

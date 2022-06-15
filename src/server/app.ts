@@ -4,6 +4,7 @@ import ENV from './.env.json';
 import { Vertex } from './vertex';
 import { Edge } from './edge';
 import { User, users } from './user';
+import { Coord } from './coord';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -128,6 +129,15 @@ io.sockets.on('connection', function (client) {
     client.on('delete_selected_elements', handle_delete_selected_elements);
     client.on('get_json', handle_get_json);
     client.on('load_json', handle_load_json);
+    client.on('update_control_point', handle_update_control_point);
+
+
+    function handle_update_control_point(index: number, c: Coord){
+        const edge = g.edges.get(index);
+        edge.cp.x = c.x;
+        edge.cp.y = c.y;
+        io.sockets.in(room_id).emit('update_control_point', index, c);
+    }
 
     function handle_load_json(s: string) {
         g.clear();

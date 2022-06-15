@@ -84,26 +84,15 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = new Coord(e.pageX, e.pageY)
 
-            let index = g.get_vertex_index_nearby(e.pageX - view.camera.x, e.pageY - view.camera.y);
-            if (index !== null) {
-                interactor_loaded.last_down = DOWN_TYPE.VERTEX;
+            const element = g.get_element_nearby(interactor_loaded.last_down_pos.sub(view.camera));
+            console.log(element);
+            interactor_loaded.last_down = element.type;
+            interactor_loaded.last_down_index = element.index;
+            interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, e)
+            if (element.type != DOWN_TYPE.EMPTY) {
+                update_params_loaded(g)
+                requestAnimationFrame(function () { draw(canvas, ctx, g) });
             }
-            else {
-                index = g.get_edge_index_nearby(e.pageX - view.camera.x, e.pageY - view.camera.y);
-                if (index !== null) {
-                    interactor_loaded.last_down = DOWN_TYPE.EDGE;
-                }
-            }
-            if (index != null) {
-                interactor_loaded.last_down_index = index;
-                interactor_loaded.mousedown(interactor_loaded.last_down, index, canvas, ctx, g, e)
-                return
-            }
-
-            interactor_loaded.last_down = DOWN_TYPE.EMPTY;
-            interactor_loaded.mousedown(interactor_loaded.last_down, null, canvas, ctx, g, e)
-            update_params_loaded(g)
-            requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
     })
 }
