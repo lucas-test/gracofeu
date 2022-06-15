@@ -60,45 +60,55 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
 }
 
 export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
-    // ctx.font = "15px serif";
-    // ctx.beginPath();
-    // ctx.fillStyle = user.color;
-    // let text = ctx.measureText(user.label);
-    // ctx.rect(user.pos.x + view.camera.x - 5, user.pos.y + view.camera.y - 17, text.width + 10, 19);
-    // ctx.fill();
 
-
-    // ctx.beginPath();
-    // ctx.fillStyle = "black";
-    // ctx.fillText(user.label, user.pos.x + view.camera.x, user.pos.y + view.camera.y);
-    // ctx.fill();
-
-
+    // DRAW USERNAME 
     ctx.font = "400 17px Arial";
     const text = ctx.measureText(user.label);
-
-    ctx.strokeStyle = user.color;
+    ctx.strokeStyle = user.color;  
     ctx.fillStyle = user.color;
-    drawRoundRect(ctx, user.pos.x + 10 + view.camera.x, user.pos.y + 17 + view.camera.y, text.width + 10, 21, 5, user.color, user.color);
+    // Rectangle 
+    drawRoundRect(ctx, user.pos.x+10 + view.camera.x, user.pos.y + 17 + view.camera.y, text.width + 10, 21, 5, user.color, user.color);
 
+    const contrast_color = invertColor(user.color);
+    
+    // username
     ctx.beginPath();
-    ctx.fillStyle = invertColor(user.color);
-    ctx.fillText(user.label, user.pos.x + 10 + 5 + view.camera.x, user.pos.y + 17 + 16 + view.camera.y);
+        ctx.fillStyle = contrast_color;
+        ctx.fillText(user.label, user.pos.x+10 + 5 + view.camera.x, user.pos.y + 17 + 16 + view.camera.y);
     ctx.fill();
 
 
-    ctx.beginPath();
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = user.color;
-    ctx.fillStyle = user.color;
-    ctx.moveTo(user.pos.x + view.camera.x, user.pos.y + view.camera.y);
-    ctx.lineTo(user.pos.x + 10 + view.camera.x, user.pos.y + 10 + view.camera.y);
-    ctx.lineTo(user.pos.x + 4 + view.camera.x, user.pos.y + 10 + view.camera.y);
-    ctx.lineTo(user.pos.x + view.camera.x, user.pos.y + 15 + view.camera.y);
-    ctx.closePath();
+    // DRAW ARROW
+    const darken_color = shadeColor (user.color, -60 );
+    const brighter_color = shadeColor (user.color, 120 );
+
+    // Background
+    ctx.beginPath();              
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = darken_color;  
+        ctx.moveTo(user.pos.x+ view.camera.x-2, user.pos.y+1+ view.camera.y);
+        ctx.lineTo(user.pos.x+ view.camera.x-2, user.pos.y+21+ view.camera.y);
     ctx.stroke();
+    
+    //Arrow
+    ctx.beginPath();         
+        ctx.fillStyle = user.color;  
+        ctx.moveTo(user.pos.x+ view.camera.x, user.pos.y+ view.camera.y);
+        ctx.lineTo(user.pos.x+13+ view.camera.x, user.pos.y+13+ view.camera.y);
+        ctx.lineTo(user.pos.x+5+ view.camera.x, user.pos.y+13+ view.camera.y);
+        ctx.lineTo(user.pos.x+ view.camera.x, user.pos.y+20+ view.camera.y);
+    ctx.closePath();
     ctx.fill();
 
+    // Bright sides
+    ctx.beginPath();              
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = brighter_color;  
+        ctx.moveTo(user.pos.x+ view.camera.x, user.pos.y+ view.camera.y);
+        ctx.lineTo(user.pos.x+13+ view.camera.x, user.pos.y+13+ view.camera.y);
+        ctx.moveTo(user.pos.x+5+ view.camera.x, user.pos.y+13+ view.camera.y);
+        ctx.lineTo(user.pos.x+ view.camera.x, user.pos.y+20+ view.camera.y);
+    ctx.stroke();
 }
 
 
@@ -233,4 +243,26 @@ function drawRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: n
         ctx.fill();
     }
     ctx.closePath();
+}
+
+
+
+function shadeColor(color:string, percent:number) {
+    var R = parseInt(color.substring(1,3),16);
+    var G = parseInt(color.substring(3,5),16);
+    var B = parseInt(color.substring(5,7),16);
+
+    R = parseInt((R * (100 + percent) / 100).toString());
+    G = parseInt((G * (100 + percent) / 100).toString());
+    B = parseInt((B * (100 + percent) / 100).toString());
+
+    R = (R<255)?R:255;  
+    G = (G<255)?G:255;  
+    B = (B<255)?B:255;  
+
+    var RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
+    var GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
+    var BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+
+    return "#"+RR+GG+BB;
 }
