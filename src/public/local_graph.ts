@@ -24,6 +24,22 @@ export class Coord {
     is_nearby(pos: Coord, r: number) {
         return this.dist2(pos) <= r;
     }
+
+    getTheta(v: Coord) {
+        let angle1 = Math.atan2(this.x, this.y);
+        let angle2 = Math.atan2(v.x, v.y);
+        return angle2 - angle1;
+    }
+
+    norm2() {
+        return this.x ** 2 + this.y ** 2;
+    }
+
+    getRho(v: Coord) {
+        let d1 = this.norm2();
+        let d2 = v.norm2();
+        return Math.sqrt(d2 / d1);
+    }
 }
 
 
@@ -37,6 +53,11 @@ export class LocalVertex {
         this.pos = new Coord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
         this.old_pos = new Coord(pos.x, pos.y);
         this.is_selected = false;
+    }
+
+    save_pos(){
+        this.old_pos.x = this.pos.x;
+        this.old_pos.y = this.pos.y;
     }
 
 
@@ -107,6 +128,22 @@ export class Edge {
         const num = Math.abs((x2 - x1) * (y1 - y) - (x1 - x) * (y2 - y1))
 
         return (num / den) < r;
+    }
+
+    transform_control_point(moved_vertex: LocalVertex, fixed_vertex: LocalVertex) {
+        var v = moved_vertex
+        var w = fixed_vertex.pos
+        let u = v.old_pos.sub(w);
+        let nv = v.pos.sub(w);
+        var theta = nv.getTheta(u)
+        var rho = u.getRho(nv)
+        this.cp.x = w.x + rho * (Math.cos(theta) * (this.old_cp.x - w.x) - Math.sin(theta) * (this.old_cp.y - w.y))
+        this.cp.y = w.y + rho * (Math.sin(theta) * (this.old_cp.x - w.x) + Math.cos(theta) * (this.old_cp.y - w.y))
+    }
+
+    save_pos(){
+        this.old_cp.x = this.cp.x;
+        this.old_cp.y = this.cp.y;
     }
 }
 

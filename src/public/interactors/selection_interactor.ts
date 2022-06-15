@@ -18,18 +18,26 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
         if (g.vertices.get(down_element_index).is_selected) {
             for (const index of g.vertices.keys()) {
                 const vertex = g.vertices.get(index);
-                vertex.old_pos = vertex.pos;
+                vertex.save_pos();
+            }
+            for (var edge of g.edges.values()) {
+                edge.save_pos();
             }
         }
         else {
-            g.vertices.get(down_element_index).old_pos = g.vertices.get(down_element_index).pos;
+            g.vertices.get(down_element_index).save_pos();
+            for (var edge of g.edges.values()) {
+                if (edge.start_vertex == down_element_index || edge.end_vertex == down_element_index) {
+                    edge.save_pos();
+                }
+            }
         }
-    } else if(down_type === DOWN_TYPE.EDGE){
+    } else if (down_type === DOWN_TYPE.EDGE) {
         console.log("down edge")
         // TODO : what to do ? 
     }
-     else if (down_type === DOWN_TYPE.EMPTY) {
-        
+    else if (down_type === DOWN_TYPE.EMPTY) {
+
         if (e.ctrlKey) {
             view.is_rectangular_selecting = true;
             view.selection_corner_1 = new Coord(e.pageX, e.pageY);
@@ -44,12 +52,12 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
 
 interactor_selection.mousemove = ((canvas, ctx, g, e) => {
     // console.log("mousemove");
-    switch(interactor_selection.last_down){
+    switch (interactor_selection.last_down) {
         case DOWN_TYPE.VERTEX:
             if (g.vertices.get(interactor_selection.last_down_index).is_selected) {
                 const origin_vertex = g.vertices.get(interactor_selection.last_down_index);
                 const data_socket = new Array();
-    
+
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
                     if (v.is_selected) {
@@ -57,13 +65,46 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                         // socket.emit("update_position", index, e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y);
                     }
                 }
+                const data_socket2 = new Array();
+                for (let [index, edge] of g.edges.entries()) {
+                    var v = g.vertices.get(edge.start_vertex)
+                    var w = g.vertices.get(edge.end_vertex)
+                    if (v.is_selected && w.is_selected) {
+                        edge.cp.x = edge.old_cp.x + e.pageX - view.camera.x - origin_vertex.old_pos.x
+                        edge.cp.y = edge.old_cp.y + e.pageY - view.camera.y - origin_vertex.old_pos.y
+                        data_socket2.push({ index: index, cp: edge.cp })
+                    }
+                    else if (v.is_selected && !w.is_selected) {
+                        edge.transform_control_point(v, w)
+                        data_socket2.push({ index: index, cp: edge.cp })
+                    } else if (!v.is_selected && w.is_selected) {
+                        edge.transform_control_point(w, v)
+                        data_socket2.push({ index: index, cp: edge.cp })
+                    }
+                }
+                socket.emit("update_control_points", data_socket2);
                 socket.emit("update_positions", data_socket);
             }
             else {
+                const v = g.vertices.get(interactor_selection.last_down_index)
+                v.pos.x = e.pageX - view.camera.x
+                v.pos.y = e.pageY - view.camera.y
+                const data_socket = new Array();
+                for (let [index, edge] of g.edges.entries()) {
+                    if (edge.start_vertex == interactor_selection.last_down_index || edge.end_vertex == interactor_selection.last_down_index) {
+                        let w = g.vertices.get(edge.start_vertex)
+                        if (edge.start_vertex == interactor_selection.last_down_index) {
+                            w = g.vertices.get(edge.end_vertex)
+                        }
+                        edge.transform_control_point(v, w)
+                        data_socket.push({ index: index, cp: edge.cp })
+                    }
+                }
+                socket.emit("update_control_points", data_socket);
                 socket.emit("update_position", interactor_selection.last_down_index, e.pageX - view.camera.x, e.pageY - view.camera.y);
             }
             return true;
-        break;
+            break;
 
         case DOWN_TYPE.EMPTY:
             if (view.is_rectangular_selecting) {
@@ -74,15 +115,15 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 down_coord = new Coord(e.pageX, e.pageY);
             }
             return true;
-        break;
+            break;
 
         case DOWN_TYPE.CONTROL_POINT:
             var edge = g.edges.get(interactor_selection.last_down_index);
-            edge.cp.x =  e.pageX - view.camera.x; // TODO à changer avec edge.cp.sub()
-            edge.cp.y =  e.pageY - view.camera.y;
+            edge.cp.x = e.pageX - view.camera.x; // TODO à changer avec edge.cp.sub()
+            edge.cp.y = e.pageY - view.camera.y;
             socket.emit("update_control_point", interactor_selection.last_down_index, edge.cp)
             return true;
-        break;
+            break;
     }
 
 
@@ -108,8 +149,8 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                 }
             }
         }
-      
-    } else if(interactor_selection.last_down === DOWN_TYPE.EDGE){
+
+    } else if (interactor_selection.last_down === DOWN_TYPE.EDGE) {
         if (interactor_selection.has_moved === false) {
             if (g.edges.get(interactor_selection.last_down_index).is_selected) {
                 if (e.ctrlKey) {
@@ -129,17 +170,17 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
 
     }
     else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
-        if ( view.is_rectangular_selecting){
+        if (view.is_rectangular_selecting) {
             view.is_rectangular_selecting = false;
             g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
             g.select_edges_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
-            
-        }else {
+
+        } else {
             previous_camera = null;
             down_coord = null;
             g.clear_all_selections();
         }
-        
+
     }
 })
 

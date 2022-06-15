@@ -44,7 +44,7 @@ npm run dev
 - [ ] zoomer
 
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
-- [ ] control_point
+- [X] control_point
 - [ ] sélection au clic d'arête courbée
 - [ ] arc
 - [ ] label/index ?

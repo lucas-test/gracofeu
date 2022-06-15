@@ -74,7 +74,7 @@ io.sockets.on('connection', function (client) {
         client.join(room_id);
         g = the_graph;
         clientRooms[client.id] = room_id;
-        emit_graph_to_client() 
+        emit_graph_to_client()
     }
 
     function emit_graph_to_client() {
@@ -130,13 +130,26 @@ io.sockets.on('connection', function (client) {
     client.on('get_json', handle_get_json);
     client.on('load_json', handle_load_json);
     client.on('update_control_point', handle_update_control_point);
+    client.on('update_control_points', handle_update_control_points);
 
+    function handle_update_control_points(data) {
+        for (const element of data) {
+            if (g.edges.has(element.index)) {
+                const edge = g.edges.get(element.index);
+                edge.cp.x = element.cp.x;
+                edge.cp.y = element.cp.y;
+            }
+        }
+        client.in(room_id).emit('update_control_points', data);
+    }
 
-    function handle_update_control_point(index: number, c: Coord){
-        const edge = g.edges.get(index);
-        edge.cp.x = c.x;
-        edge.cp.y = c.y;
-        io.sockets.in(room_id).emit('update_control_point', index, c);
+    function handle_update_control_point(index: number, c: Coord) {
+        if (g.edges.has(index)) {
+            const edge = g.edges.get(index);
+            edge.cp.x = c.x;
+            edge.cp.y = c.y;
+            io.sockets.in(room_id).emit('update_control_point', index, c);
+        }
     }
 
     function handle_load_json(s: string) {
@@ -167,10 +180,10 @@ io.sockets.on('connection', function (client) {
 
     function handle_delete_selected_elements(data) {
         for (const e of data) {
-            if ( e.type == "vertex"){
+            if (e.type == "vertex") {
                 g.delete_vertex(e.index);
             }
-            else if ( e.type == "edge"){
+            else if (e.type == "edge") {
                 g.delete_edge(e.index);
             }
         }

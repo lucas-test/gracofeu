@@ -44,6 +44,17 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_vertex_position', update_vertex_position);
     socket.on('update_vertex_positions', update_vertex_positions);
     socket.on('update_control_point', handle_update_control_point);
+    socket.on('update_control_points', handle_update_control_points);
+
+    function handle_update_control_points(data){
+        for (const e of data) {
+            if ( g.edges.has(e.index)){
+                const edge = g.edges.get(e.index);
+                edge.cp.x = e.cp.x;
+                edge.cp.y = e.cp.y;
+            }
+        }
+    }
 
     function handle_update_control_point(index: number, c: Coord){
         const edge = g.edges.get(index);
