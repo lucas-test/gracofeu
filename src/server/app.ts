@@ -69,7 +69,7 @@ io.sockets.on('connection', function (client) {
         client.join(room_id);
         g = the_graph;
         clientRooms[client.id] = room_id;
-        emit_graph_to_room()
+        emit_graph_to_client() 
     }
 
     function emit_graph_to_client() {
@@ -128,7 +128,8 @@ io.sockets.on('connection', function (client) {
     client.on('load_json', handle_load_json);
 
     function handle_load_json(s: string) {
-        g = new Graph();
+        g.clear();
+
         const data = JSON.parse(s);
         for (const vdata of data.vertices) {
             const new_vertex = new Vertex(vdata[1]["pos"]["x"], vdata[1]["pos"]["y"]);

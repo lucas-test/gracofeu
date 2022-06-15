@@ -111,6 +111,11 @@ export class Graph {
         this.edges.delete(edge_index);
     }
 
+    clear() {
+        this.vertices.clear();
+        this.edges.clear();
+    }
+
 }
 
 
