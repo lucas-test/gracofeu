@@ -55,7 +55,7 @@ export class LocalVertex {
         this.is_selected = false;
     }
 
-    save_pos(){
+    save_pos() {
         this.old_pos.x = this.pos.x;
         this.old_pos.y = this.pos.y;
     }
@@ -141,7 +141,7 @@ export class Edge {
         this.cp.y = w.y + rho * (Math.sin(theta) * (this.old_cp.x - w.x) + Math.cos(theta) * (this.old_cp.y - w.y))
     }
 
-    save_pos(){
+    save_pos() {
         this.old_cp.x = this.cp.x;
         this.old_cp.y = this.cp.y;
     }
@@ -185,7 +185,7 @@ export class Graph {
             if (edge.cp.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.CONTROL_POINT, index: index };
             }
-            if (edge.is_nearby(pos.x, pos.y, 0.2)) {
+            if (this.is_click_over_edge(index, pos)) {
                 return { type: DOWN_TYPE.EDGE, index: index };
             }
         }
@@ -230,7 +230,102 @@ export class Graph {
         }
     }
 
+    is_click_over_edge(edge_index: number, e: Coord) {
+        let xA = e.x - 5
+        let yA = e.y - 5
+        let xB = e.x + 5
+        let yB = e.y + 5
+
+        let minX = xA
+        let minY = yA
+        let maxX = xB
+        let maxY = yB
+
+        let edge = this.edges.get(edge_index);
+        let v = this.vertices.get(edge.start_vertex)
+        let w = this.vertices.get(edge.end_vertex)
+        let x0 = v.pos.x;
+        let y0 = v.pos.y;
+        let x1 = edge.cp.x;
+        let y1 = edge.cp.y;
+        let x2 = w.pos.x;
+        let y2 = w.pos.y;
+
+
+        // case where one of the endvertices is already on the box
+        if (v.is_in_rect(new Coord(xA, yA), new Coord(xB, yB)) || w.is_in_rect(new Coord(xA, yA), new Coord(xB, yB))) {
+            return true
+        } else {
+            // we get the quadratic equation of the intersection of the bended edge and the sides of the box
+            let aX = (x2 + x0 - 2 * x1);
+            let bX = 2 * (x1 - x0);
+            let cXmin = x0 - minX;
+            let cXmax = x0 - maxX;
+
+            let aY = (y2 + y0 - 2 * y1);
+            let bY = 2 * (y1 - y0);
+            let cYmin = y0 - minY;
+            let cYmax = y0 - maxY;
+
+            // the candidates for the intersections
+            let tXmin = solutionQuadratic(aX, bX, cXmin);
+            let tXmax = solutionQuadratic(aX, bX, cXmax);
+            let tYmin = solutionQuadratic(aY, bY, cYmin);
+            let tYmax = solutionQuadratic(aY, bY, cYmax);
+
+
+            for (let t of tXmax.concat(tXmin)) { // we look for the candidates that are touching vertical sides
+                if (t >= 0 && t <= 1) {
+                    let y = bezierValue(t, y0, y1, y2);
+                    if ((minY <= y && y <= maxY)) { // the candidate touches the box
+                        return true;
+                    }
+                }
+            }
+
+            for (let t of tYmax.concat(tYmin)) {
+                if (t >= 0 && t <= 1) {
+                    let x = bezierValue(t, x0, x1, x2);
+                    if ((minX <= x && x <= maxX)) {
+                        return true;
+                    }
+                }
+            }
+
+        }
+        return false;
+    }
 }
+
+
+
+
+function solutionQuadratic(a: number, b: number, c: number) {
+    if (b == 0 && a == 0) {
+        return [];
+    }
+
+    if (a == 0) {
+        return [-c / b];
+    }
+
+    let delta = b * b - 4 * a * c;
+    if (delta > 0) {
+        return [(-b + Math.sqrt(delta)) / (2 * a), (-b - Math.sqrt(delta)) / (2 * a)];
+    }
+    if (delta == 0) {
+        return [-b / (2 * a)];
+    }
+    return [];
+}
+
+
+
+function bezierValue(t: number, p0: number, p1: number, p2: number) {
+    return (1.0 - t) * (1.0 - t) * p0 + 2.0 * (1.0 - t) * t * p1 + t * t * p2;
+    // return bezierPoint(p0, p1, p1, p2, t);
+}
+
 
 
 export const local_graph = new Graph();

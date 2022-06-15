@@ -45,7 +45,7 @@ npm run dev
 
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 - [X] control_point
-- [ ] sélection au clic d'arête courbée
+- [X] sélection au clic d'arête courbée
 - [ ] arc
 - [ ] label/index ?
 - [ ] poids (nombre) sur sommets ou arêtes
