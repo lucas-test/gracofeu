@@ -3,6 +3,7 @@ import { Graph } from './graph';
 import ENV from './.env.json';
 import { Vertex } from './vertex';
 import { Edge } from './edge';
+import { User, users } from './user';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -51,6 +52,9 @@ io.sockets.on('connection', function (client) {
     // INIT NEW PLAYER
     console.log("connection from ", client.id);
     client.emit('myId', client.id, Date.now());
+    const user_data = new User(client.id);
+    users.set(client.id, user_data);
+
 
     // ROOM CREATION
 
@@ -110,9 +114,7 @@ io.sockets.on('connection', function (client) {
     }
 
     function update_user(x: number, y: number) {
-        var randomColor = "#" + Math.floor(Math.random() * 16777215).toString(16);
-
-        client.to(room_id).emit('update_user', client.id, client.id.substring(0, 5), randomColor, x, y);
+        client.to(room_id).emit('update_user', client.id, user_data.name, user_data.color, x, y);
     }
 
 
