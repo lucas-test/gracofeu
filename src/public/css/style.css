@@ -5,11 +5,30 @@ body {
   margin: 0;
 }
 
+#actions {
+  border-radius: 5px;
+  background-color: white;
+  position: fixed;
+  top: 7px;
+  left: 7px;
+}
+
+.action {
+  margin: 8px;
+  padding: 6px;
+  display: inline-block;
+}
+
+.action:hover {
+  background-color: lightcoral;
+  cursor: pointer;
+}
+
 #interaction_mode_selector {
   border-radius: 5px;
   background-color: white;
   position: fixed;
-  top: 50%;
+  top: 45%;
   left: 7px;
 }
 
@@ -46,23 +65,4 @@ body {
   padding: 3px 5px;
   border: 1px solid white;
   border-radius: 5px;
-}
-
-.action_button:hover {
-  cursor: pointer;
-}
-
-#share_link {
-  top: 40;
-  left: 5;
-}
-
-#save_file {
-  top: 70;
-  left: 5;
-}
-
-#load_file {
-  top: 100;
-  left: 5;
 }
