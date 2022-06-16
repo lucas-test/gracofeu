@@ -43,10 +43,9 @@ npm run dev
 - [ ] recentrer
 - [ ] zoomer
 
-- [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 - [X] control_point
 - [X] sélection au clic d'arête courbée
-- [ ] arc
+- [X] arc
 - [ ] label/index ?
 - [ ] poids (nombre) sur sommets ou arêtes
 
@@ -55,7 +54,7 @@ npm run dev
 - [ ] couleur utilisateur
 
 - [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
-
+- [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 
 ## V0.5 Chercheurs proches
 

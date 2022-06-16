@@ -1,6 +1,8 @@
 const SELECTION_COLOR = 'green' // avant c'était '#00ffff'
 const COLOR_BACKGROUND = "#1e1e1e";
 const GRID_COLOR = '#777777';
+const VERTEX_RADIUS = 8;
+const ARC_ARROW_LENGTH = 12
 
 
 import { view } from './camera';
@@ -13,9 +15,9 @@ export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
 
-function draw_head(ctx, start_pos: Coord, end_pos: Coord) {
-    var headlen = 10;
-    var vertex_radius = 14;
+function draw_head(ctx: CanvasRenderingContext2D, start_pos: Coord, end_pos: Coord) {
+    var headlen = ARC_ARROW_LENGTH;
+    var vertex_radius = VERTEX_RADIUS;
     var d = Math.sqrt(start_pos.dist2(end_pos))
     var tox2 = end_pos.x + (start_pos.x - end_pos.x) * vertex_radius / d
     var toy2 = end_pos.y + (start_pos.y - end_pos.y) * vertex_radius / d
@@ -64,22 +66,16 @@ export function draw_circle(center: Coord, radius: number, alpha: number, ctx: C
 export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
     const vertex = g.vertices.get(index);
 
-    ctx.fillStyle = COLOR_BACKGROUND;
-    ctx.beginPath();
-    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, 10, 0, 2 * Math.PI);
-    ctx.fill();
-
     ctx.fillStyle = "white";
-
     if (vertex.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
     ctx.beginPath();
-    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, 8, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, VERTEX_RADIUS, 0, 2 * Math.PI);
     ctx.fill();
 
 
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
-    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, 6, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, VERTEX_RADIUS-2, 0, 2 * Math.PI);
     ctx.fill();
 }
 
@@ -203,7 +199,7 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
 
         draw_circle(link.cp.add(view.camera), 4, 1, ctx);
         if ( link.orientation == ORIENTATION.DIRECTED){
-            draw_head(ctx,link.cp, v.pos);
+            draw_head(ctx,link.cp.add(view.camera), v.pos.add(view.camera));
         }
     }
 }
