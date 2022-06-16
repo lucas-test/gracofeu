@@ -5,12 +5,29 @@ const GRID_COLOR = '#777777';
 
 import { view } from './camera';
 import { User, users } from './user';
-import { Coord, Graph } from './local_graph';
+import { Coord, Graph, ORIENTATION } from './local_graph';
 
 export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
+}
+
+function draw_head(ctx, start_pos: Coord, end_pos: Coord) {
+    var headlen = 10;
+    var vertex_radius = 14;
+    var d = Math.sqrt(start_pos.dist2(end_pos))
+    var tox2 = end_pos.x + (start_pos.x - end_pos.x) * vertex_radius / d
+    var toy2 = end_pos.y + (start_pos.y - end_pos.y) * vertex_radius / d
+    var dx = tox2 - start_pos.x;
+    var dy = toy2 - start_pos.y;
+    var angle = Math.atan2(dy, dx);
+    ctx.beginPath();
+    ctx.moveTo(tox2, toy2);
+    ctx.lineTo(tox2 - headlen * Math.cos(angle - Math.PI / 6), toy2 - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.moveTo(tox2, toy2);
+    ctx.lineTo(tox2 - headlen * Math.cos(angle + Math.PI / 6), toy2 - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.stroke();
 }
 
 
@@ -185,6 +202,9 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         ctx.stroke();
 
         draw_circle(link.cp.add(view.camera), 4, 1, ctx);
+        if ( link.orientation == ORIENTATION.DIRECTED){
+            draw_head(ctx,link.cp, v.pos);
+        }
     }
 }
 

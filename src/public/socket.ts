@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
 import { User, users } from "./user";
-import { Coord, Graph, Link, LocalVertex } from "./local_graph";
+import { Coord, Graph, Link, LocalVertex, ORIENTATION } from "./local_graph";
 export const socket = io()
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -46,9 +46,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_control_point', handle_update_control_point);
     socket.on('update_control_points', handle_update_control_points);
 
-    function handle_update_control_points(data){
+    function handle_update_control_points(data) {
         for (const e of data) {
-            if ( g.links.has(e.index)){
+            if (g.links.has(e.index)) {
                 const link = g.links.get(e.index);
                 link.cp.x = e.cp.x;
                 link.cp.y = e.cp.y;
@@ -56,7 +56,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         }
     }
 
-    function handle_update_control_point(index: number, c: Coord){
+    function handle_update_control_point(index: number, c: Coord) {
         const link = g.links.get(index);
         link.cp.x = c.x;
         link.cp.y = c.y;
@@ -77,8 +77,19 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.links.clear();
         for (const data of links_entries) {
-            console.log(data[1].orientation);
-            const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, data[1].orientation);
+            let orient = ORIENTATION.UNDIRECTED;
+            switch (data[1].orientation) {
+                case "UNDIRECTED":
+                    orient = ORIENTATION.UNDIRECTED
+                    break;
+                case "DIRECTED":
+                    orient = ORIENTATION.DIRECTED
+                    break;
+                case "DIGON":
+                    orient = ORIENTATION.DIGON
+                    break;
+            }
+            const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient);
             g.links.set(data[0], new_link);
         }
 

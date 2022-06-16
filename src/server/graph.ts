@@ -53,10 +53,21 @@ export class Graph {
 
 
     add_link(i: number, j: number, orientation: ORIENTATION) {
-        for (let e of this.links.values()) {
-            if ((e.start_vertex == i && e.end_vertex == j) || (e.start_vertex == j && e.end_vertex == i)) {
-                return
+        for (const link of this.links.values()) {
+            if ( link.orientation == orientation){
+                if( orientation == ORIENTATION.UNDIRECTED){
+                    if ((link.start_vertex == i && link.end_vertex == j) || (link.start_vertex == j && link.end_vertex == i)) {
+                        return;
+                    }
+                }
+                else if (orientation == ORIENTATION.DIRECTED){
+                    if ( link.start_vertex == i && link.end_vertex == j){
+                        return;
+                    }
+                }
             }
+            
+            
         }
 
         const index = this.get_next_available_index_links();

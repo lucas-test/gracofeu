@@ -1,9 +1,9 @@
 import { Coord } from "./coord";
 
 export enum ORIENTATION{
-    UNDIRECTED,
-    DIRECTED,
-    DIGON
+    UNDIRECTED = "UNDIRECTED",
+    DIRECTED = "DIRECTED",
+    DIGON = "DIGON"
 }
 
 
@@ -17,7 +17,7 @@ export class Link {
         this.start_vertex = i;
         this.end_vertex = j;
         this.cp = cp;
-        this.orientation = this.orientation
+        this.orientation = orientation
     }
 
 

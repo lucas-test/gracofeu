@@ -6,6 +6,7 @@ import { update_params_loaded } from '../parametors/parametor_manager';
 import { view } from '../camera';
 import { socket } from '../socket';
 import { Coord, Graph } from '../local_graph';
+import { interactor_arc } from './arc_interactor';
 
 // INTERACTOR MANAGER
 
@@ -104,7 +105,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
 
-let interactors_available = [interactor_selection, interactor_edge]
+let interactors_available = [interactor_selection, interactor_edge, interactor_arc]
 
 function deselect_all_interactor_div() {
     for (let div of document.getElementsByClassName("interactor")) {

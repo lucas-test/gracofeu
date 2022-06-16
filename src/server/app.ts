@@ -219,13 +219,15 @@ io.sockets.on('connection', function (client) {
         switch(orientation){
             case "undirected":
                 orient = ORIENTATION.UNDIRECTED
+                break;
             case "directed":
                 orient = ORIENTATION.DIRECTED
+                break;
             case "digon":
                 orient = ORIENTATION.DIGON
+                break;
         }
         g.add_link(vindex, windex, orient);
-        
         emit_graph_to_room();
     }
 })
