@@ -170,35 +170,35 @@ function draw_vertices(ctx: CanvasRenderingContext2D, g: Graph) {
     }
 }
 
-// DRAW EDGES
-function draw_edges(ctx: CanvasRenderingContext2D, g: Graph) {
-    for (let edge of g.edges.values()) {
-        let u = g.vertices.get(edge.start_vertex);
-        let v = g.vertices.get(edge.end_vertex);
+// DRAW LINKS
+function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
+    for (let link of g.links.values()) {
+        let u = g.vertices.get(link.start_vertex);
+        let v = g.vertices.get(link.end_vertex);
 
         ctx.beginPath();
         ctx.moveTo(u.pos.x + view.camera.x, u.pos.y + view.camera.y);
         ctx.strokeStyle = "white";
-        if (edge.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
+        if (link.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
         ctx.lineWidth = 3;
-        ctx.quadraticCurveTo(edge.cp.x+ view.camera.x, edge.cp.y+ view.camera.y, v.pos.x + view.camera.x, v.pos.y+ view.camera.y);
+        ctx.quadraticCurveTo(link.cp.x+ view.camera.x, link.cp.y+ view.camera.y, v.pos.x + view.camera.x, v.pos.y+ view.camera.y);
         ctx.stroke();
 
-        draw_circle(edge.cp.add(view.camera), 4, 1, ctx);
+        draw_circle(link.cp.add(view.camera), 4, 1, ctx);
     }
 }
 
-function draw_edge_creating(ctx: CanvasRenderingContext2D) {
-    if (view.is_edge_creating) {
-        draw_line(view.edge_creating_start, view.edge_creating_end, ctx);
-        draw_circle(view.edge_creating_end, 10, 0.5, ctx);
+function draw_link_creating(ctx: CanvasRenderingContext2D) {
+    if (view.is_link_creating) {
+        draw_line(view.link_creating_start, view.link_creating_end, ctx);
+        draw_circle(view.link_creating_end, 10, 0.5, ctx);
     }
 }
 
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
-    draw_edges(ctx, g);
-    draw_edge_creating(ctx);
+    draw_links(ctx, g);
+    draw_link_creating(ctx);
     draw_vertices(ctx, g);
     draw_users(ctx);
     draw_rectangular_selection(ctx);

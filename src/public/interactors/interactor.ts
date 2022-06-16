@@ -5,8 +5,7 @@ import { Coord, Graph } from "../local_graph";
 export enum DOWN_TYPE {
     EMPTY = "EMPTY",
     VERTEX = "VERTEX",
-    EDGE = "EDGE",
-    ARC = "ARC",
+    LINK = "LINK",
     CONTROL_POINT = "CONTROL_POINT"
 }
 

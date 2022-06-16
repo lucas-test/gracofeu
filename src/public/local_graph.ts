@@ -1,3 +1,4 @@
+
 import { DOWN_TYPE } from "./interactors/interactor";
 
 export class Coord {
@@ -87,22 +88,28 @@ export class LocalVertex {
 
 
 
+export enum ORIENTATION{
+    UNDIRECTED,
+    DIRECTED,
+    DIGON
+}
 
 
-
-export class Edge {
+export class Link {
     start_vertex: number;
     end_vertex: number;
     cp: Coord;
     old_cp: Coord;
     is_selected: boolean;
+    orientation: ORIENTATION;
 
-    constructor(i: number, j: number, cp: Coord) {
+    constructor(i: number, j: number, cp: Coord, orientation: ORIENTATION) {
         this.start_vertex = i;
         this.end_vertex = j;
         this.is_selected = false;
         this.cp = new Coord(cp.x, cp.y);
         this.old_cp = new Coord(cp.x, cp.y);
+        this.orientation = orientation;
     }
 
     is_in_rect(c1: Coord, c2: Coord) {
@@ -113,7 +120,6 @@ export class Edge {
     }
 
     is_nearby(x: number, y: number, r: number) {
-        // TODO: bend edges
         const start = local_graph.vertices.get(this.start_vertex);
         const end = local_graph.vertices.get(this.end_vertex);
         const x1 = start.pos.x;
@@ -149,11 +155,11 @@ export class Edge {
 
 export class Graph {
     vertices: Map<number, LocalVertex>;
-    edges: Map<number, Edge>;
+    links: Map<number, Link>;
 
     constructor() {
         this.vertices = new Map();
-        this.edges = new Map();
+        this.links = new Map();
     }
 
 
@@ -163,15 +169,15 @@ export class Graph {
         });
     }
 
-    deselect_all_edges() {
-        this.edges.forEach(edge => {
-            edge.is_selected = false;
+    deselect_all_links() {
+        this.links.forEach(link => {
+            link.is_selected = false;
         });
     }
 
     clear_all_selections() {
         this.deselect_all_vertices();
-        this.deselect_all_edges();
+        this.deselect_all_links();
     }
 
     get_element_nearby(pos: Coord) {
@@ -181,12 +187,12 @@ export class Graph {
             }
         }
 
-        for (const [index, edge] of this.edges.entries()) {
-            if (edge.cp.is_nearby(pos, 150)) {
+        for (const [index, link] of this.links.entries()) {
+            if (link.cp.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.CONTROL_POINT, index: index };
             }
-            if (this.is_click_over_edge(index, pos)) {
-                return { type: DOWN_TYPE.EDGE, index: index };
+            if (this.is_click_over_link(index, pos)) {
+                return { type: DOWN_TYPE.LINK, index: index };
             }
         }
 
@@ -203,10 +209,10 @@ export class Graph {
         return null;
     }
 
-    get_edge_index_nearby(x: number, y: number) {
-        for (let index of this.edges.keys()) {
-            let e = this.edges.get(index);
-            if (e.is_nearby(x, y, 0.015)) {
+    get_link_index_nearby(x: number, y: number) {
+        for (let index of this.links.keys()) {
+            let link = this.links.get(index);
+            if (link.is_nearby(x, y, 0.015)) {
                 return index;
             }
         }
@@ -221,16 +227,16 @@ export class Graph {
         }
     }
 
-    select_edges_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
-        for (const index of this.edges.keys()) {
-            const edge = this.edges.get(index);
-            if (edge.is_in_rect(corner1.sub(cam), corner2.sub(cam))) {
-                edge.is_selected = true;
+    select_links_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
+        for (const index of this.links.keys()) {
+            const link = this.links.get(index);
+            if (link.is_in_rect(corner1.sub(cam), corner2.sub(cam))) {
+                link.is_selected = true;
             }
         }
     }
 
-    is_click_over_edge(edge_index: number, e: Coord) {
+    is_click_over_link(link_index: number, e: Coord) {
         let xA = e.x - 5
         let yA = e.y - 5
         let xB = e.x + 5
@@ -241,13 +247,13 @@ export class Graph {
         let maxX = xB
         let maxY = yB
 
-        let edge = this.edges.get(edge_index);
-        let v = this.vertices.get(edge.start_vertex)
-        let w = this.vertices.get(edge.end_vertex)
+        let link = this.links.get(link_index);
+        let v = this.vertices.get(link.start_vertex)
+        let w = this.vertices.get(link.end_vertex)
         let x0 = v.pos.x;
         let y0 = v.pos.y;
-        let x1 = edge.cp.x;
-        let y1 = edge.cp.y;
+        let x1 = link.cp.x;
+        let y1 = link.cp.y;
         let x2 = w.pos.x;
         let y2 = w.pos.y;
 

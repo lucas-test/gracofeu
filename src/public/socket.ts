@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
 import { User, users } from "./user";
-import { Coord, Edge, Graph, LocalVertex } from "./local_graph";
+import { Coord, Graph, Link, LocalVertex } from "./local_graph";
 export const socket = io()
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -48,22 +48,22 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function handle_update_control_points(data){
         for (const e of data) {
-            if ( g.edges.has(e.index)){
-                const edge = g.edges.get(e.index);
-                edge.cp.x = e.cp.x;
-                edge.cp.y = e.cp.y;
+            if ( g.links.has(e.index)){
+                const link = g.links.get(e.index);
+                link.cp.x = e.cp.x;
+                link.cp.y = e.cp.y;
             }
         }
     }
 
     function handle_update_control_point(index: number, c: Coord){
-        const edge = g.edges.get(index);
-        edge.cp.x = c.x;
-        edge.cp.y = c.y;
+        const link = g.links.get(index);
+        link.cp.x = c.x;
+        link.cp.y = c.y;
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
-    socket.on('graph', (vertices_entries, edges_entries) => {
+    socket.on('graph', (vertices_entries, links_entries) => {
         console.log("I get a new graph");
 
         // pour les vertices_entries c'est parce que on peut pas envoyer des Map par socket ...
@@ -75,10 +75,11 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             g.vertices.set(data[0], new_vertex);
         }
 
-        g.edges.clear();
-        for (const data of edges_entries) {
-            const new_edge = new Edge(data[1].start_vertex, data[1].end_vertex, data[1].cp);
-            g.edges.set(data[0], new_edge);
+        g.links.clear();
+        for (const data of links_entries) {
+            console.log(data[1].orientation);
+            const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, data[1].orientation);
+            g.links.set(data[0], new_link);
         }
 
         requestAnimationFrame(function () { draw(canvas, ctx, g) });

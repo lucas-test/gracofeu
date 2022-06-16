@@ -1,18 +1,16 @@
 
-import { Edge } from './edge';
+import { Link, ORIENTATION } from './link';
 import { Vertex } from './vertex';
-import { Arc } from './arc';
-import { middle } from './coord';
+
+import { Coord, middle } from './coord';
 
 export class Graph {
     vertices: Map<number, Vertex>;
-    edges: Map<number, Edge>;
-    arcs: Map<number, Arc>;
+    links: Map<number, Link>;
 
     constructor() {
         this.vertices = new Map();
-        this.edges = new Map();
-        this.arcs = new Map();
+        this.links = new Map();
     }
 
 
@@ -24,21 +22,15 @@ export class Graph {
         return index;
     }
 
-    get_next_available_index_edges() {
+    get_next_available_index_links() {
         let index = 0;
-        while (this.edges.has(index)) {
+        while (this.links.has(index)) {
             index += 1;
         }
         return index;
     }
 
-    get_next_available_index_arcs() {
-        let index = 0;
-        while (this.arcs.has(index)) {
-            index += 1;
-        }
-        return index;
-    }
+
 
 
     get_index(v: Vertex) {
@@ -60,60 +52,60 @@ export class Graph {
 
 
 
-    add_edge(i: number, j: number) {
-        for (let e of this.edges.values()) {
+    add_link(i: number, j: number, orientation: ORIENTATION) {
+        for (let e of this.links.values()) {
             if ((e.start_vertex == i && e.end_vertex == j) || (e.start_vertex == j && e.end_vertex == i)) {
                 return
             }
         }
 
-        const index = this.get_next_available_index_edges();
+        const index = this.get_next_available_index_links();
         const v1 = this.vertices.get(i);
         const v2 = this.vertices.get(j);
-        this.edges.set(index, new Edge(i, j, middle(v1.pos, v2.pos)));
+        this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), orientation));
+        return index;
     }
 
-    add_arc(start_vertex_index: number, end_vertex_index: number) {
-        for (let arc of this.arcs.values()) {
-            if (arc.start_vertex == start_vertex_index && arc.end_vertex == end_vertex_index) {
-                return
-            }
-        }
-
-        const index = this.get_next_available_index_arcs();
-        this.arcs.set(index, new Arc(start_vertex_index, end_vertex_index));
-
+    add_link_with_cp(i: number, j: number, orientation: ORIENTATION, cp: Coord) {
+        const index = this.add_link(i,j,orientation);
+        const link = this.links.get(index);
+        link.cp.copy_from(cp);
     }
+
+
 
 
     get_neighbors_list(i: number) {
-        let neighbors = [];
-        for (let e of this.edges.values()) {
-            if (e.start_vertex == i) {
-                neighbors.push(e.end_vertex);
-            } else if (e.end_vertex == i) {
-                neighbors.push(e.start_vertex);
+        let neighbors = new Array<number>();
+        for (let e of this.links.values()) {
+            if (e.orientation == ORIENTATION.UNDIRECTED) {
+                if (e.start_vertex == i) {
+                    neighbors.push(e.end_vertex);
+                } else if (e.end_vertex == i) {
+                    neighbors.push(e.start_vertex);
+                }
             }
         }
+        return neighbors;
     }
 
     delete_vertex(vertex_index: number) {
         this.vertices.delete(vertex_index);
 
-        this.edges.forEach((edge, edge_index) => {
-            if (edge.end_vertex === vertex_index || edge.start_vertex === vertex_index) {
-                this.edges.delete(edge_index);
+        this.links.forEach((link, link_index) => {
+            if (link.end_vertex === vertex_index || link.start_vertex === vertex_index) {
+                this.links.delete(link_index);
             }
         })
     }
 
-    delete_edge(edge_index: number) {
-        this.edges.delete(edge_index);
+    delete_link(link_index: number) {
+        this.links.delete(link_index);
     }
 
     clear() {
         this.vertices.clear();
-        this.edges.clear();
+        this.links.clear();
     }
 
 }

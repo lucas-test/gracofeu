@@ -33,9 +33,9 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                     data_socket.push({ type: "vertex", index: index });
                 }
             }
-            g.edges.forEach((edge, index) => {
-                if (edge.is_selected) {
-                    data_socket.push({ type: "edge", index: index });
+            g.links.forEach((link, index) => {
+                if (link.is_selected) {
+                    data_socket.push({ type: "link", index: index });
                 }
             })
             socket.emit("delete_selected_elements", data_socket);

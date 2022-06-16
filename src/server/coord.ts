@@ -6,6 +6,11 @@ export class Coord {
         this.x = x;
         this.y = y;
     }
+
+    copy_from(c: Coord){
+        this.x = c.x;
+        this.y = c.y;
+    }
 }
 
 export function middle(c1: Coord, c2: Coord) {

@@ -2,9 +2,9 @@ import express from 'express';
 import { Graph } from './graph';
 import ENV from './.env.json';
 import { Vertex } from './vertex';
-import { Edge } from './edge';
 import { User, users } from './user';
 import { Coord } from './coord';
+import { ORIENTATION } from './link';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -38,10 +38,10 @@ the_graph.add_vertex(300, 300);
 the_graph.add_vertex(200, 300);
 the_graph.add_vertex(200, 200);
 the_graph.add_vertex(300, 200);
-the_graph.add_edge(0, 1);
-the_graph.add_edge(1, 2);
-the_graph.add_edge(2, 3);
-the_graph.add_edge(3, 0);
+the_graph.add_link(0, 1, ORIENTATION.UNDIRECTED);
+the_graph.add_link(1, 2, ORIENTATION.UNDIRECTED);
+the_graph.add_link(2, 3, ORIENTATION.UNDIRECTED);
+the_graph.add_link(3, 0, ORIENTATION.UNDIRECTED);
 room_graphs.set(the_room, the_graph);
 
 
@@ -78,11 +78,11 @@ io.sockets.on('connection', function (client) {
     }
 
     function emit_graph_to_client() {
-        client.emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
+        client.emit('graph', [...g.vertices.entries()], [...g.links.entries()]);
     }
 
     function emit_graph_to_room() {
-        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.edges.entries()]);
+        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.links.entries()]);
     }
 
 
@@ -123,7 +123,7 @@ io.sockets.on('connection', function (client) {
     // GRAPH API
 
     client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
-    client.on('add_edge', handle_add_edge);
+    client.on('add_link', handle_add_link);
     client.on('update_position', handle_update_pos);
     client.on('update_positions', handle_update_positions);
     client.on('delete_selected_elements', handle_delete_selected_elements);
@@ -134,21 +134,21 @@ io.sockets.on('connection', function (client) {
 
     function handle_update_control_points(data) {
         for (const element of data) {
-            if (g.edges.has(element.index)) {
-                const edge = g.edges.get(element.index);
-                edge.cp.x = element.cp.x;
-                edge.cp.y = element.cp.y;
+            if (g.links.has(element.index)) {
+                const link = g.links.get(element.index);
+                link.cp.x = element.cp.x;
+                link.cp.y = element.cp.y;
             }
         }
         client.in(room_id).emit('update_control_points', data);
     }
 
-    function handle_update_control_point(index: number, c: Coord) {
-        if (g.edges.has(index)) {
-            const edge = g.edges.get(index);
-            edge.cp.x = c.x;
-            edge.cp.y = c.y;
-            io.sockets.in(room_id).emit('update_control_point', index, c);
+    function handle_update_control_point(link_index: number, c: Coord) {
+        if (g.links.has(link_index)) {
+            const link = g.links.get(link_index);
+            link.cp.x = c.x;
+            link.cp.y = c.y;
+            io.sockets.in(room_id).emit('update_control_point', link_index, c);
         }
     }
 
@@ -160,11 +160,8 @@ io.sockets.on('connection', function (client) {
             const new_vertex = new Vertex(vdata[1]["pos"]["x"], vdata[1]["pos"]["y"]);
             g.vertices.set(vdata[0], new_vertex)
         }
-        for (const edge of data.edges) {
-            g.add_edge(edge[1].start_vertex, edge[1].end_vertex)
-        }
-        for (const arc of data.arcs) {
-            g.add_arc(arc[1].start_vertex, arc[1].end_vertex)
+        for (const link of data.links) {
+            g.add_link_with_cp(link[1].start_vertex, link[1].end_vertex, link[1].orientation, new Coord(link[1].cp.x, link[1].cp.y))
         }
         emit_graph_to_room();
     }
@@ -172,8 +169,7 @@ io.sockets.on('connection', function (client) {
     function handle_get_json(callback) {
         const graph_stringifiable = {
             vertices: Array.from(g.vertices.entries()),
-            edges: Array.from(g.edges.entries()),
-            arcs: Array.from(g.arcs.entries())
+            links: Array.from(g.links.entries()),
         }
         callback(JSON.stringify(graph_stringifiable));
     }
@@ -183,8 +179,8 @@ io.sockets.on('connection', function (client) {
             if (e.type == "vertex") {
                 g.delete_vertex(e.index);
             }
-            else if (e.type == "edge") {
-                g.delete_edge(e.index);
+            else if (e.type == "link") {
+                g.delete_link(e.index);
             }
         }
         emit_graph_to_room();
@@ -218,8 +214,18 @@ io.sockets.on('connection', function (client) {
         return index;
     }
 
-    function handle_add_edge(vindex: number, windex: number) {
-        g.add_edge(vindex, windex);
+    function handle_add_link(vindex: number, windex: number, orientation: string) {
+        let orient = ORIENTATION.UNDIRECTED;
+        switch(orientation){
+            case "undirected":
+                orient = ORIENTATION.UNDIRECTED
+            case "directed":
+                orient = ORIENTATION.DIRECTED
+            case "digon":
+                orient = ORIENTATION.DIGON
+        }
+        g.add_link(vindex, windex, orient);
+        
         emit_graph_to_room();
     }
 })
