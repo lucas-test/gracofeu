@@ -9,23 +9,90 @@
     border-radius: 5px;
     color: #dddddd;
     font-family: sans-serif;
+    /* border-top-left-radius: 15px; */
 }
 
 #params_available {
-    background-color:#333333;
+    /* background-color:#333333;
+    color: #dddddd; */
     position: fixed;
-    top: 5;
-    right: 50%;
+    /* top: 5;
+    right: 50%; */
     margin: 5px;
     border-radius: 5px;
-    color: #dddddd;
     font-family: sans-serif;
     display: none;
+    padding: 5px;
+    color: #000;
+    background-color: #fff;
+    top: 15px;
+    right: calc(50% - 100px);
+    padding: 5px;
+    width: 200px;
+    text-align: center;
+    font-weight: bolder;
 }
+
+#params_available .param {
+    display: block;
+}
+
 
 .param {
     margin: 8px;
     padding: 6px;
-    background-color: #1e1e1e;
+    /* background-color: #1e1e1e; */
+    background-color: #929292;
+    color: #FFF;
+    text-align: center;
+    border-radius: 5px;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.div_button{
+    font-weight: bolder;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    font-size: 20px;
+}
+
+#params_loaded_button{
+    background-color: #fff;
+    color: #1e1e1e;
+}
+
+#params_available_button:after{
+    display: inline-block;
+    content: "\00d7";
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.remove_param_button{
+    color: #1e1e1e;
+    width: 15px;
+    height: calc(15px - 0.1em);
+    background-color: #ff4545;
+    border: 1px solid #1e1e1e;
+    padding: 0;
+    font-size: 30px;
+    margin-right: 7px;
+    padding-bottom: 0.1em;
+}
+
+.result_span{
+    margin-left: 5px;
 }
 

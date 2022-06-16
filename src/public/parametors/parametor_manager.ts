@@ -22,18 +22,21 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
     newDiv.id = "param_" + param.name;
 
 
-    let button = document.createElement('button');
+    let button = document.createElement('div');
     button.innerHTML = "-";
+    button.classList.add("div_button");
+    button.classList.add("remove_param_button");
     button.addEventListener('click', () => { remove_loaded_param(param.name); });
     newDiv.appendChild(button);
 
     let span_name = document.createElement('span');
-    span_name.innerHTML = " " + param.name + " : ";
+    span_name.innerHTML = " " + param.name + ": ";
     newDiv.appendChild(span_name);
 
     let span_result = document.createElement("span");
     span_result.id = "span_result_" + param.name;
     span_result.innerHTML = "";
+    span_result.classList.add("result_span");
     newDiv.appendChild(span_result);
 
     document.getElementById("params_loaded").appendChild(newDiv);
