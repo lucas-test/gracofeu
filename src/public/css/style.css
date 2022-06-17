@@ -17,6 +17,7 @@ body {
 .action {
   margin: 8px;
   padding: 6px;
+  transition: 250ms;
   display: inline-block;
 }
 
@@ -24,6 +25,30 @@ body {
   background-color: lightcoral;
   cursor: pointer;
 }
+
+
+.subaction_container {
+  border-radius: 5px;
+  background-color: white;
+  position: fixed;
+  top: 70px;
+  left: 7px;
+}
+
+.subaction {
+  margin: 8px;
+  padding: 6px;
+  transition: 250ms;
+  display: inline-block;
+}
+
+.subaction:hover {
+  background-color: lightcoral;
+  cursor: pointer;
+}
+
+
+
 
 #interaction_mode_selector {
   border-radius: 5px;

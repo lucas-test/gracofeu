@@ -5,9 +5,20 @@ const VERTEX_RADIUS = 8;
 const ARC_ARROW_LENGTH = 12
 
 
-import { view } from './camera';
+import { INDEX_TYPE, view } from './camera';
 import { User, users } from './user';
 import { Coord, Graph, ORIENTATION } from './local_graph';
+
+
+
+const letters = "abcdefghijklmnopqrstuvwxyz";
+
+
+// todo
+// réfléchir à s'il faut stocker les index, si oui local ou global ?
+// laisser le choix pour commencer les indices à 1 ? (ou k)
+
+
 
 export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     canvas.width = window.innerWidth;
@@ -65,18 +76,55 @@ export function draw_circle(center: Coord, radius: number, alpha: number, ctx: C
 
 export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
     const vertex = g.vertices.get(index);
+    let vertex_radius = VERTEX_RADIUS;
+    if (view.index_type != INDEX_TYPE.NONE){
+        vertex_radius = 2*VERTEX_RADIUS;
+    }
 
     ctx.fillStyle = "white";
     if (vertex.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
     ctx.beginPath();
-    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, VERTEX_RADIUS, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, vertex_radius, 0, 2 * Math.PI);
     ctx.fill();
 
 
     ctx.fillStyle = COLOR_BACKGROUND;
     ctx.beginPath();
-    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, VERTEX_RADIUS-2, 0, 2 * Math.PI);
+    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, vertex_radius-2, 0, 2 * Math.PI);
     ctx.fill();
+
+   // DRAW INDEX 
+    if (view.index_type != INDEX_TYPE.NONE){
+        ctx.font = "17px Arial";
+        let index_string = "v" + String(index)
+        if (view.index_type == INDEX_TYPE.ALPHA_STABLE){
+            index_string = letters.charAt(index % letters.length);
+        }
+        else if (view.index_type == INDEX_TYPE.NUMBER_UNSTABLE){
+            let counter = 0;
+            for(const key of g.vertices.keys()){
+                if (key <  index){
+                    counter ++;
+                }
+            }
+            index_string = "v" + String(counter)
+        }
+        else if (view.index_type == INDEX_TYPE.ALPHA_UNSTABLE){
+            let counter = 0;
+            for(const key of g.vertices.keys()){
+                if (key <  index){
+                    counter ++;
+                }
+            }
+            index_string = letters.charAt(index % letters.length);
+        }
+        
+        const measure = ctx.measureText(index_string);
+        ctx.fillStyle = "white" 
+        const px = Math.floor(vertex.pos.x - measure.width/2 + view.camera.x);
+        const py = Math.floor(vertex.pos.y + 5 + view.camera.y)
+        ctx.fillText(index_string, px, py);
+    }
 }
 
 export function draw_user(user: User, ctx: CanvasRenderingContext2D) {

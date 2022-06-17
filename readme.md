@@ -46,7 +46,7 @@ npm run dev
 - [X] control_point
 - [X] sélection au clic d'arête courbée
 - [X] arc
-- [ ] label/index ?
+- [X] vertex index
 - [ ] poids (nombre) sur sommets ou arêtes
 
 - [ ] nom utilisateur

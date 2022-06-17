@@ -26,7 +26,7 @@ function setup() {
     setup_interactors_div();
     select_interactor(interactor_edge);
 
-    setup_actions_div();
+    setup_actions_div(canvas, ctx, local_graph);
 
     setup_parametors_available();
     update_params_available_div(canvas, ctx, local_graph);
