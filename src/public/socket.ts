@@ -54,6 +54,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 link.cp.y = e.cp.y;
             }
         }
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
     function handle_update_control_point(index: number, c: Coord) {
@@ -104,6 +105,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         const v = g.vertices.get(index);
         v.pos.x = x;
         v.pos.y = y;
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
 
@@ -114,6 +116,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             v.pos.x = e.x;
             v.pos.y = e.y;
         }
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
 
