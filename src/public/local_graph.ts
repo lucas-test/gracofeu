@@ -1,4 +1,5 @@
 
+import { INDEX_TYPE, view } from "./camera";
 import { DOWN_TYPE } from "./interactors/interactor";
 
 export class Coord {
@@ -49,11 +50,13 @@ export class LocalVertex {
     pos: Coord;
     old_pos: Coord;
     is_selected: boolean;
+    index_string: string;
 
     constructor(pos: Coord) {
         this.pos = new Coord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
         this.old_pos = new Coord(pos.x, pos.y);
         this.is_selected = false;
+        this.index_string = "";
     }
 
     save_pos() {
@@ -88,7 +91,7 @@ export class LocalVertex {
 
 
 
-export enum ORIENTATION{
+export enum ORIENTATION {
     UNDIRECTED,
     DIRECTED,
     DIGON
@@ -300,6 +303,37 @@ export class Graph {
 
         }
         return false;
+    }
+
+    compute_vertices_index_string() {
+        const letters = "abcdefghijklmnopqrstuvwxyz";
+        this.vertices.forEach((vertex, index) => {
+            if (view.index_type == INDEX_TYPE.NONE) {
+                vertex.index_string = "";
+            } else if (view.index_type == INDEX_TYPE.NUMBER_STABLE) {
+                vertex.index_string = "v" + String(index)
+            } else if (view.index_type == INDEX_TYPE.ALPHA_STABLE) {
+                vertex.index_string = letters.charAt(index % letters.length);
+            }
+            else if (view.index_type == INDEX_TYPE.NUMBER_UNSTABLE) {
+                let counter = 0;
+                for (const key of this.vertices.keys()) {
+                    if (key < index) {
+                        counter++;
+                    }
+                }
+                vertex.index_string = "v" + String(counter)
+            }
+            else if (view.index_type == INDEX_TYPE.ALPHA_UNSTABLE) {
+                let counter = 0;
+                for (const key of this.vertices.keys()) {
+                    if (key < index) {
+                        counter++;
+                    }
+                }
+                vertex.index_string = letters.charAt(counter % letters.length);
+            }
+        })
     }
 }
 

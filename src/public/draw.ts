@@ -11,13 +11,6 @@ import { Coord, Graph, ORIENTATION } from './local_graph';
 
 
 
-const letters = "abcdefghijklmnopqrstuvwxyz";
-
-
-// todo
-// réfléchir à s'il faut stocker les index, si oui local ou global ?
-// laisser le choix pour commencer les indices à 1 ? (ou k)
-
 
 
 export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -27,14 +20,17 @@ export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 }
 
 function draw_head(ctx: CanvasRenderingContext2D, start_pos: Coord, end_pos: Coord) {
-    var headlen = ARC_ARROW_LENGTH;
-    var vertex_radius = VERTEX_RADIUS;
-    var d = Math.sqrt(start_pos.dist2(end_pos))
-    var tox2 = end_pos.x + (start_pos.x - end_pos.x) * vertex_radius / d
-    var toy2 = end_pos.y + (start_pos.y - end_pos.y) * vertex_radius / d
-    var dx = tox2 - start_pos.x;
-    var dy = toy2 - start_pos.y;
-    var angle = Math.atan2(dy, dx);
+    const headlen = ARC_ARROW_LENGTH;
+    let vertex_radius = VERTEX_RADIUS;
+    if ( view.index_type != INDEX_TYPE.NONE){
+        vertex_radius = VERTEX_RADIUS*2;
+    }
+    const d = Math.sqrt(start_pos.dist2(end_pos))
+    const tox2 = end_pos.x + (start_pos.x - end_pos.x) * vertex_radius / d
+    const toy2 = end_pos.y + (start_pos.y - end_pos.y) * vertex_radius / d
+    const dx = tox2 - start_pos.x;
+    const dy = toy2 - start_pos.y;
+    const angle = Math.atan2(dy, dx);
     ctx.beginPath();
     ctx.moveTo(tox2, toy2);
     ctx.lineTo(tox2 - headlen * Math.cos(angle - Math.PI / 6), toy2 - headlen * Math.sin(angle - Math.PI / 6));
@@ -96,34 +92,11 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
    // DRAW INDEX 
     if (view.index_type != INDEX_TYPE.NONE){
         ctx.font = "17px Arial";
-        let index_string = "v" + String(index)
-        if (view.index_type == INDEX_TYPE.ALPHA_STABLE){
-            index_string = letters.charAt(index % letters.length);
-        }
-        else if (view.index_type == INDEX_TYPE.NUMBER_UNSTABLE){
-            let counter = 0;
-            for(const key of g.vertices.keys()){
-                if (key <  index){
-                    counter ++;
-                }
-            }
-            index_string = "v" + String(counter)
-        }
-        else if (view.index_type == INDEX_TYPE.ALPHA_UNSTABLE){
-            let counter = 0;
-            for(const key of g.vertices.keys()){
-                if (key <  index){
-                    counter ++;
-                }
-            }
-            index_string = letters.charAt(index % letters.length);
-        }
-        
-        const measure = ctx.measureText(index_string);
+        const measure = ctx.measureText(vertex.index_string);
         ctx.fillStyle = "white" 
         const px = Math.floor(vertex.pos.x - measure.width/2 + view.camera.x);
         const py = Math.floor(vertex.pos.y + 5 + view.camera.y)
-        ctx.fillText(index_string, px, py);
+        ctx.fillText(vertex.index_string, px, py);
     }
 }
 

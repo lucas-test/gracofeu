@@ -1,6 +1,6 @@
 import { INDEX_TYPE, view } from "./camera";
 import { draw } from "./draw";
-import { Graph } from "./local_graph";
+import { Graph, local_graph } from "./local_graph";
 import { socket } from "./socket";
 
 export class Action {
@@ -77,26 +77,31 @@ load_file_action.trigger = () => {
 let change_to_none_index = new Action("index_type_none", "index_none.svg");
 change_to_none_index.trigger = () => {
     view.index_type = INDEX_TYPE.NONE;
+    local_graph.compute_vertices_index_string();
 }
 
 let change_to_number_stable_index = new Action("index_type_number_stable", "index_number_stable.svg");
 change_to_number_stable_index.trigger = () => {
     view.index_type = INDEX_TYPE.NUMBER_STABLE;
+    local_graph.compute_vertices_index_string();
 }
 
 let change_to_number_unstable_index = new Action("index_type_number_stable", "index_number_unstable.svg");
 change_to_number_unstable_index.trigger = () => {
     view.index_type = INDEX_TYPE.NUMBER_UNSTABLE;
+    local_graph.compute_vertices_index_string();
 }
 
 let change_to_alpha_stable_index = new Action("index_type_number_stable", "index_alpha_stable.svg");
 change_to_alpha_stable_index.trigger = () => {
     view.index_type = INDEX_TYPE.ALPHA_STABLE;
+    local_graph.compute_vertices_index_string();
 }
 
 let change_to_alpha_unstable_index = new Action("index_type_number_stable", "index_alpha_unstable.svg");
 change_to_alpha_unstable_index.trigger = () => {
     view.index_type = INDEX_TYPE.ALPHA_UNSTABLE;
+    local_graph.compute_vertices_index_string();
 }
 
 
@@ -123,6 +128,10 @@ export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderin
         new_subactions_div.classList.add("subaction_container");
         new_subactions_div.id = action.name + "_subactions";
         new_subactions_div.style.display = "none";
+        new_subactions_div.addEventListener("mouseleave", (event) => {
+            const target = event.target as HTMLDivElement;
+            target.style.display = "none";
+        })
 
         newDiv.onclick = function () {
             new_subactions_div.style.display = "block";

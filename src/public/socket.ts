@@ -94,6 +94,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             g.links.set(data[0], new_link);
         }
 
+        g.compute_vertices_index_string();
+
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     })
 
