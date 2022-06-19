@@ -61,17 +61,21 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
                     if (v.is_selected) {
-                        data_socket.push({ index: index, x: e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, y: e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y });
+                        const mouse_server_coord = view.serverCoord(e);
+                        const nx = mouse_server_coord.x + v.old_pos.x - origin_vertex.old_pos.x;
+                        const ny = mouse_server_coord.y + v.old_pos.y - origin_vertex.old_pos.y;
+                        data_socket.push({ index: index, x: nx, y:  ny});
                         // socket.emit("update_position", index, e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y);
                     }
                 }
                 const data_socket2 = new Array();
-                for (let [index, link] of g.links.entries()) {
-                    var v = g.vertices.get(link.start_vertex)
-                    var w = g.vertices.get(link.end_vertex)
+                for (const [index, link] of g.links.entries()) {
+                    const v = g.vertices.get(link.start_vertex)
+                    const w = g.vertices.get(link.end_vertex)
                     if (v.is_selected && w.is_selected) {
-                        link.cp.x = link.old_cp.x + e.pageX - view.camera.x - origin_vertex.old_pos.x
-                        link.cp.y = link.old_cp.y + e.pageY - view.camera.y - origin_vertex.old_pos.y
+                        const mouse_server_coord = view.serverCoord(e);
+                        link.cp.x = link.old_cp.x + mouse_server_coord.x - origin_vertex.old_pos.x
+                        link.cp.y = link.old_cp.y + mouse_server_coord.y - origin_vertex.old_pos.y
                         data_socket2.push({ index: index, cp: link.cp })
                     }
                     else if (v.is_selected && !w.is_selected) {
@@ -87,8 +91,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             }
             else {
                 const v = g.vertices.get(interactor_selection.last_down_index)
-                v.pos.x = e.pageX - view.camera.x
-                v.pos.y = e.pageY - view.camera.y
+                v.pos = view.serverCoord(e);
                 const data_socket = new Array();
                 for (let [index, link] of g.links.entries()) {
                     if (link.start_vertex == interactor_selection.last_down_index || link.end_vertex == interactor_selection.last_down_index) {
@@ -101,7 +104,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                     }
                 }
                 socket.emit("update_control_points", data_socket);
-                socket.emit("update_position", interactor_selection.last_down_index, e.pageX - view.camera.x, e.pageY - view.camera.y);
+                socket.emit("update_position", interactor_selection.last_down_index, v.pos.x, v.pos.y);
             }
             return true;
             break;
@@ -119,8 +122,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 
         case DOWN_TYPE.CONTROL_POINT:
             var link = g.links.get(interactor_selection.last_down_index);
-            link.cp.x = e.pageX - view.camera.x; // TODO à changer avec edge.cp.sub()
-            link.cp.y = e.pageY - view.camera.y;
+            link.cp = view.serverCoord(e);
             socket.emit("update_control_point", interactor_selection.last_down_index, link.cp)
             return true;
             break;

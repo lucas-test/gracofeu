@@ -41,12 +41,19 @@ npm run dev
 
 - [X] déplacer caméra
 - [ ] recentrer
-- [ ] zoomer
+- [X] zoomer  
+- - [ ] créer CanvasCoord et ServerCoord pour plus de lisibilité ??? 
+- - [ ] sauvegarder les CanvasCoord des sommets, controlpoints pour moins de calcul ???
+- - [ ] corriger grille
 
 - [X] control_point
 - [X] sélection au clic d'arête courbée
 - [X] arc
 - [X] vertex index
+- - [ ] icones plus claires
+- - [ ] décalage d'indice ?
+- - [ ] utilité des numérotations stables ?
+- - [ ] get_new_index devrait pas renvoyer le max des index +1 ? (pour suivre la création chronologique des sommets)
 - [ ] poids (nombre) sur sommets ou arêtes
 
 - [ ] nom utilisateur

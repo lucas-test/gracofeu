@@ -54,15 +54,15 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.strokeStyle = "white";
-    ctx.moveTo(start.x + view.camera.x, start.y + view.camera.y);
+    ctx.moveTo(start.x , start.y);
     ctx.lineTo(end.x, end.y);
     ctx.stroke();
 }
 
 
-export function draw_circle(center: Coord, radius: number, alpha: number, ctx: CanvasRenderingContext2D) {
+export function draw_circle(center: Coord, fillStyle: string, radius: number, alpha: number, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
-    ctx.fillStyle = "grey";
+    ctx.fillStyle = fillStyle;
     ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
     ctx.globalAlpha = alpha;
 
@@ -77,26 +77,21 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
         vertex_radius = 2*VERTEX_RADIUS;
     }
 
-    ctx.fillStyle = "white";
-    if (vertex.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
-    ctx.beginPath();
-    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, vertex_radius, 0, 2 * Math.PI);
-    ctx.fill();
+    if(vertex.is_selected){
+        draw_circle(view.canvasCoord(vertex.pos), SELECTION_COLOR, vertex_radius,1,ctx);
+    }else{
+        draw_circle(view.canvasCoord(vertex.pos), "white", vertex_radius,1,ctx);
+    }
 
-
-    ctx.fillStyle = COLOR_BACKGROUND;
-    ctx.beginPath();
-    ctx.arc(vertex.pos.x + view.camera.x, vertex.pos.y + view.camera.y, vertex_radius-2, 0, 2 * Math.PI);
-    ctx.fill();
+    draw_circle(view.canvasCoord(vertex.pos), COLOR_BACKGROUND, vertex_radius-2, 1,ctx);
 
    // DRAW INDEX 
     if (view.index_type != INDEX_TYPE.NONE){
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
         ctx.fillStyle = "white" 
-        const px = Math.floor(vertex.pos.x - measure.width/2 + view.camera.x);
-        const py = Math.floor(vertex.pos.y + 5 + view.camera.y)
-        ctx.fillText(vertex.index_string, px, py);
+        const pos = view.canvasCoord(vertex.pos)
+        ctx.fillText(vertex.index_string, pos.x - measure.width/2, pos.y+5);
     }
 }
 
@@ -108,14 +103,15 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = user.color;  
     ctx.fillStyle = user.color;
     // Rectangle 
-    drawRoundRect(ctx, user.pos.x+10 + view.camera.x, user.pos.y + 17 + view.camera.y, text.width + 10, 21, 5, user.color, user.color);
+    const user_canvas_coord = view.canvasCoord(user.pos);
+    drawRoundRect(ctx,user_canvas_coord.x+10 , user_canvas_coord.y + 17, text.width + 10, 21, 5, user.color, user.color);
 
     const contrast_color = invertColor(user.color);
     
     // username
     ctx.beginPath();
         ctx.fillStyle = contrast_color;
-        ctx.fillText(user.label, user.pos.x+10 + 5 + view.camera.x, user.pos.y + 17 + 16 + view.camera.y);
+        ctx.fillText(user.label, user_canvas_coord.x+10 + 5 ,user_canvas_coord.y + 17 + 16);
     ctx.fill();
 
 
@@ -127,17 +123,17 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();              
         ctx.lineWidth = 4;
         ctx.strokeStyle = darken_color;  
-        ctx.moveTo(user.pos.x+ view.camera.x-2, user.pos.y+1+ view.camera.y);
-        ctx.lineTo(user.pos.x+ view.camera.x-2, user.pos.y+21+ view.camera.y);
+        ctx.moveTo(user_canvas_coord.x-2,user_canvas_coord.y+1);
+        ctx.lineTo(user_canvas_coord.x-2, user_canvas_coord.y+21);
     ctx.stroke();
     
     //Arrow
     ctx.beginPath();         
         ctx.fillStyle = user.color;  
-        ctx.moveTo(user.pos.x+ view.camera.x, user.pos.y+ view.camera.y);
-        ctx.lineTo(user.pos.x+13+ view.camera.x, user.pos.y+13+ view.camera.y);
-        ctx.lineTo(user.pos.x+5+ view.camera.x, user.pos.y+13+ view.camera.y);
-        ctx.lineTo(user.pos.x+ view.camera.x, user.pos.y+20+ view.camera.y);
+        ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
+        ctx.lineTo(user_canvas_coord.x+13, user_canvas_coord.y+13);
+        ctx.lineTo(user_canvas_coord.x+5, user_canvas_coord.y+13);
+        ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y+20);
     ctx.closePath();
     ctx.fill();
 
@@ -145,10 +141,10 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();              
         ctx.lineWidth = 1;
         ctx.strokeStyle = brighter_color;  
-        ctx.moveTo(user.pos.x+ view.camera.x, user.pos.y+ view.camera.y);
-        ctx.lineTo(user.pos.x+13+ view.camera.x, user.pos.y+13+ view.camera.y);
-        ctx.moveTo(user.pos.x+5+ view.camera.x, user.pos.y+13+ view.camera.y);
-        ctx.lineTo(user.pos.x+ view.camera.x, user.pos.y+20+ view.camera.y);
+        ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
+        ctx.lineTo(user_canvas_coord.x+13, user_canvas_coord.y+13);
+        ctx.lineTo(user_canvas_coord.x+5, user_canvas_coord.y+13);
+        ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y+20);
     ctx.stroke();
 }
 
@@ -210,17 +206,20 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         let u = g.vertices.get(link.start_vertex);
         let v = g.vertices.get(link.end_vertex);
 
+        const posu = view.canvasCoord(u.pos);
+        const posv = view.canvasCoord(v.pos);
+        const poscp = view.canvasCoord(link.cp);
         ctx.beginPath();
-        ctx.moveTo(u.pos.x + view.camera.x, u.pos.y + view.camera.y);
+        ctx.moveTo(posu.x, posu.y);
         ctx.strokeStyle = "white";
         if (link.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
         ctx.lineWidth = 3;
-        ctx.quadraticCurveTo(link.cp.x+ view.camera.x, link.cp.y+ view.camera.y, v.pos.x + view.camera.x, v.pos.y+ view.camera.y);
+        ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
         ctx.stroke();
 
-        draw_circle(link.cp.add(view.camera), 4, 1, ctx);
+        draw_circle(poscp, "grey", 4, 1, ctx);
         if ( link.orientation == ORIENTATION.DIRECTED){
-            draw_head(ctx,link.cp.add(view.camera), v.pos.add(view.camera));
+            draw_head(ctx,poscp, posv);
         }
     }
 }
@@ -228,7 +227,7 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
 function draw_link_creating(ctx: CanvasRenderingContext2D) {
     if (view.is_link_creating) {
         draw_line(view.link_creating_start, view.link_creating_end, ctx);
-        draw_circle(view.link_creating_end, 10, 0.5, ctx);
+        draw_circle(view.link_creating_end, "grey", 10, 0.5, ctx);
     }
 }
 

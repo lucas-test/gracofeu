@@ -202,10 +202,10 @@ export class Graph {
         return { type: DOWN_TYPE.EMPTY, index: null };
     }
 
-    get_vertex_index_nearby(x: number, y: number) {
+    get_vertex_index_nearby(pos: Coord) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
-            if (v.is_nearby(new Coord(x, y), 150)) {
+            if (v.is_nearby(pos, 150)) {
                 return index;
             }
         }
@@ -224,7 +224,7 @@ export class Graph {
 
     select_vertices_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
         for (const vertex of this.vertices.values()) {
-            if (vertex.is_in_rect(corner1.sub(cam), corner2.sub(cam))) {
+            if (vertex.is_in_rect( view.serverCoord2(corner1),view.serverCoord2(corner2))) {
                 vertex.is_selected = true;
             }
         }
@@ -233,7 +233,7 @@ export class Graph {
     select_links_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
         for (const index of this.links.keys()) {
             const link = this.links.get(index);
-            if (link.is_in_rect(corner1.sub(cam), corner2.sub(cam))) {
+            if (link.is_in_rect( view.serverCoord2(corner1),view.serverCoord2(corner2))) {
                 link.is_selected = true;
             }
         }

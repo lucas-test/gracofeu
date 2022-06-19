@@ -58,6 +58,15 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         }
     });
 
+    canvas.addEventListener("wheel", function (e) {
+        if (e.deltaY > 0) {
+            view.apply_zoom(e, 1/1.1);
+        } else {
+            view.apply_zoom(e, 1.1);
+        }
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    });
+
     canvas.addEventListener('mouseup', function (e) {
         if (e.which == 1) { // left click
             interactor_loaded.mouseup(canvas, ctx, g, e);
@@ -76,16 +85,16 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 draw(canvas, ctx, g)
             });
         }
-
-        socket.emit("moving_cursor", e.pageX - view.camera.x, e.pageY - view.camera.y);
+        const mouse_server_coord = view.serverCoord(e);
+        socket.emit("moving_cursor", mouse_server_coord.x, mouse_server_coord.y);
     })
 
     canvas.addEventListener('mousedown', function (e) {
         if (e.which == 1) { // Left click 
             interactor_loaded.has_moved = false;
-            interactor_loaded.last_down_pos = new Coord(e.pageX, e.pageY)
+            interactor_loaded.last_down_pos = view.serverCoord(e);
 
-            const element = g.get_element_nearby(interactor_loaded.last_down_pos.sub(view.camera));
+            const element = g.get_element_nearby(interactor_loaded.last_down_pos);
             console.log(element);
             interactor_loaded.last_down = element.type;
             interactor_loaded.last_down_index = element.index;

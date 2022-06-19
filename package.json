@@ -6,6 +6,7 @@
     "scripts": {
         "clean": "rimraf dist/*",
         "build": "tsc && shx cp -r src/public/img dist/public/ && parcel build src/public/index.html --no-optimize --dist-dir dist/public",
+        "build-client": "npm run clean  && parcel build src/public/index.html --no-optimize --dist-dir dist/public && shx cp -r src/public/img dist/public/",
         "start": "node dist/server/app.js",
         "dev": " npm run clean && npm run build && npm start",
         "test": "echo \"Error: no test specified\" && exit 1"
