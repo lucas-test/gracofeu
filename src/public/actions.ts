@@ -115,11 +115,14 @@ let index_action = new Action("index_type", "Automatic numerotation", "index.svg
 index_action.subactions.push(change_to_none_index, change_to_number_stable_index, change_to_number_unstable_index, change_to_alpha_stable_index, change_to_alpha_unstable_index);
 
 
-
+let align_action = new Action("align_mode", "Automatic alignement", "align.svg");
+align_action.trigger = () => {
+    view.is_aligning = !view.is_aligning;
+}
 
 
 let actions_available = new Array<Action>();
-actions_available.push(index_action, share_action, save_file_action, load_file_action)
+actions_available.push(align_action, index_action, share_action, save_file_action, load_file_action)
 
 
 export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {

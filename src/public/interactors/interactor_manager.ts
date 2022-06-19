@@ -60,7 +60,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener("wheel", function (e) {
         if (e.deltaY > 0) {
-            view.apply_zoom(e, 1/1.1);
+            view.apply_zoom(e, 1 / 1.1);
         } else {
             view.apply_zoom(e, 1.1);
         }
@@ -73,6 +73,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.last_down = null;
             interactor_loaded.last_down_index = null;
             interactor_loaded.last_down_pos = null;
+            view.alignement_horizontal = false;
+            view.alignement_vertical = false;
             update_params_loaded(g)
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
@@ -147,7 +149,7 @@ export function setup_interactors_div() {
 
         let div_recap = document.createElement("div");
         div_recap.classList.add("interactor_recap");
-        div_recap.innerHTML = interactor.name + " <span class='shortcut'>" + interactor.shortcut+ "</span>";
+        div_recap.innerHTML = interactor.name + " <span class='shortcut'>" + interactor.shortcut + "</span>";
         document.body.appendChild(div_recap);
 
         newDiv.onmouseenter = function () {

@@ -69,7 +69,7 @@ npm run dev
 - [ ] zone texte
 - [ ] dessin à main levée
 - [ ] grille magnétique
-- [ ] aligner horizontalement/verticalement sur d'autres sommets
+- [X] aligner horizontalement/verticalement sur d'autres sommets
 - [ ] gestion tablette
 
 ## V1 GDRIM

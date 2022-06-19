@@ -21,6 +21,12 @@ class View {
     selection_corner_1: Coord;
     selection_corner_2: Coord;
 
+    is_aligning: boolean;
+    alignement_horizontal: boolean;
+    alignement_horizontal_y: number;
+    alignement_vertical: boolean;
+    alignement_vertical_x: number;
+
     index_type: INDEX_TYPE;
 
     constructor() {
@@ -31,6 +37,9 @@ class View {
         this.is_link_creating = false;
         this.is_rectangular_selecting = false;
         this.index_type = INDEX_TYPE.NONE;
+        this.is_aligning = false;
+        this.alignement_horizontal = false;
+        this.alignement_vertical = false;
     }
 
 
@@ -46,6 +55,14 @@ class View {
 
     canvasCoord2(x: number, y: number) {
         return new Coord(x * this.zoom + this.camera.x, y * this.zoom + this.camera.y);
+    }
+
+    canvasCoordX(x:number){
+        return x*this.zoom + this.camera.x;
+    }
+
+    canvasCoordY(y:number){
+        return y*this.zoom + this.camera.y;
     }
 
     // transform canvasCoord to serverCoord

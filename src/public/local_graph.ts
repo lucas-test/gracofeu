@@ -335,6 +335,40 @@ export class Graph {
             }
         })
     }
+
+    align_position(pos: Coord, mouse_server_coord: Coord, excluded_indices: Set<number>){
+        if (view.is_aligning){
+            view.alignement_horizontal = false;
+            view.alignement_vertical = false;
+            this.vertices.forEach((vertex, index) => {
+                if (excluded_indices.has(index) == false ){
+                    if (Math.abs(vertex.pos.y - mouse_server_coord.y) <= 15) {
+                        pos.y = vertex.pos.y;
+                        view.alignement_horizontal = true;
+                        view.alignement_horizontal_y = view.canvasCoordY(vertex.pos.y);
+                        return;
+                    }
+                    if (Math.abs(vertex.pos.x - mouse_server_coord.x) <= 15) {
+                        pos.x = vertex.pos.x;
+                        view.alignement_vertical = true;
+                        view.alignement_vertical_x = view.canvasCoordX(vertex.pos.x);
+                        return;
+                    }
+                }
+            })
+        }
+    }
+
+    get_selected_vertices() : Set<number>{
+        const set = new Set<number>();
+        this.vertices.forEach((v,index)=>{
+            if( v.is_selected){
+                set.add(index);
+            }
+        })
+        return set;
+    }
+
 }
 
 

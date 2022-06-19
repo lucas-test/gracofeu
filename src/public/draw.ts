@@ -3,6 +3,7 @@ const COLOR_BACKGROUND = "#1e1e1e";
 const GRID_COLOR = '#777777';
 const VERTEX_RADIUS = 8;
 const ARC_ARROW_LENGTH = 12
+const COLOR_ALIGNEMENT_LINE = "#555555"
 
 
 import { INDEX_TYPE, view } from './camera';
@@ -51,9 +52,9 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     }
 }
 
-export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2D) {
+export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2D, color: string) {
     ctx.beginPath();
-    ctx.strokeStyle = "white";
+    ctx.strokeStyle = color;
     ctx.moveTo(start.x , start.y);
     ctx.lineTo(end.x, end.y);
     ctx.stroke();
@@ -226,13 +227,25 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
 
 function draw_link_creating(ctx: CanvasRenderingContext2D) {
     if (view.is_link_creating) {
-        draw_line(view.link_creating_start, view.link_creating_end, ctx);
+        draw_line(view.link_creating_start, view.link_creating_end, ctx, "white");
         draw_circle(view.link_creating_end, "grey", 10, 0.5, ctx);
     }
 }
 
+function draw_alignements(ctx: CanvasRenderingContext2D){
+    if( view.alignement_horizontal){
+
+        draw_line(new Coord(0, view.alignement_horizontal_y), new Coord(window.innerWidth, view.alignement_horizontal_y),ctx,COLOR_ALIGNEMENT_LINE);
+    }
+    if ( view.alignement_vertical){
+        draw_line(new Coord(view.alignement_vertical_x,0), new Coord(view.alignement_vertical_x, window.innerHeight),ctx, COLOR_ALIGNEMENT_LINE);
+    }
+    
+}
+
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
+    draw_alignements(ctx);
     draw_links(ctx, g);
     draw_link_creating(ctx);
     draw_vertices(ctx, g);
