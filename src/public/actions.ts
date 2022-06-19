@@ -5,12 +5,14 @@ import { socket } from "./socket";
 
 export class Action {
     name: string;
+    info: string;
     img_src: string;
     subactions: Array<Action>;
     trigger: () => void;
 
-    constructor(name: string, img_src: string) {
+    constructor(name: string, info: string, img_src: string) {
         this.name = name;
+        this.info = info;
         this.img_src = img_src;
         this.subactions = new Array<Action>();
         this.trigger = () => { };
@@ -19,13 +21,16 @@ export class Action {
 
 
 
-let share_action = new Action("share_link", "share.svg");
+let share_action = new Action("share_link", "Share url", "share.svg");
 
 share_action.trigger = () => {
     socket.emit("get_room_id", (room_id: string) => {
         navigator.clipboard.writeText(location.origin + "/?room_id=" + room_id)
             .then(() => {
-                // TODO : update to new div
+                const subactions_div = document.getElementById(load_file_action.name + "_subactions");
+                subactions_div.classList.add("subaction_info");
+                subactions_div.innerHTML = "Copied! " + location.origin + "/?room_id=" + room_id;
+                subactions_div.style.display = "block"
                 /*
                 const _sav = share_link_div.innerHTML;
                 share_link_div.innerHTML = "Copied!";
@@ -38,7 +43,7 @@ share_action.trigger = () => {
     });
 }
 
-let save_file_action = new Action("save_file", "export.svg");
+let save_file_action = new Action("save_file", "Export to file", "export.svg");
 
 save_file_action.trigger = () => {
     socket.emit("get_json", (response: string) => {
@@ -49,7 +54,7 @@ save_file_action.trigger = () => {
     })
 }
 
-let load_file_action = new Action("load_file", "import.svg");
+let load_file_action = new Action("load_file", "Load file", "import.svg");
 
 
 
@@ -74,38 +79,38 @@ load_file_action.trigger = () => {
 }
 
 
-let change_to_none_index = new Action("index_type_none", "index_none.svg");
+let change_to_none_index = new Action("index_type_none", "None", "index_none.svg");
 change_to_none_index.trigger = () => {
     view.index_type = INDEX_TYPE.NONE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_number_stable_index = new Action("index_type_number_stable", "index_number_stable.svg");
+let change_to_number_stable_index = new Action("index_type_number_stable", "Stable numeric", "index_number_stable.svg");
 change_to_number_stable_index.trigger = () => {
     view.index_type = INDEX_TYPE.NUMBER_STABLE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_number_unstable_index = new Action("index_type_number_stable", "index_number_unstable.svg");
+let change_to_number_unstable_index = new Action("index_type_number_unstable", "Unstable numeric", "index_number_unstable.svg");
 change_to_number_unstable_index.trigger = () => {
     view.index_type = INDEX_TYPE.NUMBER_UNSTABLE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_alpha_stable_index = new Action("index_type_number_stable", "index_alpha_stable.svg");
+let change_to_alpha_stable_index = new Action("index_type_alpha_stable", "Stable alphabetic", "index_alpha_stable.svg");
 change_to_alpha_stable_index.trigger = () => {
     view.index_type = INDEX_TYPE.ALPHA_STABLE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_alpha_unstable_index = new Action("index_type_number_stable", "index_alpha_unstable.svg");
+let change_to_alpha_unstable_index = new Action("index_type_number_stable", "Unstable alphabetic","index_alpha_unstable.svg");
 change_to_alpha_unstable_index.trigger = () => {
     view.index_type = INDEX_TYPE.ALPHA_UNSTABLE;
     local_graph.compute_vertices_index_string();
 }
 
 
-let index_action = new Action("index_type", "index.svg");
+let index_action = new Action("index_type", "Automatic numerotation", "index.svg");
 
 index_action.subactions.push(change_to_none_index, change_to_number_stable_index, change_to_number_unstable_index, change_to_alpha_stable_index, change_to_alpha_unstable_index);
 
@@ -124,6 +129,7 @@ export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderin
         newDiv.classList.add("action");
         newDiv.id = action.name;
 
+        // SUBACTIONS
         const new_subactions_div = document.createElement("div");
         new_subactions_div.classList.add("subaction_container");
         new_subactions_div.id = action.name + "_subactions";
@@ -156,6 +162,25 @@ export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderin
             new_subactions_div.appendChild(new_subaction_div);
         }
 
+        // RECAP
+        let div_recap = document.createElement("div");
+        div_recap.classList.add("interactor_recap");
+        div_recap.innerHTML = action.info;
+        document.body.appendChild(div_recap);
+
+        newDiv.onmouseenter = function () {
+            var offsets = newDiv.getBoundingClientRect();
+            div_recap.style.display = "block";
+            div_recap.style.left = String(offsets.left); // String(e.clientX + 30)
+            div_recap.style.top = "70"; //String(e.clientY - 16)
+        }
+
+        newDiv.onmouseleave = function () {
+            div_recap.style.display = "none";
+        }
+
+
+        // APPEND TO DOCUMENT
         document.body.appendChild(new_subactions_div);
 
 

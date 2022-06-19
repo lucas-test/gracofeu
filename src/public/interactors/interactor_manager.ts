@@ -147,22 +147,18 @@ export function setup_interactors_div() {
 
         let div_recap = document.createElement("div");
         div_recap.classList.add("interactor_recap");
-        div_recap.innerHTML = interactor.name + " " + interactor.shortcut;
+        div_recap.innerHTML = interactor.name + " <span class='shortcut'>" + interactor.shortcut+ "</span>";
         document.body.appendChild(div_recap);
 
-        newDiv.onmousemove = function (e) {
-            div_recap.style.left = String(e.clientX + 30)
-            div_recap.style.top = String(e.clientY - 16)
-        }
-
         newDiv.onmouseenter = function () {
+            var offsets = newDiv.getBoundingClientRect();
             div_recap.style.display = "block"
-            div_recap.style.opacity = "1"
+            div_recap.style.left = "70" // String(e.clientX + 30)
+            div_recap.style.top = String(offsets.top) //String(e.clientY - 16)
         }
 
         newDiv.onmouseleave = function () {
             div_recap.style.display = "none"
-            div_recap.style.opacity = "0"
         }
     }
 }
