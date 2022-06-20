@@ -29,7 +29,7 @@ share_action.trigger = () => {
             .then(() => {
                 const subactions_div = document.getElementById(load_file_action.name + "_subactions");
                 subactions_div.classList.add("subaction_info");
-                subactions_div.innerHTML = "Copied! " + location.origin + "/?room_id=" + room_id;
+                subactions_div.innerHTML = "Copied!</br>" + location.origin + "/?room_id=" + room_id;
                 subactions_div.style.display = "block"
                 /*
                 const _sav = share_link_div.innerHTML;
@@ -118,6 +118,13 @@ index_action.subactions.push(change_to_none_index, change_to_number_stable_index
 let align_action = new Action("align_mode", "Automatic alignement", "align.svg");
 align_action.trigger = () => {
     view.is_aligning = !view.is_aligning;
+    const align_div = document.getElementById("align_mode");
+    if(view.is_aligning){
+        align_div.classList.add("action_activated");
+    }
+    else{
+        align_div.classList.remove("action_activated");
+    }
 }
 
 
