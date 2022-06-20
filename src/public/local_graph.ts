@@ -96,6 +96,34 @@ export class LocalVertex {
             return (c2.x <= this.pos.x && this.pos.x <= c1.x && c1.y <= this.pos.y && this.pos.y <= c2.y)
         }
     }
+
+    get_tikz_coordinate(index:number){
+        return `v${index}`;
+    }
+    tikzify_coordinate(index:number) {
+        return `\\coordinate (${this.get_tikz_coordinate(index)}) at (${this.pos.x}/100, ${this.pos.y}/100);`;
+    }
+
+    tikzify_node(index:number) {
+        // const c = "c" + COLORS.indexOf(this.color);
+        // if (this.color == DEFAULT_COLOR) {
+        //   c = "white";
+        // }
+    
+        return `\\node[scale = \\scaleV, nodes={white}{}{}{}] at  (${this.get_tikz_coordinate(index)})  {};`;
+    }
+
+    tikzify_label() { 
+        // TODO
+        let labelCode = "";
+        // https://tex.stackexchange.com/questions/58878/tikz-set-node-label-position-more-precisely
+        // shift={(1,0.3)} COMMENT 2
+
+        // labelCode = "\\node[shift={(" + round(this.label.getExactLabelOffsetX() * 10) / 1000 + "," + -round(this.label.getExactLabelOffsetY() * 10) / 1000 + ")}, scale=\\scaleV] at  (v" + Vertices.indexOf(this) + ") {" + this.label.text + "};";
+
+        return labelCode;
+      }
+    
 }
 
 
@@ -165,6 +193,18 @@ export class Link {
         this.old_cp.x = this.cp.x;
         this.old_cp.y = this.cp.y;
     }
+
+    tikzify_link(start:LocalVertex, start_index: number, end:LocalVertex, end_index:number){
+         // TODO: ORIENTED CASE
+        let labelCode = "";
+        // if (showLabels)
+        // labelCode = "node[midway, shift={(" + this.label.getExactLabelOffsetX() / 100 + "," + -this.label.getExactLabelOffsetY() / 100 + ")}, scale = \\scaleE] {" + this.label.text + "}";
+
+        return `\\draw[line width = \\scaleE, color = black] (${start.get_tikz_coordinate(start_index)}) .. controls (${this.cp.x}/100, ${this.cp.y}/100) .. (${end.get_tikz_coordinate(end_index)}) ${labelCode};`;
+
+    }
+
+ 
 }
 
 export class Graph {

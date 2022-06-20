@@ -2,6 +2,7 @@ import { INDEX_TYPE, view } from "./camera";
 import { draw } from "./draw";
 import { Graph, local_graph } from "./local_graph";
 import { socket } from "./socket";
+import { TikZ_create_file_data } from "./tikz";
 
 export class Action {
     name: string;
@@ -43,9 +44,19 @@ share_action.trigger = () => {
     });
 }
 
-let save_file_action = new Action("save_file", "Export to file", "export.svg");
 
-save_file_action.trigger = () => {
+
+const save_tikz_file = new Action("export_tex", "Export to .tex", "export.svg");
+save_tikz_file.trigger = () => {
+        const tikz_data =  TikZ_create_file_data(local_graph);
+        const a = document.createElement("a");
+        a.href = window.URL.createObjectURL(new Blob([tikz_data], { type: "text/plain" }));
+        a.download = "file.tex";
+        a.click();
+}
+
+const save_gco_file = new Action("export_gco", "Export to .gco", "export.svg");
+save_gco_file.trigger = () => {
     socket.emit("get_json", (response: string) => {
         const a = document.createElement("a");
         a.href = window.URL.createObjectURL(new Blob([response], { type: "text/plain" }));
@@ -53,6 +64,13 @@ save_file_action.trigger = () => {
         a.click();
     })
 }
+
+
+const save_file_action = new Action("save_file", "Export to file", "export.svg");
+save_file_action.subactions.push(save_tikz_file, save_gco_file);
+
+
+
 
 let load_file_action = new Action("load_file", "Load file", "import.svg");
 
