@@ -46,7 +46,7 @@ share_action.trigger = () => {
 
 
 
-const save_tikz_file = new Action("export_tex", "Export to .tex", "export.svg");
+const save_tikz_file = new Action("export_tex", "Export to .tex", "export_tex.svg");
 save_tikz_file.trigger = () => {
         const tikz_data =  TikZ_create_file_data(local_graph);
         const a = document.createElement("a");
@@ -55,7 +55,7 @@ save_tikz_file.trigger = () => {
         a.click();
 }
 
-const save_gco_file = new Action("export_gco", "Export to .gco", "export.svg");
+const save_gco_file = new Action("export_gco", "Export to .gco", "export_gco.svg");
 save_gco_file.trigger = () => {
     socket.emit("get_json", (response: string) => {
         const a = document.createElement("a");
