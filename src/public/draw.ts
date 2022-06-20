@@ -229,6 +229,9 @@ function draw_link_creating(ctx: CanvasRenderingContext2D) {
     if (view.is_link_creating) {
         draw_line(view.link_creating_start, view.link_creating_end, ctx, "white");
         draw_circle(view.link_creating_end, "grey", 10, 0.5, ctx);
+        if ( view.link_creating_type == ORIENTATION.DIRECTED){
+            draw_head(ctx,view.link_creating_start, view.link_creating_end);
+        }
     }
 }
 

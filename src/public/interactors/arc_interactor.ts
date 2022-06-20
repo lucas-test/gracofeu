@@ -1,6 +1,6 @@
 import { view } from "../camera";
 import { draw } from "../draw";
-import { CanvasCoord, local_graph } from "../local_graph";
+import { CanvasCoord, local_graph, ORIENTATION } from "../local_graph";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
 
@@ -14,6 +14,7 @@ interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
         view.is_link_creating = true;
         view.link_creating_start = new CanvasCoord(  e.pageX, e.pageY );
         view.link_creating_end = new CanvasCoord(  e.pageX, e.pageY );
+        view.link_creating_type = ORIENTATION.DIRECTED;
         socket.emit("add_vertex", view.serverCoord(e).x,view.serverCoord(e).y, (response) => { index_last_created_vertex = response });
     }
     if (d === DOWN_TYPE.VERTEX) {

@@ -1,4 +1,4 @@
-import { CanvasCoord, Coord, ServerCoord } from "./local_graph";
+import { CanvasCoord, Coord, ORIENTATION, ServerCoord } from "./local_graph";
 
 export enum INDEX_TYPE {
     NONE,
@@ -14,6 +14,7 @@ class View {
     grid_size: number;
     grid_show: boolean;
     is_link_creating: boolean;
+    link_creating_type: ORIENTATION;
     link_creating_start: CanvasCoord;
     link_creating_end: CanvasCoord;
 
