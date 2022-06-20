@@ -1,4 +1,4 @@
-import { Coord, Graph } from "../local_graph";
+import {  Graph, ServerCoord } from "../local_graph";
 
 
 
@@ -16,7 +16,7 @@ export class Interactor {
     img_src: string;
     last_down: DOWN_TYPE;
     last_down_index: number;
-    last_down_pos: Coord;
+    last_down_pos: ServerCoord;
     has_moved: boolean;
     mousedown: (down_type: DOWN_TYPE, down_element_index: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: MouseEvent) => void;
     mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: MouseEvent) => boolean;

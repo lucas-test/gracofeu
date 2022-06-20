@@ -3,13 +3,13 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
-import { Coord } from '../local_graph';
+import { CanvasCoord, Coord } from '../local_graph';
 
 
 // INTERACTOR SELECTION
 
 export var interactor_selection = new Interactor("selection", "s", "selection.svg")
-let down_coord: Coord; // à rajouter dans Interactor
+let down_coord: CanvasCoord; // à rajouter dans Interactor
 let previous_camera: Coord;
 
 
@@ -40,11 +40,11 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
 
         if (e.ctrlKey) {
             view.is_rectangular_selecting = true;
-            view.selection_corner_1 = new Coord(e.pageX, e.pageY);
-            view.selection_corner_2 = new Coord(e.pageX, e.pageY);
+            view.selection_corner_1 = new CanvasCoord(e.pageX, e.pageY);
+            view.selection_corner_2 = new CanvasCoord(e.pageX, e.pageY);
         }
         else {
-            down_coord = new Coord(e.pageX, e.pageY);
+            down_coord = new CanvasCoord(e.pageX, e.pageY);
             previous_camera = view.camera;
         }
     }
@@ -117,11 +117,11 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 
         case DOWN_TYPE.EMPTY:
             if (view.is_rectangular_selecting) {
-                view.selection_corner_2 = new Coord(e.pageX, e.pageY);
+                view.selection_corner_2 = new CanvasCoord(e.pageX, e.pageY);
             } else {
                 view.camera.x = previous_camera.x + e.pageX - down_coord.x;
                 view.camera.y = previous_camera.y + e.pageY - down_coord.y;
-                down_coord = new Coord(e.pageX, e.pageY);
+                down_coord = new CanvasCoord(e.pageX, e.pageY);
             }
             return true;
             break;
@@ -180,8 +180,8 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
         if (view.is_rectangular_selecting) {
             view.is_rectangular_selecting = false;
-            g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
-            g.select_links_in_rect(view.selection_corner_1, view.selection_corner_2, view.camera);
+            g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2);
+            g.select_links_in_rect(view.selection_corner_1, view.selection_corner_2);
 
         } else {
             previous_camera = null;

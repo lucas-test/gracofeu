@@ -1,6 +1,6 @@
 import { view } from "../camera";
 import { draw } from "../draw";
-import { Coord, local_graph } from "../local_graph";
+import { CanvasCoord, local_graph } from "../local_graph";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
 
@@ -12,27 +12,27 @@ var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dan
 interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
         view.is_link_creating = true;
-        view.link_creating_start = new Coord(  e.pageX, e.pageY );
-        view.link_creating_end = new Coord(  e.pageX, e.pageY );
+        view.link_creating_start = new CanvasCoord(  e.pageX, e.pageY );
+        view.link_creating_end = new CanvasCoord(  e.pageX, e.pageY );
         socket.emit("add_vertex", view.serverCoord(e).x,view.serverCoord(e).y, (response) => { index_last_created_vertex = response });
     }
     if (d === DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(interactor_arc.last_down_index);
         view.is_link_creating = true;
         view.link_creating_start = view.canvasCoord(vertex.pos);
-        view.link_creating_end = new Coord(  e.pageX, e.pageY );
+        view.link_creating_end = new CanvasCoord(  e.pageX, e.pageY );
     }
 })
 
 interactor_arc.mousemove = ((canvas, ctx, g, e) => {
     if (interactor_arc.last_down == DOWN_TYPE.EMPTY) {
-        view.link_creating_end = new Coord(  e.pageX, e.pageY );
+        view.link_creating_end = new CanvasCoord(  e.pageX, e.pageY );
         draw(canvas, ctx, local_graph);
 
 
         return false;
     } else if (interactor_arc.last_down == DOWN_TYPE.VERTEX) {
-        view.link_creating_end = new Coord(  e.pageX, e.pageY );
+        view.link_creating_end = new CanvasCoord(  e.pageX, e.pageY );
         draw(canvas, ctx, local_graph);
         return false;
     }

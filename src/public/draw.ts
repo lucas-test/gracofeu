@@ -8,7 +8,7 @@ const COLOR_ALIGNEMENT_LINE = "#555555"
 
 import { INDEX_TYPE, view } from './camera';
 import { User, users } from './user';
-import { Coord, Graph, ORIENTATION } from './local_graph';
+import { CanvasCoord, Graph, ORIENTATION } from './local_graph';
 
 
 
@@ -20,7 +20,7 @@ export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
 
-function draw_head(ctx: CanvasRenderingContext2D, start_pos: Coord, end_pos: Coord) {
+function draw_head(ctx: CanvasRenderingContext2D, start_pos: CanvasCoord, end_pos: CanvasCoord) {
     const headlen = ARC_ARROW_LENGTH;
     let vertex_radius = VERTEX_RADIUS;
     if ( view.index_type != INDEX_TYPE.NONE){
@@ -52,7 +52,7 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     }
 }
 
-export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2D, color: string) {
+export function draw_line(start: CanvasCoord, end: CanvasCoord, ctx: CanvasRenderingContext2D, color: string) {
     ctx.beginPath();
     ctx.strokeStyle = color;
     ctx.moveTo(start.x , start.y);
@@ -61,7 +61,7 @@ export function draw_line(start: Coord, end: Coord, ctx: CanvasRenderingContext2
 }
 
 
-export function draw_circle(center: Coord, fillStyle: string, radius: number, alpha: number, ctx: CanvasRenderingContext2D) {
+export function draw_circle(center: CanvasCoord, fillStyle: string, radius: number, alpha: number, ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
     ctx.fillStyle = fillStyle;
     ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
@@ -234,11 +234,10 @@ function draw_link_creating(ctx: CanvasRenderingContext2D) {
 
 function draw_alignements(ctx: CanvasRenderingContext2D){
     if( view.alignement_horizontal){
-
-        draw_line(new Coord(0, view.alignement_horizontal_y), new Coord(window.innerWidth, view.alignement_horizontal_y),ctx,COLOR_ALIGNEMENT_LINE);
+        draw_line(new CanvasCoord(0, view.alignement_horizontal_y), new CanvasCoord(window.innerWidth, view.alignement_horizontal_y),ctx,COLOR_ALIGNEMENT_LINE);
     }
     if ( view.alignement_vertical){
-        draw_line(new Coord(view.alignement_vertical_x,0), new Coord(view.alignement_vertical_x, window.innerHeight),ctx, COLOR_ALIGNEMENT_LINE);
+        draw_line(new CanvasCoord(view.alignement_vertical_x,0), new CanvasCoord(view.alignement_vertical_x, window.innerHeight),ctx, COLOR_ALIGNEMENT_LINE);
     }
     
 }

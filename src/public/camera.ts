@@ -1,4 +1,4 @@
-import { Coord } from "./local_graph";
+import { CanvasCoord, Coord, ServerCoord } from "./local_graph";
 
 export enum INDEX_TYPE {
     NONE,
@@ -14,12 +14,12 @@ class View {
     grid_size: number;
     grid_show: boolean;
     is_link_creating: boolean;
-    link_creating_start: Coord;
-    link_creating_end: Coord;
+    link_creating_start: CanvasCoord;
+    link_creating_end: CanvasCoord;
 
     is_rectangular_selecting: boolean;
-    selection_corner_1: Coord;
-    selection_corner_2: Coord;
+    selection_corner_1: CanvasCoord;
+    selection_corner_2: CanvasCoord;
 
     is_aligning: boolean;
     alignement_horizontal: boolean;
@@ -49,12 +49,12 @@ class View {
     }
 
     // transform serverCoord to canvasCoord
-    canvasCoord(pos: Coord) {
-        return new Coord(pos.x * this.zoom + this.camera.x, pos.y * this.zoom + this.camera.y);
+    canvasCoord(pos: ServerCoord): CanvasCoord {
+        return new CanvasCoord(pos.x * this.zoom + this.camera.x, pos.y * this.zoom + this.camera.y);
     }
 
-    canvasCoord2(x: number, y: number) {
-        return new Coord(x * this.zoom + this.camera.x, y * this.zoom + this.camera.y);
+    canvasCoord2(x: number, y: number): CanvasCoord {
+        return new CanvasCoord(x * this.zoom + this.camera.x, y * this.zoom + this.camera.y);
     }
 
     canvasCoordX(x:number){
@@ -66,13 +66,13 @@ class View {
     }
 
     // transform canvasCoord to serverCoord
-    serverCoord(e: MouseEvent) {
-        const ce = new Coord(e.pageX, e.pageY);
+    serverCoord(e: MouseEvent): ServerCoord {
+        const ce = new CanvasCoord(e.pageX, e.pageY);
         return this.serverCoord2(ce);
     }
 
-    serverCoord2(pos: Coord) {
-        return new Coord((pos.x - this.camera.x) / view.zoom, (pos.y - this.camera.y) / view.zoom);
+    serverCoord2(pos: CanvasCoord): ServerCoord {
+        return new ServerCoord((pos.x - this.camera.x) / view.zoom, (pos.y - this.camera.y) / view.zoom);
     }
 
     // zoom factor is multiply by r

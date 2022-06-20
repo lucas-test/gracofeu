@@ -1,12 +1,12 @@
-import { Coord } from "./local_graph";
+import { ServerCoord } from "./local_graph";
 
 
 export class User {
     label: string;
     color: string;
-    pos: Coord;
+    pos: ServerCoord;
 
-    constructor(label: string, color: string, pos: Coord) {
+    constructor(label: string, color: string, pos: ServerCoord) {
         this.label = label;
         this.color = color;
         this.pos = pos;

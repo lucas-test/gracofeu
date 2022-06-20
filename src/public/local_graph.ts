@@ -44,17 +44,28 @@ export class Coord {
     }
 }
 
+export class CanvasCoord extends Coord {
+    lol: number;
+    
+} 
+
+export class ServerCoord extends Coord {
+    lol2: number;
+}
+
+
+
 
 
 export class LocalVertex {
-    pos: Coord;
-    old_pos: Coord;
+    pos: ServerCoord;
+    old_pos: ServerCoord;
     is_selected: boolean;
     index_string: string;
 
-    constructor(pos: Coord) {
-        this.pos = new Coord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
-        this.old_pos = new Coord(pos.x, pos.y);
+    constructor(pos: ServerCoord) {
+        this.pos = new ServerCoord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
+        this.old_pos = new ServerCoord(pos.x, pos.y);
         this.is_selected = false;
         this.index_string = "";
     }
@@ -70,11 +81,11 @@ export class LocalVertex {
     }
 
 
-    is_nearby(pos: Coord, r: number) {
+    is_nearby(pos: ServerCoord, r: number) {
         return this.pos.dist2(pos) <= r;
     }
 
-    is_in_rect(c1: Coord, c2: Coord) {
+    is_in_rect(c1: ServerCoord, c2: ServerCoord) {
         if (c1.x <= c2.x && c1.y <= c2.y) {
             return (c1.x <= this.pos.x && this.pos.x <= c2.x && c1.y <= this.pos.y && this.pos.y <= c2.y)
         } else if (c1.x <= c2.x && c2.y <= c1.y) {
@@ -101,21 +112,21 @@ export enum ORIENTATION {
 export class Link {
     start_vertex: number;
     end_vertex: number;
-    cp: Coord;
-    old_cp: Coord;
+    cp: ServerCoord;
+    old_cp: ServerCoord;
     is_selected: boolean;
     orientation: ORIENTATION;
 
-    constructor(i: number, j: number, cp: Coord, orientation: ORIENTATION) {
+    constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION) {
         this.start_vertex = i;
         this.end_vertex = j;
         this.is_selected = false;
-        this.cp = new Coord(cp.x, cp.y);
-        this.old_cp = new Coord(cp.x, cp.y);
+        this.cp = new ServerCoord(cp.x, cp.y);
+        this.old_cp = new ServerCoord(cp.x, cp.y);
         this.orientation = orientation;
     }
 
-    is_in_rect(c1: Coord, c2: Coord) {
+    is_in_rect(c1: ServerCoord, c2: ServerCoord) {
         //V1: is in rect if one of its extremities is in the rectangle
         //TODO: be more clever and select also when there is an intersection between the edge and the rectangle
 
@@ -183,7 +194,7 @@ export class Graph {
         this.deselect_all_links();
     }
 
-    get_element_nearby(pos: Coord) {
+    get_element_nearby(pos: ServerCoord) {
         for (const [index, v] of this.vertices.entries()) {
             if (v.pos.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.VERTEX, index: index };
@@ -202,7 +213,7 @@ export class Graph {
         return { type: DOWN_TYPE.EMPTY, index: null };
     }
 
-    get_vertex_index_nearby(pos: Coord) {
+    get_vertex_index_nearby(pos: ServerCoord) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
             if (v.is_nearby(pos, 150)) {
@@ -222,7 +233,7 @@ export class Graph {
         return null;
     }
 
-    select_vertices_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
+    select_vertices_in_rect(corner1: CanvasCoord, corner2: CanvasCoord) {
         for (const vertex of this.vertices.values()) {
             if (vertex.is_in_rect( view.serverCoord2(corner1),view.serverCoord2(corner2))) {
                 vertex.is_selected = true;
@@ -230,7 +241,7 @@ export class Graph {
         }
     }
 
-    select_links_in_rect(corner1: Coord, corner2: Coord, cam: Coord) {
+    select_links_in_rect(corner1: CanvasCoord, corner2: CanvasCoord) {
         for (const index of this.links.keys()) {
             const link = this.links.get(index);
             if (link.is_in_rect( view.serverCoord2(corner1),view.serverCoord2(corner2))) {
@@ -262,7 +273,7 @@ export class Graph {
 
 
         // case where one of the endvertices is already on the box
-        if (v.is_in_rect(new Coord(xA, yA), new Coord(xB, yB)) || w.is_in_rect(new Coord(xA, yA), new Coord(xB, yB))) {
+        if (v.is_in_rect(new ServerCoord(xA, yA), new ServerCoord(xB, yB)) || w.is_in_rect(new ServerCoord(xA, yA), new ServerCoord(xB, yB))) {
             return true
         } else {
             // we get the quadratic equation of the intersection of the bended edge and the sides of the box
@@ -336,7 +347,7 @@ export class Graph {
         })
     }
 
-    align_position(pos: Coord, mouse_server_coord: Coord, excluded_indices: Set<number>){
+    align_position(pos: ServerCoord, mouse_server_coord: ServerCoord, excluded_indices: Set<number>){
         if (view.is_aligning){
             view.alignement_horizontal = false;
             view.alignement_vertical = false;

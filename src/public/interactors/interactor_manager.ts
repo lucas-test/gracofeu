@@ -5,7 +5,7 @@ import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
 import { view } from '../camera';
 import { socket } from '../socket';
-import { Coord, Graph } from '../local_graph';
+import { Graph } from '../local_graph';
 import { interactor_arc } from './arc_interactor';
 
 // INTERACTOR MANAGER

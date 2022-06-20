@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
 import { User, users } from "./user";
-import { Coord, Graph, Link, LocalVertex, ORIENTATION } from "./local_graph";
+import { Coord, Graph, Link, LocalVertex, ORIENTATION, ServerCoord } from "./local_graph";
 export const socket = io()
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -25,10 +25,10 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function update_user(id: string, label: string, color: string, x: number, y: number) {
         if (users.has(id)) {
-            users.get(id).pos = new Coord(x, y);
+            users.get(id).pos = new ServerCoord(x, y);
         }
         else {
-            users.set(id, new User(label, color, new Coord(x, y)));
+            users.set(id, new User(label, color, new ServerCoord(x, y)));
         }
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }

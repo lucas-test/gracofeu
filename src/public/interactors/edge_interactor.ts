@@ -3,7 +3,7 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { draw, draw_line, draw_circle, draw_vertex } from '../draw';
 import { socket } from '../socket';
 import { view } from '../camera';
-import { Coord, local_graph } from '../local_graph';
+import { CanvasCoord, local_graph } from '../local_graph';
 
 
 // INTERACTOR EDGE
@@ -29,7 +29,7 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
         let vertex = g.vertices.get(interactor_edge.last_down_index);
         view.is_link_creating = true;
         view.link_creating_start = view.canvasCoord(vertex.pos);
-        view.link_creating_end = new Coord(e.pageX, e.pageY);
+        view.link_creating_end = new CanvasCoord(e.pageX, e.pageY);
     }
 })
 
