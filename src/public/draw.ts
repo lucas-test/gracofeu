@@ -215,7 +215,8 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         ctx.strokeStyle = "white";
         if (link.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
         ctx.lineWidth = 3;
-        ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
+        //ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
+        ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
         ctx.stroke();
 
         draw_circle(poscp, "grey", 4, 1, ctx);
