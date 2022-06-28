@@ -24,7 +24,7 @@ color_interactor.trigger = (mouse_pos: CanvasCoord) => {
     for (const color of colors_available) {
         const color_div = document.createElement("div");
         color_div.classList.add("color_choice");
-        if ( color == color_selected ){
+        if (color == color_selected) {
             color_div.classList.add("selected");
         }
 

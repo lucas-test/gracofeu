@@ -1,7 +1,5 @@
-
-
 #params_loaded {
-    background-color:#333333;
+    background-color: #333333;
     position: fixed;
     top: 5;
     right: 5;
@@ -53,7 +51,7 @@
     justify-content: flex-start;
 }
 
-.div_button{
+.div_button {
     font-weight: bolder;
     border-radius: 50%;
     display: flex;
@@ -65,12 +63,12 @@
     font-size: 20px;
 }
 
-#params_loaded_button{
+#params_loaded_button {
     background-color: #fff;
     color: #1e1e1e;
 }
 
-#params_available_button:after{
+#params_available_button:after {
     display: inline-block;
     content: "\00d7";
     width: 20px;
@@ -80,7 +78,7 @@
     cursor: pointer;
 }
 
-.remove_param_button{
+.remove_param_button {
     color: #1e1e1e;
     width: 15px;
     height: calc(15px - 0.1em);
@@ -92,7 +90,6 @@
     padding-bottom: 0.1em;
 }
 
-.result_span{
+.result_span {
     margin-left: 5px;
 }
-

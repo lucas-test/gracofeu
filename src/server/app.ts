@@ -133,10 +133,10 @@ io.sockets.on('connection', function (client) {
     client.on('update_control_points', handle_update_control_points);
     client.on('update_colors', handle_update_colors);
 
-    function handle_update_colors(data){
+    function handle_update_colors(data) {
         for (const element of data) {
-            if ( element.type == "vertex"){
-                if( g.vertices.has(element.index)){
+            if (element.type == "vertex") {
+                if (g.vertices.has(element.index)) {
                     const vertex = g.vertices.get(element.index);
                     vertex.color = element.color;
                 }
@@ -229,7 +229,7 @@ io.sockets.on('connection', function (client) {
 
     function handle_add_link(vindex: number, windex: number, orientation: string) {
         let orient = ORIENTATION.UNDIRECTED;
-        switch(orientation){
+        switch (orientation) {
             case "undirected":
                 orient = ORIENTATION.UNDIRECTED
                 break;

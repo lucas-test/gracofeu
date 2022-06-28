@@ -8,7 +8,7 @@ function TikZ_header() {
 
 function Tikz_create_defines() {
     return "\t\t%Defining some constants\n\t\t\\def\\scaleL{0.95}; %Scale of the labels of vertices\n\t\t\\def\\scaleE{0.8}; %Scale of the edges\n\t\t\\def\\scaleV{0.45}; %Scale of the vertices\n";
-  }
+}
 
 
 function TikZ_credits() {
@@ -45,7 +45,7 @@ function TikZ_create_links(g: Graph) {
 }
 
 
-export function TikZ_create_file_data(g:Graph) {
+export function TikZ_create_file_data(g: Graph) {
     let latex = TikZ_credits() + "\n\n";
     latex += TikZ_header();
     // latex += defineColors();
@@ -56,4 +56,4 @@ export function TikZ_create_file_data(g:Graph) {
     latex += TikZ_create_nodes(g) + "\n";
     latex += "\n\t\\end{tikzpicture}\n\\end{document}\n";
     return latex;
-  }
+}

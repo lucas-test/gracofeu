@@ -1,6 +1,6 @@
 import { Coord } from "./coord";
 
-export enum ORIENTATION{
+export enum ORIENTATION {
     UNDIRECTED = "UNDIRECTED",
     DIRECTED = "DIRECTED",
     DIGON = "DIGON"

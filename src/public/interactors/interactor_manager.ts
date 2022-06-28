@@ -15,7 +15,7 @@ import { color_interactor } from './color_interactor';
 
 
 export var interactor_loaded: Interactor = null;
-let mouse_pos = new CanvasCoord(0,0);
+let mouse_pos = new CanvasCoord(0, 0);
 
 
 export function select_interactor(interactor: Interactor) {

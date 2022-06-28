@@ -7,7 +7,7 @@ export class Coord {
         this.y = y;
     }
 
-    copy_from(c: Coord){
+    copy_from(c: Coord) {
         this.x = c.x;
         this.y = c.y;
     }

@@ -63,10 +63,10 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
-                    if (v.is_selected) {        
+                    if (v.is_selected) {
                         const nx = mouse_server_coord.x + v.old_pos.x - origin_vertex.old_pos.x;
                         const ny = mouse_server_coord.y + v.old_pos.y - origin_vertex.old_pos.y;
-                        data_socket.push({ index: index, x: nx, y:  ny});
+                        data_socket.push({ index: index, x: nx, y: ny });
                         // socket.emit("update_position", index, e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y);
                     }
                 }
@@ -97,7 +97,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 v.pos = mouse_server_coord;
 
                 g.align_position(v.pos, mouse_server_coord, new Set([interactor_selection.last_down_index]));
-                
+
                 const data_socket = new Array();
                 for (let [index, link] of g.links.entries()) {
                     if (link.start_vertex == interactor_selection.last_down_index || link.end_vertex == interactor_selection.last_down_index) {

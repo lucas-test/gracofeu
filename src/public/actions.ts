@@ -48,11 +48,11 @@ share_action.trigger = () => {
 
 const save_tikz_file = new Action("export_tex", "Export to .tex", "export_tex.svg");
 save_tikz_file.trigger = () => {
-        const tikz_data =  TikZ_create_file_data(local_graph);
-        const a = document.createElement("a");
-        a.href = window.URL.createObjectURL(new Blob([tikz_data], { type: "text/plain" }));
-        a.download = "file.tex";
-        a.click();
+    const tikz_data = TikZ_create_file_data(local_graph);
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(new Blob([tikz_data], { type: "text/plain" }));
+    a.download = "file.tex";
+    a.click();
 }
 
 const save_gco_file = new Action("export_gco", "Export to .gco", "export_gco.svg");
@@ -121,7 +121,7 @@ change_to_alpha_stable_index.trigger = () => {
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_alpha_unstable_index = new Action("index_type_number_stable", "Unstable alphabetic","index_alpha_unstable.svg");
+let change_to_alpha_unstable_index = new Action("index_type_number_stable", "Unstable alphabetic", "index_alpha_unstable.svg");
 change_to_alpha_unstable_index.trigger = () => {
     view.index_type = INDEX_TYPE.ALPHA_UNSTABLE;
     local_graph.compute_vertices_index_string();
@@ -137,10 +137,10 @@ let align_action = new Action("align_mode", "Automatic alignement", "align.svg")
 align_action.trigger = () => {
     view.is_aligning = !view.is_aligning;
     const align_div = document.getElementById("align_mode");
-    if(view.is_aligning){
+    if (view.is_aligning) {
         align_div.classList.add("action_activated");
     }
-    else{
+    else {
         align_div.classList.remove("action_activated");
     }
 }

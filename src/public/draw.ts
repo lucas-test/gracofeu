@@ -23,8 +23,8 @@ export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 function draw_head(ctx: CanvasRenderingContext2D, start_pos: CanvasCoord, end_pos: CanvasCoord) {
     const headlen = ARC_ARROW_LENGTH;
     let vertex_radius = VERTEX_RADIUS;
-    if ( view.index_type != INDEX_TYPE.NONE){
-        vertex_radius = VERTEX_RADIUS*2;
+    if (view.index_type != INDEX_TYPE.NONE) {
+        vertex_radius = VERTEX_RADIUS * 2;
     }
     const d = Math.sqrt(start_pos.dist2(end_pos))
     const tox2 = end_pos.x + (start_pos.x - end_pos.x) * vertex_radius / d
@@ -55,7 +55,7 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 export function draw_line(start: CanvasCoord, end: CanvasCoord, ctx: CanvasRenderingContext2D, color: string) {
     ctx.beginPath();
     ctx.strokeStyle = color;
-    ctx.moveTo(start.x , start.y);
+    ctx.moveTo(start.x, start.y);
     ctx.lineTo(end.x, end.y);
     ctx.stroke();
 }
@@ -74,25 +74,25 @@ export function draw_circle(center: CanvasCoord, fillStyle: string, radius: numb
 export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
     const vertex = g.vertices.get(index);
     let vertex_radius = VERTEX_RADIUS;
-    if (view.index_type != INDEX_TYPE.NONE){
-        vertex_radius = 2*VERTEX_RADIUS;
+    if (view.index_type != INDEX_TYPE.NONE) {
+        vertex_radius = 2 * VERTEX_RADIUS;
     }
 
-    if(vertex.is_selected){
-        draw_circle(view.canvasCoord(vertex.pos), SELECTION_COLOR, vertex_radius,1,ctx);
-    }else{
-        draw_circle(view.canvasCoord(vertex.pos), "white", vertex_radius,1,ctx);
+    if (vertex.is_selected) {
+        draw_circle(view.canvasCoord(vertex.pos), SELECTION_COLOR, vertex_radius, 1, ctx);
+    } else {
+        draw_circle(view.canvasCoord(vertex.pos), "white", vertex_radius, 1, ctx);
     }
 
-    draw_circle(view.canvasCoord(vertex.pos), vertex.color, vertex_radius-2, 1,ctx);
+    draw_circle(view.canvasCoord(vertex.pos), vertex.color, vertex_radius - 2, 1, ctx);
 
-   // DRAW INDEX 
-    if (view.index_type != INDEX_TYPE.NONE){
+    // DRAW INDEX 
+    if (view.index_type != INDEX_TYPE.NONE) {
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
-        ctx.fillStyle = "white" 
+        ctx.fillStyle = "white"
         const pos = view.canvasCoord(vertex.pos)
-        ctx.fillText(vertex.index_string, pos.x - measure.width/2, pos.y+5);
+        ctx.fillText(vertex.index_string, pos.x - measure.width / 2, pos.y + 5);
     }
 }
 
@@ -101,51 +101,51 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     // DRAW USERNAME 
     ctx.font = "400 17px Arial";
     const text = ctx.measureText(user.label);
-    ctx.strokeStyle = user.color;  
+    ctx.strokeStyle = user.color;
     ctx.fillStyle = user.color;
     // Rectangle 
     const user_canvas_coord = view.canvasCoord(user.pos);
-    drawRoundRect(ctx,user_canvas_coord.x+10 , user_canvas_coord.y + 17, text.width + 10, 21, 5, user.color, user.color);
+    drawRoundRect(ctx, user_canvas_coord.x + 10, user_canvas_coord.y + 17, text.width + 10, 21, 5, user.color, user.color);
 
     const contrast_color = invertColor(user.color);
-    
+
     // username
     ctx.beginPath();
-        ctx.fillStyle = contrast_color;
-        ctx.fillText(user.label, user_canvas_coord.x+10 + 5 ,user_canvas_coord.y + 17 + 16);
+    ctx.fillStyle = contrast_color;
+    ctx.fillText(user.label, user_canvas_coord.x + 10 + 5, user_canvas_coord.y + 17 + 16);
     ctx.fill();
 
 
     // DRAW ARROW
-    const darken_color = shadeColor (user.color, -60 );
-    const brighter_color = shadeColor (user.color, 120 );
+    const darken_color = shadeColor(user.color, -60);
+    const brighter_color = shadeColor(user.color, 120);
 
     // Background
-    ctx.beginPath();              
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = darken_color;  
-        ctx.moveTo(user_canvas_coord.x-2,user_canvas_coord.y+1);
-        ctx.lineTo(user_canvas_coord.x-2, user_canvas_coord.y+21);
+    ctx.beginPath();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = darken_color;
+    ctx.moveTo(user_canvas_coord.x - 2, user_canvas_coord.y + 1);
+    ctx.lineTo(user_canvas_coord.x - 2, user_canvas_coord.y + 21);
     ctx.stroke();
-    
+
     //Arrow
-    ctx.beginPath();         
-        ctx.fillStyle = user.color;  
-        ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
-        ctx.lineTo(user_canvas_coord.x+13, user_canvas_coord.y+13);
-        ctx.lineTo(user_canvas_coord.x+5, user_canvas_coord.y+13);
-        ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y+20);
+    ctx.beginPath();
+    ctx.fillStyle = user.color;
+    ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
+    ctx.lineTo(user_canvas_coord.x + 13, user_canvas_coord.y + 13);
+    ctx.lineTo(user_canvas_coord.x + 5, user_canvas_coord.y + 13);
+    ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y + 20);
     ctx.closePath();
     ctx.fill();
 
     // Bright sides
-    ctx.beginPath();              
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = brighter_color;  
-        ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
-        ctx.lineTo(user_canvas_coord.x+13, user_canvas_coord.y+13);
-        ctx.lineTo(user_canvas_coord.x+5, user_canvas_coord.y+13);
-        ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y+20);
+    ctx.beginPath();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = brighter_color;
+    ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
+    ctx.lineTo(user_canvas_coord.x + 13, user_canvas_coord.y + 13);
+    ctx.lineTo(user_canvas_coord.x + 5, user_canvas_coord.y + 13);
+    ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y + 20);
     ctx.stroke();
 }
 
@@ -220,8 +220,8 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         ctx.stroke();
 
         draw_circle(poscp, "grey", 4, 1, ctx);
-        if ( link.orientation == ORIENTATION.DIRECTED){
-            draw_head(ctx,poscp, posv);
+        if (link.orientation == ORIENTATION.DIRECTED) {
+            draw_head(ctx, poscp, posv);
         }
     }
 }
@@ -230,20 +230,20 @@ function draw_link_creating(ctx: CanvasRenderingContext2D) {
     if (view.is_link_creating) {
         draw_line(view.link_creating_start, view.link_creating_end, ctx, "white");
         draw_circle(view.link_creating_end, "grey", 10, 0.5, ctx);
-        if ( view.link_creating_type == ORIENTATION.DIRECTED){
-            draw_head(ctx,view.link_creating_start, view.link_creating_end);
+        if (view.link_creating_type == ORIENTATION.DIRECTED) {
+            draw_head(ctx, view.link_creating_start, view.link_creating_end);
         }
     }
 }
 
-function draw_alignements(ctx: CanvasRenderingContext2D){
-    if( view.alignement_horizontal){
-        draw_line(new CanvasCoord(0, view.alignement_horizontal_y), new CanvasCoord(window.innerWidth, view.alignement_horizontal_y),ctx,COLOR_ALIGNEMENT_LINE);
+function draw_alignements(ctx: CanvasRenderingContext2D) {
+    if (view.alignement_horizontal) {
+        draw_line(new CanvasCoord(0, view.alignement_horizontal_y), new CanvasCoord(window.innerWidth, view.alignement_horizontal_y), ctx, COLOR_ALIGNEMENT_LINE);
     }
-    if ( view.alignement_vertical){
-        draw_line(new CanvasCoord(view.alignement_vertical_x,0), new CanvasCoord(view.alignement_vertical_x, window.innerHeight),ctx, COLOR_ALIGNEMENT_LINE);
+    if (view.alignement_vertical) {
+        draw_line(new CanvasCoord(view.alignement_vertical_x, 0), new CanvasCoord(view.alignement_vertical_x, window.innerHeight), ctx, COLOR_ALIGNEMENT_LINE);
     }
-    
+
 }
 
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -306,22 +306,22 @@ function drawRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: n
 
 
 
-function shadeColor(color:string, percent:number) {
-    var R = parseInt(color.substring(1,3),16);
-    var G = parseInt(color.substring(3,5),16);
-    var B = parseInt(color.substring(5,7),16);
+function shadeColor(color: string, percent: number) {
+    var R = parseInt(color.substring(1, 3), 16);
+    var G = parseInt(color.substring(3, 5), 16);
+    var B = parseInt(color.substring(5, 7), 16);
 
     R = parseInt((R * (100 + percent) / 100).toString());
     G = parseInt((G * (100 + percent) / 100).toString());
     B = parseInt((B * (100 + percent) / 100).toString());
 
-    R = (R<255)?R:255;  
-    G = (G<255)?G:255;  
-    B = (B<255)?B:255;  
+    R = (R < 255) ? R : 255;
+    G = (G < 255) ? G : 255;
+    B = (B < 255) ? B : 255;
 
-    var RR = ((R.toString(16).length==1)?"0"+R.toString(16):R.toString(16));
-    var GG = ((G.toString(16).length==1)?"0"+G.toString(16):G.toString(16));
-    var BB = ((B.toString(16).length==1)?"0"+B.toString(16):B.toString(16));
+    var RR = ((R.toString(16).length == 1) ? "0" + R.toString(16) : R.toString(16));
+    var GG = ((G.toString(16).length == 1) ? "0" + G.toString(16) : G.toString(16));
+    var BB = ((B.toString(16).length == 1) ? "0" + B.toString(16) : B.toString(16));
 
-    return "#"+RR+GG+BB;
+    return "#" + RR + GG + BB;
 }

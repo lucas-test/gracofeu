@@ -54,20 +54,20 @@ export class Graph {
 
     add_link(i: number, j: number, orientation: ORIENTATION) {
         for (const link of this.links.values()) {
-            if ( link.orientation == orientation){
-                if( orientation == ORIENTATION.UNDIRECTED){
+            if (link.orientation == orientation) {
+                if (orientation == ORIENTATION.UNDIRECTED) {
                     if ((link.start_vertex == i && link.end_vertex == j) || (link.start_vertex == j && link.end_vertex == i)) {
                         return;
                     }
                 }
-                else if (orientation == ORIENTATION.DIRECTED){
-                    if ( link.start_vertex == i && link.end_vertex == j){
+                else if (orientation == ORIENTATION.DIRECTED) {
+                    if (link.start_vertex == i && link.end_vertex == j) {
                         return;
                     }
                 }
             }
-            
-            
+
+
         }
 
         const index = this.get_next_available_index_links();
@@ -78,7 +78,7 @@ export class Graph {
     }
 
     add_link_with_cp(i: number, j: number, orientation: ORIENTATION, cp: Coord) {
-        const index = this.add_link(i,j,orientation);
+        const index = this.add_link(i, j, orientation);
         const link = this.links.get(index);
         link.cp.copy_from(cp);
     }

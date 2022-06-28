@@ -46,8 +46,8 @@ export class Coord {
 
 export class CanvasCoord extends Coord {
     lol: number;
-    
-} 
+
+}
 
 export class ServerCoord extends Coord {
     lol2: number;
@@ -102,23 +102,23 @@ export class LocalVertex {
         }
     }
 
-    get_tikz_coordinate(index:number){
+    get_tikz_coordinate(index: number) {
         return `v${index}`;
     }
-    tikzify_coordinate(index:number) {
+    tikzify_coordinate(index: number) {
         return `\\coordinate (${this.get_tikz_coordinate(index)}) at (${this.pos.x}/100, ${this.pos.y}/100);`;
     }
 
-    tikzify_node(index:number) {
+    tikzify_node(index: number) {
         // const c = "c" + COLORS.indexOf(this.color);
         // if (this.color == DEFAULT_COLOR) {
         //   c = "white";
         // }
-    
+
         return `\\node[scale = \\scaleV, nodes={white}{}{}{}] at  (${this.get_tikz_coordinate(index)})  {};`;
     }
 
-    tikzify_label() { 
+    tikzify_label() {
         // TODO
         let labelCode = "";
         // https://tex.stackexchange.com/questions/58878/tikz-set-node-label-position-more-precisely
@@ -127,8 +127,8 @@ export class LocalVertex {
         // labelCode = "\\node[shift={(" + round(this.label.getExactLabelOffsetX() * 10) / 1000 + "," + -round(this.label.getExactLabelOffsetY() * 10) / 1000 + ")}, scale=\\scaleV] at  (v" + Vertices.indexOf(this) + ") {" + this.label.text + "};";
 
         return labelCode;
-      }
-    
+    }
+
 }
 
 
@@ -199,8 +199,8 @@ export class Link {
         this.old_cp.y = this.cp.y;
     }
 
-    tikzify_link(start:LocalVertex, start_index: number, end:LocalVertex, end_index:number){
-         // TODO: ORIENTED CASE
+    tikzify_link(start: LocalVertex, start_index: number, end: LocalVertex, end_index: number) {
+        // TODO: ORIENTED CASE
         let labelCode = "";
         // if (showLabels)
         // labelCode = "node[midway, shift={(" + this.label.getExactLabelOffsetX() / 100 + "," + -this.label.getExactLabelOffsetY() / 100 + ")}, scale = \\scaleE] {" + this.label.text + "}";
@@ -209,7 +209,7 @@ export class Link {
 
     }
 
- 
+
 }
 
 export class Graph {
@@ -280,7 +280,7 @@ export class Graph {
 
     select_vertices_in_rect(corner1: CanvasCoord, corner2: CanvasCoord) {
         for (const vertex of this.vertices.values()) {
-            if (vertex.is_in_rect( view.serverCoord2(corner1),view.serverCoord2(corner2))) {
+            if (vertex.is_in_rect(view.serverCoord2(corner1), view.serverCoord2(corner2))) {
                 vertex.is_selected = true;
             }
         }
@@ -289,7 +289,7 @@ export class Graph {
     select_links_in_rect(corner1: CanvasCoord, corner2: CanvasCoord) {
         for (const index of this.links.keys()) {
             const link = this.links.get(index);
-            if (link.is_in_rect( view.serverCoord2(corner1),view.serverCoord2(corner2))) {
+            if (link.is_in_rect(view.serverCoord2(corner1), view.serverCoord2(corner2))) {
                 link.is_selected = true;
             }
         }
@@ -392,12 +392,12 @@ export class Graph {
         })
     }
 
-    align_position(pos: ServerCoord, mouse_server_coord: ServerCoord, excluded_indices: Set<number>){
-        if (view.is_aligning){
+    align_position(pos: ServerCoord, mouse_server_coord: ServerCoord, excluded_indices: Set<number>) {
+        if (view.is_aligning) {
             view.alignement_horizontal = false;
             view.alignement_vertical = false;
             this.vertices.forEach((vertex, index) => {
-                if (excluded_indices.has(index) == false ){
+                if (excluded_indices.has(index) == false) {
                     if (Math.abs(vertex.pos.y - mouse_server_coord.y) <= 15) {
                         pos.y = vertex.pos.y;
                         view.alignement_horizontal = true;
@@ -415,10 +415,10 @@ export class Graph {
         }
     }
 
-    get_selected_vertices() : Set<number>{
+    get_selected_vertices(): Set<number> {
         const set = new Set<number>();
-        this.vertices.forEach((v,index)=>{
-            if( v.is_selected){
+        this.vertices.forEach((v, index) => {
+            if (v.is_selected) {
                 set.add(index);
             }
         })

@@ -58,12 +58,12 @@ class View {
         return new CanvasCoord(x * this.zoom + this.camera.x, y * this.zoom + this.camera.y);
     }
 
-    canvasCoordX(x:number){
-        return x*this.zoom + this.camera.x;
+    canvasCoordX(x: number) {
+        return x * this.zoom + this.camera.x;
     }
 
-    canvasCoordY(y:number){
-        return y*this.zoom + this.camera.y;
+    canvasCoordY(y: number) {
+        return y * this.zoom + this.camera.y;
     }
 
     // transform canvasCoord to serverCoord
