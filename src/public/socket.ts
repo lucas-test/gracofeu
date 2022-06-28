@@ -73,6 +73,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         g.vertices.clear();
         for (const data of vertices_entries) {
             const new_vertex = new LocalVertex(data[1].pos);
+            new_vertex.color = data[1].color;
             g.vertices.set(data[0], new_vertex);
         }
 

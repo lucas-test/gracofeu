@@ -131,6 +131,19 @@ io.sockets.on('connection', function (client) {
     client.on('load_json', handle_load_json);
     client.on('update_control_point', handle_update_control_point);
     client.on('update_control_points', handle_update_control_points);
+    client.on('update_colors', handle_update_colors);
+
+    function handle_update_colors(data){
+        for (const element of data) {
+            if ( element.type == "vertex"){
+                if( g.vertices.has(element.index)){
+                    const vertex = g.vertices.get(element.index);
+                    vertex.color = element.color;
+                }
+            }
+        }
+        emit_graph_to_room();
+    }
 
     function handle_update_control_points(data) {
         for (const element of data) {

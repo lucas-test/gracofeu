@@ -1,4 +1,4 @@
-import {  Graph, ServerCoord } from "../local_graph";
+import {  CanvasCoord, Graph, ServerCoord } from "../local_graph";
 
 
 
@@ -21,6 +21,7 @@ export class Interactor {
     mousedown: (down_type: DOWN_TYPE, down_element_index: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: MouseEvent) => void;
     mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: MouseEvent) => boolean;
     mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: MouseEvent) => void;
+    trigger: (mouse_pos: CanvasCoord) => void;
 
     constructor(name: string, shortcut: string, img_src: string) {
         this.name = name;
@@ -29,6 +30,7 @@ export class Interactor {
         this.has_moved = false;
         this.last_down = null;
         this.last_down_index = null;
+        this.trigger = (e) => { };
     }
 }
 

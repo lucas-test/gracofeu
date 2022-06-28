@@ -84,7 +84,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
         draw_circle(view.canvasCoord(vertex.pos), "white", vertex_radius,1,ctx);
     }
 
-    draw_circle(view.canvasCoord(vertex.pos), COLOR_BACKGROUND, vertex_radius-2, 1,ctx);
+    draw_circle(view.canvasCoord(vertex.pos), vertex.color, vertex_radius-2, 1,ctx);
 
    // DRAW INDEX 
     if (view.index_type != INDEX_TYPE.NONE){

@@ -66,7 +66,11 @@ npm run dev
 
 ## V0.5 Chercheurs proches
 
-- [ ] couleur sommet/arête
+- couleur
+    [X] sommet
+    [ ] arête
+    [ ] interactor utilisation
+    [ ] color picker utilisation
 - [ ] zone texte
 - [ ] dessin à main levée
 - [ ] grille magnétique

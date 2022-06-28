@@ -47,7 +47,7 @@ body {
   cursor: pointer;
 }
 
-.subaction_info{
+.subaction_info {
   padding: 6px;
   text-align: center;
   cursor: default;
@@ -75,7 +75,8 @@ body {
   background-color: lightcoral;
 }
 
-.interactor.selected, .action_activated {
+.interactor.selected,
+.action_activated {
   background-color: lightblue;
 }
 
@@ -99,7 +100,7 @@ body {
 }
 
 
-.shortcut{
+.shortcut {
   color: lightblue;
   text-transform: capitalize;
   font-weight: bold;

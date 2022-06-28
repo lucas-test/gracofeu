@@ -58,9 +58,13 @@ export class ServerCoord extends Coord {
 
 
 export class LocalVertex {
+    // server attributes:
     pos: ServerCoord;
-    old_pos: ServerCoord;
+    color: string;
+
+    // local attributes:
     is_selected: boolean;
+    old_pos: ServerCoord;
     index_string: string;
 
     constructor(pos: ServerCoord) {
@@ -68,6 +72,7 @@ export class LocalVertex {
         this.old_pos = new ServerCoord(pos.x, pos.y);
         this.is_selected = false;
         this.index_string = "";
+        this.color = "black";
     }
 
     save_pos() {

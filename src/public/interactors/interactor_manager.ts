@@ -5,8 +5,9 @@ import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
 import { view } from '../camera';
 import { socket } from '../socket';
-import { Graph } from '../local_graph';
+import { CanvasCoord, Graph } from '../local_graph';
 import { interactor_arc } from './arc_interactor';
+import { color_interactor } from './color_interactor';
 
 // INTERACTOR MANAGER
 
@@ -14,6 +15,7 @@ import { interactor_arc } from './arc_interactor';
 
 
 export var interactor_loaded: Interactor = null;
+let mouse_pos = new CanvasCoord(0,0);
 
 
 export function select_interactor(interactor: Interactor) {
@@ -53,6 +55,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             if (interactor.shortcut == e.key) {
                 deselect_all_interactor_div()
                 select_interactor(interactor);
+                interactor.trigger(mouse_pos);
                 return;
             }
         }
@@ -81,6 +84,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     })
 
     canvas.addEventListener('mousemove', function (e) {
+        mouse_pos.x = e.pageX;
+        mouse_pos.y = e.pageY;
         interactor_loaded.has_moved = true;
         if (interactor_loaded.mousemove(canvas, ctx, g, e)) {
             requestAnimationFrame(function () {
@@ -116,7 +121,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
 
-let interactors_available = [interactor_selection, interactor_edge, interactor_arc]
+let interactors_available = [interactor_selection, interactor_edge, interactor_arc, color_interactor]
 
 function deselect_all_interactor_div() {
     for (let div of document.getElementsByClassName("interactor")) {
