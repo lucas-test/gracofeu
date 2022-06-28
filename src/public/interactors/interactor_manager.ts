@@ -101,7 +101,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = view.serverCoord(e);
 
-            const element = g.get_element_nearby(interactor_loaded.last_down_pos);
+            const element = g.get_element_nearby(view.canvasCoordFromMouse(e));
             console.log(element);
             interactor_loaded.last_down = element.type;
             interactor_loaded.last_down_index = element.index;

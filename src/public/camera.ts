@@ -58,6 +58,10 @@ class View {
         return new CanvasCoord(x * this.zoom + this.camera.x, y * this.zoom + this.camera.y);
     }
 
+    canvasCoordFromMouse(e: MouseEvent): CanvasCoord {
+        return new CanvasCoord(e.pageX, e.pageY);
+    }
+
     canvasCoordX(x: number) {
         return x * this.zoom + this.camera.x;
     }

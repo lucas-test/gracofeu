@@ -90,15 +90,16 @@ export class LocalVertex {
         return this.pos.dist2(pos) <= r;
     }
 
-    is_in_rect(c1: ServerCoord, c2: ServerCoord) {
+    is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
+        const canvas_pos = view.canvasCoord(this.pos);
         if (c1.x <= c2.x && c1.y <= c2.y) {
-            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c1.y <= this.pos.y && this.pos.y <= c2.y)
+            return (c1.x <= canvas_pos.x && canvas_pos.x <= c2.x && c1.y <= canvas_pos.y && canvas_pos.y <= c2.y)
         } else if (c1.x <= c2.x && c2.y <= c1.y) {
-            return (c1.x <= this.pos.x && this.pos.x <= c2.x && c2.y <= this.pos.y && this.pos.y <= c1.y)
+            return (c1.x <= canvas_pos.x && canvas_pos.x <= c2.x && c2.y <= canvas_pos.y && canvas_pos.y <= c1.y)
         } else if (c2.x <= c1.x && c2.y <= c1.y) {
-            return (c2.x <= this.pos.x && this.pos.x <= c1.x && c2.y <= this.pos.y && this.pos.y <= c1.y)
+            return (c2.x <= canvas_pos.x && canvas_pos.x <= c1.x && c2.y <= canvas_pos.y && canvas_pos.y <= c1.y)
         } else if (c2.x <= c1.x && c1.y <= c2.y) {
-            return (c2.x <= this.pos.x && this.pos.x <= c1.x && c1.y <= this.pos.y && this.pos.y <= c2.y)
+            return (c2.x <= canvas_pos.x && canvas_pos.x <= c1.x && c1.y <= canvas_pos.y && canvas_pos.y <= c2.y)
         }
     }
 
@@ -159,7 +160,7 @@ export class Link {
         this.orientation = orientation;
     }
 
-    is_in_rect(c1: ServerCoord, c2: ServerCoord) {
+    is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
         //V1: is in rect if one of its extremities is in the rectangle
         //TODO: be more clever and select also when there is an intersection between the edge and the rectangle
 
@@ -239,15 +240,15 @@ export class Graph {
         this.deselect_all_links();
     }
 
-    get_element_nearby(pos: ServerCoord) {
+    get_element_nearby(pos: CanvasCoord) {
         for (const [index, v] of this.vertices.entries()) {
-            if (v.pos.is_nearby(pos, 150)) {
+            if (view.canvasCoord(v.pos).is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.VERTEX, index: index };
             }
         }
 
         for (const [index, link] of this.links.entries()) {
-            if (link.cp.is_nearby(pos, 150)) {
+            if (view.canvasCoord(link.cp).is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.CONTROL_POINT, index: index };
             }
             if (this.is_click_over_link(index, pos)) {
@@ -258,29 +259,20 @@ export class Graph {
         return { type: DOWN_TYPE.EMPTY, index: null };
     }
 
-    get_vertex_index_nearby(pos: ServerCoord) {
+    get_vertex_index_nearby(pos: CanvasCoord) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
-            if (v.is_nearby(pos, 150)) {
+            if (view.canvasCoord(v.pos).is_nearby(pos, 150)) {
                 return index;
             }
         }
         return null;
     }
 
-    get_link_index_nearby(x: number, y: number) {
-        for (let index of this.links.keys()) {
-            let link = this.links.get(index);
-            if (link.is_nearby(x, y, 0.015)) {
-                return index;
-            }
-        }
-        return null;
-    }
 
     select_vertices_in_rect(corner1: CanvasCoord, corner2: CanvasCoord) {
         for (const vertex of this.vertices.values()) {
-            if (vertex.is_in_rect(view.serverCoord2(corner1), view.serverCoord2(corner2))) {
+            if (vertex.is_in_rect(corner1, corner2)) {
                 vertex.is_selected = true;
             }
         }
@@ -289,13 +281,14 @@ export class Graph {
     select_links_in_rect(corner1: CanvasCoord, corner2: CanvasCoord) {
         for (const index of this.links.keys()) {
             const link = this.links.get(index);
-            if (link.is_in_rect(view.serverCoord2(corner1), view.serverCoord2(corner2))) {
+            if (link.is_in_rect(corner1, corner2)) {
                 link.is_selected = true;
             }
         }
     }
 
-    is_click_over_link(link_index: number, e: Coord) {
+    is_click_over_link(link_index: number, e: CanvasCoord) {
+
         let xA = e.x - 5
         let yA = e.y - 5
         let xB = e.x + 5
@@ -306,19 +299,23 @@ export class Graph {
         let maxX = xB
         let maxY = yB
 
-        let link = this.links.get(link_index);
-        let v = this.vertices.get(link.start_vertex)
-        let w = this.vertices.get(link.end_vertex)
-        let x0 = v.pos.x;
-        let y0 = v.pos.y;
-        let x1 = link.cp.x;
-        let y1 = link.cp.y;
-        let x2 = w.pos.x;
-        let y2 = w.pos.y;
+        const link = this.links.get(link_index);
+        const v = this.vertices.get(link.start_vertex)
+        const w = this.vertices.get(link.end_vertex)
+        const linkcp_canvas = view.canvasCoord(link.cp);
+        const v_canvas_pos = view.canvasCoord(v.pos);
+        const w_canvas_pos = view.canvasCoord(w.pos);
+
+        let x0 = v_canvas_pos.x;
+        let y0 = v_canvas_pos.y;
+        let x1 = linkcp_canvas.x;
+        let y1 = linkcp_canvas.y;
+        let x2 = w_canvas_pos.x;
+        let y2 = w_canvas_pos.y;
 
 
         // case where one of the endvertices is already on the box
-        if (v.is_in_rect(new ServerCoord(xA, yA), new ServerCoord(xB, yB)) || w.is_in_rect(new ServerCoord(xA, yA), new ServerCoord(xB, yB))) {
+        if (v.is_in_rect(new CanvasCoord(xA, yA), new CanvasCoord(xB, yB)) || w.is_in_rect(new CanvasCoord(xA, yA), new CanvasCoord(xB, yB))) {
             return true
         } else {
             // we get the quadratic equation of the intersection of the bended edge and the sides of the box

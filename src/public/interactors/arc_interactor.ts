@@ -43,7 +43,7 @@ interactor_arc.mousemove = ((canvas, ctx, g, e) => {
 interactor_arc.mouseup = ((canvas, ctx, g, e) => {
     view.is_link_creating = false;
     if (interactor_arc.last_down == DOWN_TYPE.VERTEX) {
-        let index = g.get_vertex_index_nearby(view.serverCoord(e));
+        let index = g.get_vertex_index_nearby(view.canvasCoordFromMouse(e));
         if (index !== null && interactor_arc.last_down_index != index) { // there is a vertex nearby and it is not the previous one
             socket.emit("add_link", interactor_arc.last_down_index, index, "directed");
         } else {
@@ -58,7 +58,7 @@ interactor_arc.mouseup = ((canvas, ctx, g, e) => {
             }
         }
     } else if (interactor_arc.last_down === DOWN_TYPE.EMPTY) {
-        let index = g.get_vertex_index_nearby(view.serverCoord(e));
+        let index = g.get_vertex_index_nearby(view.canvasCoordFromMouse(e));
         if (index !== null && index != index_last_created_vertex) {
             socket.emit("add_link", index_last_created_vertex, index, "directed");
         } else {
