@@ -1,112 +1,107 @@
 html,
 body {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  background-color: #1e1e1e;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: #1e1e1e;
 }
 
 #actions {
-  border-radius: 5px;
-  background-color: white;
-  position: fixed;
-  top: 7px;
-  left: 7px;
+    border-radius: 5px;
+    background-color: white;
+    position: fixed;
+    top: 7px;
+    left: 7px;
 }
 
 .action {
-  margin: 8px;
-  padding: 6px;
-  transition: 250ms;
-  display: inline-block;
+    margin: 8px;
+    padding: 6px;
+    transition: 250ms;
+    display: inline-block;
 }
 
 .action:hover {
-  background-color: lightcoral;
-  cursor: pointer;
+    background-color: lightcoral;
+    cursor: pointer;
 }
 
-
 .subaction_container {
-  border-radius: 5px;
-  background-color: white;
-  position: fixed;
-  top: 70px;
-  left: 7px;
+    border-radius: 5px;
+    background-color: white;
+    position: fixed;
+    top: 70px;
+    left: 7px;
 }
 
 .subaction {
-  margin: 8px;
-  padding: 6px;
-  transition: 250ms;
-  display: inline-block;
+    margin: 8px;
+    padding: 6px;
+    transition: 250ms;
+    display: inline-block;
 }
 
 .subaction:hover {
-  background-color: lightcoral;
-  cursor: pointer;
+    background-color: lightcoral;
+    cursor: pointer;
 }
 
 .subaction_info {
-  padding: 6px;
-  text-align: center;
-  cursor: default;
+    padding: 6px;
+    text-align: center;
+    cursor: default;
 }
 
-
-
-
 #interaction_mode_selector {
-  border-radius: 5px;
-  background-color: white;
-  position: fixed;
-  top: 45%;
-  left: 7px;
+    border-radius: 5px;
+    background-color: white;
+    position: fixed;
+    top: 45%;
+    left: 7px;
 }
 
 .interactor {
-  margin: 8px;
-  padding: 6px;
-  transition: 250ms;
-  background-color: white;
+    margin: 8px;
+    padding: 6px;
+    transition: 250ms;
+    background-color: white;
 }
 
 .interactor:hover {
-  background-color: lightcoral;
+    background-color: lightcoral;
 }
 
 .interactor.selected,
 .action_activated {
-  background-color: lightblue;
+    background-color: lightblue;
 }
 
 .interactor_recap {
-  position: fixed;
-  background-color: #303030;
-  color: white;
-  border-radius: 2px;
-  padding: 10px;
-  transition: 1000ms;
-  display: none;
+    position: fixed;
+    background-color: #303030;
+    color: white;
+    border-radius: 2px;
+    padding: 10px;
+    transition: 1000ms;
+    display: none;
 }
 
 .action_button {
-  background-color: #333333;
-  position: fixed;
-  color: white;
-  padding: 3px 5px;
-  border: 1px solid white;
-  border-radius: 5px;
+    background-color: #333333;
+    position: fixed;
+    color: white;
+    padding: 3px 5px;
+    border: 1px solid white;
+    border-radius: 5px;
 }
 
-
 .shortcut {
-  color: lightblue;
-  text-transform: capitalize;
-  font-weight: bold;
-  background-color: #333333;
-  border: 1px solid white;
-  padding-left: 3px;
-  padding-right: 3px;
-  border-radius: 1px;
+    color: lightblue;
+    text-transform: capitalize;
+    font-weight: bold;
+    background-color: #333333;
+    border: 1px solid white;
+    padding-left: 3px;
+    padding-right: 3px;
+    border-radius: 1px;
 }

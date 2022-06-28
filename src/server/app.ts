@@ -68,6 +68,7 @@ io.sockets.on('connection', function (client) {
     g.add_vertex(200, 100);
     room_graphs.set(room_id, g);
     emit_graph_to_room()
+    // emit_users_to_client();
 
     if (ENV.mode == "dev") {
         room_id = the_room;
@@ -84,6 +85,11 @@ io.sockets.on('connection', function (client) {
     function emit_graph_to_room() {
         io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.links.entries()]);
     }
+
+    // function emit_users_to_client(){
+    //     client.emit('clients', [...users.entries()]);
+    // }
+
 
 
     // SETUP NON GRAPH ACTIONS
@@ -115,7 +121,7 @@ io.sockets.on('connection', function (client) {
     }
 
     function update_user(x: number, y: number) {
-        client.to(room_id).emit('update_user', client.id, user_data.name, user_data.color, x, y);
+        client.to(room_id).emit('update_user', client.id, user_data.label, user_data.color, x, y);
     }
 
 

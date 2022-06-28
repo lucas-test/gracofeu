@@ -1,0 +1,21 @@
+#user_list {
+    border-radius: 5px;
+    background-color: white;
+    position: fixed;
+    top: 9px;
+    right: 100px;
+    display: flex;
+    padding: 3px;
+    visibility: hidden;
+}
+
+.user {
+    border: 3px solid #000;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    margin: 0px 2px;
+    cursor: pointer;
+    font-family: sans-serif;
+}

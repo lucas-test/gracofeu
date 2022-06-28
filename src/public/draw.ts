@@ -259,7 +259,7 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
 
 
 // Credits: https://stackoverflow.com/questions/35969656/how-can-i-generate-the-opposite-color-according-to-current-color
-function invertColor(hex: string) {
+export function invertColor(hex: string) {
     if (hex.indexOf('#') === 0) {
         hex = hex.slice(1);
     }
@@ -306,7 +306,7 @@ function drawRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: n
 
 
 
-function shadeColor(color: string, percent: number) {
+export function shadeColor(color: string, percent: number) {
     var R = parseInt(color.substring(1, 3), 16);
     var G = parseInt(color.substring(3, 5), 16);
     var B = parseInt(color.substring(5, 7), 16);

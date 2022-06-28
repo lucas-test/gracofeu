@@ -1,9 +1,9 @@
 export class User {
-    name: string;
+    label: string;
     color: string;
 
     constructor(id: string) {
-        this.name = id.substring(0, 5)
+        this.label = id.substring(0, 5)
         this.color = getRandomColor();
     }
 }

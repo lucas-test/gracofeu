@@ -1,10 +1,10 @@
 #params_loaded {
-    background-color: #333333;
+    /* background-color: #333333; */
     position: fixed;
     top: 5;
     right: 5;
     margin: 5px;
-    border-radius: 5px;
+    /* border-radius: 5px; */
     color: #dddddd;
     font-family: sans-serif;
     /* border-top-left-radius: 15px; */
@@ -34,7 +34,6 @@
 #params_available .param {
     display: block;
 }
-
 
 .param {
     margin: 8px;

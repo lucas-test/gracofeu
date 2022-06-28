@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
-import { User, users } from "./user";
+import { update_user_list_div, User, users } from "./user";
 import { Coord, Graph, Link, LocalVertex, ORIENTATION, ServerCoord } from "./local_graph";
 export const socket = io()
 
@@ -10,6 +10,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('myId', handle_my_id);
     socket.on('update_user', update_user);
     socket.on('remove_user', remove_user);
+    // socket.on('clients', handle_clients);
 
 
 
@@ -29,6 +30,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         }
         else {
             users.set(id, new User(label, color, new ServerCoord(x, y)));
+            update_user_list_div();
         }
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -36,8 +38,18 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function remove_user(userid: string) {
         users.delete(userid);
+        update_user_list_div();
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
+
+    
+    // function handle_clients(users_entries){
+    //     users.clear();
+    //     for (const data of users_entries) {
+    //         const new_user = new User(data[1].label, data[1].color, new ServerCoord(-10, -10));
+    //         users.set(data[0], new_user);
+    //     }
+    // }
 
 
     // GRAPH 
@@ -127,3 +139,4 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
 }
+
