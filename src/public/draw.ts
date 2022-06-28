@@ -166,7 +166,9 @@ function draw_rectangular_selection(ctx: CanvasRenderingContext2D) {
 }
 
 function draw_grid(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-    for (let i = view.camera.x % view.grid_size; i < canvas.width; i += view.grid_size) {
+    const grid_size = view.grid_size;
+
+    for (let i = view.camera.x % grid_size; i < canvas.width; i += grid_size) {
         ctx.beginPath();
         ctx.strokeStyle = GRID_COLOR;
         ctx.lineWidth = 1;
@@ -175,7 +177,7 @@ function draw_grid(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         ctx.stroke();
     }
 
-    for (let i = view.camera.y % view.grid_size; i < canvas.height; i += view.grid_size) {
+    for (let i = view.camera.y % grid_size; i < canvas.height; i += grid_size) {
         ctx.beginPath();
         ctx.strokeStyle = GRID_COLOR;
         ctx.lineWidth = 1;

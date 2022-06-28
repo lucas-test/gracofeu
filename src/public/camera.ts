@@ -12,6 +12,9 @@ class View {
     camera: Coord;
     zoom: number;
     grid_size: number;
+    grid_min_size: number;
+    grid_max_size: number;
+    grid_initial_size: number;
     grid_show: boolean;
     is_link_creating: boolean;
     link_creating_type: ORIENTATION;
@@ -33,7 +36,10 @@ class View {
     constructor() {
         this.camera = new Coord(0, 0);
         this.zoom = 1.;
-        this.grid_size = 50;
+        this.grid_min_size = 40;
+        this.grid_max_size = 80;
+        this.grid_initial_size = 50;
+        this.grid_size = this.grid_initial_size;
         this.grid_show = false;
         this.is_link_creating = false;
         this.is_rectangular_selecting = false;
@@ -85,6 +91,14 @@ class View {
         this.zoom *= r;
         this.camera.x = center.pageX + (this.camera.x - center.pageX) * r;
         this.camera.y = center.pageY + (this.camera.y - center.pageY) * r;
+
+        this.grid_size = this.grid_initial_size * this.zoom;
+        while (this.grid_size > this.grid_max_size){
+            this.grid_size /= 2;
+        }
+        while (this.grid_size < this.grid_min_size){
+            this.grid_size *= 2;
+        }
     }
 
 
