@@ -66,6 +66,7 @@ export class LocalVertex {
     is_selected: boolean;
     old_pos: ServerCoord;
     index_string: string;
+    // todo : add canvas_pos: CanvasCoord
 
     constructor(pos: ServerCoord) {
         this.pos = new ServerCoord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
@@ -389,6 +390,7 @@ export class Graph {
         })
     }
 
+    // todo : replace ServerCoord by CanvasCoord
     align_position(pos: ServerCoord, mouse_server_coord: ServerCoord, excluded_indices: Set<number>) {
         if (view.is_aligning) {
             view.alignement_horizontal = false;

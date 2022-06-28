@@ -16,10 +16,13 @@ class View {
     grid_max_size: number;
     grid_initial_size: number;
     grid_show: boolean;
+    
     is_link_creating: boolean;
     link_creating_type: ORIENTATION;
     link_creating_start: CanvasCoord;
-    link_creating_end: CanvasCoord;
+
+    is_creating_vertex: boolean;
+    creating_vertex_pos: CanvasCoord;
 
     is_rectangular_selecting: boolean;
     selection_corner_1: CanvasCoord;
@@ -47,6 +50,9 @@ class View {
         this.is_aligning = false;
         this.alignement_horizontal = false;
         this.alignement_vertical = false;
+
+        this.is_creating_vertex = false;
+        this.creating_vertex_pos = new CanvasCoord(0,0);
     }
 
 

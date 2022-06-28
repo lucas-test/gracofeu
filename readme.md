@@ -44,7 +44,7 @@ npm run dev
 - [X] zoomer  
     - [X] CanvasCoord et ServerCoord
     - [ ] sauvegarder les CanvasCoord des sommets, controlpoints pour moins de calcul ???
-    - [ ] corriger grille
+    - [X] corriger grille
 
 - [X] control_point
 - [X] sélection au clic d'arête courbée

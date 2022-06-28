@@ -12,8 +12,8 @@ import { setup_socket, socket } from "./socket";
 
 function setup() {
 
-    let canvas = document.getElementById('main') as HTMLCanvasElement;
-    let ctx = canvas.getContext('2d');
+    const canvas = document.getElementById('main') as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
 
 
     setup_socket(canvas, ctx, local_graph);
@@ -24,7 +24,7 @@ function setup() {
     document.addEventListener('contextmenu', event => event.preventDefault());
     setup_interactions(canvas, ctx, local_graph);
     setup_interactors_div();
-    select_interactor(interactor_edge);
+    select_interactor(interactor_edge, canvas, ctx, local_graph);
 
     setup_actions_div(canvas, ctx, local_graph);
 

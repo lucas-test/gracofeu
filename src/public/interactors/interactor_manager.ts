@@ -18,9 +18,12 @@ export var interactor_loaded: Interactor = null;
 let mouse_pos = new CanvasCoord(0, 0);
 
 
-export function select_interactor(interactor: Interactor) {
+export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     interactor_loaded = interactor;
+    view.is_creating_vertex = false;
+    interactor.trigger(mouse_pos);
     select_interactor_div(interactor);
+    requestAnimationFrame(function () { draw(canvas, ctx, g) });
 }
 
 
@@ -54,8 +57,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         for (let interactor of interactors_available) {
             if (interactor.shortcut == e.key) {
                 deselect_all_interactor_div()
-                select_interactor(interactor);
-                interactor.trigger(mouse_pos);
+                select_interactor(interactor, canvas, ctx, g);
                 return;
             }
         }

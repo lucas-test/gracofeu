@@ -13,7 +13,6 @@ interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
         view.is_link_creating = true;
         view.link_creating_start = new CanvasCoord(e.pageX, e.pageY);
-        view.link_creating_end = new CanvasCoord(e.pageX, e.pageY);
         view.link_creating_type = ORIENTATION.DIRECTED;
         socket.emit("add_vertex", view.serverCoord(e).x, view.serverCoord(e).y, (response) => { index_last_created_vertex = response });
     }
@@ -21,23 +20,14 @@ interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
         let vertex = g.vertices.get(interactor_arc.last_down_index);
         view.is_link_creating = true;
         view.link_creating_start = view.canvasCoord(vertex.pos);
-        view.link_creating_end = new CanvasCoord(e.pageX, e.pageY);
     }
 })
 
 interactor_arc.mousemove = ((canvas, ctx, g, e) => {
-    if (interactor_arc.last_down == DOWN_TYPE.EMPTY) {
-        view.link_creating_end = new CanvasCoord(e.pageX, e.pageY);
-        draw(canvas, ctx, local_graph);
-
-
-        return false;
-    } else if (interactor_arc.last_down == DOWN_TYPE.VERTEX) {
-        view.link_creating_end = new CanvasCoord(e.pageX, e.pageY);
-        draw(canvas, ctx, local_graph);
-        return false;
-    }
-    return false;
+    const u = view.serverCoord(e);
+    g.align_position(u, u, new Set());
+    view.creating_vertex_pos = view.canvasCoord(u);
+    return true;
 })
 
 interactor_arc.mouseup = ((canvas, ctx, g, e) => {
@@ -72,3 +62,8 @@ interactor_arc.mouseup = ((canvas, ctx, g, e) => {
     }
 
 })
+
+interactor_arc.trigger = (mouse_pos: CanvasCoord) =>{
+    view.is_creating_vertex = true;
+    view.creating_vertex_pos = mouse_pos;
+}
