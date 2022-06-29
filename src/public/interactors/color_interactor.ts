@@ -63,7 +63,7 @@ color_interactor.mousedown = ((down_type, down_element_index, canvas, ctx, g, e)
 
 
 color_interactor.mousemove = ((canvas, ctx, g, e) => {
-    const elt = g.get_element_nearby(view.canvasCoordFromMouse(e));
+    const elt = g.get_element_nearby(e);
     if (elt.type == DOWN_TYPE.VERTEX) {
         const data_socket = new Array();
         data_socket.push({ type: "vertex", index: elt.index, color: color_selected });

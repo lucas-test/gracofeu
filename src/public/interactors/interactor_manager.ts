@@ -5,7 +5,7 @@ import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
 import { view } from '../camera';
 import { socket } from '../socket';
-import { CanvasCoord, Graph } from '../local_graph';
+import { CanvasCoord, Graph, ServerCoord } from '../local_graph';
 import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 
@@ -76,7 +76,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener('mouseup', function (e) {
         if (e.which == 1) { // left click
-            interactor_loaded.mouseup(canvas, ctx, g, e);
+            const click_pos = new CanvasCoord(e.pageX, e.pageY);
+            interactor_loaded.mouseup(canvas, ctx, g, click_pos);
             interactor_loaded.last_down = null;
             interactor_loaded.last_down_index = null;
             interactor_loaded.last_down_pos = null;
@@ -88,10 +89,11 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     })
 
     canvas.addEventListener('mousemove', function (e) {
+        const click_pos = new CanvasCoord(e.pageX, e.pageY);
         mouse_pos.x = e.pageX;
         mouse_pos.y = e.pageY;
         interactor_loaded.has_moved = true;
-        if (interactor_loaded.mousemove(canvas, ctx, g, e)) {
+        if (interactor_loaded.mousemove(canvas, ctx, g, click_pos)) {
             requestAnimationFrame(function () {
                 draw(canvas, ctx, g)
             });
@@ -102,20 +104,65 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener('mousedown', function (e) {
         if (e.which == 1) { // Left click 
+            const click_pos = new CanvasCoord(e.pageX, e.pageY);
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = view.serverCoord(e);
 
-            const element = g.get_element_nearby(view.canvasCoordFromMouse(e));
+            const element = g.get_element_nearby(click_pos);
             console.log(element);
             interactor_loaded.last_down = element.type;
             interactor_loaded.last_down_index = element.index;
-            interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, e)
+            interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, click_pos)
             if (element.type != DOWN_TYPE.EMPTY) {
                 update_params_loaded(g)
                 requestAnimationFrame(function () { draw(canvas, ctx, g) });
             }
         }
     })
+
+    canvas.addEventListener('touchstart', (et: TouchEvent) => {
+        console.log("touchstart");
+        interactor_loaded.has_moved = false;
+        const click_pos = new CanvasCoord(et.touches[0].clientX, et.touches[0].clientY);
+        interactor_loaded.last_down_pos = view.serverCoord2(click_pos);
+        
+        const element = g.get_element_nearby(click_pos);
+        console.log(element);
+        interactor_loaded.last_down = element.type;
+        interactor_loaded.last_down_index = element.index;
+        interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, click_pos)
+        if (element.type != DOWN_TYPE.EMPTY) {
+            update_params_loaded(g)
+            requestAnimationFrame(function () { draw(canvas, ctx, g) });
+        }
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+        mouse_pos.x = e.touches[0].clientX;
+        mouse_pos.y = e.touches[0].clientY;
+        interactor_loaded.has_moved = true;
+        if (interactor_loaded.mousemove(canvas, ctx, g, mouse_pos)) {
+            requestAnimationFrame(function () {
+                draw(canvas, ctx, g)
+            });
+        }
+        const mouse_server_coord = view.serverCoord2(mouse_pos);
+        socket.emit("moving_cursor", mouse_server_coord.x, mouse_server_coord.y);
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+        const click_pos = mouse_pos;
+        interactor_loaded.mouseup(canvas, ctx, g, click_pos);
+        interactor_loaded.last_down = null;
+        interactor_loaded.last_down_index = null;
+        interactor_loaded.last_down_pos = null;
+        view.alignement_horizontal = false;
+        view.alignement_vertical = false;
+        update_params_loaded(g)
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    });
+
+
 }
 
 
