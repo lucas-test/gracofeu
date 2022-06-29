@@ -43,8 +43,9 @@ npm run dev
 - [ ] recentrer
 - [X] zoomer  
     - [X] CanvasCoord et ServerCoord
-    - [ ] sauvegarder les CanvasCoord des sommets, controlpoints pour moins de calcul ???
+    - [X] sauvegarder les CanvasCoord des sommets, controlpoints pour moins de calcul ???
     - [X] corriger grille
+    - [ ] simplifier l'utilisation de g.align pour que ça soit plus clair
 
 - [X] control_point
 - [X] sélection au clic d'arête courbée
@@ -76,6 +77,7 @@ npm run dev
 - [ ] grille magnétique
 - [X] aligner horizontalement/verticalement sur d'autres sommets
 - [ ] gestion tablette
+- [ ] optimisation possible en Math.floor() dans view.canvasCoord
 
 ## V1 GDRIM
 

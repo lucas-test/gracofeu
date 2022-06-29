@@ -66,8 +66,10 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     canvas.addEventListener("wheel", function (e) {
         if (e.deltaY > 0) {
             view.apply_zoom(e, 1 / 1.1);
+            g.update_canvas_pos()
         } else {
             view.apply_zoom(e, 1.1);
+            g.update_canvas_pos()
         }
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     });

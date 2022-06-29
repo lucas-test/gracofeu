@@ -79,19 +79,19 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     }
 
     if (vertex.is_selected) {
-        draw_circle(view.canvasCoord(vertex.pos), SELECTION_COLOR, vertex_radius, 1, ctx);
+        draw_circle(vertex.canvas_pos, SELECTION_COLOR, vertex_radius, 1, ctx);
     } else {
-        draw_circle(view.canvasCoord(vertex.pos), "white", vertex_radius, 1, ctx);
+        draw_circle(vertex.canvas_pos, "white", vertex_radius, 1, ctx);
     }
 
-    draw_circle(view.canvasCoord(vertex.pos), vertex.color, vertex_radius - 2, 1, ctx);
+    draw_circle(vertex.canvas_pos, vertex.color, vertex_radius - 2, 1, ctx);
 
     // DRAW INDEX 
     if (view.index_type != INDEX_TYPE.NONE) {
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
         ctx.fillStyle = "white"
-        const pos = view.canvasCoord(vertex.pos)
+        const pos = vertex.canvas_pos
         ctx.fillText(vertex.index_string, pos.x - measure.width / 2, pos.y + 5);
     }
 }
@@ -104,7 +104,7 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     ctx.strokeStyle = user.color;
     ctx.fillStyle = user.color;
     // Rectangle 
-    const user_canvas_coord = view.canvasCoord(user.pos);
+    const user_canvas_coord = user.canvas_pos;
     drawRoundRect(ctx, user_canvas_coord.x + 10, user_canvas_coord.y + 17, text.width + 10, 21, 5, user.color, user.color);
 
     const contrast_color = invertColor(user.color);
@@ -209,9 +209,9 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         let u = g.vertices.get(link.start_vertex);
         let v = g.vertices.get(link.end_vertex);
 
-        const posu = view.canvasCoord(u.pos);
-        const posv = view.canvasCoord(v.pos);
-        const poscp = view.canvasCoord(link.cp);
+        const posu = u.canvas_pos; 
+        const posv = v.canvas_pos; 
+        const poscp = link.canvas_cp;
         ctx.beginPath();
         ctx.moveTo(posu.x, posu.y);
         ctx.strokeStyle = "white";

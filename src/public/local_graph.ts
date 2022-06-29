@@ -66,7 +66,7 @@ export class LocalVertex {
     is_selected: boolean;
     old_pos: ServerCoord;
     index_string: string;
-    // todo : add canvas_pos: CanvasCoord
+    canvas_pos: CanvasCoord;
 
     constructor(pos: ServerCoord) {
         this.pos = new ServerCoord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
@@ -74,6 +74,7 @@ export class LocalVertex {
         this.is_selected = false;
         this.index_string = "";
         this.color = "black";
+        this.canvas_pos = view.canvasCoord(pos);
     }
 
     save_pos() {
@@ -82,17 +83,12 @@ export class LocalVertex {
     }
 
 
-    dist2(x: number, y: number) {
-        return (this.pos.x - x) ** 2 + (this.pos.y - y) ** 2
-    }
-
-
-    is_nearby(pos: ServerCoord, r: number) {
-        return this.pos.dist2(pos) <= r;
+    is_nearby(pos: CanvasCoord, r: number) {
+        return this.canvas_pos.dist2(pos) <= r;
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
-        const canvas_pos = view.canvasCoord(this.pos);
+        const canvas_pos = this.canvas_pos;
         if (c1.x <= c2.x && c1.y <= c2.y) {
             return (c1.x <= canvas_pos.x && canvas_pos.x <= c2.x && c1.y <= canvas_pos.y && canvas_pos.y <= c2.y)
         } else if (c1.x <= c2.x && c2.y <= c1.y) {
@@ -148,9 +144,13 @@ export class Link {
     start_vertex: number;
     end_vertex: number;
     cp: ServerCoord;
+    orientation: ORIENTATION;
+
+    // local attributes
     old_cp: ServerCoord;
     is_selected: boolean;
-    orientation: ORIENTATION;
+    canvas_cp: CanvasCoord;
+
 
     constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION) {
         this.start_vertex = i;
@@ -159,6 +159,7 @@ export class Link {
         this.cp = new ServerCoord(cp.x, cp.y);
         this.old_cp = new ServerCoord(cp.x, cp.y);
         this.orientation = orientation;
+        this.canvas_cp = view.canvasCoord(this.cp)
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
@@ -168,22 +169,7 @@ export class Link {
         return local_graph.vertices.get(this.start_vertex).is_in_rect(c1, c2) || local_graph.vertices.get(this.end_vertex).is_in_rect(c1, c2);
     }
 
-    is_nearby(x: number, y: number, r: number) {
-        const start = local_graph.vertices.get(this.start_vertex);
-        const end = local_graph.vertices.get(this.end_vertex);
-        const x1 = start.pos.x;
-        const y1 = start.pos.y;
-        const x2 = end.pos.x;
-        const y2 = end.pos.y;
 
-        const den = start.dist2(x2, y2);
-        if (den == 0) {
-            return true;
-        }
-        const num = Math.abs((x2 - x1) * (y1 - y) - (x1 - x) * (y2 - y1))
-
-        return (num / den) < r;
-    }
 
     transform_control_point(moved_vertex: LocalVertex, fixed_vertex: LocalVertex) {
         var v = moved_vertex
@@ -194,6 +180,7 @@ export class Link {
         var rho = u.getRho(nv)
         this.cp.x = w.x + rho * (Math.cos(theta) * (this.old_cp.x - w.x) - Math.sin(theta) * (this.old_cp.y - w.y))
         this.cp.y = w.y + rho * (Math.sin(theta) * (this.old_cp.x - w.x) + Math.cos(theta) * (this.old_cp.y - w.y))
+        this.canvas_cp = view.canvasCoord(this.cp);
     }
 
     save_pos() {
@@ -243,13 +230,13 @@ export class Graph {
 
     get_element_nearby(pos: CanvasCoord) {
         for (const [index, v] of this.vertices.entries()) {
-            if (view.canvasCoord(v.pos).is_nearby(pos, 150)) {
+            if (v.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.VERTEX, index: index };
             }
         }
 
         for (const [index, link] of this.links.entries()) {
-            if (view.canvasCoord(link.cp).is_nearby(pos, 150)) {
+            if (link.canvas_cp.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.CONTROL_POINT, index: index };
             }
             if (this.is_click_over_link(index, pos)) {
@@ -263,7 +250,7 @@ export class Graph {
     get_vertex_index_nearby(pos: CanvasCoord) {
         for (let index of this.vertices.keys()) {
             let v = this.vertices.get(index);
-            if (view.canvasCoord(v.pos).is_nearby(pos, 150)) {
+            if (v.is_nearby(pos, 150)) {
                 return index;
             }
         }
@@ -304,8 +291,8 @@ export class Graph {
         const v = this.vertices.get(link.start_vertex)
         const w = this.vertices.get(link.end_vertex)
         const linkcp_canvas = view.canvasCoord(link.cp);
-        const v_canvas_pos = view.canvasCoord(v.pos);
-        const w_canvas_pos = view.canvasCoord(w.pos);
+        const v_canvas_pos = v.canvas_pos;
+        const w_canvas_pos = w.canvas_pos
 
         let x0 = v_canvas_pos.x;
         let y0 = v_canvas_pos.y;
@@ -391,20 +378,20 @@ export class Graph {
     }
 
     // todo : replace ServerCoord by CanvasCoord
-    align_position(pos: ServerCoord, mouse_server_coord: ServerCoord, excluded_indices: Set<number>) {
+    align_position(pos: CanvasCoord, mouse_canvas_coord: CanvasCoord, excluded_indices: Set<number>) {
         if (view.is_aligning) {
             view.alignement_horizontal = false;
             view.alignement_vertical = false;
             this.vertices.forEach((vertex, index) => {
                 if (excluded_indices.has(index) == false) {
-                    if (Math.abs(vertex.pos.y - mouse_server_coord.y) <= 15) {
-                        pos.y = vertex.pos.y;
+                    if (Math.abs(vertex.canvas_pos.y - mouse_canvas_coord.y) <= 15) {
+                        pos.y = vertex.canvas_pos.y;
                         view.alignement_horizontal = true;
                         view.alignement_horizontal_y = view.canvasCoordY(vertex.pos.y);
                         return;
                     }
-                    if (Math.abs(vertex.pos.x - mouse_server_coord.x) <= 15) {
-                        pos.x = vertex.pos.x;
+                    if (Math.abs(vertex.canvas_pos.x - mouse_canvas_coord.x) <= 15) {
+                        pos.x = vertex.canvas_pos.x;
                         view.alignement_vertical = true;
                         view.alignement_vertical_x = view.canvasCoordX(vertex.pos.x);
                         return;
@@ -422,6 +409,15 @@ export class Graph {
             }
         })
         return set;
+    }
+
+    update_canvas_pos() {
+        for (const v of this.vertices.values()) {
+            v.canvas_pos = view.canvasCoord(v.pos);
+        }
+        for (const link of this.links.values()) {
+            link.canvas_cp = view.canvasCoord(link.cp)
+        }
     }
 
 }
