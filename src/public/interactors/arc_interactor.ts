@@ -12,9 +12,14 @@ var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dan
 interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
         view.is_link_creating = true;
-        view.link_creating_start = new CanvasCoord(e.pageX, e.pageY);
+        const mouse_canvas_coord = view.canvasCoordFromMouse(e);
+        const pos = mouse_canvas_coord;
+        g.align_position(pos, mouse_canvas_coord, new Set(), canvas);
+
+        view.link_creating_start = pos;
         view.link_creating_type = ORIENTATION.DIRECTED;
-        socket.emit("add_vertex", view.serverCoord(e).x, view.serverCoord(e).y, (response) => { index_last_created_vertex = response });
+        const server_pos = view.serverCoord2(pos);
+        socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => { index_last_created_vertex = response });
     }
     if (d === DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(interactor_arc.last_down_index);
@@ -25,7 +30,7 @@ interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
 
 interactor_arc.mousemove = ((canvas, ctx, g, e) => {
     const u = view.canvasCoordFromMouse(e);
-    g.align_position(u, u, new Set());
+    g.align_position(u, u, new Set(), canvas);
     view.creating_vertex_pos = u;
     return true;
 })
@@ -63,7 +68,7 @@ interactor_arc.mouseup = ((canvas, ctx, g, e) => {
 
 })
 
-interactor_arc.trigger = (mouse_pos: CanvasCoord) =>{
+interactor_arc.trigger = (mouse_pos: CanvasCoord) => {
     view.is_creating_vertex = true;
     view.creating_vertex_pos = mouse_pos;
 }

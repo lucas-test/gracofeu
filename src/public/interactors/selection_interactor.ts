@@ -59,7 +59,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 const data_socket = new Array();
 
                 const mouse_canvas_coord = view.canvasCoordFromMouse(e);
-                g.align_position(mouse_canvas_coord, mouse_canvas_coord, g.get_selected_vertices());
+                g.align_position(mouse_canvas_coord, mouse_canvas_coord, g.get_selected_vertices(), canvas);
                 const mouse_server_coord = view.serverCoord2(mouse_canvas_coord);
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
@@ -95,7 +95,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             else {
                 const v = g.vertices.get(interactor_selection.last_down_index)
                 const mouse_canvas_coord = view.canvasCoordFromMouse(e);
-                g.align_position(mouse_canvas_coord, mouse_canvas_coord, new Set([interactor_selection.last_down_index]));
+                g.align_position(mouse_canvas_coord, mouse_canvas_coord, new Set([interactor_selection.last_down_index]), canvas);
                 v.canvas_pos = mouse_canvas_coord;
                 v.pos = view.serverCoord2(v.canvas_pos);
 

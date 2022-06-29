@@ -74,7 +74,7 @@ npm run dev
     - [ ] color picker utilisation
 - [ ] zone texte
 - [ ] dessin à main levée
-- [ ] grille magnétique
+- [X] grille magnétique
 - [X] aligner horizontalement/verticalement sur d'autres sommets
 - [ ] gestion tablette
 - [ ] optimisation possible en Math.floor() dans view.canvasCoord

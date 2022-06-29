@@ -378,7 +378,7 @@ export class Graph {
     }
 
     // todo : replace ServerCoord by CanvasCoord
-    align_position(pos: CanvasCoord, mouse_canvas_coord: CanvasCoord, excluded_indices: Set<number>) {
+    align_position(pos: CanvasCoord, mouse_canvas_coord: CanvasCoord, excluded_indices: Set<number>, canvas: HTMLCanvasElement) {
         if (view.is_aligning) {
             view.alignement_horizontal = false;
             view.alignement_vertical = false;
@@ -398,6 +398,23 @@ export class Graph {
                     }
                 }
             })
+        }
+        if (view.grid_show) {
+            const grid_size = view.grid_size;
+
+            for (let x = view.camera.x % grid_size; x < canvas.width; x += grid_size) {
+                if ( Math.abs(x - mouse_canvas_coord.x) <= 15  ){
+                    pos.x = x;
+                    break;
+                }
+            }
+
+            for (let y = view.camera.y % grid_size; y < canvas.height; y += grid_size) {
+                if ( Math.abs(y - mouse_canvas_coord.y) <= 15  ){
+                    pos.y = y;
+                    break;
+                }
+            }
         }
     }
 
