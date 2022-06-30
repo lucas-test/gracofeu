@@ -39,7 +39,7 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
     else if (down_type === DOWN_TYPE.EMPTY) {
 
         // TODO
-        if (false){ //(e.ctrlKey) {
+        if (false) { //(e.ctrlKey) {
             view.is_rectangular_selecting = true;
             view.selection_corner_1 = e; // peut etre faut copier
             view.selection_corner_2 = e; // peut etre faut copier
@@ -59,8 +59,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 const origin_vertex = g.vertices.get(interactor_selection.last_down_index);
                 const data_socket = new Array();
 
-                const mouse_canvas_coord = e; // peut etre faut copier
-                g.align_position(mouse_canvas_coord, mouse_canvas_coord, g.get_selected_vertices(), canvas);
+                const mouse_canvas_coord = g.align_position(e, g.get_selected_vertices(), canvas);
                 const mouse_server_coord = view.serverCoord2(mouse_canvas_coord);
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
@@ -95,8 +94,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             }
             else {
                 const v = g.vertices.get(interactor_selection.last_down_index)
-                const mouse_canvas_coord = e; // peut etre faut copier
-                g.align_position(mouse_canvas_coord, mouse_canvas_coord, new Set([interactor_selection.last_down_index]), canvas);
+                const mouse_canvas_coord = g.align_position(e, new Set([interactor_selection.last_down_index]), canvas);
                 v.canvas_pos = mouse_canvas_coord;
                 v.pos = view.serverCoord2(v.canvas_pos);
 

@@ -13,8 +13,7 @@ interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
         view.is_link_creating = true;
         const mouse_canvas_coord = e; // faut peut etre copier
-        const pos = mouse_canvas_coord;
-        g.align_position(pos, mouse_canvas_coord, new Set(), canvas);
+        const pos = g.align_position( mouse_canvas_coord, new Set(), canvas);
 
         view.link_creating_start = pos;
         view.link_creating_type = ORIENTATION.DIRECTED;
@@ -29,9 +28,7 @@ interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
 })
 
 interactor_arc.mousemove = ((canvas, ctx, g, e) => {
-    const u = e; // faut peut etre copier
-    g.align_position(u, u, new Set(), canvas);
-    view.creating_vertex_pos = u;
+    view.creating_vertex_pos = g.align_position(e, new Set(), canvas);
     return true;
 })
 

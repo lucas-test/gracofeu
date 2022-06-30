@@ -45,7 +45,7 @@ npm run dev
     - [X] CanvasCoord et ServerCoord
     - [X] sauvegarder les CanvasCoord des sommets, controlpoints pour moins de calcul ???
     - [X] corriger grille
-    - [ ] simplifier l'utilisation de g.align pour que ça soit plus clair
+    - [X] simplifier l'utilisation de g.align pour que ça soit plus clair
 
 - [X] control_point
 - [X] sélection au clic d'arête courbée

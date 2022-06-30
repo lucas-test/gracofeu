@@ -377,21 +377,23 @@ export class Graph {
         })
     }
 
-    // todo : replace ServerCoord by CanvasCoord
-    align_position(pos: CanvasCoord, mouse_canvas_coord: CanvasCoord, excluded_indices: Set<number>, canvas: HTMLCanvasElement) {
+    // align_position
+    // return a CanvasCoord near mouse_canvas_coord which aligned on other vertices or on the grid
+    align_position(pos_to_align: CanvasCoord, excluded_indices: Set<number>, canvas: HTMLCanvasElement) {
+        const aligned_pos = new CanvasCoord(pos_to_align.x, pos_to_align.y);
         if (view.is_aligning) {
             view.alignement_horizontal = false;
             view.alignement_vertical = false;
             this.vertices.forEach((vertex, index) => {
                 if (excluded_indices.has(index) == false) {
-                    if (Math.abs(vertex.canvas_pos.y - mouse_canvas_coord.y) <= 15) {
-                        pos.y = vertex.canvas_pos.y;
+                    if (Math.abs(vertex.canvas_pos.y - pos_to_align.y) <= 15) {
+                        aligned_pos.y = vertex.canvas_pos.y;
                         view.alignement_horizontal = true;
                         view.alignement_horizontal_y = view.canvasCoordY(vertex.pos.y);
                         return;
                     }
-                    if (Math.abs(vertex.canvas_pos.x - mouse_canvas_coord.x) <= 15) {
-                        pos.x = vertex.canvas_pos.x;
+                    if (Math.abs(vertex.canvas_pos.x - pos_to_align.x) <= 15) {
+                        aligned_pos.x = vertex.canvas_pos.x;
                         view.alignement_vertical = true;
                         view.alignement_vertical_x = view.canvasCoordX(vertex.pos.x);
                         return;
@@ -401,21 +403,20 @@ export class Graph {
         }
         if (view.grid_show) {
             const grid_size = view.grid_size;
-
             for (let x = view.camera.x % grid_size; x < canvas.width; x += grid_size) {
-                if ( Math.abs(x - mouse_canvas_coord.x) <= 15  ){
-                    pos.x = x;
+                if (Math.abs(x - pos_to_align.x) <= 15) {
+                    aligned_pos.x = x;
                     break;
                 }
             }
-
             for (let y = view.camera.y % grid_size; y < canvas.height; y += grid_size) {
-                if ( Math.abs(y - mouse_canvas_coord.y) <= 15  ){
-                    pos.y = y;
+                if (Math.abs(y - pos_to_align.y) <= 15) {
+                    aligned_pos.y = y;
                     break;
                 }
             }
         }
+        return aligned_pos;
     }
 
     get_selected_vertices(): Set<number> {

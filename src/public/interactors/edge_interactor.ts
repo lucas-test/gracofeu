@@ -15,10 +15,7 @@ export var interactor_edge = new Interactor("edge", "e", "edition.svg");
 interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {
         view.is_link_creating = true;
-
-        const mouse_canvas_coord = e; // faut peut etre copier
-        const pos = mouse_canvas_coord;
-        g.align_position(pos, mouse_canvas_coord, new Set(), canvas);
+        const pos = g.align_position(e, new Set(), canvas);
 
         view.link_creating_start = pos;
         view.link_creating_type = ORIENTATION.UNDIRECTED;
@@ -33,9 +30,7 @@ interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
 })
 
 interactor_edge.mousemove = ((canvas, ctx, g, e) => {
-    const u = e; // faut peut etre copier
-    g.align_position(u, u, new Set(), canvas);
-    view.creating_vertex_pos = u;
+    view.creating_vertex_pos = g.align_position(e, new Set(), canvas);
     return true;
 })
 
@@ -49,8 +44,7 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
 
             if (interactor_edge.last_down_index !== index) { // We check if we are not creating a vertex on another one
                 let save_last_down_index = interactor_edge.last_down_index; // see not below
-                const mouse_canvas_coord = e; // faut peut etre copier
-                g.align_position(mouse_canvas_coord, mouse_canvas_coord, new Set(), canvas);
+                const mouse_canvas_coord = g.align_position(e, new Set(), canvas);
                 const server_pos = view.serverCoord2(mouse_canvas_coord);
                 socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => {
                     socket.emit("add_link", save_last_down_index, response, "undirected");
@@ -65,9 +59,8 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
             socket.emit("add_link", index_last_created_vertex, index, "undirected");
         } else {
             if (index_last_created_vertex !== index) { // We check if we are not creating another vertex where we created the one with the mousedown 
-                const mouse_canvas_coord = e; // faut peut etre copier
-                g.align_position(mouse_canvas_coord, mouse_canvas_coord, new Set(), canvas);
-                const server_pos = view.serverCoord2(mouse_canvas_coord);
+                const aligned_mouse_pos = g.align_position(e, new Set(), canvas);
+                const server_pos = view.serverCoord2(aligned_mouse_pos);
                 socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => {
                     socket.emit("add_link", index_last_created_vertex, response, "undirected");
                 });
@@ -78,7 +71,7 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
 
 })
 
-interactor_edge.trigger = (mouse_pos: CanvasCoord) =>{
+interactor_edge.trigger = (mouse_pos: CanvasCoord) => {
     view.is_creating_vertex = true;
     view.creating_vertex_pos = mouse_pos;
 }
