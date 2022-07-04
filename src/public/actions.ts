@@ -146,8 +146,24 @@ align_action.trigger = () => {
 }
 
 
+
+let grid_action = new Action("grid_mode", "Show Grid", "grid.svg");
+grid_action.trigger = () => {
+    view.grid_show = !view.grid_show;
+    const grid_div = document.getElementById("grid_mode");
+    if (view.grid_show) {
+        grid_div.classList.add("action_activated");
+    }
+    else {
+        grid_div.classList.remove("action_activated");
+    }
+}
+
+
+
 let actions_available = new Array<Action>();
-actions_available.push(align_action, index_action, share_action, save_file_action, load_file_action)
+actions_available.push(grid_action, align_action, index_action, share_action, save_file_action, load_file_action)
+
 
 
 export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
