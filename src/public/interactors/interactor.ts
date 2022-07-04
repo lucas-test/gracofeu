@@ -6,7 +6,8 @@ export enum DOWN_TYPE {
     EMPTY = "EMPTY",
     VERTEX = "VERTEX",
     LINK = "LINK",
-    CONTROL_POINT = "CONTROL_POINT"
+    CONTROL_POINT = "CONTROL_POINT",
+    STROKE = "STROKE"
 }
 
 

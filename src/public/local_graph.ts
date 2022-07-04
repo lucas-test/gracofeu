@@ -1,6 +1,7 @@
 
 import { INDEX_TYPE, view } from "./camera";
 import { DOWN_TYPE } from "./interactors/interactor";
+import { Stroke } from "./stroke";
 
 export class Coord {
     x: number;
@@ -204,10 +205,12 @@ export class Link {
 export class Graph {
     vertices: Map<number, LocalVertex>;
     links: Map<number, Link>;
+    strokes: Map<number, Stroke>;
 
     constructor() {
         this.vertices = new Map();
         this.links = new Map();
+        this.strokes = new Map();
     }
 
 
@@ -241,6 +244,13 @@ export class Graph {
             }
             if (this.is_click_over_link(index, pos)) {
                 return { type: DOWN_TYPE.LINK, index: index };
+            }
+        }
+
+        for(const [index,s] of this.strokes.entries()){
+            var last = s.last;
+            if(last.is_nearby(pos, 150)){     
+                return { type: DOWN_TYPE.STROKE, index: index };
             }
         }
 

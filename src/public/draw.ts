@@ -9,6 +9,7 @@ const COLOR_ALIGNEMENT_LINE = "#555555"
 import { INDEX_TYPE, view } from './camera';
 import { User, users } from './user';
 import { CanvasCoord, Graph, ORIENTATION } from './local_graph';
+import { Stroke } from './stroke';
 
 
 
@@ -253,9 +254,36 @@ function draw_alignements(ctx: CanvasRenderingContext2D) {
 
 }
 
+
+function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
+    ctx.beginPath();
+    if(!s.is_last())
+        ctx.moveTo(s.pos.x + view.camera.x, s.pos.y + view.camera.y);
+    while(!s.is_last()){
+        ctx.strokeStyle = s.color;
+        ctx.lineWidth = s.width;
+        ctx.lineTo(s.next.pos.x + view.camera.x, s.next.pos.y + view.camera.y);
+        s = s.next;
+    }
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.strokeStyle = "#F00";
+    ctx.rect(s.min_prev_x + view.camera.x , s.min_prev_y + view.camera.y, s.max_prev_x - s.min_prev_x, s.max_prev_y - s.min_prev_y);
+    ctx.stroke();
+}
+
+
+function draw_strokes(ctx: CanvasRenderingContext2D, g:Graph){
+    g.strokes.forEach(s => {
+        draw_stroke(ctx, s);
+    });
+}
+
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
     draw_alignements(ctx);
+    draw_strokes(ctx, g);
     draw_links(ctx, g);
     draw_link_creating(ctx);
     draw_vertices(ctx, g);
