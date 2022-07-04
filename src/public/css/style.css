@@ -101,7 +101,10 @@ body {
     font-weight: bold;
     background-color: #333333;
     border: 1px solid white;
+    border-radius: 2px;
     padding-left: 3px;
     padding-right: 3px;
-    border-radius: 1px;
+    font-weight: bold;
+    box-shadow: #fff 2px 2px;
+    margin-left: 10px;
 }

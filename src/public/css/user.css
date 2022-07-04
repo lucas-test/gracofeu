@@ -14,8 +14,10 @@
     border-radius: 50%;
     width: 20px;
     height: 20px;
-    text-align: center;
     margin: 0px 2px;
     cursor: pointer;
     font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
