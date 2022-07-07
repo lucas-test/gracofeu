@@ -1,63 +1,60 @@
 import { CanvasCoord, Coord, ServerCoord } from "./local_graph";
 
 export class Stroke{
-    pos:ServerCoord;
+    positions:Array<ServerCoord>;
+    old_pos:ServerCoord;
     color:string;
     width:number;
-    next:Stroke;
-    pred:Stroke;
-    min_prev_x: number;
-    max_prev_x: number;
-    min_prev_y: number;
-    max_prev_y: number;
-    last:Stroke;
+    top_left: ServerCoord;
+    bot_right: ServerCoord;
+    is_selected:boolean;
     
-    constructor(pos:ServerCoord, color:string, width:number, pred:Stroke){
-        this.pos = pos;
-        this.pred = pred;
+    constructor(pos:Array<ServerCoord>, color:string, width:number){
+        this.positions = pos;
         this.color = color;
         this.width = width;
-        this.next = null;
-        if(pred !== null){
-            pred.next = this;
-            this.max_prev_x = Math.max(pos.x, pred.max_prev_x);
-            this.min_prev_x = Math.min(pos.x, pred.min_prev_x);
-            this.max_prev_y = Math.max(pos.y, pred.max_prev_y);
-            this.min_prev_y = Math.min(pos.y, pred.min_prev_y);
+        this.is_selected = false;
+        if(pos.length>0){
+            this.old_pos = new ServerCoord(pos[0].x, pos[0].y);
+            this.top_left = new ServerCoord(pos[0].x, pos[0].y);
+            this.bot_right = new ServerCoord(pos[0].x, pos[0].y);
+            for(let i = 1; i<pos.length; i++){
+                this.bot_right.x = Math.max(pos[i].x, this.bot_right.x);
+                this.top_left.x = Math.min(pos[i].x, this.top_left.x);
+                this.bot_right.y = Math.max(pos[i].y, this.bot_right.y);
+                this.top_left.y = Math.min(pos[i].y, this.top_left.y);
+            }
         }
         else{
-            this.max_prev_x = pos.x;
-            this.min_prev_x = pos.x;
-            this.max_prev_y = pos.y;
-            this.min_prev_y = pos.y;
-        }
-        this.last = null;
-    }
-
-    is_last(){
-        return this.next === null;
-    }
-
-    set_last(last:Stroke){
-        this.last = last;
-        if(this.pred !== null){
-            this.pred.set_last(last);
+            this.old_pos = null;
+            this.top_left = null;
+            this.bot_right = null;
         }
     }
 
     is_nearby(pos:Coord, r:number){
-        if (pos.x > this.max_prev_x || pos.x < this.min_prev_x || pos.y > this.max_prev_y || pos.y < this.min_prev_y)
+        if (pos.x > this.bot_right.x || pos.x < this.top_left.x || pos.y > this.bot_right.y || pos.y < this.top_left.y)
         {
             return false;
         }
-        else if(this.pred === null){
-            return (pos.dist2(this.pos) <= r);
-        }
-        else{
 
-        // TODO: Next to the LINE between the two last instead of checking the vertices only.
-            return (pos.dist2(this.pos) <= r) || this.pred.is_nearby(pos, r);
+        for(let i = 0; i<this.positions.length; i++){
+            // TODO: Next to the LINE between the two last instead of checking the vertices only.
+            if(pos.dist2(this.positions[i]) <= r){
+                return i;
+            }
         }
+
+        return false;
+    }
+
+
+    push(pos:ServerCoord){
+        this.positions.push(pos);
+        this.bot_right.x = Math.max(pos.x, this.bot_right.x);
+        this.top_left.x = Math.min(pos.x, this.top_left.x);
+        this.bot_right.y = Math.max(pos.y, this.bot_right.y);
+        this.top_left.y = Math.min(pos.y, this.top_left.y);
     }
 
 }

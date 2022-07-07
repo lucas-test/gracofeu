@@ -36,6 +36,9 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
         console.log("down link")
         // TODO : what to do ? 
     }
+    else if(down_type === DOWN_TYPE.STROKE) {
+        console.log("down stroke");
+    }
     else if (down_type === DOWN_TYPE.EMPTY) {
 
         // TODO
@@ -178,6 +181,25 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
             }
         }
 
+    }
+    else if (interactor_selection.last_down === DOWN_TYPE.STROKE)
+    {
+        if (interactor_selection.has_moved === false) {
+            if (g.strokes.get(interactor_selection.last_down_index).is_selected) {
+                if (false) { //e.ctrlKey) {
+                    g.strokes.get(interactor_selection.last_down_index).is_selected = false;
+                }
+            }
+            else {
+                if (false) { //(e.ctrlKey) {
+                    g.strokes.get(interactor_selection.last_down_index).is_selected = true;
+                }
+                else {
+                    g.clear_all_selections();
+                    g.strokes.get(interactor_selection.last_down_index).is_selected = true;
+                }
+            }
+        }
     }
     else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
         if (view.is_rectangular_selecting) {

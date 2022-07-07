@@ -3,6 +3,7 @@ import { draw, draw_circle, draw_vertex } from "./draw";
 import { update_user_list_div, User, users } from "./user";
 import { Coord, Graph, Link, LocalVertex, ORIENTATION, ServerCoord } from "./local_graph";
 import { view } from "./camera";
+import { Stroke } from "./stroke";
 export const socket = io()
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -52,6 +53,20 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     //     }
     // }
 
+    socket.on('strokes', handle_strokes);
+
+    function handle_strokes(data){
+        // console.log(data);
+        g.strokes.clear();
+        for(const s of data){
+            const positions = [];
+            s[1].positions.forEach(e => {
+                positions.push(new ServerCoord(e.x, e.y));
+            });
+            const new_stroke = new Stroke(positions, s[1].color, s[1].width);
+            g.strokes.set(s[0], new_stroke);
+        }
+    }
 
     // GRAPH 
     socket.on('update_vertex_position', update_vertex_position);

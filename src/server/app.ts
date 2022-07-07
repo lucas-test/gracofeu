@@ -67,7 +67,8 @@ io.sockets.on('connection', function (client) {
     let g = new Graph();
     g.add_vertex(200, 100);
     room_graphs.set(room_id, g);
-    emit_graph_to_room()
+    emit_graph_to_room();
+    emit_strokes_to_room();
     // emit_users_to_client();
 
     if (ENV.mode == "dev") {
@@ -84,6 +85,10 @@ io.sockets.on('connection', function (client) {
 
     function emit_graph_to_room() {
         io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.links.entries()]);
+    }
+
+    function emit_strokes_to_room(){
+        io.sockets.in(room_id).emit('strokes', [...g.strokes.entries()]);
     }
 
     // function emit_users_to_client(){
@@ -138,6 +143,12 @@ io.sockets.on('connection', function (client) {
     client.on('update_control_point', handle_update_control_point);
     client.on('update_control_points', handle_update_control_points);
     client.on('update_colors', handle_update_colors);
+    client.on('add_stroke', handle_add_stroke);
+
+    function handle_add_stroke(positions:any, old_pos:any, color:string, width:number, top_left:any, bot_right:any){
+        g.add_stroke(positions, old_pos, color, width, top_left, bot_right);
+        emit_strokes_to_room();
+    }
 
     function handle_update_colors(data) {
         for (const element of data) {

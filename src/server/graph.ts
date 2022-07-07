@@ -3,14 +3,17 @@ import { Link, ORIENTATION } from './link';
 import { Vertex } from './vertex';
 
 import { Coord, middle } from './coord';
+import { Stroke } from './stroke';
 
 export class Graph {
     vertices: Map<number, Vertex>;
     links: Map<number, Link>;
+    strokes: Map<number, Stroke>;
 
     constructor() {
         this.vertices = new Map();
         this.links = new Map();
+        this.strokes = new Map();
     }
 
 
@@ -30,6 +33,13 @@ export class Graph {
         return index;
     }
 
+    get_next_available_index_strokes(){
+        let index = 0;
+        while (this.strokes.has(index)) {
+            index += 1;
+        }
+        return index;
+    }
 
 
 
@@ -41,6 +51,7 @@ export class Graph {
         }
         return;
     }
+
 
 
     add_vertex(x: number, y: number) {
@@ -76,6 +87,23 @@ export class Graph {
         this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), orientation));
         return index;
     }
+
+
+    add_stroke(positions_data:any, old_pos_data:any, color:string, width:number, top_left_data:any, bot_right_data:any) {
+        // console.log(positions_data, old_pos_data, color, width, top_left_data, bot_right_data);
+        const index = this.get_next_available_index_strokes();
+        const positions = [];
+        positions_data.forEach(e => {
+            // console.log(e);
+            positions.push(new Coord(e[1].x, e[1].y));
+        });
+        const old_pos = new Coord(old_pos_data.x, old_pos_data.y);
+        const top_left = new Coord(top_left_data.x, top_left_data.y);
+        const bot_right = new Coord(bot_right_data.x, bot_right_data.y);
+
+        this.strokes.set(index, new Stroke(positions, old_pos, color, width, top_left, bot_right));
+    }
+
 
     add_link_with_cp(i: number, j: number, orientation: ORIENTATION, cp: Coord) {
         const index = this.add_link(i, j, orientation);

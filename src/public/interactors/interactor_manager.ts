@@ -46,6 +46,12 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                     data_socket.push({ type: "link", index: index });
                 }
             })
+            g.strokes.forEach((s, index) => {
+                if (s.is_selected) {
+                    data_socket.push({ type: "stroke", index: index });
+                }
+            })
+
             socket.emit("delete_selected_elements", data_socket);
             return;
         }

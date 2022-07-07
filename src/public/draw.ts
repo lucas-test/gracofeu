@@ -256,21 +256,32 @@ function draw_alignements(ctx: CanvasRenderingContext2D) {
 
 
 function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
-    ctx.beginPath();
-    if(!s.is_last())
-        ctx.moveTo(s.pos.x + view.camera.x, s.pos.y + view.camera.y);
-    while(!s.is_last()){
+    if(s.positions.length > 0){ 
+        if(s.is_selected){
+            ctx.beginPath();
+            ctx.strokeStyle = SELECTION_COLOR;
+            ctx.lineWidth = 1;
+            ctx.rect(s.top_left.x + view.camera.x - 3 , s.top_left.y + view.camera.y - 3, s.bot_right.x - s.top_left.x + 6, s.bot_right.y - s.top_left.y + 6);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.lineWidth = s.width + 4;
+            ctx.moveTo(s.positions[0].x + view.camera.x, s.positions[0].y + view.camera.y);
+            for(let i = 1; i<s.positions.length; i++){
+                ctx.lineTo(s.positions[i].x + view.camera.x, s.positions[i].y + view.camera.y);
+            }
+            ctx.stroke();
+        }
+
+        ctx.beginPath();
         ctx.strokeStyle = s.color;
         ctx.lineWidth = s.width;
-        ctx.lineTo(s.next.pos.x + view.camera.x, s.next.pos.y + view.camera.y);
-        s = s.next;
+        ctx.moveTo(s.positions[0].x + view.camera.x, s.positions[0].y + view.camera.y);
+        for(let i = 1; i<s.positions.length; i++){
+            ctx.lineTo(s.positions[i].x + view.camera.x, s.positions[i].y + view.camera.y);
+        }
+        ctx.stroke();
     }
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.strokeStyle = "#F00";
-    ctx.rect(s.min_prev_x + view.camera.x , s.min_prev_y + view.camera.y, s.max_prev_x - s.min_prev_x, s.max_prev_y - s.min_prev_y);
-    ctx.stroke();
 }
 
 

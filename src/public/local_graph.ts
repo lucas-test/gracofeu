@@ -105,7 +105,7 @@ export class LocalVertex {
         return `v${index}`;
     }
     tikzify_coordinate(index: number) {
-        return `\\coordinate (${this.get_tikz_coordinate(index)}) at (${this.pos.x}/100, ${this.pos.y}/100);`;
+        return `\\coordinate (${this.get_tikz_coordinate(index)}) at (${Math.round(this.pos.x)/100}, ${Math.round(this.pos.y)/100});`;
     }
 
     tikzify_node(index: number) {
@@ -195,7 +195,7 @@ export class Link {
         // if (showLabels)
         // labelCode = "node[midway, shift={(" + this.label.getExactLabelOffsetX() / 100 + "," + -this.label.getExactLabelOffsetY() / 100 + ")}, scale = \\scaleE] {" + this.label.text + "}";
 
-        return `\\draw[line width = \\scaleE, color = black] (${start.get_tikz_coordinate(start_index)}) .. controls (${this.cp.x}/100, ${this.cp.y}/100) .. (${end.get_tikz_coordinate(end_index)}) ${labelCode};`;
+        return `\\draw[line width = \\scaleE, color = black] (${start.get_tikz_coordinate(start_index)}) .. controls (${Math.round(this.cp.x)/100}, ${Math.round(this.cp.y)/100}) .. (${end.get_tikz_coordinate(end_index)}) ${labelCode};`;
 
     }
 
@@ -224,11 +224,18 @@ export class Graph {
         this.links.forEach(link => {
             link.is_selected = false;
         });
+    } 
+    
+    deselect_all_strokes() {
+        this.strokes.forEach(s => {
+            s.is_selected = false;
+        });
     }
 
     clear_all_selections() {
         this.deselect_all_vertices();
         this.deselect_all_links();
+        this.deselect_all_strokes();
     }
 
     get_element_nearby(pos: CanvasCoord) {
@@ -248,8 +255,7 @@ export class Graph {
         }
 
         for(const [index,s] of this.strokes.entries()){
-            var last = s.last;
-            if(last.is_nearby(pos, 150)){     
+            if(s.is_nearby(pos, 150)){     
                 return { type: DOWN_TYPE.STROKE, index: index };
             }
         }

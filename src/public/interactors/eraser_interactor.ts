@@ -21,9 +21,8 @@ interactor_eraser.mousedown = ((d, k, canvas, ctx, g, e) => {
 interactor_eraser.mousemove = ((canvas, ctx, g, e) => {
     if(is_erasing){
         for(const [index,s] of g.strokes.entries()){
-            var last = s.last;
             const server_pos = view.serverCoord2(e);
-            if(last.is_nearby(server_pos, 50)){
+            if(s.is_nearby(server_pos, 50) !== false){
                 console.log("CLOSE!!");
                 g.strokes.delete(index);
                 return true;
