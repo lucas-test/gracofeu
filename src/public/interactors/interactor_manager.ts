@@ -10,6 +10,7 @@ import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';
 import { interactor_eraser } from './eraser_interactor';
+import { interactor_area } from './area_interactor';
 
 // INTERACTOR MANAGER
 
@@ -180,7 +181,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
 
-let interactors_available = [interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser];
+let interactors_available = [interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_area];
 
 function deselect_all_interactor_div() {
     for (let div of document.getElementsByClassName("interactor")) {

@@ -10,6 +10,7 @@ import { INDEX_TYPE, view } from './camera';
 import { User, users } from './user';
 import { CanvasCoord, Graph, ORIENTATION } from './local_graph';
 import { Stroke } from './stroke';
+import { Area } from './area';
 
 
 
@@ -254,7 +255,7 @@ function draw_alignements(ctx: CanvasRenderingContext2D) {
 
 }
 
-
+// DRAW STROKES
 function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
     if(s.positions.length > 0){ 
         if(s.is_selected){
@@ -291,8 +292,39 @@ function draw_strokes(ctx: CanvasRenderingContext2D, g:Graph){
     });
 }
 
+
+// DRAW AREA
+function draw_area(ctx: CanvasRenderingContext2D, a:Area){
+    ctx.beginPath();
+        ctx.strokeStyle = a.color;
+        ctx.lineWidth = 2;
+        ctx.rect(a.c1.x + view.camera.x , a.c1.y + view.camera.y - 3, a.c2.x - a.c1.x, a.c2.y - a.c1.y);
+        ctx.stroke();
+
+        ctx.globalAlpha = 0.07;
+        ctx.fillStyle = a.color;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        ctx.beginPath();
+        ctx.font = "400 24px Arial";
+        ctx.fillStyle = a.color;
+        ctx.fillText(a.label, Math.min(a.c1.x, a.c2.x) + view.camera.x + 5, Math.max(a.c1.y, a.c2.y) + view.camera.y - 10);
+        ctx.fill();
+
+}
+
+
+function draw_areas(ctx:CanvasRenderingContext2D, g:Graph)
+{
+    g.areas.forEach(a => {
+        draw_area(ctx, a);
+    });
+}
+
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
+    draw_areas(ctx, g);
     draw_alignements(ctx);
     draw_strokes(ctx, g);
     draw_links(ctx, g);
