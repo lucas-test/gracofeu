@@ -116,7 +116,6 @@ npm run dev
 # Known issues 
 - [ ] zoom does not affect other's cursor position
 - [ ] changing your own label triggers shortcuts
-- [ ] edges number not updated on creation 
 - [ ] Chrome : no export to file? 
 
 
