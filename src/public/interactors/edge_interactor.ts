@@ -54,7 +54,7 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
             }
         }
     } else if (interactor_edge.last_down === DOWN_TYPE.EMPTY) {
-        let index = g.get_vertex_index_nearby(e);
+        let index = g.get_vertex_index_nearby(g.align_position(e, new Set(), canvas));
         if (index !== null && index != index_last_created_vertex) {
             socket.emit("add_link", index_last_created_vertex, index, "undirected");
         } else {
