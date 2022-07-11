@@ -108,7 +108,7 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     const user_canvas_coord = user.canvas_pos;
     drawRoundRect(ctx, user_canvas_coord.x + 10, user_canvas_coord.y + 17, text.width + 10, 21, 5, user.color, user.color);
 
-    const contrast_color = invertColor(user.color);
+    const contrast_color = user.contrast_color;
 
     // username
     ctx.beginPath();
@@ -118,7 +118,7 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
 
 
     // DRAW ARROW
-    const darken_color = shadeColor(user.color, -60);
+    const darken_color = user.border_color;
     const brighter_color = shadeColor(user.color, 120);
 
     // Background
@@ -314,7 +314,7 @@ export function invertColor(hex: string) {
     if (hex.length === 3) {
         hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
     }
-    console.log(hex);
+    // console.log(hex);
     if (hex.length !== 6) {
         throw new Error('Invalid HEX color.');
     }
