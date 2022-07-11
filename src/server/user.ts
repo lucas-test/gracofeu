@@ -1,17 +1,19 @@
 export class User {
     label: string;
+    id:string;
     color: string;
 
-    constructor(id: string) {
+    constructor(id: string, color:string) {
+        this.id = id;
         this.label = id.substring(0, 5)
-        this.color = getRandomColor();
+        this.color = color;
     }
 }
 
 export const users = new Map<string, User>();
 
 // TO REMOVE
-function getRandomColor() {
+export function getRandomColor() {
     const h = 360 * Math.random();
     const s = (20 + 80 * Math.random())
     const l = (35 + 50 * Math.random()) / 100;

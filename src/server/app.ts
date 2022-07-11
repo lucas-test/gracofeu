@@ -2,7 +2,7 @@ import express from 'express';
 import { Graph } from './graph';
 import ENV from './.env.json';
 import { Vertex } from './vertex';
-import { User, users } from './user';
+import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
 
@@ -52,9 +52,9 @@ io.sockets.on('connection', function (client) {
 
     // INIT NEW PLAYER
     console.log("connection from ", client.id);
-    client.emit('myId', client.id, Date.now());
-    const user_data = new User(client.id);
+    const user_data = new User(client.id, getRandomColor());
     users.set(client.id, user_data);
+    client.emit('myId', user_data.id, user_data.label, user_data.color,  Date.now());
 
 
     // ROOM CREATION
@@ -102,6 +102,18 @@ io.sockets.on('connection', function (client) {
     client.on('disconnect', handle_disconnect);
     client.on('change_room_to', handle_change_room_to);
     client.on('get_room_id', (callback) => { callback(handle_get_room_id()) });
+    client.on('update_self_user', handle_update_self_user);
+
+    function handle_update_self_user(label:string, color:string){
+        if(users.has(client.id)){
+            users.get(client.id).color=color;
+            users.get(client.id).label=label;
+            client.to(room_id).emit('update_other_self_user', client.id, label, color);
+        }
+        else{
+            console.log("Error, client not found", client.id);
+        }
+    }
 
     function handle_get_room_id() {
         return room_id;

@@ -1,10 +1,11 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
-import { update_user_list_div, User, users } from "./user";
+import { Self, self_user, update_self_user_div, update_user_list_div, User, users } from "./user";
 import { Coord, Graph, Link, LocalVertex, ORIENTATION, ServerCoord } from "./local_graph";
 import { view } from "./camera";
 import { Stroke } from "./stroke";
 export const socket = io()
+
 
 export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
 
@@ -13,10 +14,23 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_user', update_user);
     socket.on('remove_user', remove_user);
     // socket.on('clients', handle_clients);
+    socket.on('update_other_self_user', update_other_self_user);
+
+    function update_other_self_user(id:string, label:string, color:string){
+        // console.log(id, label, color);
+        if (users.has(id)) {
+            users.get(id).set_color(color);
+            users.get(id).label = label;
+        }
+        else {
+            users.set(id, new User(label, color));
+        }
+        update_user_list_div();
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    }
 
 
-
-    function handle_my_id(id: string) {
+    function handle_my_id(id: string, label:string, color:string) {
         let url = new URL(document.URL);
         let urlsp = url.searchParams;
         let room_id = encodeURI(urlsp.get("room_id"));
@@ -24,6 +38,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             console.log("room_id : ", room_id);
             socket.emit("change_room_to", room_id);
         }
+
+        self_user.init(id, label, color);
+        update_self_user_div();
     }
 
     function update_user(id: string, label: string, color: string, x: number, y: number) {
