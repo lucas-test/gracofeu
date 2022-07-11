@@ -9,20 +9,22 @@ export class Action {
     info: string;
     img_src: string;
     subactions: Array<Action>;
+    shortcut: string;
     trigger: () => void;
 
-    constructor(name: string, info: string, img_src: string) {
+    constructor(name: string, info: string, img_src: string, shortcut: string) {
         this.name = name;
         this.info = info;
         this.img_src = img_src;
         this.subactions = new Array<Action>();
+        this.shortcut = shortcut;
         this.trigger = () => { };
     }
 }
 
 
 
-let share_action = new Action("share_link", "Share url", "share.svg");
+let share_action = new Action("share_link", "Share url", "share.svg", "");
 
 share_action.trigger = () => {
     socket.emit("get_room_id", (room_id: string) => {
@@ -46,7 +48,7 @@ share_action.trigger = () => {
 
 
 
-const save_tikz_file = new Action("export_tex", "Export to .tex", "export_tex.svg");
+const save_tikz_file = new Action("export_tex", "Export to .tex", "export_tex.svg", "");
 save_tikz_file.trigger = () => {
     const tikz_data = TikZ_create_file_data(local_graph);
     const a = document.createElement("a");
@@ -55,7 +57,7 @@ save_tikz_file.trigger = () => {
     a.click();
 }
 
-const save_gco_file = new Action("export_gco", "Export to .gco", "export_gco.svg");
+const save_gco_file = new Action("export_gco", "Export to .gco", "export_gco.svg", "");
 save_gco_file.trigger = () => {
     socket.emit("get_json", (response: string) => {
         const a = document.createElement("a");
@@ -66,13 +68,13 @@ save_gco_file.trigger = () => {
 }
 
 
-const save_file_action = new Action("save_file", "Export to file", "export.svg");
+const save_file_action = new Action("save_file", "Export to file", "export.svg", "");
 save_file_action.subactions.push(save_tikz_file, save_gco_file);
 
 
 
 
-let load_file_action = new Action("load_file", "Load file", "import.svg");
+let load_file_action = new Action("load_file", "Load file", "import.svg", "");
 
 
 
@@ -97,43 +99,43 @@ load_file_action.trigger = () => {
 }
 
 
-let change_to_none_index = new Action("index_type_none", "None", "index_none.svg");
+let change_to_none_index = new Action("index_type_none", "None", "index_none.svg", "");
 change_to_none_index.trigger = () => {
     view.index_type = INDEX_TYPE.NONE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_number_stable_index = new Action("index_type_number_stable", "Stable numeric", "index_number_stable.svg");
+let change_to_number_stable_index = new Action("index_type_number_stable", "Stable numeric", "index_number_stable.svg", "");
 change_to_number_stable_index.trigger = () => {
     view.index_type = INDEX_TYPE.NUMBER_STABLE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_number_unstable_index = new Action("index_type_number_unstable", "Unstable numeric", "index_number_unstable.svg");
+let change_to_number_unstable_index = new Action("index_type_number_unstable", "Unstable numeric", "index_number_unstable.svg", "");
 change_to_number_unstable_index.trigger = () => {
     view.index_type = INDEX_TYPE.NUMBER_UNSTABLE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_alpha_stable_index = new Action("index_type_alpha_stable", "Stable alphabetic", "index_alpha_stable.svg");
+let change_to_alpha_stable_index = new Action("index_type_alpha_stable", "Stable alphabetic", "index_alpha_stable.svg", "");
 change_to_alpha_stable_index.trigger = () => {
     view.index_type = INDEX_TYPE.ALPHA_STABLE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_alpha_unstable_index = new Action("index_type_number_stable", "Unstable alphabetic", "index_alpha_unstable.svg");
+let change_to_alpha_unstable_index = new Action("index_type_number_stable", "Unstable alphabetic", "index_alpha_unstable.svg", "");
 change_to_alpha_unstable_index.trigger = () => {
     view.index_type = INDEX_TYPE.ALPHA_UNSTABLE;
     local_graph.compute_vertices_index_string();
 }
 
 
-let index_action = new Action("index_type", "Automatic numerotation", "index.svg");
+let index_action = new Action("index_type", "Automatic numerotation", "index.svg", "");
 
 index_action.subactions.push(change_to_none_index, change_to_number_stable_index, change_to_number_unstable_index, change_to_alpha_stable_index, change_to_alpha_unstable_index);
 
 
-let align_action = new Action("align_mode", "Automatic alignement", "align.svg");
+let align_action = new Action("align_mode", "Automatic alignement", "align.svg", "");
 align_action.trigger = () => {
     view.is_aligning = !view.is_aligning;
     const align_div = document.getElementById("align_mode");
@@ -147,7 +149,7 @@ align_action.trigger = () => {
 
 
 
-let grid_action = new Action("grid_mode", "Show Grid", "grid.svg");
+let grid_action = new Action("grid_mode", "Show Grid", "grid.svg", "g");
 grid_action.trigger = () => {
     view.grid_show = !view.grid_show;
     const grid_div = document.getElementById("grid_mode");
@@ -161,9 +163,14 @@ grid_action.trigger = () => {
 
 
 
-let actions_available = new Array<Action>();
+export let actions_available = new Array<Action>();
 actions_available.push(grid_action, align_action, index_action, share_action, save_file_action, load_file_action)
 
+export function select_action(action: Action, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph){
+    document.getElementById(action.name + "_subactions").style.display = "block";
+    action.trigger();
+    requestAnimationFrame(function () { draw(canvas, ctx, g) });
+}
 
 
 export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -209,14 +216,18 @@ export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderin
         // RECAP
         let div_recap = document.createElement("div");
         div_recap.classList.add("interactor_recap");
-        div_recap.innerHTML = action.info;
+        if ( action.shortcut != ""){
+            div_recap.innerHTML = action.info + " <span class='shortcut'>" + action.shortcut + "</span>";
+        }else {
+            div_recap.innerHTML = action.info;
+        }
         document.body.appendChild(div_recap);
 
         newDiv.onmouseenter = function () {
             var offsets = newDiv.getBoundingClientRect();
             div_recap.style.display = "block";
-            div_recap.style.left = String(offsets.left); // String(e.clientX + 30)
-            div_recap.style.top = "70"; //String(e.clientY - 16)
+            div_recap.style.left = String(offsets.left); 
+            div_recap.style.top = "70";
         }
 
         newDiv.onmouseleave = function () {

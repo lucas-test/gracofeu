@@ -11,6 +11,7 @@ import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';
 import { interactor_eraser } from './eraser_interactor';
 import { interactor_area } from './area_interactor';
+import { actions_available, select_action } from '../actions';
 
 // INTERACTOR MANAGER
 
@@ -56,18 +57,16 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             socket.emit("delete_selected_elements", data_socket);
             return;
         }
-        else if (e.key == "g") {
-            view.toggle_grid();
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
-            return;
-        }
         for (let interactor of interactors_available) {
             if (interactor.shortcut == e.key) {
                 deselect_all_interactor_div()
                 select_interactor(interactor, canvas, ctx, g);
                 return;
+            }
+        }
+        for( const action of actions_available){
+            if( action.shortcut == e.key){
+                select_action(action, canvas, ctx, g);
             }
         }
     });

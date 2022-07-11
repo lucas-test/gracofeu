@@ -4,6 +4,7 @@ import { Self, self_user, update_self_user_div, update_user_list_div, User, user
 import { Coord, Graph, Link, LocalVertex, ORIENTATION, ServerCoord } from "./local_graph";
 import { view } from "./camera";
 import { Stroke } from "./stroke";
+import { update_params_loaded } from "./parametors/parametor_manager";
 export const socket = io()
 
 
@@ -143,7 +144,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         }
 
         g.compute_vertices_index_string();
-
+        update_params_loaded(g);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     })
 
