@@ -1,3 +1,4 @@
+import { view } from "./camera";
 import { CanvasCoord, Coord, ServerCoord } from "./local_graph";
 
 export class Stroke{
@@ -32,15 +33,16 @@ export class Stroke{
         }
     }
 
-    is_nearby(pos:Coord, r:number){
-        if (pos.x > this.bot_right.x || pos.x < this.top_left.x || pos.y > this.bot_right.y || pos.y < this.top_left.y)
+    is_nearby(pos:CanvasCoord, r:number){
+        const server_pos = view.serverCoord2(pos);
+        if (server_pos.x > this.bot_right.x || server_pos.x < this.top_left.x || server_pos.y > this.bot_right.y || server_pos.y < this.top_left.y)
         {
             return false;
         }
 
         for(let i = 0; i<this.positions.length; i++){
             // TODO: Next to the LINE between the two last instead of checking the vertices only.
-            if(pos.dist2(this.positions[i]) <= r){
+            if(server_pos.dist2(this.positions[i]) <= r){
                 return i;
             }
         }

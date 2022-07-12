@@ -257,6 +257,18 @@ export class Graph {
             }
         }
 
+        for(const [index,a] of this.areas.entries()){
+            const corner_index = a.is_nearby_corner(pos, 50);
+            if( corner_index != false){
+                return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index};
+            }
+            const side_index = a.is_nearby_side(pos, 10);
+            if( side_index != false){
+                return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index};
+            }
+        }
+
+
         for(const [index,s] of this.strokes.entries()){
             if(s.is_nearby(pos, 150)){     
                 return { type: DOWN_TYPE.STROKE, index: index };

@@ -259,27 +259,35 @@ function draw_alignements(ctx: CanvasRenderingContext2D) {
 function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
     if(s.positions.length > 0){ 
         if(s.is_selected){
+            const tlcanvas = view.canvasCoord(s.top_left);
+            const brcanvas = view.canvasCoord(s.bot_right);
             ctx.beginPath();
             ctx.strokeStyle = SELECTION_COLOR;
             ctx.lineWidth = 1;
-            ctx.rect(s.top_left.x + view.camera.x - 3 , s.top_left.y + view.camera.y - 3, s.bot_right.x - s.top_left.x + 6, s.bot_right.y - s.top_left.y + 6);
+            
+            ctx.rect(tlcanvas.x - 3 ,tlcanvas.y - 3, brcanvas.x - tlcanvas.x + 6, brcanvas.y - tlcanvas.y + 6);
             ctx.stroke();
 
+            
+            let position_canvas = view.canvasCoord(s.positions[0]);
             ctx.beginPath();
             ctx.lineWidth = s.width + 4;
-            ctx.moveTo(s.positions[0].x + view.camera.x, s.positions[0].y + view.camera.y);
+            ctx.moveTo(position_canvas.x, position_canvas.y);
             for(let i = 1; i<s.positions.length; i++){
-                ctx.lineTo(s.positions[i].x + view.camera.x, s.positions[i].y + view.camera.y);
+                position_canvas = view.canvasCoord(s.positions[i]);
+                ctx.lineTo(position_canvas.x, position_canvas.y);
             }
             ctx.stroke();
         }
 
+        let position_canvas = view.canvasCoord(s.positions[0]);
         ctx.beginPath();
         ctx.strokeStyle = s.color;
         ctx.lineWidth = s.width;
-        ctx.moveTo(s.positions[0].x + view.camera.x, s.positions[0].y + view.camera.y);
+        ctx.moveTo(position_canvas.x, position_canvas.y);
         for(let i = 1; i<s.positions.length; i++){
-            ctx.lineTo(s.positions[i].x + view.camera.x, s.positions[i].y + view.camera.y);
+            position_canvas = view.canvasCoord(s.positions[i]);
+            ctx.lineTo(position_canvas.x, position_canvas.y);
         }
         ctx.stroke();
     }
@@ -300,7 +308,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
         ctx.lineWidth = 2;
         const c1canvas = view.canvasCoord(a.c1);
         const c2canvas = view.canvasCoord(a.c2); 
-        ctx.rect(c1canvas.x , c1canvas.y - 3, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
+        ctx.rect(c1canvas.x , c1canvas.y, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
         ctx.stroke();
 
         ctx.globalAlpha = 0.07;
@@ -313,7 +321,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
         ctx.fillStyle = a.color;
         const text_server_pos = new ServerCoord(Math.min(a.c1.x, a.c2.x), Math.max(a.c1.y, a.c2.y) ) ;
         const text_canvas_pos = view.canvasCoord(text_server_pos);
-        ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 10);
+        ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 5);
         ctx.fill();
 
 }

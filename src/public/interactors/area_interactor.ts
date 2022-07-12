@@ -17,10 +17,14 @@ let first_corner : CanvasCoord;
 
 
 interactor_area.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) => {
-     if (down_type === DOWN_TYPE.EMPTY) {
-            is_creating_area = true;
-            first_corner = e;
-        }
+    if (down_type === DOWN_TYPE.EMPTY) {
+        is_creating_area = true;
+        first_corner = e;
+    }
+
+    if (down_type === DOWN_TYPE.AREA_CORNER){
+        console.log(down_element_index);
+    }
 })
 
 interactor_area.mousemove = ((canvas, ctx, g, e) => {
@@ -34,12 +38,15 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
     if (is_creating_area) {
         if (interactor_area.last_down === DOWN_TYPE.EMPTY) {
             is_creating_area = false;
-            let index = 0;
-            while (g.areas.has(index)) {
-                index += 1;
-            }
+            // let index = 0;
+            // while (g.areas.has(index)) {
+            //     index += 1;
+            // }
+            // g.areas.set(index, new Area("G", view.serverCoord2(first_corner), view.serverCoord2(e)));
 
-            g.areas.set(index, new Area("G", view.serverCoord2(first_corner), view.serverCoord2(e)));
+            const c1 = view.serverCoord2(first_corner);
+            const c2  = view.serverCoord2(e);
+            socket.emit("add_area", c1.x, c1.y, c2.x, c2.y, "G", null);
         }
 
     }

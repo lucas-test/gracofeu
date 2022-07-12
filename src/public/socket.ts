@@ -5,6 +5,7 @@ import { Coord, Graph, Link, LocalVertex, ORIENTATION, ServerCoord } from "./loc
 import { view } from "./camera";
 import { Stroke } from "./stroke";
 import { update_params_loaded } from "./parametors/parametor_manager";
+import { Area } from "./area";
 export const socket = io()
 
 
@@ -85,6 +86,20 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             g.strokes.set(s[0], new_stroke);
         }
     }
+
+    socket.on('areas', handle_areas);
+
+    function handle_areas(data){
+        // console.log(data);
+        g.areas.clear();
+        for(const s of data){
+            const new_area = new Area(s[1].label, s[1].c1, s[1].c2, s[1].color);
+            g.areas.set(s[0], new_area);
+            //console.log(g.areas.get(s[0]).get_subgraph(g));
+        }
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    }
+
 
     // GRAPH 
     socket.on('update_vertex_position', update_vertex_position);

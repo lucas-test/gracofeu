@@ -69,6 +69,7 @@ io.sockets.on('connection', function (client) {
     room_graphs.set(room_id, g);
     emit_graph_to_room();
     emit_strokes_to_room();
+    emit_areas_to_room();
     // emit_users_to_client();
 
     if (ENV.mode == "dev") {
@@ -89,6 +90,10 @@ io.sockets.on('connection', function (client) {
 
     function emit_strokes_to_room(){
         io.sockets.in(room_id).emit('strokes', [...g.strokes.entries()]);
+    }
+
+    function emit_areas_to_room(){
+        io.sockets.in(room_id).emit('areas', [...g.areas.entries()])
     }
 
     // function emit_users_to_client(){
@@ -126,6 +131,8 @@ io.sockets.on('connection', function (client) {
             room_id = new_room_id;
             g = room_graphs.get(room_id);
             emit_graph_to_client();
+            emit_strokes_to_room();
+            emit_areas_to_room();
             console.log(clientRooms);
         }
         else {
@@ -142,8 +149,9 @@ io.sockets.on('connection', function (client) {
     }
 
 
-
+    // ------------------------
     // GRAPH API
+    // ------------------------
 
     client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
     client.on('add_link', handle_add_link);
@@ -156,12 +164,24 @@ io.sockets.on('connection', function (client) {
     client.on('update_control_points', handle_update_control_points);
     client.on('update_colors', handle_update_colors);
     client.on('add_stroke', handle_add_stroke);
+    client.on('add_area', handle_add_area);
 
+
+    // AREAS 
+    function handle_add_area(c1x:number, c1y:number, c2x:number, c2y:number, label:string, color:string){
+        g.add_area(new Coord(c1x, c1y), new Coord(c2x, c2y), label, color);
+        emit_areas_to_room();
+    }
+
+
+    // STROKES
     function handle_add_stroke(positions:any, old_pos:any, color:string, width:number, top_left:any, bot_right:any){
         g.add_stroke(positions, old_pos, color, width, top_left, bot_right);
         emit_strokes_to_room();
     }
 
+
+    // COLORS
     function handle_update_colors(data) {
         for (const element of data) {
             if (element.type == "vertex") {
@@ -174,6 +194,8 @@ io.sockets.on('connection', function (client) {
         emit_graph_to_room();
     }
 
+
+    // LINKS
     function handle_update_control_points(data) {
         for (const element of data) {
             if (g.links.has(element.index)) {
@@ -194,6 +216,26 @@ io.sockets.on('connection', function (client) {
         }
     }
 
+    function handle_add_link(vindex: number, windex: number, orientation: string) {
+        let orient = ORIENTATION.UNDIRECTED;
+        switch (orientation) {
+            case "undirected":
+                orient = ORIENTATION.UNDIRECTED
+                break;
+            case "directed":
+                orient = ORIENTATION.DIRECTED
+                break;
+            case "digon":
+                orient = ORIENTATION.DIGON
+                break;
+        }
+        g.add_link(vindex, windex, orient);
+        emit_graph_to_room();
+    }
+
+
+
+    // JSON
     function handle_load_json(s: string) {
         g.clear();
 
@@ -216,18 +258,8 @@ io.sockets.on('connection', function (client) {
         callback(JSON.stringify(graph_stringifiable));
     }
 
-    function handle_delete_selected_elements(data) {
-        for (const e of data) {
-            if (e.type == "vertex") {
-                g.delete_vertex(e.index);
-            }
-            else if (e.type == "link") {
-                g.delete_link(e.index);
-            }
-        }
-        emit_graph_to_room();
-    }
 
+    // VERTICES 
     function handle_update_pos(vertexIndex: number, x: number, y: number) {
         let vertex = g.vertices.get(vertexIndex);
         vertex.pos.x = x;
@@ -245,33 +277,26 @@ io.sockets.on('connection', function (client) {
     }
 
 
-
-
-
-
-
     function handle_add_vertex(x: number, y: number) {
         let index = g.add_vertex(x, y);
         emit_graph_to_room();
         return index;
     }
 
-    function handle_add_link(vindex: number, windex: number, orientation: string) {
-        let orient = ORIENTATION.UNDIRECTED;
-        switch (orientation) {
-            case "undirected":
-                orient = ORIENTATION.UNDIRECTED
-                break;
-            case "directed":
-                orient = ORIENTATION.DIRECTED
-                break;
-            case "digon":
-                orient = ORIENTATION.DIGON
-                break;
+
+    // OTHERS 
+    function handle_delete_selected_elements(data) {
+        for (const e of data) {
+            if (e.type == "vertex") {
+                g.delete_vertex(e.index);
+            }
+            else if (e.type == "link") {
+                g.delete_link(e.index);
+            }
         }
-        g.add_link(vindex, windex, orient);
         emit_graph_to_room();
     }
+   
 })
 
 

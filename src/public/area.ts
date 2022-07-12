@@ -1,5 +1,5 @@
 import { view } from "./camera";
-import { Link, LocalVertex, local_graph, ServerCoord } from "./local_graph";
+import { Coord, Graph, Link, LocalVertex, local_graph, ServerCoord } from "./local_graph";
 
 export class Area{
     c1 : ServerCoord;
@@ -7,34 +7,89 @@ export class Area{
     color:string;
     label:string;
 
-    // TODO: change vertices and links into Array of indices? And add Array<number> in Local Vertex / Link ? 
-    vertices : Map<number, LocalVertex>;
-    links: Map<number, Link>;
     
-    constructor(label:string, c1:ServerCoord, c2:ServerCoord){
+    constructor(label:string, c1:ServerCoord, c2:ServerCoord, color:string){
         this.c1 = c1;
         this.c2 = c2;
         this.label = label;
-        this.color = "#ee4512";
-        this.vertices = new Map();
-        this.links = new Map();
-
-        for (const [index, v] of local_graph.vertices.entries()) {
-            if(v.is_in_rect(view.canvasCoord(c1), view.canvasCoord(c2))){
-                this.vertices.set(index, v);
-            }
-        }
-
-        for (const [index, e] of local_graph.links.entries()){
-            const u = local_graph.vertices.get(e.start_vertex);
-            const v = local_graph.vertices.get(e.end_vertex);
-
-            if((u.is_in_rect(view.canvasCoord(c1), view.canvasCoord(c2))) && (v.is_in_rect(view.canvasCoord(c1), view.canvasCoord(c2)))){
-                this.links.set(index, e);
-            }
-        }
-
-        console.log(this.vertices, this.links);
+        this.color = color;
     }
-    
+
+    is_nearby_corner(pos:Coord, r:number){
+        // TL(1)_____________TR(2)
+        // |                   |
+        // |                   |
+        // BL(3)_____________BR(4)
+
+        const TL = view.canvasCoord(new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y)));
+        const TR = view.canvasCoord(new ServerCoord(Math.max(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y)));
+        const BR = view.canvasCoord(new ServerCoord(Math.max(this.c1.x, this.c2.x), Math.max(this.c1.y, this.c2.y)));
+        const BL = view.canvasCoord(new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.max(this.c1.y, this.c2.y)));
+
+        if(TL.is_nearby(pos, r)){
+            return 1;
+        }
+        if(TR.is_nearby(pos, r)){
+            return 2;
+        }
+        if(BR.is_nearby(pos, r)){
+            return 3;
+        }
+        if(BL.is_nearby(pos, r)){
+            return 4;
+        }
+        return false;
+    }
+
+    is_nearby_side(pos:Coord, r:number){
+        // __________1_________
+        // |                   |
+        // 4                   2
+        // |_________3_________|
+
+        const c1canvas = view.canvasCoord(this.c1);
+        const c2canvas = view.canvasCoord(this.c2);  
+        const minX = Math.min(c1canvas.x, c2canvas.x);
+        const minY = Math.min(c1canvas.y, c2canvas.y);
+        const maxX = Math.max(c1canvas.x, c2canvas.x);
+        const maxY = Math.max(c1canvas.y, c2canvas.y);
+
+        if(pos.x < maxX && pos.x > minX && Math.abs(pos.y - minY) < r){
+            return 1;
+        }
+        if(pos.y < maxY && pos.y > minY && Math.abs(pos.x - maxX) < r){
+            return 2;
+        }
+        if(pos.x < maxX && pos.x > minX && Math.abs(pos.y - maxY) < r){
+            return 3;
+        }
+        if(pos.y < maxY && pos.y > minY && Math.abs(pos.x - minX) < r){
+            return 4;
+        }
+
+        return false;
+    }
+
+    get_subgraph(g:Graph){
+        const subgraph = new Graph();
+        const c1canvas = view.canvasCoord(this.c1);
+        const c2canvas = view.canvasCoord(this.c2);   
+
+         for (const [index, v] of g.vertices.entries()) {
+            if(v.is_in_rect(c1canvas, c2canvas)){
+                subgraph.vertices.set(index, v);
+            }
+        }
+
+        for (const [index, e] of g.links.entries()){
+            const u = g.vertices.get(e.start_vertex);
+            const v = g.vertices.get(e.end_vertex);
+
+            if((u.is_in_rect(c1canvas, c2canvas)) && (v.is_in_rect(c1canvas, c2canvas))){
+                subgraph.links.set(index, e);
+            }
+        }
+        return subgraph;
+
+    }
 }

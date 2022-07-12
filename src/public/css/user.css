@@ -14,6 +14,7 @@
 #self_user {
     display: inline-flex;
     padding: 4px;
+    align-items: flex-end;
 }
 
 #self_user_color {
@@ -23,10 +24,14 @@
     border-radius: 50%;
 }
 
+#self_user_label {
+    margin-right: 5px;
+}
+
 #user_list {
     visibility: hidden;
     display: flex;
-    padding: 2px;
+    /* padding: 2px; */
     margin-left: 0px;
 }
 

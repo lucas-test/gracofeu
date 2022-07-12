@@ -4,16 +4,20 @@ import { Vertex } from './vertex';
 
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
+import { Area } from './area';
 
 export class Graph {
     vertices: Map<number, Vertex>;
     links: Map<number, Link>;
     strokes: Map<number, Stroke>;
+    areas:Map<number, Area>;
+
 
     constructor() {
         this.vertices = new Map();
         this.links = new Map();
         this.strokes = new Map();
+        this.areas = new Map();
     }
 
 
@@ -41,6 +45,13 @@ export class Graph {
         return index;
     }
 
+    get_next_available_index_area() {
+        let index = 0;
+        while (this.areas.has(index)) {
+            index += 1;
+        }
+        return index;
+    }
 
 
     get_index(v: Vertex) {
@@ -89,6 +100,15 @@ export class Graph {
     }
 
 
+    add_link_with_cp(i: number, j: number, orientation: ORIENTATION, cp: Coord) {
+        const index = this.add_link(i, j, orientation);
+        const link = this.links.get(index);
+        link.cp.copy_from(cp);
+    }
+
+
+
+
     add_stroke(positions_data:any, old_pos_data:any, color:string, width:number, top_left_data:any, bot_right_data:any) {
         // console.log(positions_data, old_pos_data, color, width, top_left_data, bot_right_data);
         const index = this.get_next_available_index_strokes();
@@ -105,14 +125,11 @@ export class Graph {
     }
 
 
-    add_link_with_cp(i: number, j: number, orientation: ORIENTATION, cp: Coord) {
-        const index = this.add_link(i, j, orientation);
-        const link = this.links.get(index);
-        link.cp.copy_from(cp);
+    add_area(c1:Coord, c2:Coord, label:string, color:string){
+        let index = this.get_next_available_index_area();
+        this.areas.set(index, new Area(label+index, c1, c2, color));
+        return index;
     }
-
-
-
 
     get_neighbors_list(i: number) {
         let neighbors = new Array<number>();

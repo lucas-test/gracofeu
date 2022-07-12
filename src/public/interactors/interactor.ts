@@ -7,7 +7,10 @@ export enum DOWN_TYPE {
     VERTEX = "VERTEX",
     LINK = "LINK",
     CONTROL_POINT = "CONTROL_POINT",
-    STROKE = "STROKE"
+    STROKE = "STROKE",
+    AREA = "AREA",
+    AREA_CORNER = "AREA_CORNER",
+    AREA_SIDE = "AREA_SIDE"
 }
 
 

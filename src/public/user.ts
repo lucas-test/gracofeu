@@ -51,9 +51,11 @@ export function update_user_list_div() {
     if (users.size === 0) {
         div.style.visibility = "hidden";
         // div.style.marginLeft = "0px";
+        div.style.padding = "0px";
     }
     else {
         div.style.visibility = "visible";
+        div.style.padding = "2px";
         // div.style.marginLeft = "10px";
     }
 

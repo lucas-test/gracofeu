@@ -56,8 +56,9 @@ body {
     border-radius: 5px;
     background-color: white;
     position: fixed;
-    top: 45%;
+    top: 50%;
     left: 7px;
+    transform: translateY(calc(-50% + 27px));
 }
 
 .interactor {
