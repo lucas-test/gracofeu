@@ -8,7 +8,7 @@ const COLOR_ALIGNEMENT_LINE = "#555555"
 
 import { INDEX_TYPE, view } from './camera';
 import { User, users } from './user';
-import { CanvasCoord, Graph, ORIENTATION } from './local_graph';
+import { CanvasCoord, Graph, ORIENTATION, ServerCoord } from './local_graph';
 import { Stroke } from './stroke';
 import { Area } from './area';
 
@@ -298,7 +298,9 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
     ctx.beginPath();
         ctx.strokeStyle = a.color;
         ctx.lineWidth = 2;
-        ctx.rect(a.c1.x + view.camera.x , a.c1.y + view.camera.y - 3, a.c2.x - a.c1.x, a.c2.y - a.c1.y);
+        const c1canvas = view.canvasCoord(a.c1);
+        const c2canvas = view.canvasCoord(a.c2); 
+        ctx.rect(c1canvas.x , c1canvas.y - 3, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
         ctx.stroke();
 
         ctx.globalAlpha = 0.07;
@@ -309,7 +311,9 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
         ctx.beginPath();
         ctx.font = "400 24px Arial";
         ctx.fillStyle = a.color;
-        ctx.fillText(a.label, Math.min(a.c1.x, a.c2.x) + view.camera.x + 5, Math.max(a.c1.y, a.c2.y) + view.camera.y - 10);
+        const text_server_pos = new ServerCoord(Math.min(a.c1.x, a.c2.x), Math.max(a.c1.y, a.c2.y) ) ;
+        const text_canvas_pos = view.canvasCoord(text_server_pos);
+        ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 10);
         ctx.fill();
 
 }
