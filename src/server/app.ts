@@ -96,9 +96,22 @@ io.sockets.on('connection', function (client) {
         io.sockets.in(room_id).emit('areas', [...g.areas.entries()])
     }
 
-    // function emit_users_to_client(){
-    //     client.emit('clients', [...users.entries()]);
-    // }
+    function emit_users_to_client(){
+        // console.log(clientRooms);
+        if(client.id in clientRooms){
+            const users_in_room = new Map<string, User>();
+            for (const client_id in clientRooms) {
+                if(client_id != client.id && clientRooms[client_id] == clientRooms[client.id])
+                {
+                    users_in_room.set(client_id, users.get(client_id));
+                }
+            }
+            // console.log(users_in_room);
+            client.emit('clients', [...users_in_room.entries()]);
+            // TODO: Corriger ca: on envoie le nouvel user à tous les users de la room, mais on n'a pas ses coordonnées donc ce sont de fausses coordonnées.
+            client.to(room_id).emit('update_user', client.id, user_data.label, user_data.color, -100, -100);
+        }
+    }
 
 
 
@@ -133,6 +146,7 @@ io.sockets.on('connection', function (client) {
             emit_graph_to_client();
             emit_strokes_to_room();
             emit_areas_to_room();
+            emit_users_to_client();
             console.log(clientRooms);
         }
         else {

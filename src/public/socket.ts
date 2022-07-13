@@ -15,7 +15,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('myId', handle_my_id);
     socket.on('update_user', update_user);
     socket.on('remove_user', remove_user);
-    // socket.on('clients', handle_clients);
+    socket.on('clients', handle_clients);
     socket.on('update_other_self_user', update_other_self_user);
 
     function update_other_self_user(id:string, label:string, color:string){
@@ -52,6 +52,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         else {
             users.set(id, new User(label, color, new ServerCoord(x, y)));
             update_user_list_div();
+            console.log("NEW USER !! ");
         }
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -64,13 +65,16 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     }
 
     
-    // function handle_clients(users_entries){
-    //     users.clear();
-    //     for (const data of users_entries) {
-    //         const new_user = new User(data[1].label, data[1].color, new ServerCoord(-10, -10));
-    //         users.set(data[0], new_user);
-    //     }
-    // }
+    function handle_clients(users_entries){
+        users.clear();
+        for (const data of users_entries) {
+            //TODO: Corriger ca: on est obligé de mettre de fausses coordonnées aux autres users à l'init car le serveur ne les stocke pas 
+            const new_user = new User(data[1].label, data[1].color, new ServerCoord(-100, -100));
+            users.set(data[0], new_user);
+        }
+        // console.log(users);
+        requestAnimationFrame(function () { update_user_list_div() });
+    }
 
     socket.on('strokes', handle_strokes);
 
