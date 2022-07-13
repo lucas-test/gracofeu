@@ -258,13 +258,16 @@ export class Graph {
         }
 
         for(const [index,a] of this.areas.entries()){
+            if( a.is_nearby(pos, 200)){
+                return{ type: DOWN_TYPE.AREA, index: index };
+            }
             const corner_index = a.is_nearby_corner(pos, 50);
             if( corner_index != false){
-                return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index};
+                return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index };
             }
-            const side_index = a.is_nearby_side(pos, 10);
+            const side_index = a.is_nearby_side(pos, 5);
             if( side_index != false){
-                return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index};
+                return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index };
             }
         }
 

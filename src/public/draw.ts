@@ -318,9 +318,16 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
 
         ctx.beginPath();
         ctx.font = "400 24px Arial";
+        const measure = ctx.measureText(a.label);
         ctx.fillStyle = a.color;
         const text_server_pos = new ServerCoord(Math.min(a.c1.x, a.c2.x), Math.max(a.c1.y, a.c2.y) ) ;
         const text_canvas_pos = view.canvasCoord(text_server_pos);
+        ctx.rect(text_canvas_pos.x, text_canvas_pos.y - 29, measure.width + 10, 29);
+        ctx.fill();
+
+        
+        ctx.beginPath();
+        ctx.fillStyle = invertColor(a.color);
         ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 5);
         ctx.fill();
 

@@ -92,3 +92,8 @@
 .result_span {
     margin-left: 5px;
 }
+
+.subgraph_option {
+    cursor: pointer;
+    margin: 2px;
+}

@@ -117,5 +117,6 @@ npm run dev
 - [ ] zoom does not affect other's cursor position
 - [ ] changing your own label triggers shortcuts
 - [ ] Chrome : no export to file? 
+- [ ] Parametors may appear several times
 
 

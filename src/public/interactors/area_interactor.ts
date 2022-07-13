@@ -37,16 +37,13 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
 
     if (is_creating_area) {
         if (interactor_area.last_down === DOWN_TYPE.EMPTY) {
+            if(first_corner.dist2(e) > 10){
+                const c1 = view.serverCoord2(first_corner);
+                const c2  = view.serverCoord2(e);
+                socket.emit("add_area", c1.x, c1.y, c2.x, c2.y, "G", null);
+            }
             is_creating_area = false;
-            // let index = 0;
-            // while (g.areas.has(index)) {
-            //     index += 1;
-            // }
-            // g.areas.set(index, new Area("G", view.serverCoord2(first_corner), view.serverCoord2(e)));
-
-            const c1 = view.serverCoord2(first_corner);
-            const c2  = view.serverCoord2(e);
-            socket.emit("add_area", c1.x, c1.y, c2.x, c2.y, "G", null);
+            first_corner = null;
         }
 
     }

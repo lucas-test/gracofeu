@@ -6,13 +6,25 @@ export class Area{
     c2 : ServerCoord;
     color:string;
     label:string;
+    id:string;
 
     
-    constructor(label:string, c1:ServerCoord, c2:ServerCoord, color:string){
+    constructor(id: string, label:string, c1:ServerCoord, c2:ServerCoord, color:string){
         this.c1 = c1;
         this.c2 = c2;
         this.label = label;
         this.color = color;
+        this.id = id;
+    }
+
+    is_nearby(pos:Coord, r:number){
+        // ____________________
+        // |                   |
+        // |__       KO        |
+        // |OK|________________|
+
+        const BL = view.canvasCoord(new ServerCoord(Math.min(this.c1.x, this.c2.x) + 10, Math.max(this.c1.y, this.c2.y) - 10));
+        return BL.is_nearby(pos, r);
     }
 
     is_nearby_corner(pos:Coord, r:number){

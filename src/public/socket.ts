@@ -6,6 +6,7 @@ import { view } from "./camera";
 import { Stroke } from "./stroke";
 import { update_params_loaded } from "./parametors/parametor_manager";
 import { Area } from "./area";
+import { update_options_graphs } from "./parametors/div_parametor";
 export const socket = io()
 
 
@@ -97,11 +98,14 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         // console.log(data);
         g.areas.clear();
         for(const s of data){
-            const new_area = new Area(s[1].label, s[1].c1, s[1].c2, s[1].color);
+            const new_area = new Area(s[0], s[1].label, s[1].c1, s[1].c2, s[1].color);
             g.areas.set(s[0], new_area);
             //console.log(g.areas.get(s[0]).get_subgraph(g));
         }
-        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+        
+        requestAnimationFrame(function () { 
+            update_options_graphs(canvas, ctx, g);
+            draw(canvas, ctx, g) });
     }
 
 

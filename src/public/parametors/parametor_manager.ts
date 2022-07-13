@@ -2,6 +2,7 @@ import { draw } from '../draw';
 import { param_nb_edges, param_nb_vertices } from './some_parametors';
 import { Parametor } from './parametor';
 import { Graph } from '../local_graph';
+import { Area } from '../area';
 
 
 
@@ -16,31 +17,37 @@ export function setup_parametors_available() {
 
 
 
-export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, a: Area) {
+    const id =  param.id + "_area_" +( a==null?"null":a.id);
+    const area_id = (a==null?null:a.id);
+
+    // console.log("ID", id, "AREA_ID", area_id);
+
     let newDiv = document.createElement("div");
     newDiv.classList.add("param");
-    newDiv.id = "param_" + param.name;
+    newDiv.id = "param_" + id;
 
 
     let button = document.createElement('div');
     button.innerHTML = "-";
     button.classList.add("div_button");
     button.classList.add("remove_param_button");
-    button.addEventListener('click', () => { remove_loaded_param(param.name); });
+    button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
     newDiv.appendChild(button);
 
     let span_name = document.createElement('span');
-    span_name.innerHTML = " " + param.name + ": ";
+    span_name.innerHTML = " " + (a==null?"":("("+ a.label + ") ")) + param.name + ": ";
     newDiv.appendChild(span_name);
 
     let span_result = document.createElement("span");
-    span_result.id = "span_result_" + param.name;
+    span_result.id = "span_result_" + id;
+    console.log("SPAN ID", span_result.id);
     span_result.innerHTML = "";
     span_result.classList.add("result_span");
     newDiv.appendChild(span_result);
 
     document.getElementById("params_loaded").appendChild(newDiv);
-    params_loaded.push(param)
+    params_loaded.push({parametor:param, area:a, id:id, area_id : area_id})
     update_params_loaded(g)
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
@@ -48,19 +55,26 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
 
 
 
-export function update_params_loaded(g: Graph) {
+export function update_params_loaded(g:Graph) {
     for (let param of params_loaded) {
-        var result = param.compute(g)
-        document.getElementById("span_result_" + param.name).innerHTML = result
+        // console.log(param, param.parametor, param.area);
+        if(param.area === null){
+            var result = param.parametor.compute(g);
+        }
+        else{
+            var result = param.parametor.compute(param.area.get_subgraph(g));
+        }
+        document.getElementById("span_result_" + param.id).innerHTML = result;
     }
 }
 
 
-function remove_loaded_param(param_name: string) {
+function remove_loaded_param(param_id: string, area_id:string) {
     for (var i = 0; i < params_loaded.length; i++) {
-        if (params_loaded[i].name == param_name) {
+        // console.log(params_loaded[i]);
+        if (params_loaded[i].parametor.id == param_id && area_id == params_loaded[i].area_id) {
+            document.getElementById("param_" + params_loaded[i].id).remove()
             params_loaded.splice(i, 1)
-            document.getElementById("param_" + param_name).remove()
             return
         }
     }
