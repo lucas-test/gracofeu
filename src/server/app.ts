@@ -179,11 +179,78 @@ io.sockets.on('connection', function (client) {
     client.on('update_colors', handle_update_colors);
     client.on('add_stroke', handle_add_stroke);
     client.on('add_area', handle_add_area);
+    client.on('area_move_side', handle_move_side_area);
+    client.on('area_move_corner', handle_move_corner_area);
 
 
     // AREAS 
     function handle_add_area(c1x:number, c1y:number, c2x:number, c2y:number, label:string, color:string){
         g.add_area(new Coord(c1x, c1y), new Coord(c2x, c2y), label, color);
+        emit_areas_to_room();
+    }
+
+    function handle_move_side_area(index:number, x:number, y:number, side_number){
+        const area = g.areas.get(index);
+        console.log(g.areas.get(index));
+        switch(side_number){
+            case 1:
+                if(area.c1.y > area.c2.y){ area.c2.y = y; }
+                else{  area.c1.y = y; }
+                break;
+            case 2:
+                if(area.c1.x > area.c2.x){ area.c1.x = x; }
+                else{ area.c2.x = x; }
+                break;
+            case 3:
+                if(area.c1.y < area.c2.y){ area.c2.y = y; }
+                else{ area.c1.y = y; }
+                break;
+            case 4:
+                if(area.c1.x < area.c2.x){ area.c1.x = x; }
+                else{ area.c2.x = x; }
+                break;
+            default:
+                break;
+        }
+
+        g.areas.set(index, area);
+        //TODO : update only one area
+        emit_areas_to_room();
+    }
+
+
+    
+    function handle_move_corner_area(index:number, x:number, y:number, corner_number){
+        const area = g.areas.get(index);
+        switch(corner_number){
+            case 1:
+                if(area.c1.x < area.c2.x){ area.c1.x = x; }
+                else{ area.c2.x = x; }
+                if(area.c1.y > area.c2.y){  area.c2.y = y; }
+                else{ area.c1.y = y; }
+                break;
+            case 2:
+                if(area.c1.x > area.c2.x){ area.c1.x = x; }
+                else{ area.c2.x = x; }
+                if(area.c1.y > area.c2.y){ area.c2.y = y; }
+                else{ area.c1.y = y; }
+                break;
+            case 3:
+                if(area.c1.x > area.c2.x){ area.c1.x = x; }
+                else{ area.c2.x = x; }
+                if(area.c1.y < area.c2.y){ area.c2.y = y; }
+                else{ area.c1.y = y; }
+                break;
+            case 4:
+                if(area.c1.x < area.c2.x){ area.c1.x = x; }
+                else{ area.c2.x = x; }
+                if(area.c1.y < area.c2.y){ area.c2.y = y; }
+                else{ area.c1.y = y; }
+                break;
+            default:
+                break;
+        }
+        //TODO : update only one area
         emit_areas_to_room();
     }
 

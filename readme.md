@@ -118,5 +118,6 @@ npm run dev
 - [ ] changing your own label triggers shortcuts
 - [ ] Chrome : no export to file? 
 - [ ] Parametors may appear several times
+- [ ] Parametor not updated when moving side/corner of Area
 
 

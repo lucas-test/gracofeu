@@ -3,7 +3,7 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
-import { CanvasCoord, Coord } from '../local_graph';
+import { CanvasCoord, Coord, ServerCoord } from '../local_graph';
 import { Area } from '../area';
 
 
@@ -15,6 +15,10 @@ let previous_camera: Coord;
 let is_creating_area : boolean;
 let first_corner : CanvasCoord;
 
+let side_number;
+let corner_number;
+let last_down_index : number;
+
 
 interactor_area.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) => {
     if (down_type === DOWN_TYPE.EMPTY) {
@@ -23,7 +27,15 @@ interactor_area.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) 
     }
 
     if (down_type === DOWN_TYPE.AREA_CORNER){
-        console.log(down_element_index);
+        const area = g.areas.get(down_element_index);
+        corner_number = area.is_nearby_corner(e, 100);
+        last_down_index = down_element_index;
+    }
+
+    if (down_type === DOWN_TYPE.AREA_SIDE){
+        const area = g.areas.get(down_element_index);
+        side_number = area.is_nearby_side(e, 5);
+        last_down_index = down_element_index;
     }
 })
 
@@ -45,7 +57,14 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
             is_creating_area = false;
             first_corner = null;
         }
-
+    }
+    else if (interactor_area.last_down === DOWN_TYPE.AREA_SIDE){
+        socket.emit("area_move_side", last_down_index, e.x, e.y, side_number);      
+        side_number = null;
+    }
+    else if (interactor_area.last_down === DOWN_TYPE.AREA_CORNER){
+        socket.emit("area_move_corner", last_down_index, e.x, e.y, corner_number);  
+        corner_number = null;
     }
 })
 

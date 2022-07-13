@@ -31,7 +31,7 @@ export class Area{
         // TL(1)_____________TR(2)
         // |                   |
         // |                   |
-        // BL(3)_____________BR(4)
+        // BL(4)_____________BR(3)
 
         const TL = view.canvasCoord(new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y)));
         const TR = view.canvasCoord(new ServerCoord(Math.max(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y)));
