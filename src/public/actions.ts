@@ -149,7 +149,7 @@ align_action.trigger = () => {
 
 
 
-let grid_action = new Action("grid_mode", "Show Grid", "grid.svg", "g");
+let grid_action = new Action("grid_mode", "Show Layout", "grid.svg", "l");
 grid_action.trigger = () => {
     view.grid_show = !view.grid_show;
     const grid_div = document.getElementById("grid_mode");

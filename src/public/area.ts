@@ -1,4 +1,5 @@
 import { view } from "./camera";
+import { invertColor } from "./draw";
 import { Coord, Graph, Link, LocalVertex, local_graph, ServerCoord } from "./local_graph";
 
 export class Area{
@@ -7,6 +8,7 @@ export class Area{
     color:string;
     label:string;
     id:string;
+    accent_color:string;
 
     
     constructor(id: string, label:string, c1:ServerCoord, c2:ServerCoord, color:string){
@@ -15,6 +17,7 @@ export class Area{
         this.label = label;
         this.color = color;
         this.id = id;
+        this.accent_color = invertColor(color);
     }
 
     is_nearby(pos:Coord, r:number){

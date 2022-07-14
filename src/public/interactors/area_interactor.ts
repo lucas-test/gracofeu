@@ -9,7 +9,7 @@ import { Area } from '../area';
 
 // INTERACTOR SELECTION
 
-export var interactor_area = new Interactor("area", "g", "selection.svg")
+export var interactor_area = new Interactor("area", "g", "area.svg")
 let down_coord: CanvasCoord; // à rajouter dans Interactor
 let previous_camera: Coord;
 let is_creating_area : boolean;

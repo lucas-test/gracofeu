@@ -105,7 +105,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         
         requestAnimationFrame(function () { 
             update_options_graphs(canvas, ctx, g);
-            draw(canvas, ctx, g) });
+            draw(canvas, ctx, g) 
+        });
     }
 
 

@@ -1,4 +1,4 @@
-import { draw } from '../draw';
+import { draw, invertColor } from '../draw';
 import { param_nb_edges, param_nb_vertices } from './some_parametors';
 import { Parametor } from './parametor';
 import { Graph } from '../local_graph';
@@ -36,12 +36,20 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
     newDiv.appendChild(button);
 
     let span_name = document.createElement('span');
-    span_name.innerHTML = " " + (a==null?"":("("+ a.label + ") ")) + param.name + ": ";
+    if(a!== null){
+        let span_area_name = document.createElement('span');
+        span_area_name.classList.add("span_area_name_parametor");
+        span_area_name.textContent = a.label;
+        span_area_name.style.background = a.color;
+        span_area_name.style.color = a.accent_color;
+        span_area_name.style.borderColor = a.accent_color;
+        newDiv.appendChild(span_area_name);
+    }
+    span_name.innerHTML = param.name + ": ";
     newDiv.appendChild(span_name);
 
     let span_result = document.createElement("span");
     span_result.id = "span_result_" + html_id;
-    console.log("SPAN ID", span_result.id);
     span_result.innerHTML = "";
     span_result.classList.add("result_span");
     newDiv.appendChild(span_result);
@@ -77,11 +85,11 @@ export function update_params_loaded(g:Graph) {
 
 
 function remove_loaded_param(param_id: string, area_id:string) {
+    
     for (var i = 0; i < params_loaded.length; i++) {
-        if (params_loaded[i].parametor.html_id == param_id && area_id == params_loaded[i].area_id) {
-
+        if (params_loaded[i].parametor.id == param_id && area_id == params_loaded[i].area_id) {
             const DOM = document.getElementById("param_" + params_loaded[i].html_id);
-            
+
             if(DOM !== null){
                 DOM.remove()
                 params_loaded.splice(i, 1)
