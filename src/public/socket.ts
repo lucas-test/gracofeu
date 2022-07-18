@@ -102,9 +102,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             g.areas.set(s[0], new_area);
             //console.log(g.areas.get(s[0]).get_subgraph(g));
         }
-        
+        update_params_loaded(g);
+        update_options_graphs(canvas, ctx, g);
         requestAnimationFrame(function () { 
-            update_options_graphs(canvas, ctx, g);
             draw(canvas, ctx, g) 
         });
     }

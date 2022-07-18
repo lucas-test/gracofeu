@@ -40,7 +40,6 @@ npm run dev
 ## V0.3
 
 - [X] déplacer caméra
-- [ ] recentrer
 - [X] zoomer  
     - [X] CanvasCoord et ServerCoord
     - [X] sauvegarder les CanvasCoord des sommets, controlpoints pour moins de calcul ???
@@ -56,14 +55,19 @@ npm run dev
     - [ ] utilité des numérotations stables ?
     - [ ] get_new_index devrait pas renvoyer le max des index +1 ? (pour suivre la création chronologique des sommets)
     
-- [ ] poids (nombre) sur sommets ou arêtes
 
-- [ ] nom utilisateur
-- [X] curseur utilisateur
-- [ ] couleur utilisateur
+- utilisateur
+    - [X] nom utilisateur
+    - [X] curseur utilisateur
+    - [ ] suivre
+    - [ ] en dehors de l'écran
 
 - [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
+
+- [ ] serverCoord -> inclus automatiquement canvasCoord
+- [ ] visibilité de certains éléments
+- [ ] curseur des interacteurs
 
 ## V0.5 Chercheurs proches
 
@@ -73,11 +77,32 @@ npm run dev
     - [ ] interactor utilisation
     - [ ] color picker utilisation
 - [ ] zone texte
-- [ ] dessin à main levée
 - [X] grille magnétique
 - [X] aligner horizontalement/verticalement sur d'autres sommets
 - [ ] gestion tablette
 - [ ] optimisation possible en Math.floor() dans view.canvasCoord
+
+- stroke
+    - [ ] selectionner mieux
+    - [ ] déplacer
+    - [ ] effacer mieux (plus tard)
+    - [ ] affichage en live (plus tard, interet ??)
+
+- area 
+    - [ ] clic sur label dans parametre -> centrer sur area
+    - [ ] modifier rectangle area
+    - [ ] déplacer area
+
+- parametre
+    - [ ] ranger par area
+    - [ ] mise à jour pas tout le temps pour genre ceux qui ont pas besoin de la position
+    - [X] bouton remove parametor marche pas
+    - [X] mettre en place la structure sans attribut
+    - [ ] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
+    - [ ] update parametre
+    - [ ] parametres classiques : distance (diametre), degré (min, max, moyen, sequence), is_currently_planar, is_planar, is_bipartite, is_sparse, is_connected 
+
+
 
 ## V1 GDRIM
 
@@ -87,17 +112,13 @@ npm run dev
 - [ ] exporter pdf
 - [ ] export graphviz ?
 - [ ] interactor/parameter/modifyer: les mettre dans des fichiers séparés
-- [ ] zone graphe
 - [ ] diapo graphe
+- [ ] poids (nombre) sur sommets ou arêtes
 
-### Parameter
-- [X] bouton remove parametor marche pas
-- [X] mettre en place la structure sans attribut
-- [ ] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
-- [ ] selection et parametre (genre s'il y a une sélection, nb_vertices renvoie la taille de la sélection)
-- [ ] update parametre
-- [ ] attributs
-- [ ] déplacer les calculs dans le serveur
+- parametre
+    - [ ] attributs
+    - [ ] déplacer les calculs dans le serveur ??
+
 
 ### Modifyer
 - [ ] structure
@@ -111,6 +132,8 @@ npm run dev
 - [ ] multi control point
 - [ ] loop
 - [ ] insertion de parametres ou modifiyer perso
+- [ ] chat vocal
+- [ ] chat écrit
 
 
 # Known issues 
@@ -118,6 +141,6 @@ npm run dev
 - [ ] changing your own label triggers shortcuts
 - [ ] Chrome : no export to file? 
 - [ ] Parametors may appear several times
-- [ ] Parametor not updated when moving side/corner of Area
+- [ ] zoom and create links
 
 

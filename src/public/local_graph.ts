@@ -52,7 +52,16 @@ export class CanvasCoord extends Coord {
 }
 
 export class ServerCoord extends Coord {
-    lol2: number;
+    canvas_pos: CanvasCoord;
+
+    constructor(x:number, y:number){
+        super(x,y);
+        this.canvas_pos = view.canvasCoord(this);
+    }
+
+    after_view_update(){
+        this.canvas_pos = view.canvasCoord(this);
+    }
 }
 
 

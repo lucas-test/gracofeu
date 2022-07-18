@@ -1,6 +1,6 @@
 import { view } from "./camera";
 import { invertColor } from "./draw";
-import { Coord, Graph, Link, LocalVertex, local_graph, ServerCoord } from "./local_graph";
+import { CanvasCoord, Coord, Graph, Link, LocalVertex, local_graph, ServerCoord } from "./local_graph";
 
 export class Area{
     c1 : ServerCoord;

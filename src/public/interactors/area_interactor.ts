@@ -46,12 +46,11 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_area.mouseup = ((canvas, ctx, g, e) => {
-
+    const c2  = view.serverCoord2(e);
     if (is_creating_area) {
         if (interactor_area.last_down === DOWN_TYPE.EMPTY) {
             if(first_corner.dist2(e) > 10){
                 const c1 = view.serverCoord2(first_corner);
-                const c2  = view.serverCoord2(e);
                 socket.emit("add_area", c1.x, c1.y, c2.x, c2.y, "G", null);
             }
             is_creating_area = false;
@@ -59,11 +58,11 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
         }
     }
     else if (interactor_area.last_down === DOWN_TYPE.AREA_SIDE){
-        socket.emit("area_move_side", last_down_index, e.x, e.y, side_number);      
+        socket.emit("area_move_side", last_down_index, c2.x, c2.y, side_number);      
         side_number = null;
     }
     else if (interactor_area.last_down === DOWN_TYPE.AREA_CORNER){
-        socket.emit("area_move_corner", last_down_index, e.x, e.y, corner_number);  
+        socket.emit("area_move_corner", last_down_index, c2.x, c2.y, corner_number);  
         corner_number = null;
     }
 })
