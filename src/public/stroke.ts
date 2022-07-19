@@ -1,10 +1,11 @@
 import { view } from "./camera";
 import { CanvasCoord, Coord, ServerCoord } from "./local_graph";
+import { Multicolor } from "./multicolor";
 
 export class Stroke{
     positions:Array<ServerCoord>;
     old_pos:ServerCoord;
-    color:string;
+    multicolor:Multicolor;
     width:number;
     top_left: ServerCoord;
     bot_right: ServerCoord;
@@ -12,7 +13,7 @@ export class Stroke{
     
     constructor(pos:Array<ServerCoord>, color:string, width:number){
         this.positions = pos;
-        this.color = color;
+        this.multicolor = new Multicolor(color);
         this.width = width;
         this.is_selected = false;
         if(pos.length>0){

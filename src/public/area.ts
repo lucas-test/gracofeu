@@ -1,23 +1,22 @@
 import { view } from "./camera";
 import { invertColor } from "./draw";
 import { CanvasCoord, Coord, Graph, Link, LocalVertex, local_graph, ServerCoord } from "./local_graph";
+import { Multicolor } from "./multicolor";
 
 export class Area{
     c1 : ServerCoord;
     c2 : ServerCoord;
-    color:string;
+    multicolor:Multicolor;
     label:string;
     id:string;
-    accent_color:string;
 
     
     constructor(id: string, label:string, c1:ServerCoord, c2:ServerCoord, color:string){
         this.c1 = c1;
         this.c2 = c2;
         this.label = label;
-        this.color = color;
+        this.multicolor = new Multicolor(color);
         this.id = id;
-        this.accent_color = invertColor(color);
     }
 
     is_nearby(pos:Coord, r:number){

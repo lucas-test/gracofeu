@@ -97,16 +97,8 @@ io.sockets.on('connection', function (client) {
     }
 
     function emit_users_to_client(){
-        // console.log(clientRooms);
         if(client.id in clientRooms){
-            const users_in_room = new Map<string, User>();
-            for (const client_id in clientRooms) {
-                if(client_id != client.id && clientRooms[client_id] == clientRooms[client.id])
-                {
-                    users_in_room.set(client_id, users.get(client_id));
-                }
-            }
-            // console.log(users_in_room);
+            const users_in_room =  get_other_clients_in_room(client.id,clientRooms);
             client.emit('clients', [...users_in_room.entries()]);
             // TODO: Corriger ca: on envoie le nouvel user à tous les users de la room, mais on n'a pas ses coordonnées donc ce sont de fausses coordonnées.
             client.to(room_id).emit('update_user', client.id, user_data.label, user_data.color, -100, -100);
@@ -383,6 +375,16 @@ io.sockets.on('connection', function (client) {
 
 
 
+function get_other_clients_in_room(client_id:string, clientRooms):Map<string, User>{
+    const users_in_room = new Map<string, User>();
+    for (const id_client in clientRooms) {
+        if(client_id != id_client && clientRooms[client_id] == clientRooms[id_client])
+        {
+            users_in_room.set(id_client, users.get(id_client));
+        }
+    }
+    return users_in_room;
+}
 
 
 
