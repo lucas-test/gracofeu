@@ -2,7 +2,7 @@ import { CanvasCoord } from '../local_graph';
 import { socket } from '../socket';
 import { Interactor, DOWN_TYPE } from './interactor'
 
-export let color_interactor = new Interactor("color", "c", "color.svg");
+export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK]));
 
 // Local variables
 let color_selected = "red";
@@ -126,7 +126,7 @@ color_interactor.mousedown = ((down_type, down_element_index, canvas, ctx, g, e)
 
 color_interactor.mousemove = ((canvas, ctx, g, e) => {
     if (color_interactor.last_down != null) {
-        const elt = g.get_element_nearby(e);
+        const elt = g.get_element_nearby(e, color_interactor.interactable_element_type);
         if (elt.type == DOWN_TYPE.VERTEX) {
             const data_socket = new Array();
             data_socket.push({ type: "vertex", index: elt.index, color: color_selected });

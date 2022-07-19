@@ -9,7 +9,7 @@ import { self_user } from '../user';
 
 // INTERACTOR SELECTION
 
-export var interactor_selection = new Interactor("selection", "s", "selection.svg")
+export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE]))
 let down_coord: CanvasCoord; // à rajouter dans Interactor
 let previous_camera: Coord;
 

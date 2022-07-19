@@ -10,7 +10,7 @@ import { CanvasCoord, local_graph, ORIENTATION } from '../local_graph';
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 
 
-export var interactor_edge = new Interactor("edge", "e", "edition.svg");
+export var interactor_edge = new Interactor("edge", "e", "edition.svg", new Set([DOWN_TYPE.VERTEX]));
 
 interactor_edge.mousedown = ((d, k, canvas, ctx, g, e) => {
     if (d == DOWN_TYPE.EMPTY) {

@@ -9,7 +9,7 @@ import {Stroke} from '../stroke';
 
 var is_erasing = false;
 
-export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg");
+export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new Set([DOWN_TYPE.STROKE]));
 
 interactor_eraser.mousedown = ((d, k, canvas, ctx, g, e) => {
     if(d === DOWN_TYPE.STROKE){

@@ -127,7 +127,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = view.serverCoord(e);
 
-            const element = g.get_element_nearby(click_pos);
+            const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
             console.log(element);
             interactor_loaded.last_down = element.type;
             interactor_loaded.last_down_index = element.index;
@@ -145,7 +145,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         const click_pos = new CanvasCoord(et.touches[0].clientX, et.touches[0].clientY);
         interactor_loaded.last_down_pos = view.serverCoord2(click_pos);
         
-        const element = g.get_element_nearby(click_pos);
+        const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
         console.log(element);
         interactor_loaded.last_down = element.type;
         interactor_loaded.last_down_index = element.index;

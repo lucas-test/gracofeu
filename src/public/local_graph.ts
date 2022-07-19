@@ -253,40 +253,43 @@ export class Graph {
         this.deselect_all_strokes();
     }
 
-    get_element_nearby(pos: CanvasCoord) {
-        for (const [index, v] of this.vertices.entries()) {
-            if (v.is_nearby(pos, 150)) {
-                return { type: DOWN_TYPE.VERTEX, index: index };
+    get_element_nearby(pos: CanvasCoord, interactable_element_type: Set<DOWN_TYPE>) {
+        if (interactable_element_type.has(DOWN_TYPE.VERTEX)) {
+            for (const [index, v] of this.vertices.entries()) {
+                if (v.is_nearby(pos, 150)) {
+                    return { type: DOWN_TYPE.VERTEX, index: index };
+                }
             }
         }
-
+       
         for (const [index, link] of this.links.entries()) {
-            if (link.canvas_cp.is_nearby(pos, 150)) {
+            if (interactable_element_type.has(DOWN_TYPE.CONTROL_POINT) && link.canvas_cp.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.CONTROL_POINT, index: index };
             }
-            if (this.is_click_over_link(index, pos)) {
+            if (interactable_element_type.has(DOWN_TYPE.LINK) && this.is_click_over_link(index, pos)) {
                 return { type: DOWN_TYPE.LINK, index: index };
             }
         }
 
         for(const [index,a] of this.areas.entries()){
-            if( a.is_nearby(pos, 200)){
+            if(interactable_element_type.has(DOWN_TYPE.AREA) && a.is_nearby(pos, 200)){
                 return{ type: DOWN_TYPE.AREA, index: index };
             }
             const corner_index = a.is_nearby_corner(pos, 50);
-            if( corner_index != false){
+            if(interactable_element_type.has(DOWN_TYPE.AREA_CORNER) && corner_index != false){
                 return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index };
             }
             const side_index = a.is_nearby_side(pos, 5);
-            if( side_index != false){
+            if(interactable_element_type.has(DOWN_TYPE.AREA_SIDE) && side_index != false){
                 return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index };
             }
         }
 
-
-        for(const [index,s] of this.strokes.entries()){
-            if(s.is_nearby(pos, 150)){     
-                return { type: DOWN_TYPE.STROKE, index: index };
+        if (interactable_element_type.has(DOWN_TYPE.STROKE)) {
+            for(const [index,s] of this.strokes.entries()){
+                if(s.is_nearby(pos, 150)){     
+                    return { type: DOWN_TYPE.STROKE, index: index };
+                }
             }
         }
 
