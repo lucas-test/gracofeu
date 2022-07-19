@@ -23,8 +23,8 @@ function setup() {
     window.addEventListener('resize', function () { resizeCanvas(canvas, ctx, local_graph) }, false);
     document.addEventListener('contextmenu', event => event.preventDefault());
     setup_interactions(canvas, ctx, local_graph);
-    setup_interactors_div();
-    select_interactor(interactor_edge, canvas, ctx, local_graph);
+    setup_interactors_div(canvas, ctx, local_graph);
+    select_interactor(interactor_edge, canvas, ctx, local_graph, null);
 
     setup_actions_div(canvas, ctx, local_graph);
 

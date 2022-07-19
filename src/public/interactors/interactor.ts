@@ -26,6 +26,7 @@ export class Interactor {
     mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => boolean;
     mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
     trigger: (mouse_pos: CanvasCoord) => void;
+    onleave: () => void;
 
     constructor(name: string, shortcut: string, img_src: string) {
         this.name = name;
@@ -35,6 +36,7 @@ export class Interactor {
         this.last_down = null;
         this.last_down_index = null;
         this.trigger = (e) => { };
+        this.onleave = () => {};
     }
 }
 

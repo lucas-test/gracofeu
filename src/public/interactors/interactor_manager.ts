@@ -22,10 +22,13 @@ export var interactor_loaded: Interactor = null;
 let mouse_pos = new CanvasCoord(0, 0);
 
 
-export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, pos: CanvasCoord) {
+    if ( interactor_loaded != null && interactor_loaded != interactor){
+        interactor_loaded.onleave();
+    }
     interactor_loaded = interactor;
     view.is_creating_vertex = false;
-    interactor.trigger(mouse_pos);
+    interactor.trigger(pos);
     select_interactor_div(interactor);
     requestAnimationFrame(function () { draw(canvas, ctx, g) });
 }
@@ -60,7 +63,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         for (let interactor of interactors_available) {
             if (interactor.shortcut == e.key) {
                 deselect_all_interactor_div()
-                select_interactor(interactor, canvas, ctx, g);
+                select_interactor(interactor, canvas, ctx, g, mouse_pos);
                 return;
             }
         }
@@ -193,21 +196,19 @@ function select_interactor_div(interactor: Interactor) {
         if (div.id == interactor.name) {
             div.classList.add("selected");
         }
+        else {
+            div.classList.remove("selected");
+        }
     }
 }
 
 
-export function setup_interactors_div() {
+export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     let interactors_div = document.getElementById("interaction_mode_selector");
     for (let interactor of interactors_available) {
         let newDiv = document.createElement("div");
         newDiv.classList.add("interactor");
         newDiv.id = interactor.name;
-        newDiv.onclick = function () {
-            deselect_all_interactor_div()
-            newDiv.classList.add("selected")
-            interactor_loaded = interactor
-        };
         newDiv.innerHTML = '<img src="img/interactor/' + interactor.img_src + '" width="27px" />';
         interactors_div.appendChild(newDiv);
 
@@ -226,6 +227,11 @@ export function setup_interactors_div() {
         newDiv.onmouseleave = function () {
             div_recap.style.display = "none"
         }
+
+        newDiv.onclick = function () {
+            select_interactor(interactor, canvas,ctx, g, null);
+            div_recap.style.display = "none";
+        };
     }
 }
 
