@@ -18,6 +18,7 @@ export class Interactor {
     name: string;
     shortcut: string;
     img_src: string;
+    interactable_element_type: Set<DOWN_TYPE>;
     last_down: DOWN_TYPE;
     last_down_index: number;
     last_down_pos: ServerCoord;
@@ -28,13 +29,14 @@ export class Interactor {
     trigger: (mouse_pos: CanvasCoord) => void;
     onleave: () => void;
 
-    constructor(name: string, shortcut: string, img_src: string) {
+    constructor(name: string, shortcut: string, img_src: string, interactable_element_type: Set<DOWN_TYPE>) {
         this.name = name;
         this.shortcut = shortcut;
         this.img_src = img_src;
         this.has_moved = false;
         this.last_down = null;
         this.last_down_index = null;
+        this.interactable_element_type = interactable_element_type;
         this.trigger = (e) => { };
         this.onleave = () => {};
     }

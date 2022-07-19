@@ -66,7 +66,7 @@ npm run dev
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 
 - [ ] serverCoord -> inclus automatiquement canvasCoord
-- [ ] interactor: visibilité et cliquabilité de certains éléments
+- [X] interactor: visibilité et cliquabilité de certains éléments
 - [ ] curseur des interacteurs
 
 ## V0.5 Chercheurs proches

@@ -11,6 +11,8 @@ import { User, users } from './user';
 import { CanvasCoord, Graph, ORIENTATION, ServerCoord } from './local_graph';
 import { Stroke } from './stroke';
 import { Area } from './area';
+import { interactor_loaded } from './interactors/interactor_manager';
+import { DOWN_TYPE } from './interactors/interactor';
 
 
 
@@ -223,7 +225,9 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
         ctx.stroke();
 
-        draw_circle(poscp, "grey", 4, 1, ctx);
+        if ( interactor_loaded.interactable_element_type.has(DOWN_TYPE.CONTROL_POINT)){
+            draw_circle(poscp, "grey", 4, 1, ctx);
+        }
         if (link.orientation == ORIENTATION.DIRECTED) {
             draw_head(ctx, poscp, posv);
         }

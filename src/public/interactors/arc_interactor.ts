@@ -4,7 +4,7 @@ import { CanvasCoord, local_graph, ORIENTATION } from "../local_graph";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
 
-export var interactor_arc = new Interactor("arc", "a", "arc.svg");
+export var interactor_arc = new Interactor("arc", "a", "arc.svg", new Set([DOWN_TYPE.VERTEX]));
 
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 
