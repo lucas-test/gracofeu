@@ -13,6 +13,8 @@ import { Stroke } from './stroke';
 import { Area } from './area';
 import { interactor_loaded } from './interactors/interactor_manager';
 import { DOWN_TYPE } from './interactors/interactor';
+import { clamp } from './utils';
+import { Multicolor } from './multicolor';
 
 
 
@@ -21,6 +23,8 @@ import { DOWN_TYPE } from './interactors/interactor';
 export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    // view.window_height = window.innerHeight;
+    // view.window_width = window.innerWidth;
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
 
@@ -102,57 +106,111 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     }
 }
 
-export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
-
-    // DRAW USERNAME 
+function draw_user_label(x:number, y:number, label:string, multicolor:Multicolor, ctx: CanvasRenderingContext2D){
     ctx.font = "400 17px Arial";
-    const text = ctx.measureText(user.label);
-    ctx.strokeStyle = user.multicolor.color;
-    ctx.fillStyle = user.multicolor.color;
+    const text = ctx.measureText(label);
+    ctx.strokeStyle = multicolor.color;
+    ctx.fillStyle = multicolor.color;
     // Rectangle 
-    const user_canvas_coord = user.canvas_pos;
-    drawRoundRect(ctx, user_canvas_coord.x + 10, user_canvas_coord.y + 17, text.width + 10, 21, 5, user.multicolor.color, user.multicolor.color);
-
-    const contrast_color = user.multicolor.contrast;
+    drawRoundRect(ctx, x, y, text.width + 10, 21, 5, multicolor.color, multicolor.color);
 
     // username
     ctx.beginPath();
-    ctx.fillStyle = contrast_color;
-    ctx.fillText(user.label, user_canvas_coord.x + 10 + 5, user_canvas_coord.y + 17 + 16);
+    ctx.fillStyle = multicolor.contrast;
+    ctx.fillText(label,  x + 5, y + 16);
     ctx.fill();
+}
 
 
-    // DRAW ARROW
-    const darken_color = user.multicolor.darken;
-    const brighter_color = user.multicolor.lighten;
-
+function draw_user_arrow(user: User, ctx: CanvasRenderingContext2D){
     // Background
     ctx.beginPath();
     ctx.lineWidth = 4;
-    ctx.strokeStyle = darken_color;
-    ctx.moveTo(user_canvas_coord.x - 2, user_canvas_coord.y + 1);
-    ctx.lineTo(user_canvas_coord.x - 2, user_canvas_coord.y + 21);
+    ctx.strokeStyle = user.multicolor.darken;
+    ctx.moveTo(user.canvas_pos.x - 2, user.canvas_pos.y + 1);
+    ctx.lineTo(user.canvas_pos.x - 2, user.canvas_pos.y + 21);
     ctx.stroke();
 
     //Arrow
     ctx.beginPath();
     ctx.fillStyle = user.multicolor.color;
-    ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
-    ctx.lineTo(user_canvas_coord.x + 13, user_canvas_coord.y + 13);
-    ctx.lineTo(user_canvas_coord.x + 5, user_canvas_coord.y + 13);
-    ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y + 20);
+    ctx.moveTo(user.canvas_pos.x, user.canvas_pos.y);
+    ctx.lineTo(user.canvas_pos.x + 13, user.canvas_pos.y + 13);
+    ctx.lineTo(user.canvas_pos.x + 5, user.canvas_pos.y + 13);
+    ctx.lineTo(user.canvas_pos.x, user.canvas_pos.y + 20);
     ctx.closePath();
     ctx.fill();
 
     // Bright sides
     ctx.beginPath();
     ctx.lineWidth = 1;
-    ctx.strokeStyle = brighter_color;
-    ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
-    ctx.lineTo(user_canvas_coord.x + 13, user_canvas_coord.y + 13);
-    ctx.lineTo(user_canvas_coord.x + 5, user_canvas_coord.y + 13);
-    ctx.lineTo(user_canvas_coord.x, user_canvas_coord.y + 20);
+    ctx.strokeStyle = user.multicolor.lighten;
+    ctx.moveTo(user.canvas_pos.x, user.canvas_pos.y);
+    ctx.lineTo(user.canvas_pos.x + 13, user.canvas_pos.y + 13);
+    ctx.lineTo(user.canvas_pos.x + 5, user.canvas_pos.y + 13);
+    ctx.lineTo(user.canvas_pos.x, user.canvas_pos.y + 20);
     ctx.stroke();
+}
+
+
+export function draw_user(user: User, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+
+    if(user.canvas_pos.x > canvas.width || user.canvas_pos.x < 0 || user.canvas_pos.y > canvas.height  || user.canvas_pos.y < 0 ){
+        const x = clamp(user.canvas_pos.x, 0, canvas.width);
+        const y = clamp(user.canvas_pos.y, 0, canvas.height);
+
+        ctx.beginPath();
+        ctx.fillStyle = user.multicolor.color;
+        ctx.arc(x, y, 10, 0, 2*Math.PI);
+        ctx.fill();
+
+        ctx.font = "400 17px Arial";
+        const text = ctx.measureText(user.label);
+
+        let shift_x = 0;
+        let shift_y = 0;
+        if(user.canvas_pos.x > canvas.width){
+            shift_x = - text.width - 23 ;
+            shift_y = -10;
+        }
+        if(user.canvas_pos.x < 0){
+            shift_x = 13 ;
+            shift_y = -10;
+        }
+        if(user.canvas_pos.y > canvas.height){
+            shift_x = - text.width/2 - 5;
+            shift_y = - 34 ;
+
+            if(user.canvas_pos.x < 0){
+                shift_x = 10;
+            }
+            if(user.canvas_pos.x > canvas.width){
+                shift_x = - text.width - 13;
+            }
+        }
+        if(user.canvas_pos.y < 0){
+            shift_x = - text.width/2 - 5;
+            shift_y = 13 ;
+
+            if(user.canvas_pos.x < 0){
+                shift_x = 10;
+            }
+            if(user.canvas_pos.x > canvas.width){
+                shift_x = - text.width - 13;
+            }
+        }
+
+        draw_user_label(x + shift_x, y + shift_y, user.label, user.multicolor, ctx);
+
+
+    }
+    else{
+        // DRAW USERNAME 
+        draw_user_label(user.canvas_pos.x + 10, user.canvas_pos.y + 17, user.label, user.multicolor, ctx);
+
+        // DRAW ARROW
+        draw_user_arrow(user, ctx);
+    }
 }
 
 
@@ -195,9 +253,9 @@ function draw_grid(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
 
 
 // DRAW USERS
-function draw_users(ctx: CanvasRenderingContext2D) {
+function draw_users(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
     users.forEach(user => {
-        draw_user(user, ctx);
+        draw_user(user, canvas, ctx);
     });
 }
 
@@ -372,7 +430,7 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_links(ctx, g);
     draw_link_creating(ctx);
     draw_vertices(ctx, g);
-    draw_users(ctx);
+    draw_users(canvas, ctx);
     draw_vertex_creating(ctx);
     draw_rectangular_selection(ctx);
     // draw_following(ctx);
