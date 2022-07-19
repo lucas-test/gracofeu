@@ -7,7 +7,7 @@ export let color_interactor = new Interactor("color", "c", "color.svg");
 // Local variables
 let color_selected = "red";
 const colors_available = new Array();
-colors_available.push("red", "green", "blue", "black"); // initial colors
+colors_available.push("red", "green", "blue", "black", "white"); // initial colors
 
 // Color picker HTML div
 const color_picker_div = document.createElement("div");
@@ -116,6 +116,11 @@ color_interactor.mousedown = ((down_type, down_element_index, canvas, ctx, g, e)
         data_socket.push({ type: "vertex", index: down_element_index, color: color_selected });
         socket.emit("update_colors", data_socket);
     }
+    else if (down_type == DOWN_TYPE.LINK){
+        const data_socket = new Array();
+        data_socket.push({ type: "link", index: down_element_index, color: color_selected });
+        socket.emit("update_colors", data_socket);
+    }
 })
 
 
@@ -125,6 +130,12 @@ color_interactor.mousemove = ((canvas, ctx, g, e) => {
         if (elt.type == DOWN_TYPE.VERTEX) {
             const data_socket = new Array();
             data_socket.push({ type: "vertex", index: elt.index, color: color_selected });
+            socket.emit("update_colors", data_socket);
+            return true;
+        }
+        else if (elt.type == DOWN_TYPE.LINK) {
+            const data_socket = new Array();
+            data_socket.push({ type: "link", index: elt.index, color: color_selected });
             socket.emit("update_colors", data_socket);
             return true;
         }

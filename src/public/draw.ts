@@ -216,7 +216,7 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         const poscp = link.canvas_cp;
         ctx.beginPath();
         ctx.moveTo(posu.x, posu.y);
-        ctx.strokeStyle = "white";
+        ctx.strokeStyle = link.color;
         if (link.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
         ctx.lineWidth = 3;
         //ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);

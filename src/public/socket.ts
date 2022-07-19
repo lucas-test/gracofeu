@@ -163,7 +163,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     orient = ORIENTATION.DIGON
                     break;
             }
-            const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient);
+            const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color);
             g.links.set(data[0], new_link);
         }
 

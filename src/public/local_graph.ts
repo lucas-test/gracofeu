@@ -152,10 +152,12 @@ export enum ORIENTATION {
 
 
 export class Link {
+    // Server properties
     start_vertex: number;
     end_vertex: number;
     cp: ServerCoord;
     orientation: ORIENTATION;
+    color: string;
 
     // local attributes
     old_cp: ServerCoord;
@@ -163,9 +165,10 @@ export class Link {
     canvas_cp: CanvasCoord;
 
 
-    constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION) {
+    constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string) {
         this.start_vertex = i;
         this.end_vertex = j;
+        this.color = color;
         this.is_selected = false;
         this.cp = new ServerCoord(cp.x, cp.y);
         this.old_cp = new ServerCoord(cp.x, cp.y);

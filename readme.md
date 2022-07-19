@@ -66,16 +66,16 @@ npm run dev
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 
 - [ ] serverCoord -> inclus automatiquement canvasCoord
-- [ ] visibilité de certains éléments
+- [ ] interactor: visibilité et cliquabilité de certains éléments
 - [ ] curseur des interacteurs
 
 ## V0.5 Chercheurs proches
 
 - couleur
     - [X] sommet
-    - [ ] arête
-    - [ ] interactor utilisation
-    - [ ] color picker utilisation
+    - [X] arête
+    - [X] interactor utilisation
+    - [X] color picker utilisation
 - [ ] zone texte
 - [X] grille magnétique
 - [X] aligner horizontalement/verticalement sur d'autres sommets

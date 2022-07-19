@@ -271,6 +271,12 @@ io.sockets.on('connection', function (client) {
                     vertex.color = element.color;
                 }
             }
+            else if (element.type == "link") {
+                if (g.links.has(element.index)) {
+                    const link = g.links.get(element.index);
+                    link.color = element.color;
+                }
+            }
         }
         emit_graph_to_room();
     }
