@@ -422,22 +422,26 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
         const top_right = view.canvasCoord(a.top_right_corner());
         const bot_right = view.canvasCoord(a.bot_right_corner());
 
+        const corner_side = 18;
+
+        ctx.beginPath();
+        ctx.strokeStyle = a.multicolor.color;
+        ctx.fillStyle = a.multicolor.color;
+        ctx.lineWidth = 2;
+        ctx.rect(top_left.x, top_left.y, corner_side, corner_side);
+        ctx.stroke();
+        // ctx.fill();
+
         ctx.beginPath();
         ctx.strokeStyle = a.multicolor.color;
         ctx.lineWidth = 2;
-        ctx.rect(top_left.x, top_left.y, 20, 20);
+        ctx.rect(top_right.x-corner_side, top_right.y, corner_side, corner_side);
         ctx.stroke();
 
         ctx.beginPath();
         ctx.strokeStyle = a.multicolor.color;
         ctx.lineWidth = 2;
-        ctx.rect(top_right.x-20, top_right.y, 20, 20);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.strokeStyle = a.multicolor.color;
-        ctx.lineWidth = 2;
-        ctx.rect(bot_right.x-20, bot_right.y-20, 20, 20);
+        ctx.rect(bot_right.x-corner_side, bot_right.y-corner_side, corner_side, corner_side);
         ctx.stroke();
     }
 }

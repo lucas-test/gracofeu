@@ -59,8 +59,8 @@ npm run dev
 - utilisateur
     - [X] nom utilisateur
     - [X] curseur utilisateur
-    - [ ] suivre
-    - [ ] en dehors de l'écran
+    - [X] suivre
+    - [X] en dehors de l'écran
 
 - [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
@@ -85,12 +85,13 @@ npm run dev
 - stroke
     - [ ] selectionner mieux
     - [ ] déplacer
+    - [X] effacer serveur
     - [ ] effacer mieux (plus tard)
     - [ ] affichage en live (plus tard, interet ??)
 
 - area 
     - [ ] clic sur label dans parametre -> centrer sur area
-    - [ ] modifier rectangle area
+    - [X] modifier rectangle area
     - [ ] déplacer area
 
 - parametre
@@ -137,10 +138,12 @@ npm run dev
 
 
 # Known issues 
-- [ ] zoom does not affect other's cursor position
-- [ ] changing your own label triggers shortcuts
-- [ ] Chrome : no export to file? 
-- [ ] Parametors may appear several times
-- [ ] zoom and create links
+- zoom does not affect other's cursor position
+- changing your own label triggers shortcuts
+- Chrome : no export to file? 
+- Parametors may appear several times
+- zoom and create links
+- resizing areas may look weird if the corners are swapped 
+- start resizing area, then leave mouse out of window, stop clicking, then mouse back on window = bug
 
 

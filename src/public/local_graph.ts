@@ -215,7 +215,7 @@ export class Graph {
             }
             const corner_index = a.is_nearby_corner(pos);
             console.log("CORNER INDEX", corner_index, corner_index!=0);
-            if(interactable_element_type.has(DOWN_TYPE.AREA_CORNER) && corner_index != 0){
+            if(interactable_element_type.has(DOWN_TYPE.AREA_CORNER) && corner_index != AREA_CORNER.NONE){
                 return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index };
             }
 
