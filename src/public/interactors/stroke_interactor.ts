@@ -60,7 +60,7 @@ interactor_stroke.mouseup = ((canvas, ctx, g, e) => {
     // });
     // socket.emit("add_stroke", data_socket);
 
-    socket.emit("add_stroke", [... s.positions.entries()], s.old_pos, s.color, s.width, s.top_left, s.bot_right);
+    socket.emit("add_stroke", [... s.positions.entries()], s.old_pos, s.multicolor.color, s.width, s.top_left, s.bot_right);
 
     last_stroke = null;
     index_last_stroke = null;

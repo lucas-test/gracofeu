@@ -40,9 +40,9 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
         let span_area_name = document.createElement('span');
         span_area_name.classList.add("span_area_name_parametor");
         span_area_name.textContent = a.label;
-        span_area_name.style.background = a.color;
-        span_area_name.style.color = a.accent_color;
-        span_area_name.style.borderColor = a.accent_color;
+        span_area_name.style.background = a.multicolor.color;
+        span_area_name.style.color = a.multicolor.contrast;
+        span_area_name.style.borderColor = a.multicolor.contrast;
         newDiv.appendChild(span_area_name);
     }
     span_name.innerHTML = param.name + ": ";

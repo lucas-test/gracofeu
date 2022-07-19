@@ -1,22 +1,23 @@
 import { view } from "./camera";
 import { invertColor, shadeColor } from "./draw";
 import { CanvasCoord, ServerCoord } from "./local_graph";
+import { Multicolor } from "./multicolor";
 import { socket } from "./socket";
 
 
 export class User {
     label: string;
-    color: string;
-    contrast_color: string;
-    border_color:string;
+    multicolor: Multicolor;
+    // contrast_color: string;
+    // border_color:string;
     pos: ServerCoord;
     canvas_pos: CanvasCoord;
 
     constructor(label: string, color: string, pos?: ServerCoord) {
         this.label = label;
-        this.color = color;
-        this.contrast_color = invertColor(color);
-        this.border_color = shadeColor(color, -60);
+        this.multicolor = new Multicolor(color);
+        // this.contrast_color = invertColor(color);
+        // this.border_color = shadeColor(color, -60);
 
         
         if (typeof pos !== 'undefined') {
@@ -36,9 +37,9 @@ export class User {
     }
 
     set_color(color:string){
-        this.color = color;
-        this.contrast_color = invertColor(color);
-        this.border_color = shadeColor(color, -60);
+        this.multicolor.set_color(color);
+        // this.contrast_color = invertColor(color);
+        // this.border_color = shadeColor(color, -60);
     }
 
 }
@@ -62,10 +63,10 @@ export function update_user_list_div() {
     for (let u of users.values()) {
         let newDiv = document.createElement("div");
         newDiv.classList.add("user");
-        newDiv.style.color = u.contrast_color;
+        newDiv.style.color = u.multicolor.contrast;
         newDiv.innerHTML = u.label.substring(0, 1);
-        newDiv.style.background = u.color;
-        newDiv.style.borderColor = u.border_color;
+        newDiv.style.background = u.multicolor.color;
+        newDiv.style.borderColor = u.multicolor.color;
         newDiv.dataset.label = u.label;
 
 

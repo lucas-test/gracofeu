@@ -103,13 +103,13 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
     // DRAW USERNAME 
     ctx.font = "400 17px Arial";
     const text = ctx.measureText(user.label);
-    ctx.strokeStyle = user.color;
-    ctx.fillStyle = user.color;
+    ctx.strokeStyle = user.multicolor.color;
+    ctx.fillStyle = user.multicolor.color;
     // Rectangle 
     const user_canvas_coord = user.canvas_pos;
-    drawRoundRect(ctx, user_canvas_coord.x + 10, user_canvas_coord.y + 17, text.width + 10, 21, 5, user.color, user.color);
+    drawRoundRect(ctx, user_canvas_coord.x + 10, user_canvas_coord.y + 17, text.width + 10, 21, 5, user.multicolor.color, user.multicolor.color);
 
-    const contrast_color = user.contrast_color;
+    const contrast_color = user.multicolor.contrast;
 
     // username
     ctx.beginPath();
@@ -119,8 +119,8 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
 
 
     // DRAW ARROW
-    const darken_color = user.border_color;
-    const brighter_color = shadeColor(user.color, 120);
+    const darken_color = user.multicolor.darken;
+    const brighter_color = user.multicolor.lighten;
 
     // Background
     ctx.beginPath();
@@ -132,7 +132,7 @@ export function draw_user(user: User, ctx: CanvasRenderingContext2D) {
 
     //Arrow
     ctx.beginPath();
-    ctx.fillStyle = user.color;
+    ctx.fillStyle = user.multicolor.color;
     ctx.moveTo(user_canvas_coord.x, user_canvas_coord.y);
     ctx.lineTo(user_canvas_coord.x + 13, user_canvas_coord.y + 13);
     ctx.lineTo(user_canvas_coord.x + 5, user_canvas_coord.y + 13);
@@ -282,7 +282,7 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
 
         let position_canvas = view.canvasCoord(s.positions[0]);
         ctx.beginPath();
-        ctx.strokeStyle = s.color;
+        ctx.strokeStyle = s.multicolor.color;
         ctx.lineWidth = s.width;
         ctx.moveTo(position_canvas.x, position_canvas.y);
         for(let i = 1; i<s.positions.length; i++){
@@ -304,7 +304,7 @@ function draw_strokes(ctx: CanvasRenderingContext2D, g:Graph){
 // DRAW AREA
 function draw_area(ctx: CanvasRenderingContext2D, a:Area){
     ctx.beginPath();
-        ctx.strokeStyle = a.color;
+        ctx.strokeStyle = a.multicolor.color;
         ctx.lineWidth = 2;
         const c1canvas = view.canvasCoord(a.c1);
         const c2canvas = view.canvasCoord(a.c2);
@@ -312,14 +312,14 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
         ctx.stroke();
 
         ctx.globalAlpha = 0.07;
-        ctx.fillStyle = a.color;
+        ctx.fillStyle = a.multicolor.color;
         ctx.fill();
         ctx.globalAlpha = 1;
 
         ctx.beginPath();
         ctx.font = "400 24px Arial";
         const measure = ctx.measureText(a.label);
-        ctx.fillStyle = a.color;
+        ctx.fillStyle = a.multicolor.color;
         const text_server_pos = new ServerCoord(Math.min(a.c1.x, a.c2.x), Math.max(a.c1.y, a.c2.y) ) ;
         const text_canvas_pos = view.canvasCoord(text_server_pos);
         ctx.rect(text_canvas_pos.x, text_canvas_pos.y - 29, measure.width + 10, 29);
@@ -327,7 +327,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
 
         
         ctx.beginPath();
-        ctx.fillStyle = invertColor(a.color);
+        ctx.fillStyle = invertColor(a.multicolor.color);
         ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 5);
         ctx.fill();
 
