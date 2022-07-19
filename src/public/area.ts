@@ -1,5 +1,5 @@
 import { view } from "./camera";
-import { Coord, Graph, ServerCoord } from "./local_graph";
+import { Coord, ServerCoord } from "./coord";
 import { Multicolor } from "./multicolor";
 
 
@@ -34,7 +34,7 @@ export class Area{
         this.id = id;
     }
 
-    is_nearby(pos:Coord, r:number){
+    is_nearby(pos:Coord, r:number){ // TODO ne pas utiliser Coord seul car on ne sait pas si c'est serveur ou canvas
         // ____________________
         // |                   |
         // |__       KO        |
@@ -91,27 +91,6 @@ export class Area{
         return AREA_SIDE.NONE;
     }
 
-    get_subgraph(g:Graph){
-        const subgraph = new Graph();
-        const c1canvas = view.canvasCoord(this.c1);
-        const c2canvas = view.canvasCoord(this.c2);   
-
-         for (const [index, v] of g.vertices.entries()) {
-            if(v.is_in_rect(c1canvas, c2canvas)){
-                subgraph.vertices.set(index, v);
-            }
-        }
-
-        for (const [index, e] of g.links.entries()){
-            const u = g.vertices.get(e.start_vertex);
-            const v = g.vertices.get(e.end_vertex);
-
-            if((u.is_in_rect(c1canvas, c2canvas)) && (v.is_in_rect(c1canvas, c2canvas))){
-                subgraph.links.set(index, e);
-            }
-        }
-        return subgraph;
-    }
 
     top_left_corner():ServerCoord{
         return new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y));

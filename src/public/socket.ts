@@ -1,12 +1,13 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
 import { Self, self_user, update_self_user_div, update_user_list_div, User, users } from "./user";
-import { Coord, Graph, Link, LocalVertex, ORIENTATION, ServerCoord } from "./local_graph";
+import { Graph, Link, LocalVertex, ORIENTATION } from "./local_graph";
 import { view } from "./camera";
 import { Stroke } from "./stroke";
 import { update_params_loaded } from "./parametors/parametor_manager";
 import { Area } from "./area";
 import { update_options_graphs } from "./parametors/div_parametor";
+import { Coord, ServerCoord } from "./coord";
 export const socket = io()
 
 

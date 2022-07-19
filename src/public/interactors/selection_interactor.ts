@@ -3,8 +3,8 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
-import { CanvasCoord, Coord } from '../local_graph';
-import { self_user } from '../user';
+import { self_user, users } from '../user';
+import { CanvasCoord, Coord } from '../coord';
 
 
 // INTERACTOR SELECTION
@@ -126,6 +126,9 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 view.camera.x = previous_camera.x + e.x - down_coord.x;
                 view.camera.y = previous_camera.y + e.y - down_coord.y;
                 g.update_canvas_pos();
+                for (const user of users.values()){
+                    user.canvas_pos = view.canvasCoord(user.pos);
+                }
                 down_coord = e; // peut etre faut copier
                 
                  

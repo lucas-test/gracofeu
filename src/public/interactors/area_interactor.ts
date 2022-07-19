@@ -3,8 +3,8 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
-import { CanvasCoord, Coord, ServerCoord } from '../local_graph';
 import { Area } from '../area';
+import { CanvasCoord, Coord } from '../coord';
 
 
 // INTERACTOR SELECTION

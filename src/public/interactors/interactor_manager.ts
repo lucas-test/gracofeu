@@ -5,7 +5,7 @@ import { draw } from '../draw';
 import { update_params_loaded } from '../parametors/parametor_manager';
 import { view } from '../camera';
 import { socket } from '../socket';
-import { CanvasCoord, Graph, ServerCoord } from '../local_graph';
+import {  Graph } from '../local_graph';
 import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';
@@ -13,6 +13,7 @@ import { interactor_eraser } from './eraser_interactor';
 import { interactor_area } from './area_interactor';
 import { actions_available, select_action } from '../actions';
 import { self_user } from '../user';
+import { CanvasCoord } from '../coord';
 
 // INTERACTOR MANAGER
 

@@ -1,6 +1,7 @@
 import { view } from "../camera";
+import { CanvasCoord } from "../coord";
 import { draw } from "../draw";
-import { CanvasCoord, local_graph, ORIENTATION } from "../local_graph";
+import { local_graph, ORIENTATION } from "../local_graph";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
 

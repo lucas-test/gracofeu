@@ -1,5 +1,5 @@
 import { view } from "./camera";
-import { CanvasCoord, Coord, ServerCoord } from "./local_graph";
+import { CanvasCoord, ServerCoord } from "./coord";
 import { Multicolor } from "./multicolor";
 
 export class Stroke{

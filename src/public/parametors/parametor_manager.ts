@@ -73,7 +73,7 @@ export function update_params_loaded(g:Graph) {
         else{
             if(g.areas.has(param.area_id)){
                 const area = g.areas.get(param.area_id);
-                var result = param.parametor.compute(area.get_subgraph(g));
+                var result = param.parametor.compute(g.get_subgraph_from_area(param.area_id));
                 document.getElementById("span_result_" + param.html_id).innerHTML = result;
             }
             else{

@@ -8,7 +8,7 @@ const COLOR_ALIGNEMENT_LINE = "#555555"
 
 import { INDEX_TYPE, view } from './camera';
 import { User, users } from './user';
-import { CanvasCoord, Graph, ORIENTATION, ServerCoord } from './local_graph';
+import {  Graph, ORIENTATION } from './local_graph';
 import { Stroke } from './stroke';
 import { Area } from './area';
 import { interactor_loaded } from './interactors/interactor_manager';
@@ -16,6 +16,7 @@ import { DOWN_TYPE } from './interactors/interactor';
 import { clamp } from './utils';
 import { Multicolor } from './multicolor';
 import { interactor_area } from './interactors/area_interactor';
+import { CanvasCoord } from './coord';
 
 
 

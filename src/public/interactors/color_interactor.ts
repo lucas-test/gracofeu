@@ -1,4 +1,5 @@
-import { CanvasCoord } from '../local_graph';
+
+import { CanvasCoord } from '../coord';
 import { socket } from '../socket';
 import { Interactor, DOWN_TYPE } from './interactor'
 

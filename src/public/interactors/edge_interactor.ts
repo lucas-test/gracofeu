@@ -2,7 +2,8 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
-import { CanvasCoord, local_graph, ORIENTATION } from '../local_graph';
+import { local_graph, ORIENTATION } from '../local_graph';
+import { CanvasCoord } from '../coord';
 
 
 // INTERACTOR EDGE

@@ -1,6 +1,6 @@
 import { view } from "./camera";
+import { CanvasCoord, ServerCoord } from "./coord";
 import { COLOR_BACKGROUND, invertColor, shadeColor } from "./draw";
-import { CanvasCoord, ServerCoord } from "./local_graph";
 import { Multicolor } from "./multicolor";
 import { socket } from "./socket";
 

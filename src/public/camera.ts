@@ -1,4 +1,5 @@
-import { CanvasCoord, Coord, ORIENTATION, ServerCoord } from "./local_graph";
+import { CanvasCoord, Coord, ServerCoord } from "./coord";
+import { ORIENTATION } from "./local_graph";
 
 export enum INDEX_TYPE {
     NONE,
