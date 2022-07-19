@@ -1,24 +1,21 @@
 import { view } from "./camera";
-import { invertColor, shadeColor } from "./draw";
+import { COLOR_BACKGROUND, invertColor, shadeColor } from "./draw";
 import { CanvasCoord, ServerCoord } from "./local_graph";
 import { Multicolor } from "./multicolor";
 import { socket } from "./socket";
 
 
 export class User {
+    id: string;
     label: string;
     multicolor: Multicolor;
-    // contrast_color: string;
-    // border_color:string;
     pos: ServerCoord;
     canvas_pos: CanvasCoord;
 
-    constructor(label: string, color: string, pos?: ServerCoord) {
+    constructor(id: string, label: string, color: string, pos?: ServerCoord) {
+        this.id = id;
         this.label = label;
         this.multicolor = new Multicolor(color);
-        // this.contrast_color = invertColor(color);
-        // this.border_color = shadeColor(color, -60);
-
         
         if (typeof pos !== 'undefined') {
             this.pos = pos;
@@ -38,9 +35,9 @@ export class User {
 
     set_color(color:string){
         this.multicolor.set_color(color);
-        // this.contrast_color = invertColor(color);
-        // this.border_color = shadeColor(color, -60);
     }
+
+    
 
 }
 
@@ -69,9 +66,13 @@ export function update_user_list_div() {
         newDiv.style.borderColor = u.multicolor.color;
         newDiv.dataset.label = u.label;
 
-
         newDiv.onclick = function () {
-            //TODO: Follow user
+            if(view.following === u.id){
+                self_user.unfollow(u.id);
+            }
+            else{
+                self_user.follow(u.id);
+            }
         }
         div.appendChild(newDiv)
     }
@@ -80,31 +81,52 @@ export function update_user_list_div() {
 
 export class Self{
     label:string;
-    color:string;
+    multicolor:Multicolor;
     id:string;
-    contrast_color:string;
+    // contrast_color:string;
 
     constructor(){
         this.label = null;
-        this.color = null;
+        this.multicolor = null;
         this.id = null;
-        this.contrast_color = null;
+        // this.contrast_color = null;
     }
 
     init(id:string, label:string, color:string){
-        this.color = color;
+        this.multicolor = new Multicolor(color);
         this.label = label;
         this.id = id;
-        this.contrast_color = invertColor(color);
+        // this.contrast_color = invertColor(color);
     }
 
     update_label(label:string){
         this.label = label;
     }
 
-    update_color(color:string){
-        this.color = color;
-        this.contrast_color = invertColor(color);
+    set_color(color:string){
+        this.multicolor.set_color(color);
+        // this.contrast_color = invertColor(color);
+    }
+
+
+    follow(id:string){
+        if(users.has(id)){
+            const borderDIV = document.getElementById("border");
+            const u = users.get(id);
+            view.following = id;
+            borderDIV.style.borderColor = u.multicolor.color;
+            socket.emit("follow", id);
+        }
+        else{
+            view.following = null;
+        }
+    }
+
+    unfollow(id:string){
+        const borderDIV = document.getElementById("border");
+        view.following = null;
+        borderDIV.style.borderColor = COLOR_BACKGROUND;
+        socket.emit("unfollow", id);
     }
 }
 
@@ -120,7 +142,7 @@ export function update_self_user_div(){
 
 function update_self_user_color(){
     let div = document.getElementById('self_user_color');
-    div.style.background = self_user.color;
+    div.style.background = self_user.multicolor.color;
 }
 
 function update_self_user_label(){
@@ -140,7 +162,7 @@ function update_self_user_label(){
 
     div.addEventListener('focusout', function()
     {   
-        socket.emit("update_self_user", div.textContent, self_user.color);
+        socket.emit("update_self_user", div.textContent, self_user.multicolor.color);
     });
 
 }

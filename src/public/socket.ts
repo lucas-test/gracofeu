@@ -18,6 +18,29 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('remove_user', remove_user);
     socket.on('clients', handle_clients);
     socket.on('update_other_self_user', update_other_self_user);
+    socket.on('send_view', handle_send_view);
+    socket.on('view_follower', handle_update_view_follower);
+
+
+    function handle_update_view_follower(x:number, y:number, zoom:number, id:string){
+        // console.log("FOLLOWING USER:", x,y,zoom, id);
+        if(users.has(id) && view.following == id){
+            // console.log("Following......")
+            view.camera = new Coord(x, y);
+            view.zoom = zoom;
+            g.update_canvas_pos();
+            // requestAnimationFrame(function () { draw(canvas, ctx, g) });
+        }
+        else{
+            // console.log("reset....");
+            view.following = null;
+        }
+    }
+
+    function handle_send_view(){
+        // console.log("SENDING MY VIEW");
+        socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
+    }
 
     function update_other_self_user(id:string, label:string, color:string){
         // console.log(id, label, color);
@@ -26,7 +49,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             users.get(id).label = label;
         }
         else {
-            users.set(id, new User(label, color));
+            users.set(id, new User(id, label, color));
         }
         update_user_list_div();
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -51,9 +74,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             users.get(id).set_pos(x,y);
         }
         else {
-            users.set(id, new User(label, color, new ServerCoord(x, y)));
+            users.set(id, new User(id, label, color, new ServerCoord(x, y)));
             update_user_list_div();
-            console.log("NEW USER !! ");
+            // console.log("NEW USER !! ");
         }
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -70,7 +93,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         users.clear();
         for (const data of users_entries) {
             //TODO: Corriger ca: on est obligé de mettre de fausses coordonnées aux autres users à l'init car le serveur ne les stocke pas 
-            const new_user = new User(data[1].label, data[1].color, new ServerCoord(-100, -100));
+            const new_user = new User(data[0], data[1].label, data[1].color, new ServerCoord(-100, -100));
             users.set(data[0], new_user);
         }
         // console.log(users);

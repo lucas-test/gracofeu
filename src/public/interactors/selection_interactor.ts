@@ -4,6 +4,7 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
 import { CanvasCoord, Coord } from '../local_graph';
+import { self_user } from '../user';
 
 
 // INTERACTOR SELECTION
@@ -126,6 +127,12 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 view.camera.y = previous_camera.y + e.y - down_coord.y;
                 g.update_canvas_pos();
                 down_coord = e; // peut etre faut copier
+                
+                 
+                if(view.following !== null){
+                    self_user.unfollow(view.following);
+                }
+                socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
             }
             return true;
             break;

@@ -12,6 +12,7 @@ import { interactor_stroke } from './stroke_interactor';
 import { interactor_eraser } from './eraser_interactor';
 import { interactor_area } from './area_interactor';
 import { actions_available, select_action } from '../actions';
+import { self_user } from '../user';
 
 // INTERACTOR MANAGER
 
@@ -82,6 +83,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             view.apply_zoom(e, 1.1);
             g.update_canvas_pos()
         }
+        
+        
+        if(view.following !== null){
+            self_user.unfollow(view.following);
+        }
+        socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
+        
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     });
 

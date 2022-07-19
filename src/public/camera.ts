@@ -36,6 +36,8 @@ class View {
 
     index_type: INDEX_TYPE;
 
+    following: string;
+
     constructor() {
         this.camera = new Coord(0, 0);
         this.zoom = 1.;
@@ -53,6 +55,8 @@ class View {
 
         this.is_creating_vertex = false;
         this.creating_vertex_pos = new CanvasCoord(0,0);
+
+        this.following = null;
     }
 
 

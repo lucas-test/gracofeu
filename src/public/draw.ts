@@ -1,5 +1,5 @@
 const SELECTION_COLOR = 'green' // avant c'était '#00ffff'
-const COLOR_BACKGROUND = "#1e1e1e";
+export const COLOR_BACKGROUND = "#1e1e1e";
 const GRID_COLOR = '#777777';
 const VERTEX_RADIUS = 8;
 const ARC_ARROW_LENGTH = 12
@@ -64,13 +64,15 @@ export function draw_line(start: CanvasCoord, end: CanvasCoord, ctx: CanvasRende
 
 
 export function draw_circle(center: CanvasCoord, fillStyle: string, radius: number, alpha: number, ctx: CanvasRenderingContext2D) {
-    ctx.beginPath();
-    ctx.fillStyle = fillStyle;
-    ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
-    ctx.globalAlpha = alpha;
+    if(center != null){
+        ctx.beginPath();
+        ctx.fillStyle = fillStyle;
+        ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
+        ctx.globalAlpha = alpha;
 
-    ctx.fill();
-    ctx.globalAlpha = 1;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    }
 }
 
 export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
@@ -195,6 +197,23 @@ function draw_users(ctx: CanvasRenderingContext2D) {
     users.forEach(user => {
         draw_user(user, ctx);
     });
+}
+
+
+function draw_following(ctx: CanvasRenderingContext2D){
+    if(view.following !== null){
+        const following_user = users.get(view.following);
+        if(following_user){
+            ctx.beginPath();
+            ctx.strokeStyle = following_user.multicolor.color;
+            ctx.lineWidth = 10;
+            ctx.rect(0,0,1000,1000);
+            ctx.stroke();
+        }
+        else{
+            view.following = null;
+        }
+    }
 }
 
 
@@ -352,6 +371,7 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_users(ctx);
     draw_vertex_creating(ctx);
     draw_rectangular_selection(ctx);
+    // draw_following(ctx);
 }
 
 

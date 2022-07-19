@@ -113,6 +113,9 @@ io.sockets.on('connection', function (client) {
     client.on('change_room_to', handle_change_room_to);
     client.on('get_room_id', (callback) => { callback(handle_get_room_id()) });
     client.on('update_self_user', handle_update_self_user);
+    client.on('follow', add_follower);
+    client.on('unfollow', remove_follower);
+    client.on('my_view', send_view_to_followers);
 
     function handle_update_self_user(label:string, color:string){
         if(users.has(client.id)){
@@ -152,6 +155,34 @@ io.sockets.on('connection', function (client) {
 
     function update_user(x: number, y: number) {
         client.to(room_id).emit('update_user', client.id, user_data.label, user_data.color, x, y);
+    }
+
+    function add_follower(id:string){
+        console.log("ADDING FOLLOWER...");
+        if(users.has(client.id) && users.has(id)){
+            users.get(id).followers.push(client.id);
+            io.to(id).emit("send_view");
+            
+            console.log("ADDED!");
+        }
+    }
+
+    function remove_follower(id:string){
+        console.log("REMOVING FOLLOWER...");
+        if(users.has(client.id) && users.has(id)){
+            const index = users.get(id).followers.indexOf(client.id);
+            if (index > -1) { 
+                users.get(id).followers.splice(index, 1);
+                console.log("REMOVED!");
+            }
+        }
+    }
+
+    function send_view_to_followers(x:number, y:number, zoom:number){
+        // console.log("SEND VIEW TO FOLLOWERS:", x,y,zoom, client.id, users.get(client.id).followers);
+        for(const user_id of users.get(client.id).followers){
+            io.to(user_id).emit("view_follower", x, y, zoom, client.id);
+        }
     }
 
 

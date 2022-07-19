@@ -2,11 +2,13 @@ export class User {
     label: string;
     id:string;
     color: string;
+    followers : Array<string>;
 
     constructor(id: string, color:string) {
         this.id = id;
         this.label = id.substring(0, 5)
         this.color = color;
+        this.followers = new Array<string>();
     }
 }
 
