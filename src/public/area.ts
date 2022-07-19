@@ -1,7 +1,23 @@
 import { view } from "./camera";
-import { invertColor } from "./draw";
-import { CanvasCoord, Coord, Graph, Link, LocalVertex, local_graph, ServerCoord } from "./local_graph";
+import { Coord, Graph, ServerCoord } from "./local_graph";
 import { Multicolor } from "./multicolor";
+
+
+export enum AREA_CORNER {
+    NONE = 0,
+    TOP_LEFT = 1,
+    TOP_RIGHT = 2,
+    BOT_RIGHT = 3,
+    BOT_LEFT = 4
+}
+
+export enum AREA_SIDE{
+    NONE = 0,
+    TOP = 1,
+    RIGHT = 2,
+    BOT = 3,
+    LEFT = 4
+}
 
 export class Area{
     c1 : ServerCoord;
@@ -10,7 +26,6 @@ export class Area{
     label:string;
     id:string;
 
-    
     constructor(id: string, label:string, c1:ServerCoord, c2:ServerCoord, color:string){
         this.c1 = c1;
         this.c2 = c2;
@@ -29,37 +44,29 @@ export class Area{
         return BL.is_nearby(pos, r);
     }
 
-    is_nearby_corner(pos:Coord, r:number){
-        // TL(1)_____________TR(2)
-        // |                   |
-        // |                   |
-        // BL(4)_____________BR(3)
+    is_nearby_corner(pos:Coord, r?:number):AREA_CORNER{
+        if(this.is_nearby_top_left_corner(pos, r)){
+            return AREA_CORNER.TOP_LEFT;
+        }
 
-        const TL = view.canvasCoord(new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y)));
-        const TR = view.canvasCoord(new ServerCoord(Math.max(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y)));
-        const BR = view.canvasCoord(new ServerCoord(Math.max(this.c1.x, this.c2.x), Math.max(this.c1.y, this.c2.y)));
-        const BL = view.canvasCoord(new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.max(this.c1.y, this.c2.y)));
+        if(this.is_nearby_top_right_corner(pos, r)){
+            return AREA_CORNER.TOP_RIGHT;
+        }
 
-        if(TL.is_nearby(pos, r)){
-            return 1;
+        if(this.is_nearby_bot_right_corner(pos, r)){
+            return AREA_CORNER.BOT_RIGHT;
         }
-        if(TR.is_nearby(pos, r)){
-            return 2;
+
+        if(this.is_nearby_bot_left_corner(pos, r)){
+            return AREA_CORNER.BOT_LEFT;
         }
-        if(BR.is_nearby(pos, r)){
-            return 3;
-        }
-        if(BL.is_nearby(pos, r)){
-            return 4;
-        }
-        return false;
+        return AREA_CORNER.NONE;
     }
 
-    is_nearby_side(pos:Coord, r:number){
-        // __________1_________
-        // |                   |
-        // 4                   2
-        // |_________3_________|
+    is_nearby_side(pos:Coord, r?:number):AREA_SIDE{
+        if(r == undefined){
+            r = 100;
+        }
 
         const c1canvas = view.canvasCoord(this.c1);
         const c2canvas = view.canvasCoord(this.c2);  
@@ -69,19 +76,19 @@ export class Area{
         const maxY = Math.max(c1canvas.y, c2canvas.y);
 
         if(pos.x < maxX && pos.x > minX && Math.abs(pos.y - minY) < r){
-            return 1;
+            return AREA_SIDE.TOP;
         }
         if(pos.y < maxY && pos.y > minY && Math.abs(pos.x - maxX) < r){
-            return 2;
+            return AREA_SIDE.RIGHT;
         }
         if(pos.x < maxX && pos.x > minX && Math.abs(pos.y - maxY) < r){
-            return 3;
+            return AREA_SIDE.BOT;
         }
         if(pos.y < maxY && pos.y > minY && Math.abs(pos.x - minX) < r){
-            return 4;
+            return AREA_SIDE.LEFT;
         }
 
-        return false;
+        return AREA_SIDE.NONE;
     }
 
     get_subgraph(g:Graph){
@@ -104,6 +111,55 @@ export class Area{
             }
         }
         return subgraph;
+    }
 
+    top_left_corner():ServerCoord{
+        return new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y));
+    }
+
+    top_right_corner():ServerCoord{
+        return new ServerCoord(Math.max(this.c1.x, this.c2.x), Math.min(this.c1.y, this.c2.y));
+    }
+    
+    bot_right_corner():ServerCoord{
+        return new ServerCoord(Math.max(this.c1.x, this.c2.x), Math.max(this.c1.y, this.c2.y));
+    }
+    
+    bot_left_corner():ServerCoord{
+        return new ServerCoord(Math.min(this.c1.x, this.c2.x), Math.max(this.c1.y, this.c2.y));
+    }
+
+
+    is_nearby_top_left_corner(pos:Coord, s?:number){      
+        if(s == undefined){
+            s = 20;
+        }
+        const TL = this.top_left_corner();
+        return pos.x > TL.x && pos.x < TL.x + s && pos.y > TL.y && pos.y < TL.y + s;
+    }
+
+    is_nearby_top_right_corner(pos:Coord, s?:number){      
+        if(s == undefined){
+            s = 20;
+        }
+        const TR = this.top_right_corner();
+        return pos.x < TR.x && pos.x > TR.x - s && pos.y > TR.y && pos.y < TR.y + s;
+    }
+
+    is_nearby_bot_left_corner(pos:Coord, s?:number){      
+        if(s == undefined){
+            s = 20;
+        }
+        const BL = this.bot_left_corner();
+        return pos.x > BL.x && pos.x < BL.x + s && pos.y > BL.y - s && pos.y < BL.y;
+    }
+
+    is_nearby_bot_right_corner(pos:Coord, s?:number){      
+        if(s == undefined){
+            s = 20;
+        }
+        const BR = this.bot_right_corner();
+        return pos.x < BR.x && pos.x > BR.x - s && pos.y > BR.y - s && pos.y < BR.y;
     }
 }
+

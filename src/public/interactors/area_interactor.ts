@@ -28,7 +28,7 @@ interactor_area.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) 
 
     if (down_type === DOWN_TYPE.AREA_CORNER){
         const area = g.areas.get(down_element_index);
-        corner_number = area.is_nearby_corner(e, 100);
+        corner_number = area.is_nearby_corner(e);
         last_down_index = down_element_index;
     }
 

@@ -83,6 +83,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
     function remove_user(userid: string) {
+        if(view.following == userid){
+            self_user.unfollow(userid);
+        }
         users.delete(userid);
         update_user_list_div();
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -113,6 +116,10 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const new_stroke = new Stroke(positions, s[1].color, s[1].width);
             g.strokes.set(s[0], new_stroke);
         }
+        requestAnimationFrame(function () { 
+            draw(canvas, ctx, g) 
+        });
+        
     }
 
     socket.on('areas', handle_areas);

@@ -15,6 +15,7 @@ import { interactor_loaded } from './interactors/interactor_manager';
 import { DOWN_TYPE } from './interactors/interactor';
 import { clamp } from './utils';
 import { Multicolor } from './multicolor';
+import { interactor_area } from './interactors/area_interactor';
 
 
 
@@ -384,34 +385,60 @@ function draw_strokes(ctx: CanvasRenderingContext2D, g:Graph){
 
 // DRAW AREA
 function draw_area(ctx: CanvasRenderingContext2D, a:Area){
+
+
     ctx.beginPath();
+    ctx.strokeStyle = a.multicolor.color;
+    ctx.lineWidth = 2;
+    const c1canvas = view.canvasCoord(a.c1);
+    const c2canvas = view.canvasCoord(a.c2);
+    ctx.rect(c1canvas.x , c1canvas.y, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
+    ctx.stroke();
+
+    ctx.globalAlpha = 0.07;
+    ctx.fillStyle = a.multicolor.color;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    ctx.beginPath();
+    ctx.font = "400 24px Arial";
+    const measure = ctx.measureText(a.label);
+    ctx.fillStyle = a.multicolor.color;
+    const text_canvas_pos = view.canvasCoord(a.bot_left_corner());
+    ctx.rect(text_canvas_pos.x, text_canvas_pos.y - 29, measure.width + 10, 29);
+    ctx.fill();
+
+    
+    ctx.beginPath();
+    ctx.fillStyle = invertColor(a.multicolor.color);
+    ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 5);
+    ctx.fill();
+
+
+
+    if(interactor_loaded && interactor_loaded === interactor_area){
+        const top_left = view.canvasCoord(a.top_left_corner());
+        const top_right = view.canvasCoord(a.top_right_corner());
+        const bot_right = view.canvasCoord(a.bot_right_corner());
+
+        ctx.beginPath();
         ctx.strokeStyle = a.multicolor.color;
         ctx.lineWidth = 2;
-        const c1canvas = view.canvasCoord(a.c1);
-        const c2canvas = view.canvasCoord(a.c2);
-        ctx.rect(c1canvas.x , c1canvas.y, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
+        ctx.rect(top_left.x, top_left.y, 20, 20);
         ctx.stroke();
 
-        ctx.globalAlpha = 0.07;
-        ctx.fillStyle = a.multicolor.color;
-        ctx.fill();
-        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.strokeStyle = a.multicolor.color;
+        ctx.lineWidth = 2;
+        ctx.rect(top_right.x-20, top_right.y, 20, 20);
+        ctx.stroke();
 
         ctx.beginPath();
-        ctx.font = "400 24px Arial";
-        const measure = ctx.measureText(a.label);
-        ctx.fillStyle = a.multicolor.color;
-        const text_server_pos = new ServerCoord(Math.min(a.c1.x, a.c2.x), Math.max(a.c1.y, a.c2.y) ) ;
-        const text_canvas_pos = view.canvasCoord(text_server_pos);
-        ctx.rect(text_canvas_pos.x, text_canvas_pos.y - 29, measure.width + 10, 29);
-        ctx.fill();
-
-        
-        ctx.beginPath();
-        ctx.fillStyle = invertColor(a.multicolor.color);
-        ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 5);
-        ctx.fill();
-
+        ctx.strokeStyle = a.multicolor.color;
+        ctx.lineWidth = 2;
+        ctx.rect(bot_right.x-20, bot_right.y-20, 20, 20);
+        ctx.stroke();
+    }
 }
 
 

@@ -1,5 +1,4 @@
-
-import { Area } from "./area";
+import { Area, AREA_CORNER, AREA_SIDE } from "./area";
 import { INDEX_TYPE, view } from "./camera";
 import { DOWN_TYPE } from "./interactors/interactor";
 import { Stroke } from "./stroke";
@@ -275,14 +274,16 @@ export class Graph {
             if(interactable_element_type.has(DOWN_TYPE.AREA) && a.is_nearby(pos, 200)){
                 return{ type: DOWN_TYPE.AREA, index: index };
             }
-            const corner_index = a.is_nearby_corner(pos, 50);
-            if(interactable_element_type.has(DOWN_TYPE.AREA_CORNER) && corner_index != false){
+            const corner_index = a.is_nearby_corner(pos);
+            console.log("CORNER INDEX", corner_index, corner_index!=0);
+            if(interactable_element_type.has(DOWN_TYPE.AREA_CORNER) && corner_index != 0){
                 return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index };
             }
-            const side_index = a.is_nearby_side(pos, 5);
-            if(interactable_element_type.has(DOWN_TYPE.AREA_SIDE) && side_index != false){
-                return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index };
-            }
+
+            // const side_index = a.is_nearby_side(pos, 5);
+            // if(interactable_element_type.has(DOWN_TYPE.AREA_SIDE) && side_index != AREA_SIDE.NONE){
+            //     return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index };
+            // }
         }
 
         if (interactable_element_type.has(DOWN_TYPE.STROKE)) {

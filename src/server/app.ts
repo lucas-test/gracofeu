@@ -70,7 +70,7 @@ io.sockets.on('connection', function (client) {
     emit_graph_to_room();
     emit_strokes_to_room();
     emit_areas_to_room();
-    // emit_users_to_client();
+    emit_users_to_client();
 
     if (ENV.mode == "dev") {
         room_id = the_room;
@@ -150,6 +150,9 @@ io.sockets.on('connection', function (client) {
     }
 
     function handle_disconnect() {
+        if(users.has(client.id)){
+            users.delete(client.id);
+        }
         io.sockets.in(room_id).emit('remove_user', client.id);
     }
 
@@ -201,6 +204,7 @@ io.sockets.on('connection', function (client) {
     client.on('update_control_points', handle_update_control_points);
     client.on('update_colors', handle_update_colors);
     client.on('add_stroke', handle_add_stroke);
+    client.on('delete_stroke', handle_delete_stroke);
     client.on('add_area', handle_add_area);
     client.on('area_move_side', handle_move_side_area);
     client.on('area_move_corner', handle_move_corner_area);
@@ -283,6 +287,16 @@ io.sockets.on('connection', function (client) {
         g.add_stroke(positions, old_pos, color, width, top_left, bot_right);
         emit_strokes_to_room();
     }
+
+
+    
+    function handle_delete_stroke(index:number) {
+        if(g.strokes.has(index)){
+            g.delete_stroke(index);
+        }
+        emit_strokes_to_room();
+    }
+   
 
 
     // COLORS
@@ -396,15 +410,31 @@ io.sockets.on('connection', function (client) {
 
     // OTHERS 
     function handle_delete_selected_elements(data) {
+        let emit_graph = false;
+        let emit_stroke = false;
+
         for (const e of data) {
             if (e.type == "vertex") {
                 g.delete_vertex(e.index);
+                emit_graph = true;
             }
             else if (e.type == "link") {
                 g.delete_link(e.index);
+                emit_graph = true;
+            }
+            else if (e.type == "stroke") {
+                g.delete_stroke(e.index);
+                emit_stroke = true;
             }
         }
-        emit_graph_to_room();
+
+        if(emit_graph){
+            emit_graph_to_room(); 
+        }
+        
+        if(emit_stroke){
+            emit_strokes_to_room();
+        }
     }
    
 })
@@ -415,7 +445,7 @@ io.sockets.on('connection', function (client) {
 function get_other_clients_in_room(client_id:string, clientRooms):Map<string, User>{
     const users_in_room = new Map<string, User>();
     for (const id_client in clientRooms) {
-        if(client_id != id_client && clientRooms[client_id] == clientRooms[id_client])
+        if(client_id != id_client && clientRooms[client_id] == clientRooms[id_client] && users.has(id_client))
         {
             users_in_room.set(id_client, users.get(id_client));
         }

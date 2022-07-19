@@ -23,8 +23,9 @@ interactor_eraser.mousemove = ((canvas, ctx, g, e) => {
         for(const [index,s] of g.strokes.entries()){
             // const canvas_coord = view.ca(e);
             if(s.is_nearby(e, 50) !== false){
-                console.log("CLOSE!!");
-                g.strokes.delete(index);
+                // console.log("CLOSE!!");
+                // g.strokes.delete(index);
+                socket.emit("delete_stroke", index);
                 return true;
             }
         }

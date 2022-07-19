@@ -159,6 +159,11 @@ export class Graph {
         this.links.delete(link_index);
     }
 
+    
+    delete_stroke(stroke_index: number) {
+        this.strokes.delete(stroke_index);
+    }
+
     clear() {
         this.vertices.clear();
         this.links.clear();
