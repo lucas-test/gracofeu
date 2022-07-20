@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
-import { Self, self_user, update_self_user_div, update_user_list_div, User, users } from "./user";
+import { Self, self_user, update_self_user_div, update_users_canvas_pos, update_user_list_div, User, users } from "./user";
 import { Graph, Link, LocalVertex, ORIENTATION } from "./local_graph";
 import { view } from "./camera";
 import { Stroke } from "./stroke";
@@ -31,6 +31,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             view.camera = new Coord(x, y);
             view.zoom = zoom;
             g.update_canvas_pos();
+            update_users_canvas_pos();
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
         else{

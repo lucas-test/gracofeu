@@ -425,6 +425,15 @@ export class Graph {
         for (const link of this.links.values()) {
             link.canvas_cp = view.canvasCoord(link.cp)
         }
+        // TODO when area and stroke will have canvas_pos
+        /*
+        for (const area of this.areas.values()){
+            area.update_canvas_pos();
+        }
+        for( const stroke of this.strokes.values()){
+            stroke.update_canvas_pos();
+        }
+        */
     }
 
     get_subgraph_from_area(area_index: number){

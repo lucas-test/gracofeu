@@ -4,6 +4,7 @@ import { CanvasCoord, Coord } from "./coord";
 import { draw } from "./draw";
 import { Graph } from "./local_graph";
 import { socket } from "./socket";
+import { update_users_canvas_pos } from "./user";
 
 export function get_span_for_area(a:Area):HTMLSpanElement{
     if(a!== null){
@@ -48,9 +49,9 @@ function center_canvas_on_rectangle(top_left:CanvasCoord, bot_right:CanvasCoord,
     const ratio_h = canvas.height/h;
 
     view.translate_camera(new Coord(shift_x, shift_y));
-    g.update_canvas_pos();
 
     const center = new CanvasCoord(canvas.width/2, canvas.height/2);
     view.apply_zoom_to_center(center, Math.min(ratio_h, ratio_w)*0.8);
     g.update_canvas_pos();
+    update_users_canvas_pos();
 }

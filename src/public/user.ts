@@ -79,6 +79,12 @@ export function update_user_list_div() {
 }
 
 
+export function update_users_canvas_pos() {
+    for (const user of users.values()){
+        user.canvas_pos = view.canvasCoord(user.pos);
+    }
+}
+
 export class Self{
     label:string;
     multicolor:Multicolor;

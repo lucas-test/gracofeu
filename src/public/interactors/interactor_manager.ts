@@ -12,7 +12,7 @@ import { interactor_stroke } from './stroke_interactor';
 import { interactor_eraser } from './eraser_interactor';
 import { interactor_area } from './area_interactor';
 import { actions_available, select_action } from '../actions';
-import { self_user } from '../user';
+import { self_user, update_users_canvas_pos } from '../user';
 import { CanvasCoord } from '../coord';
 
 // INTERACTOR MANAGER
@@ -82,12 +82,12 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener("wheel", function (e) {
         if (e.deltaY > 0) {
-            view.apply_zoom(e, 1 / 1.1);
-            g.update_canvas_pos()
+            view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1 / 1.1);
         } else {
-            view.apply_zoom(e, 1.1);
-            g.update_canvas_pos()
+            view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1.1);
         }
+        g.update_canvas_pos();
+        update_users_canvas_pos();
         
         
         if(view.following !== null){

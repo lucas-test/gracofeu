@@ -109,12 +109,6 @@ class View {
     }
 
     // zoom factor is multiply by r
-    apply_zoom(center: MouseEvent, r: number) {
-        const center_coord = new CanvasCoord(center.pageX, center.pageY);
-        this.apply_zoom_to_center(center_coord, r);
-    }
-
-    
     apply_zoom_to_center(center: CanvasCoord, r: number) {
         this.zoom *= r;
         this.camera.x = center.x + (this.camera.x - center.x) * r;

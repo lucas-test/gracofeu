@@ -1,7 +1,7 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
-import { self_user, users } from '../user';
+import { self_user, update_users_canvas_pos, users } from '../user';
 import { CanvasCoord, Coord } from '../coord';
 import { down_coord, has_moved, last_down, last_down_index } from './interactor_manager';
 
@@ -121,9 +121,8 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             } else {
                 view.translate_camera_from_old(e.sub(down_coord));
                 g.update_canvas_pos();
-                for (const user of users.values()){
-                    user.canvas_pos = view.canvasCoord(user.pos);
-                }
+                update_users_canvas_pos();
+ 
                 
                 if(view.following !== null){
                     self_user.unfollow(view.following);

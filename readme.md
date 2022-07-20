@@ -52,8 +52,9 @@ npm run dev
 - [X] vertex index
     - [ ] icones plus claires
     - [ ] décalage d'indice ?
-    - [ ] utilité des numérotations stables ?
     - [ ] get_new_index devrait pas renvoyer le max des index +1 ? (pour suivre la création chronologique des sommets)
+    - [ ] aide sur les actions
+    - [ ] possibilité de modifier les labels
     
 
 - utilisateur
@@ -92,7 +93,8 @@ npm run dev
 - area 
     - [ ] clic sur label dans parametre -> centrer sur area
     - [X] modifier rectangle area
-    - [ ] déplacer area
+    - [X] déplacer area
+    - [ ] voir l'area se créé
 
 - parametre
     - [ ] ranger par area
@@ -138,12 +140,13 @@ npm run dev
 
 
 # Known issues 
-- zoom does not affect other's cursor position
 - changing your own label triggers shortcuts
 - Chrome : no export to file? 
 - Parametors may appear several times
 - zoom and create links
-- resizing areas may look weird if the corners are swapped 
-- start resizing area, then leave mouse out of window, stop clicking, then mouse back on window = bug
+    solution : changer les canvasCoord en serverCoord (genre link_creating_start) puis au zoom mettre à jour les serverCoord dans view
+    OU
+    interdire le zoom pendant la création ?
+- start resizing area, then leave mouse out of window, stop clicking, then mouse back on window = bug -> pareil avec création de link, couleur, pen ... solution avec événement outofscreen si existe ?
 
 
