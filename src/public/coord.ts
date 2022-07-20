@@ -1,3 +1,4 @@
+import { Server } from "socket.io";
 import { view } from "./camera";
 
 export class Coord {
@@ -45,6 +46,14 @@ export class Coord {
 export class CanvasCoord extends Coord {
     lol: number;
 
+    sub2(c: CanvasCoord) {
+        return new CanvasCoord(this.x - c.x, this.y - c.y);
+    }
+
+    add2(c: CanvasCoord) {
+        return new CanvasCoord(this.x + c.x, this.y + c.y);
+    }
+
 }
 
 export class ServerCoord extends Coord {
@@ -58,4 +67,24 @@ export class ServerCoord extends Coord {
     after_view_update(){
         this.canvas_pos = view.canvasCoord(this);
     }
+
+    copy() {
+        return new ServerCoord( this.x, this.y);
+    }
+}
+
+export function corner_top_left(c1: ServerCoord, c2: ServerCoord){
+    return new ServerCoord(Math.min(c1.x, c2.x), Math.min(c1.y,c2.y));
+}
+
+export function corner_bottom_left(c1: ServerCoord, c2: ServerCoord){
+    return new ServerCoord(Math.min(c1.x, c2.x), Math.max(c1.y,c2.y));
+}
+
+export function corner_bottom_right(c1: ServerCoord, c2: ServerCoord){
+    return new ServerCoord(Math.max(c1.x, c2.x), Math.max(c1.y,c2.y));
+}
+
+export function corner_top_right(c1: ServerCoord, c2: ServerCoord){
+    return new ServerCoord(Math.max(c1.x, c2.x), Math.min(c1.y,c2.y));
 }

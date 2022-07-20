@@ -208,9 +208,19 @@ io.sockets.on('connection', function (client) {
     client.on('add_area', handle_add_area);
     client.on('area_move_side', handle_move_side_area);
     client.on('area_move_corner', handle_move_corner_area);
+    client.on('area_translate', handle_area_translate);
 
 
     // AREAS 
+    function handle_area_translate(index: number, corner_top_left: Coord, corner_bottom_right: Coord){
+        if ( g.areas.has(index)){
+            const area = g.areas.get(index);
+            area.c1 = new Coord(corner_top_left.x, corner_top_left.y);
+            area.c2 = new Coord(corner_bottom_right.x, corner_bottom_right.y);
+            emit_areas_to_room();
+        }
+    }
+
     function handle_add_area(c1x:number, c1y:number, c2x:number, c2y:number, label:string, color:string){
         g.add_area(new Coord(c1x, c1y), new Coord(c2x, c2y), label, color);
         emit_areas_to_room();

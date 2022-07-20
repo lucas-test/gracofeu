@@ -1,5 +1,3 @@
-
-
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
@@ -7,38 +5,32 @@ import { Area, AREA_CORNER, AREA_SIDE } from '../area';
 import { CanvasCoord, Coord, ServerCoord } from '../coord';
 
 
-// INTERACTOR SELECTION
-
 export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]))
 let down_coord: CanvasCoord; // à rajouter dans Interactor
-let previous_camera: Coord;
+
 let is_creating_area : boolean;
 let is_moving_area : boolean;
 let first_corner : CanvasCoord;
 
 let side_number;
 let corner_number;
-let last_down_index : number;
 
 
 interactor_area.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) => {
+    down_coord = e;
     const esc  = view.serverCoord2(e);
     if (down_type === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
         first_corner = e;
-    }
-
-    if (down_type === DOWN_TYPE.AREA_CORNER){
+    } else if (down_type === DOWN_TYPE.AREA_CORNER){
         const area = g.areas.get(down_element_index);
         corner_number = area.is_nearby_corner(e);
-        last_down_index = down_element_index;
         is_moving_area = true;
-    }
-
-    if (down_type === DOWN_TYPE.AREA_SIDE){
+    } else  if (down_type === DOWN_TYPE.AREA_SIDE){
         const area = g.areas.get(down_element_index);
         side_number = area.is_nearby_side(e);
-        last_down_index = down_element_index;
+        is_moving_area = true;
+    } else if ( down_type == DOWN_TYPE.AREA){
         is_moving_area = true;
     }
 })
@@ -50,13 +42,15 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
         return true;
     }
     else if(is_moving_area){
-        const moving_area = g.areas.get(last_down_index);
+        const moving_area = g.areas.get(interactor_area.last_down_index);
         if(side_number != null){
             moving_area.resize_side_area(esc, side_number)
         }
         else if(corner_number != null)
         {
             moving_area.resize_corner_area(esc, corner_number);
+        } else if ( interactor_area.last_down == DOWN_TYPE.AREA){
+            moving_area.translate(e.sub2(down_coord));
         }
         return true;
     }
@@ -123,13 +117,18 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
         }
     }
     else if (interactor_area.last_down === DOWN_TYPE.AREA_SIDE){
-        socket.emit("area_move_side", last_down_index, esc.x, esc.y, side_number);      
+        socket.emit("area_move_side", interactor_area.last_down_index, esc.x, esc.y, side_number);      
         side_number = null;
         is_moving_area = false;
     }
     else if (interactor_area.last_down === DOWN_TYPE.AREA_CORNER){
-        socket.emit("area_move_corner", last_down_index, esc.x, esc.y, corner_number);  
+        socket.emit("area_move_corner", interactor_area.last_down_index, esc.x, esc.y, corner_number);  
         corner_number = null;
+        is_moving_area = false;
+    }
+    else if ( interactor_area.last_down == DOWN_TYPE.AREA){
+        const moved_area = g.areas.get(interactor_area.last_down_index);
+        socket.emit("area_translate", interactor_area.last_down_index, moved_area.corner_top_left, moved_area.corner_bottom_right);  
         is_moving_area = false;
     }
 })

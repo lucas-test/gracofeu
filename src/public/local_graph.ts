@@ -430,8 +430,8 @@ export class Graph {
     get_subgraph_from_area(area_index: number){
         const area = this.areas.get(area_index);
         const subgraph = new Graph();
-        const c1canvas = view.canvasCoord(area.c1);
-        const c2canvas = view.canvasCoord(area.c2);   
+        const c1canvas = view.canvasCoord(area.corner_top_left);
+        const c2canvas = view.canvasCoord(area.corner_bottom_right);   
 
          for (const [index, v] of this.vertices.entries()) {
             if(v.is_in_rect(c1canvas, c2canvas)){

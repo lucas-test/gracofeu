@@ -391,8 +391,8 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
     ctx.beginPath();
     ctx.strokeStyle = a.multicolor.color;
     ctx.lineWidth = 2;
-    const c1canvas = view.canvasCoord(a.c1);
-    const c2canvas = view.canvasCoord(a.c2);
+    const c1canvas = view.canvasCoord(a.corner_top_left);
+    const c2canvas = view.canvasCoord(a.corner_bottom_right);
     ctx.rect(c1canvas.x , c1canvas.y, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
     ctx.stroke();
 
