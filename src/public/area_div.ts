@@ -3,6 +3,7 @@ import { view } from "./camera";
 import { CanvasCoord } from "./coord";
 import { draw } from "./draw";
 import { Graph } from "./local_graph";
+import { socket } from "./socket";
 
 export function get_span_for_area(a:Area):HTMLSpanElement{
     if(a!== null){
@@ -30,6 +31,7 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
                 requestAnimationFrame(function () { 
                     draw(canvas, ctx, g) 
                 });
+                socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
             })
             list_area_DOM.appendChild(span_area);
         }
