@@ -8,6 +8,7 @@ import { update_params_loaded } from "./parametors/parametor_manager";
 import { Area } from "./area";
 import { update_options_graphs } from "./parametors/div_parametor";
 import { Coord, ServerCoord } from "./coord";
+import { make_list_areas } from "./area_div";
 export const socket = io()
 
 
@@ -135,6 +136,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         }
         update_params_loaded(g);
         update_options_graphs(canvas, ctx, g);
+        make_list_areas(canvas, ctx, g);
         requestAnimationFrame(function () { 
             draw(canvas, ctx, g) 
         });
