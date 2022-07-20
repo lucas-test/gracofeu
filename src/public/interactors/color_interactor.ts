@@ -2,6 +2,7 @@
 import { CanvasCoord } from '../coord';
 import { socket } from '../socket';
 import { Interactor, DOWN_TYPE } from './interactor'
+import { last_down, last_down_index } from './interactor_manager';
 
 export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK]));
 
@@ -111,22 +112,22 @@ color_interactor.onleave = () => {
 }
 
 
-color_interactor.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) => {
-    if (down_type == DOWN_TYPE.VERTEX) {
+color_interactor.mousedown = (( canvas, ctx, g, e) => {
+    if (last_down == DOWN_TYPE.VERTEX) {
         const data_socket = new Array();
-        data_socket.push({ type: "vertex", index: down_element_index, color: color_selected });
+        data_socket.push({ type: "vertex", index: last_down_index, color: color_selected });
         socket.emit("update_colors", data_socket);
     }
-    else if (down_type == DOWN_TYPE.LINK){
+    else if (last_down == DOWN_TYPE.LINK){
         const data_socket = new Array();
-        data_socket.push({ type: "link", index: down_element_index, color: color_selected });
+        data_socket.push({ type: "link", index: last_down_index, color: color_selected });
         socket.emit("update_colors", data_socket);
     }
 })
 
 
 color_interactor.mousemove = ((canvas, ctx, g, e) => {
-    if (color_interactor.last_down != null) {
+    if (last_down != null) {
         const elt = g.get_element_nearby(e, color_interactor.interactable_element_type);
         if (elt.type == DOWN_TYPE.VERTEX) {
             const data_socket = new Array();

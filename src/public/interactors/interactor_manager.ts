@@ -22,6 +22,9 @@ import { CanvasCoord } from '../coord';
 
 export let interactor_loaded: Interactor = null;
 export let down_coord: CanvasCoord = null;
+export let last_down: DOWN_TYPE = null;
+export let last_down_index: number = null;
+export let has_moved: boolean = false;
 let mouse_pos = new CanvasCoord(0, 0);
 
 
@@ -100,9 +103,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             const click_pos = new CanvasCoord(e.pageX, e.pageY);
             down_coord = null;
             interactor_loaded.mouseup(canvas, ctx, g, click_pos);
-            interactor_loaded.last_down = null;
-            interactor_loaded.last_down_index = null;
-            interactor_loaded.last_down_pos = null;
+            last_down = null;
+            last_down_index = null;
             view.alignement_horizontal = false;
             view.alignement_vertical = false;
             update_params_loaded(g)
@@ -114,7 +116,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         const click_pos = new CanvasCoord(e.pageX, e.pageY);
         mouse_pos.x = e.pageX;
         mouse_pos.y = e.pageY;
-        interactor_loaded.has_moved = true;
+        has_moved = true;
         if (interactor_loaded.mousemove(canvas, ctx, g, click_pos)) {
             requestAnimationFrame(function () {
                 draw(canvas, ctx, g)
@@ -127,14 +129,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     canvas.addEventListener('mousedown', function (e) {
         if (e.which == 1) { // Left click 
             down_coord = new CanvasCoord(e.pageX, e.pageY);
-            interactor_loaded.has_moved = false;
-            interactor_loaded.last_down_pos = view.serverCoord(e);
+            has_moved = false;
 
             const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
             console.log(element);
-            interactor_loaded.last_down = element.type;
-            interactor_loaded.last_down_index = element.index;
-            interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, down_coord)
+            last_down = element.type;
+            last_down_index = element.index;
+            interactor_loaded.mousedown( canvas, ctx, g, down_coord)
             if (element.type != DOWN_TYPE.EMPTY) {
                 update_params_loaded(g)
                 requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -144,15 +145,14 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener('touchstart', (et: TouchEvent) => {
         console.log("touchstart");
-        interactor_loaded.has_moved = false;
+        has_moved = false;
         const click_pos = new CanvasCoord(et.touches[0].clientX, et.touches[0].clientY);
-        interactor_loaded.last_down_pos = view.serverCoord2(click_pos);
         
         const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
         console.log(element);
-        interactor_loaded.last_down = element.type;
-        interactor_loaded.last_down_index = element.index;
-        interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, click_pos)
+        last_down = element.type;
+        last_down_index = element.index;
+        interactor_loaded.mousedown( canvas, ctx, g, click_pos)
         if (element.type != DOWN_TYPE.EMPTY) {
             update_params_loaded(g)
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -162,7 +162,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     canvas.addEventListener('touchmove', (e) => {
         mouse_pos.x = e.touches[0].clientX;
         mouse_pos.y = e.touches[0].clientY;
-        interactor_loaded.has_moved = true;
+        has_moved = true;
         if (interactor_loaded.mousemove(canvas, ctx, g, mouse_pos)) {
             requestAnimationFrame(function () {
                 draw(canvas, ctx, g)
@@ -175,9 +175,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     canvas.addEventListener('touchend', (e) => {
         const click_pos = mouse_pos;
         interactor_loaded.mouseup(canvas, ctx, g, click_pos);
-        interactor_loaded.last_down = null;
-        interactor_loaded.last_down_index = null;
-        interactor_loaded.last_down_pos = null;
+        last_down = null;
+        last_down_index = null;
         view.alignement_horizontal = false;
         view.alignement_vertical = false;
         update_params_loaded(g)

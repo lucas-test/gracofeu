@@ -4,14 +4,15 @@ import { draw } from "../draw";
 import { local_graph, ORIENTATION } from "../local_graph";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
+import { last_down, last_down_index } from "./interactor_manager";
 
 export var interactor_arc = new Interactor("arc", "a", "arc.svg", new Set([DOWN_TYPE.VERTEX]));
 
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 
 
-interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
-    if (d == DOWN_TYPE.EMPTY) {
+interactor_arc.mousedown = (( canvas, ctx, g, e) => {
+    if (last_down == DOWN_TYPE.EMPTY) {
         view.is_link_creating = true;
         const mouse_canvas_coord = e; // faut peut etre copier
         const pos = g.align_position( mouse_canvas_coord, new Set(), canvas);
@@ -21,8 +22,8 @@ interactor_arc.mousedown = ((d, k, canvas, ctx, g, e) => {
         const server_pos = view.serverCoord2(pos);
         socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => { index_last_created_vertex = response });
     }
-    if (d === DOWN_TYPE.VERTEX) {
-        let vertex = g.vertices.get(interactor_arc.last_down_index);
+    if (last_down === DOWN_TYPE.VERTEX) {
+        let vertex = g.vertices.get(last_down_index);
         view.is_link_creating = true;
         view.link_creating_start = vertex.canvas_pos;
     }
@@ -35,14 +36,14 @@ interactor_arc.mousemove = ((canvas, ctx, g, e) => {
 
 interactor_arc.mouseup = ((canvas, ctx, g, e) => {
     view.is_link_creating = false;
-    if (interactor_arc.last_down == DOWN_TYPE.VERTEX) {
+    if (last_down == DOWN_TYPE.VERTEX) {
         let index = g.get_vertex_index_nearby(e);
-        if (index !== null && interactor_arc.last_down_index != index) { // there is a vertex nearby and it is not the previous one
-            socket.emit("add_link", interactor_arc.last_down_index, index, "directed");
+        if (index !== null && last_down_index != index) { // there is a vertex nearby and it is not the previous one
+            socket.emit("add_link", last_down_index, index, "directed");
         } else {
 
-            if (interactor_arc.last_down_index !== index) { // We check if we are not creating a vertex on another one
-                let save_last_down_index = interactor_arc.last_down_index; // see note below
+            if (last_down_index !== index) { // We check if we are not creating a vertex on another one
+                let save_last_down_index = last_down_index; // see note below
                 socket.emit("add_vertex", view.serverCoord2(e).x, view.serverCoord2(e).y, (response) => {
                     socket.emit("add_link", save_last_down_index, response, "directed");
                     // we cant do socket.emit("add_edge", interactor_edge.last_down_index, response);
@@ -50,7 +51,7 @@ interactor_arc.mouseup = ((canvas, ctx, g, e) => {
                 });
             }
         }
-    } else if (interactor_arc.last_down === DOWN_TYPE.EMPTY) {
+    } else if (last_down === DOWN_TYPE.EMPTY) {
         let index = g.get_vertex_index_nearby(g.align_position(e, new Set(), canvas));
         if (index !== null && index != index_last_created_vertex) {
             socket.emit("add_link", index_last_created_vertex, index, "directed");

@@ -3,6 +3,7 @@ import {socket} from '../socket';
 import {view} from '../camera';
 import {local_graph,ORIENTATION} from '../local_graph';
 import {Stroke} from '../stroke';
+import { last_down, last_down_index } from './interactor_manager';
 
 
 // INTERACTOR ERASER
@@ -11,9 +12,9 @@ var is_erasing = false;
 
 export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new Set([DOWN_TYPE.STROKE]));
 
-interactor_eraser.mousedown = ((d, k, canvas, ctx, g, e) => {
-    if(d === DOWN_TYPE.STROKE){
-        g.strokes.delete(interactor_eraser.last_down_index);
+interactor_eraser.mousedown = (( canvas, ctx, g, e) => {
+    if(last_down === DOWN_TYPE.STROKE){
+        g.strokes.delete(last_down_index);
     }
     is_erasing = true;
 })

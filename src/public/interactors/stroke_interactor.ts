@@ -15,7 +15,7 @@ var gap_refresh = 0;
 
 export var interactor_stroke = new Interactor("pen", "p", "stroke.svg", new Set([DOWN_TYPE.VERTEX]));
 
-interactor_stroke.mousedown = ((d, k, canvas, ctx, g, e) => {
+interactor_stroke.mousedown = ((  canvas, ctx, g, e) => {
     const server_pos = view.serverCoord2(e);
     last_stroke = new Stroke([server_pos], "#ffffff", 2);
 

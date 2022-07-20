@@ -3,7 +3,7 @@ import { socket } from '../socket';
 import { view } from '../camera';
 import { AREA_CORNER, AREA_SIDE } from '../area';
 import { CanvasCoord } from '../coord';
-import { down_coord } from './interactor_manager';
+import { down_coord, last_down, last_down_index } from './interactor_manager';
 
 
 export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]))
@@ -16,20 +16,20 @@ let side_number: AREA_SIDE;
 let corner_number: AREA_CORNER;
 
 
-interactor_area.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) => {
+interactor_area.mousedown = (( canvas, ctx, g, e) => {
     const esc  = view.serverCoord2(e);
-    if (down_type === DOWN_TYPE.EMPTY) {
+    if (last_down === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
         first_corner = e;
-    } else if (down_type === DOWN_TYPE.AREA_CORNER){
-        const area = g.areas.get(down_element_index);
+    } else if (last_down === DOWN_TYPE.AREA_CORNER){
+        const area = g.areas.get(last_down_index);
         corner_number = area.is_nearby_corner(e);
         is_moving_area = true;
-    } else  if (down_type === DOWN_TYPE.AREA_SIDE){
-        const area = g.areas.get(down_element_index);
+    } else  if (last_down === DOWN_TYPE.AREA_SIDE){
+        const area = g.areas.get(last_down_index);
         side_number = area.is_nearby_side(e);
         is_moving_area = true;
-    } else if ( down_type == DOWN_TYPE.AREA){
+    } else if ( last_down == DOWN_TYPE.AREA){
         is_moving_area = true;
     }
 })
@@ -41,14 +41,14 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
         return true;
     }
     else if(is_moving_area){
-        const moving_area = g.areas.get(interactor_area.last_down_index);
+        const moving_area = g.areas.get(last_down_index);
         if(side_number != null){
             moving_area.resize_side_area(esc, side_number)
         }
         else if(corner_number != null)
         {
             moving_area.resize_corner_area(esc, corner_number);
-        } else if ( interactor_area.last_down == DOWN_TYPE.AREA){
+        } else if ( last_down == DOWN_TYPE.AREA){
             moving_area.translate(e.sub2(down_coord));
         }
         return true;
@@ -107,7 +107,7 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
 interactor_area.mouseup = ((canvas, ctx, g, e) => {
     const esc  = view.serverCoord2(e);
     if (is_creating_area) {
-        if (interactor_area.last_down === DOWN_TYPE.EMPTY) {
+        if (last_down === DOWN_TYPE.EMPTY) {
             if(first_corner.dist2(e) > 10){
                 socket.emit("add_area", first_corner.x, first_corner.y, esc.x, esc.y, "G", null);
             }
@@ -115,19 +115,19 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
             first_corner = null;
         }
     }
-    else if (interactor_area.last_down === DOWN_TYPE.AREA_SIDE){
-        socket.emit("area_move_side", interactor_area.last_down_index, esc.x, esc.y, side_number);      
+    else if (last_down === DOWN_TYPE.AREA_SIDE){
+        socket.emit("area_move_side", last_down_index, esc.x, esc.y, side_number);      
         side_number = null;
         is_moving_area = false;
     }
-    else if (interactor_area.last_down === DOWN_TYPE.AREA_CORNER){
-        socket.emit("area_move_corner", interactor_area.last_down_index, esc.x, esc.y, corner_number);  
+    else if (last_down === DOWN_TYPE.AREA_CORNER){
+        socket.emit("area_move_corner", last_down_index, esc.x, esc.y, corner_number);  
         corner_number = null;
         is_moving_area = false;
     }
-    else if ( interactor_area.last_down == DOWN_TYPE.AREA){
-        const moved_area = g.areas.get(interactor_area.last_down_index);
-        socket.emit("area_translate", interactor_area.last_down_index, moved_area.corner_top_left, moved_area.corner_bottom_right);  
+    else if ( last_down == DOWN_TYPE.AREA){
+        const moved_area = g.areas.get(last_down_index);
+        socket.emit("area_translate", last_down_index, moved_area.corner_top_left, moved_area.corner_bottom_right);  
         is_moving_area = false;
     }
 })

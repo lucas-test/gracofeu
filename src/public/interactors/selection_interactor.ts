@@ -3,7 +3,7 @@ import { socket } from '../socket';
 import { view } from '../camera';
 import { self_user, users } from '../user';
 import { CanvasCoord, Coord } from '../coord';
-import { down_coord } from './interactor_manager';
+import { down_coord, has_moved, last_down, last_down_index } from './interactor_manager';
 
 
 // INTERACTOR SELECTION
@@ -12,9 +12,9 @@ export var interactor_selection = new Interactor("selection", "s", "selection.sv
 let previous_camera: Coord;
 
 
-interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g, e) => {
-    if (down_type == DOWN_TYPE.VERTEX) {
-        if (g.vertices.get(down_element_index).is_selected) {
+interactor_selection.mousedown = (( canvas, ctx, g, e) => {
+    if (last_down == DOWN_TYPE.VERTEX) {
+        if (g.vertices.get(last_down_index).is_selected) {
             for (const index of g.vertices.keys()) {
                 const vertex = g.vertices.get(index);
                 vertex.save_pos();
@@ -24,21 +24,21 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
             }
         }
         else {
-            g.vertices.get(down_element_index).save_pos();
+            g.vertices.get(last_down_index).save_pos();
             for (var link of g.links.values()) {
-                if (link.start_vertex == down_element_index || link.end_vertex == down_element_index) {
+                if (link.start_vertex == last_down_index || link.end_vertex == last_down_index) {
                     link.save_pos();
                 }
             }
         }
-    } else if (down_type === DOWN_TYPE.LINK) {
+    } else if (last_down === DOWN_TYPE.LINK) {
         console.log("down link")
         // TODO : what to do ? 
     }
-    else if(down_type === DOWN_TYPE.STROKE) {
+    else if(last_down === DOWN_TYPE.STROKE) {
         console.log("down stroke");
     }
-    else if (down_type === DOWN_TYPE.EMPTY) {
+    else if (last_down === DOWN_TYPE.EMPTY) {
 
         // TODO
         if (false) { //(e.ctrlKey) {
@@ -54,10 +54,10 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
 
 interactor_selection.mousemove = ((canvas, ctx, g, e) => {
     // console.log("mousemove");
-    switch (interactor_selection.last_down) {
+    switch (last_down) {
         case DOWN_TYPE.VERTEX:
-            if (g.vertices.get(interactor_selection.last_down_index).is_selected) {
-                const origin_vertex = g.vertices.get(interactor_selection.last_down_index);
+            if (g.vertices.get(last_down_index).is_selected) {
+                const origin_vertex = g.vertices.get(last_down_index);
                 const data_socket = new Array();
 
                 const mouse_canvas_coord = g.align_position(e, g.get_selected_vertices(), canvas);
@@ -94,16 +94,16 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 socket.emit("update_positions", data_socket);
             }
             else {
-                const v = g.vertices.get(interactor_selection.last_down_index)
-                const mouse_canvas_coord = g.align_position(e, new Set([interactor_selection.last_down_index]), canvas);
+                const v = g.vertices.get(last_down_index)
+                const mouse_canvas_coord = g.align_position(e, new Set([last_down_index]), canvas);
                 v.canvas_pos = mouse_canvas_coord;
                 v.pos = view.serverCoord2(v.canvas_pos);
 
                 const data_socket = new Array();
                 for (let [index, link] of g.links.entries()) {
-                    if (link.start_vertex == interactor_selection.last_down_index || link.end_vertex == interactor_selection.last_down_index) {
+                    if (link.start_vertex == last_down_index || link.end_vertex == last_down_index) {
                         let w = g.vertices.get(link.start_vertex)
-                        if (link.start_vertex == interactor_selection.last_down_index) {
+                        if (link.start_vertex == last_down_index) {
                             w = g.vertices.get(link.end_vertex)
                         }
                         link.transform_control_point(v, w)
@@ -111,7 +111,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                     }
                 }
                 socket.emit("update_control_points", data_socket);
-                socket.emit("update_position", interactor_selection.last_down_index, v.pos.x, v.pos.y);
+                socket.emit("update_position", last_down_index, v.pos.x, v.pos.y);
             }
             return true;
             break;
@@ -136,10 +136,10 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             break;
 
         case DOWN_TYPE.CONTROL_POINT:
-            var link = g.links.get(interactor_selection.last_down_index);
+            var link = g.links.get(last_down_index);
             link.cp = view.serverCoord2(e);
             link.canvas_cp = view.canvasCoord(link.cp);
-            socket.emit("update_control_point", interactor_selection.last_down_index, link.cp)
+            socket.emit("update_control_point", last_down_index, link.cp)
             return true;
             break;
     }
@@ -149,64 +149,64 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_selection.mouseup = ((canvas, ctx, g, e) => {
-    console.log("mouseup", interactor_selection.has_moved);
-    if (interactor_selection.last_down === DOWN_TYPE.VERTEX) {
-        if (interactor_selection.has_moved === false) {
-            if (g.vertices.get(interactor_selection.last_down_index).is_selected) {
+    console.log("mouseup", has_moved);
+    if (last_down === DOWN_TYPE.VERTEX) {
+        if (has_moved === false) {
+            if (g.vertices.get(last_down_index).is_selected) {
                 if (false) { //e.ctrlKey) {
-                    g.vertices.get(interactor_selection.last_down_index).is_selected = false;
+                    g.vertices.get(last_down_index).is_selected = false;
                 }
             }
             else {
                 if (false) { //(e.ctrlKey) {
-                    g.vertices.get(interactor_selection.last_down_index).is_selected = true;
+                    g.vertices.get(last_down_index).is_selected = true;
                 }
                 else {
                     g.clear_all_selections();
-                    g.vertices.get(interactor_selection.last_down_index).is_selected = true;
+                    g.vertices.get(last_down_index).is_selected = true;
                 }
             }
         }
 
-    } else if (interactor_selection.last_down === DOWN_TYPE.LINK) {
-        if (interactor_selection.has_moved === false) {
-            if (g.links.get(interactor_selection.last_down_index).is_selected) {
+    } else if (last_down === DOWN_TYPE.LINK) {
+        if (has_moved === false) {
+            if (g.links.get(last_down_index).is_selected) {
                 if (false) { //(e.ctrlKey) {
-                    g.links.get(interactor_selection.last_down_index).is_selected = false;
+                    g.links.get(last_down_index).is_selected = false;
                 }
             }
             else {
                 if (false) { //(e.ctrlKey) {
-                    g.links.get(interactor_selection.last_down_index).is_selected = true;
+                    g.links.get(last_down_index).is_selected = true;
                 }
                 else {
                     g.clear_all_selections();
-                    g.links.get(interactor_selection.last_down_index).is_selected = true;
+                    g.links.get(last_down_index).is_selected = true;
                 }
             }
         }
 
     }
-    else if (interactor_selection.last_down === DOWN_TYPE.STROKE)
+    else if (last_down === DOWN_TYPE.STROKE)
     {
-        if (interactor_selection.has_moved === false) {
-            if (g.strokes.get(interactor_selection.last_down_index).is_selected) {
+        if (has_moved === false) {
+            if (g.strokes.get(last_down_index).is_selected) {
                 if (false) { //e.ctrlKey) {
-                    g.strokes.get(interactor_selection.last_down_index).is_selected = false;
+                    g.strokes.get(last_down_index).is_selected = false;
                 }
             }
             else {
                 if (false) { //(e.ctrlKey) {
-                    g.strokes.get(interactor_selection.last_down_index).is_selected = true;
+                    g.strokes.get(last_down_index).is_selected = true;
                 }
                 else {
                     g.clear_all_selections();
-                    g.strokes.get(interactor_selection.last_down_index).is_selected = true;
+                    g.strokes.get(last_down_index).is_selected = true;
                 }
             }
         }
     }
-    else if (interactor_selection.last_down === DOWN_TYPE.EMPTY) {
+    else if (last_down === DOWN_TYPE.EMPTY) {
         if (view.is_rectangular_selecting) {
             view.is_rectangular_selecting = false;
             g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2);
