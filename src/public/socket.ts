@@ -31,7 +31,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             view.camera = new Coord(x, y);
             view.zoom = zoom;
             g.update_canvas_pos();
-            // requestAnimationFrame(function () { draw(canvas, ctx, g) });
+            requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
         else{
             // console.log("reset....");

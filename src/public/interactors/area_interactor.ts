@@ -2,7 +2,7 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
 import { AREA_CORNER, AREA_SIDE } from '../area';
-import { CanvasCoord } from '../coord';
+import { ServerCoord } from '../coord';
 import { down_coord, last_down, last_down_index } from './interactor_manager';
 
 
@@ -10,7 +10,7 @@ export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DO
 
 let is_creating_area : boolean;
 let is_moving_area : boolean;
-let first_corner : CanvasCoord;
+let first_corner : ServerCoord;
 
 let side_number: AREA_SIDE;
 let corner_number: AREA_CORNER;
@@ -20,7 +20,7 @@ interactor_area.mousedown = (( canvas, ctx, g, e) => {
     const esc  = view.serverCoord2(e);
     if (last_down === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
-        first_corner = e;
+        first_corner = view.serverCoord2(e);
     } else if (last_down === DOWN_TYPE.AREA_CORNER){
         const area = g.areas.get(last_down_index);
         corner_number = area.is_nearby_corner(e);
