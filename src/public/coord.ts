@@ -1,4 +1,3 @@
-import { Server } from "socket.io";
 import { view } from "./camera";
 
 export class Coord {
@@ -44,6 +43,11 @@ export class Coord {
 
     copy(){
         return new Coord(this.x, this.y);
+    }
+
+    copy_from(c: Coord){
+        this.x = c.x;
+        this.y = c.y;
     }
 }
 

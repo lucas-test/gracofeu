@@ -11,6 +11,7 @@ export enum INDEX_TYPE {
 
 class View {
     camera: Coord;
+    old_camera: Coord;
     zoom: number;
     grid_size: number;
     grid_min_size: number;
@@ -44,6 +45,7 @@ class View {
 
     constructor() {
         this.camera = new Coord(0, 0);
+        this.old_camera = new Coord(0, 0);
         this.zoom = 1.;
         this.grid_min_size = 40;
         this.grid_max_size = 80;
@@ -66,6 +68,9 @@ class View {
         // this.window_height = window.innerHeight;
     }
 
+    save_camera(){
+        this.old_camera.copy_from(this.camera);
+    }
 
     toggle_grid() {
         this.grid_show = !this.grid_show;
@@ -122,6 +127,14 @@ class View {
         while (this.grid_size < this.grid_min_size){
             this.grid_size *= 2;
         }
+    }
+
+    translate_camera_from_old(shift: Coord){
+        this.camera.copy_from(this.old_camera.add(shift)); // camera = old_camera + shift
+    }
+
+    translate_camera(shift: Coord){
+        this.camera.copy_from(this.camera.add(shift)); // camera = camera + shift
     }
 
 

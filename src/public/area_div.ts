@@ -1,6 +1,6 @@
 import { Area } from "./area";
 import { view } from "./camera";
-import { CanvasCoord } from "./coord";
+import { CanvasCoord, Coord } from "./coord";
 import { draw } from "./draw";
 import { Graph } from "./local_graph";
 import { socket } from "./socket";
@@ -27,7 +27,7 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
         for(const a of g.areas.values()){
             const span_area = get_span_for_area(a);
             span_area.addEventListener("click", (e)=>{
-                center_canvas_on_rectangle(a.top_left_corner().canvas_pos, a.bot_right_corner().canvas_pos, canvas, g);
+                center_canvas_on_rectangle(view.canvasCoord(a.top_left_corner()), view.canvasCoord(a.bot_right_corner()), canvas, g); // .canvas_pos est pas encore implémenté
                 requestAnimationFrame(function () { 
                     draw(canvas, ctx, g) 
                 });
@@ -47,8 +47,7 @@ function center_canvas_on_rectangle(top_left:CanvasCoord, bot_right:CanvasCoord,
     const ratio_w = canvas.width/w;
     const ratio_h = canvas.height/h;
 
-    view.camera.x += shift_x;
-    view.camera.y += shift_y;
+    view.translate_camera(new Coord(shift_x, shift_y));
     g.update_canvas_pos();
 
     const center = new CanvasCoord(canvas.width/2, canvas.height/2);
