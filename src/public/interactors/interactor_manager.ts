@@ -44,38 +44,40 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
     window.addEventListener('keydown', function (e) {
-        if (e.key == "Delete") {
-            const data_socket = new Array();
-            for (const index of g.vertices.keys()) {
-                const v = g.vertices.get(index);
-                if (v.is_selected) {
-                    data_socket.push({ type: "vertex", index: index });
+        if( document.activeElement.nodeName == "BODY"){ // otherwise focus is on a text
+            if (e.key == "Delete") {
+                const data_socket = new Array();
+                for (const index of g.vertices.keys()) {
+                    const v = g.vertices.get(index);
+                    if (v.is_selected) {
+                        data_socket.push({ type: "vertex", index: index });
+                    }
                 }
-            }
-            g.links.forEach((link, index) => {
-                if (link.is_selected) {
-                    data_socket.push({ type: "link", index: index });
-                }
-            })
-            g.strokes.forEach((s, index) => {
-                if (s.is_selected) {
-                    data_socket.push({ type: "stroke", index: index });
-                }
-            })
+                g.links.forEach((link, index) => {
+                    if (link.is_selected) {
+                        data_socket.push({ type: "link", index: index });
+                    }
+                })
+                g.strokes.forEach((s, index) => {
+                    if (s.is_selected) {
+                        data_socket.push({ type: "stroke", index: index });
+                    }
+                })
 
-            socket.emit("delete_selected_elements", data_socket);
-            return;
-        }
-        for (let interactor of interactors_available) {
-            if (interactor.shortcut == e.key) {
-                deselect_all_interactor_div()
-                select_interactor(interactor, canvas, ctx, g, mouse_pos);
+                socket.emit("delete_selected_elements", data_socket);
                 return;
             }
-        }
-        for( const action of actions_available){
-            if( action.shortcut == e.key){
-                select_action(action, canvas, ctx, g);
+            for (let interactor of interactors_available) {
+                if (interactor.shortcut == e.key) {
+                    deselect_all_interactor_div()
+                    select_interactor(interactor, canvas, ctx, g, mouse_pos);
+                    return;
+                }
+            }
+            for( const action of actions_available){
+                if( action.shortcut == e.key){
+                    select_action(action, canvas, ctx, g);
+                }
             }
         }
     });

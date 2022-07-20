@@ -140,7 +140,6 @@ npm run dev
 
 
 # Known issues 
-- changing your own label triggers shortcuts
 - Chrome : no export to file? 
 - Parametors may appear several times
 - zoom and create links
