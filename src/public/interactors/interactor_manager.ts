@@ -20,7 +20,8 @@ import { CanvasCoord } from '../coord';
 
 
 
-export var interactor_loaded: Interactor = null;
+export let interactor_loaded: Interactor = null;
+export let down_coord: CanvasCoord = null;
 let mouse_pos = new CanvasCoord(0, 0);
 
 
@@ -97,6 +98,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     canvas.addEventListener('mouseup', function (e) {
         if (e.which == 1) { // left click
             const click_pos = new CanvasCoord(e.pageX, e.pageY);
+            down_coord = null;
             interactor_loaded.mouseup(canvas, ctx, g, click_pos);
             interactor_loaded.last_down = null;
             interactor_loaded.last_down_index = null;
@@ -124,15 +126,15 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener('mousedown', function (e) {
         if (e.which == 1) { // Left click 
-            const click_pos = new CanvasCoord(e.pageX, e.pageY);
+            down_coord = new CanvasCoord(e.pageX, e.pageY);
             interactor_loaded.has_moved = false;
             interactor_loaded.last_down_pos = view.serverCoord(e);
 
-            const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
+            const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
             console.log(element);
             interactor_loaded.last_down = element.type;
             interactor_loaded.last_down_index = element.index;
-            interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, click_pos)
+            interactor_loaded.mousedown(interactor_loaded.last_down, element.index, canvas, ctx, g, down_coord)
             if (element.type != DOWN_TYPE.EMPTY) {
                 update_params_loaded(g)
                 requestAnimationFrame(function () { draw(canvas, ctx, g) });

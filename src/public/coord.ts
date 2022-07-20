@@ -41,6 +41,10 @@ export class Coord {
         let d2 = v.norm2();
         return Math.sqrt(d2 / d1);
     }
+
+    copy(){
+        return new Coord(this.x, this.y);
+    }
 }
 
 export class CanvasCoord extends Coord {

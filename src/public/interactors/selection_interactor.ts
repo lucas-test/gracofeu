@@ -1,16 +1,14 @@
-
-
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { view } from '../camera';
 import { self_user, users } from '../user';
 import { CanvasCoord, Coord } from '../coord';
+import { down_coord } from './interactor_manager';
 
 
 // INTERACTOR SELECTION
 
 export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE]))
-let down_coord: CanvasCoord; // à rajouter dans Interactor
 let previous_camera: Coord;
 
 
@@ -49,8 +47,7 @@ interactor_selection.mousedown = ((down_type, down_element_index, canvas, ctx, g
             view.selection_corner_2 = e; // peut etre faut copier
         }
         else {
-            down_coord = e; // peut etre faut copier
-            previous_camera = view.camera;
+            previous_camera = view.camera.copy();
         }
     }
 })
@@ -129,9 +126,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 for (const user of users.values()){
                     user.canvas_pos = view.canvasCoord(user.pos);
                 }
-                down_coord = e; // peut etre faut copier
                 
-                 
                 if(view.following !== null){
                     self_user.unfollow(view.following);
                 }
@@ -219,7 +214,6 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
 
         } else {
             previous_camera = null;
-            down_coord = null;
             g.clear_all_selections();
         }
 
