@@ -106,7 +106,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         requestAnimationFrame(function () { update_user_list_div() });
     }
 
-    socket.on('strokes', handle_strokes);
+
 
     function handle_strokes(data){
         // console.log(data);
@@ -119,13 +119,14 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const new_stroke = new Stroke(positions, s[1].color, s[1].width);
             g.strokes.set(s[0], new_stroke);
         }
+        update_params_loaded(g,false);
         requestAnimationFrame(function () { 
             draw(canvas, ctx, g) 
         });
         
     }
 
-    socket.on('areas', handle_areas);
+
 
     function handle_areas(data){
         // console.log(data);
@@ -135,7 +136,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             g.areas.set(s[0], new_area);
             //console.log(g.areas.get(s[0]).get_subgraph(g));
         }
-        update_params_loaded(g);
+        update_params_loaded(g,false);
         update_options_graphs(canvas, ctx, g);
         make_list_areas(canvas, ctx, g);
         requestAnimationFrame(function () { 
@@ -145,10 +146,13 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
     // GRAPH 
-    socket.on('update_vertex_position', update_vertex_position);
-    socket.on('update_vertex_positions', update_vertex_positions);
-    socket.on('update_control_point', handle_update_control_point);
-    socket.on('update_control_points', handle_update_control_points);
+    socket.on('graph', update_graph); // ALL
+    socket.on('update_vertex_position', update_vertex_position); // V MOVE
+    socket.on('update_vertex_positions', update_vertex_positions); // V MOVE
+    socket.on('update_control_point', handle_update_control_point); // CP MOVE
+    socket.on('update_control_points', handle_update_control_points); // CP MOVE
+    socket.on('areas', handle_areas); // AREA
+    socket.on('strokes', handle_strokes); // STROKES
 
     function handle_update_control_points(data) {
         for (const e of data) {
@@ -159,6 +163,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 link.canvas_cp = view.canvasCoord(link.cp);
             }
         }
+        update_params_loaded(g,false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
@@ -167,10 +172,11 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         link.cp.x = c.x;
         link.cp.y = c.y;
         link.canvas_cp = view.canvasCoord(link.cp);
+        update_params_loaded(g,false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
-    socket.on('graph', (vertices_entries, links_entries) => {
+    function update_graph(vertices_entries, links_entries) {
         console.log("I get a new graph");
 
         // pour les vertices_entries c'est parce que on peut pas envoyer des Map par socket ...
@@ -202,9 +208,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         }
 
         g.compute_vertices_index_string();
-        update_params_loaded(g);
+        update_params_loaded(g, false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
-    })
+    }
 
 
 
@@ -215,6 +221,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         v.pos.x = x;
         v.pos.y = y;
         v.canvas_pos = view.canvasCoord(v.pos);
+        update_params_loaded(g,false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
@@ -227,6 +234,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             v.pos.y = e.y;
             v.canvas_pos = view.canvasCoord(v.pos);
         }
+        update_params_loaded(g,false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 

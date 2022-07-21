@@ -2,7 +2,6 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { interactor_selection } from './selection_interactor';
 import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
-import { update_params_loaded } from '../parametors/parametor_manager';
 import { view } from '../camera';
 import { socket } from '../socket';
 import {  Graph } from '../local_graph';
@@ -109,7 +108,6 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             last_down_index = null;
             view.alignement_horizontal = false;
             view.alignement_vertical = false;
-            update_params_loaded(g)
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
     })
@@ -139,7 +137,6 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             last_down_index = element.index;
             interactor_loaded.mousedown( canvas, ctx, g, down_coord)
             if (element.type != DOWN_TYPE.EMPTY) {
-                update_params_loaded(g)
                 requestAnimationFrame(function () { draw(canvas, ctx, g) });
             }
         }
@@ -156,7 +153,6 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         last_down_index = element.index;
         interactor_loaded.mousedown( canvas, ctx, g, click_pos)
         if (element.type != DOWN_TYPE.EMPTY) {
-            update_params_loaded(g)
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
     });
@@ -181,7 +177,6 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         last_down_index = null;
         view.alignement_horizontal = false;
         view.alignement_vertical = false;
-        update_params_loaded(g)
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     });
 
