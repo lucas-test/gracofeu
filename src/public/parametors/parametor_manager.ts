@@ -18,16 +18,17 @@ export function setup_parametors_available() {
 
 
 export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, a: Area) {
+    // Some IDs for the html
     const html_id =  param.id + "_area_" +( a==null?"null":a.id);
     const area_id = (a==null?null:a.id);
+    const param_to_load = {parametor:param, html_id:html_id, area_id : area_id};
 
-    // console.log("ID", id, "AREA_ID", area_id);
-
+    // Div for the parametor
     let newDiv = document.createElement("div");
     newDiv.classList.add("param");
     newDiv.id = "param_" + html_id;
 
-
+    // Remove button
     let button = document.createElement('div');
     button.innerHTML = "-";
     button.classList.add("div_button");
@@ -35,50 +36,69 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
     button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
     newDiv.appendChild(button);
 
+    // Span for label
     let span_name = document.createElement('span');
     if(a!== null){
-        let span_area_name = document.createElement('span');
-        span_area_name.classList.add("span_area_name_parametor");
-        span_area_name.textContent = a.label;
-        span_area_name.style.background = a.multicolor.color;
-        span_area_name.style.color = a.multicolor.contrast;
-        span_area_name.style.borderColor = a.multicolor.contrast;
+        let span_area_name = a.get_span_for_area();
         newDiv.appendChild(span_area_name);
     }
     span_name.innerHTML = param.name + ": ";
     newDiv.appendChild(span_name);
 
+    // Span for the result
     let span_result = document.createElement("span");
     span_result.id = "span_result_" + html_id;
     span_result.innerHTML = "";
     span_result.classList.add("result_span");
+    if(param.is_boolean){
+        span_result.classList.add("inactive_boolean_result");
+    }
     newDiv.appendChild(span_result);
+    if(!param.is_live){
+        let svg_reload_parametor = document.createElement("img");
+        svg_reload_parametor.id = "img_reload_" + html_id;
+        svg_reload_parametor.src = "img/parametor/reload.svg";
+        svg_reload_parametor.addEventListener('click', ()=>{update_parametor(g,param_to_load)});
+        svg_reload_parametor.classList.add("reload_img");
+        newDiv.appendChild(svg_reload_parametor);
+    }
 
+    // Add parametor to document and list of loaded parametors
     document.getElementById("params_loaded").appendChild(newDiv);
-    params_loaded.push({parametor:param, html_id:html_id, area_id : area_id})
-    update_params_loaded(g)
+    params_loaded.push(param_to_load);
+    update_params_loaded(g, true);
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
 
 
 
 
-export function update_params_loaded(g:Graph) {
+export function update_params_loaded(g:Graph, force_compute?:boolean) {
+    if(force_compute === undefined){
+        force_compute = false;
+    }
+
     for (let param of params_loaded) {
-        // console.log(param, param.parametor, param.area);
-        if(param.area_id === null){
-            var result = param.parametor.compute(g);
+        if(force_compute || param.parametor.is_live){
+            update_parametor(g, param);
+        }
+    }
+}
+
+
+function update_parametor(g:Graph, param){
+    if(param.area_id === null){
+        var result = param.parametor.compute(g);
+        document.getElementById("span_result_" + param.html_id).innerHTML = result;
+    }
+    else{
+        if(g.areas.has(param.area_id)){
+            const area = g.areas.get(param.area_id);
+            var result = param.parametor.compute(g.get_subgraph_from_area(param.area_id));
             document.getElementById("span_result_" + param.html_id).innerHTML = result;
         }
         else{
-            if(g.areas.has(param.area_id)){
-                const area = g.areas.get(param.area_id);
-                var result = param.parametor.compute(g.get_subgraph_from_area(param.area_id));
-                document.getElementById("span_result_" + param.html_id).innerHTML = result;
-            }
-            else{
-                remove_loaded_param(param.html_id, param.area_id);
-            }
+            remove_loaded_param(param.html_id, param.area_id);
         }
     }
 }

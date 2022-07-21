@@ -1,23 +1,7 @@
-import { Area } from "./area";
-import { view } from "./camera";
-import { CanvasCoord, Coord } from "./coord";
+import { center_canvas_on_rectangle, view } from "./camera";
 import { draw } from "./draw";
 import { Graph } from "./local_graph";
 import { socket } from "./socket";
-import { update_users_canvas_pos } from "./user";
-
-export function get_span_for_area(a:Area):HTMLSpanElement{
-    if(a!== null){
-        const span_area = document.createElement('span');
-        span_area.classList.add("span_area_name_parametor");
-        span_area.textContent = a.label;
-        span_area.style.background = a.multicolor.color;
-        span_area.style.color = a.multicolor.contrast;
-        span_area.style.borderColor = a.multicolor.contrast;
-        return span_area;
-    }
-    return null;
-}
 
 
 
@@ -26,7 +10,7 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     if(list_area_DOM){
         list_area_DOM.innerHTML = "";
         for(const a of g.areas.values()){
-            const span_area = get_span_for_area(a);
+            const span_area = a.get_span_for_area();
             span_area.addEventListener("click", (e)=>{
                 center_canvas_on_rectangle(view.canvasCoord(a.top_left_corner()), view.canvasCoord(a.bot_right_corner()), canvas, g); // .canvas_pos est pas encore implémenté
                 requestAnimationFrame(function () { 
@@ -37,21 +21,4 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
             list_area_DOM.appendChild(span_area);
         }
     }
-}
-
-
-function center_canvas_on_rectangle(top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, g:Graph){
-    const w = bot_right.x - top_left.x;
-    const h = bot_right.y - top_left.y;
-    const shift_x = (canvas.width - w)/2 - top_left.x;
-    const shift_y = (canvas.height - h)/2 - top_left.y;
-    const ratio_w = canvas.width/w;
-    const ratio_h = canvas.height/h;
-
-    view.translate_camera(new Coord(shift_x, shift_y));
-
-    const center = new CanvasCoord(canvas.width/2, canvas.height/2);
-    view.apply_zoom_to_center(center, Math.min(ratio_h, ratio_w)*0.8);
-    g.update_canvas_pos();
-    update_users_canvas_pos();
 }

@@ -1,5 +1,6 @@
 import { CanvasCoord, Coord, ServerCoord } from "./coord";
-import { ORIENTATION } from "./local_graph";
+import { Graph, ORIENTATION } from "./local_graph";
+import { update_users_canvas_pos } from "./user";
 
 export enum INDEX_TYPE {
     NONE,
@@ -135,3 +136,21 @@ class View {
 }
 
 export let view = new View();
+
+
+export function center_canvas_on_rectangle(top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, g:Graph){
+    const w = bot_right.x - top_left.x;
+    const h = bot_right.y - top_left.y;
+    const shift_x = (canvas.width - w)/2 - top_left.x;
+    const shift_y = (canvas.height - h)/2 - top_left.y;
+    const ratio_w = canvas.width/w;
+    const ratio_h = canvas.height/h;
+
+    view.translate_camera(new Coord(shift_x, shift_y));
+
+    const center = new CanvasCoord(canvas.width/2, canvas.height/2);
+    view.apply_zoom_to_center(center, Math.min(ratio_h, ratio_w)*0.8);
+    g.update_canvas_pos();
+    update_users_canvas_pos();
+}
+
