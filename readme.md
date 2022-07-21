@@ -94,7 +94,7 @@ npm run dev
     - [ ] clic sur label dans parametre -> centrer sur area
     - [X] modifier rectangle area
     - [X] déplacer area
-    - [ ] voir l'area se créé
+    - [X] voir l'area se créer
 
 - parametre
     - [ ] ranger par area

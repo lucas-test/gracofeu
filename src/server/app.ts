@@ -221,9 +221,10 @@ io.sockets.on('connection', function (client) {
         }
     }
 
-    function handle_add_area(c1x:number, c1y:number, c2x:number, c2y:number, label:string, color:string){
-        g.add_area(new Coord(c1x, c1y), new Coord(c2x, c2y), label, color);
+    function handle_add_area(c1x:number, c1y:number, c2x:number, c2y:number, label:string, color:string, callback: (created_area_index: number) => void){
+        const created_area_index = g.add_area(new Coord(c1x, c1y), new Coord(c2x, c2y), label, color);
         emit_areas_to_room();
+        callback(created_area_index);
     }
 
     function handle_move_side_area(index:number, x:number, y:number, side_number){
