@@ -1,5 +1,5 @@
 import express from 'express';
-import { Graph } from './graph';
+import { Graph, SENSIBILITY } from './graph';
 import ENV from './.env.json';
 import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
@@ -67,7 +67,7 @@ io.sockets.on('connection', function (client) {
     let g = new Graph();
     g.add_vertex(200, 100);
     room_graphs.set(room_id, g);
-    emit_graph_to_room();
+    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
     emit_strokes_to_room();
     emit_areas_to_room();
     emit_users_to_client();
@@ -77,15 +77,15 @@ io.sockets.on('connection', function (client) {
         client.join(room_id);
         g = the_graph;
         clientRooms[client.id] = room_id;
-        emit_graph_to_client()
+        emit_graph_to_client(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
     }
 
-    function emit_graph_to_client() {
-        client.emit('graph', [...g.vertices.entries()], [...g.links.entries()]);
+    function emit_graph_to_client(s:Set<SENSIBILITY>) {
+        client.emit('graph', [...g.vertices.entries()], [...g.links.entries()], [... s]);
     }
 
-    function emit_graph_to_room() {
-        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.links.entries()]);
+    function emit_graph_to_room(s:Set<SENSIBILITY>) {
+        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.links.entries()], [... s]);
     }
 
     function emit_strokes_to_room(){
@@ -138,7 +138,7 @@ io.sockets.on('connection', function (client) {
             clientRooms[client.id] = new_room_id;
             room_id = new_room_id;
             g = room_graphs.get(room_id);
-            emit_graph_to_client();
+            emit_graph_to_client(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
             emit_strokes_to_room();
             emit_areas_to_room();
             emit_users_to_client();
@@ -326,7 +326,8 @@ io.sockets.on('connection', function (client) {
                 }
             }
         }
-        emit_graph_to_room();
+        // TODO:  Sensibility for colors ? 
+        emit_graph_to_room(new Set([SENSIBILITY.COLOR]));
     }
 
 
@@ -365,7 +366,7 @@ io.sockets.on('connection', function (client) {
                 break;
         }
         g.add_link(vindex, windex, orient);
-        emit_graph_to_room();
+        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
     }
 
 
@@ -382,7 +383,7 @@ io.sockets.on('connection', function (client) {
         for (const link of data.links) {
             g.add_link_with_cp(link[1].start_vertex, link[1].end_vertex, link[1].orientation, new Coord(link[1].cp.x, link[1].cp.y))
         }
-        emit_graph_to_room();
+        emit_graph_to_room(new Set([SENSIBILITY.COLOR, SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]));
     }
 
     function handle_get_json(callback) {
@@ -414,36 +415,37 @@ io.sockets.on('connection', function (client) {
 
     function handle_add_vertex(x: number, y: number) {
         let index = g.add_vertex(x, y);
-        emit_graph_to_room();
+        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
         return index;
     }
 
 
     // OTHERS 
     function handle_delete_selected_elements(data) {
-        let emit_graph = false;
-        let emit_stroke = false;
+        let deleted_vertex = false;
+        let delete_link = false;
+        let delete_stroke = false; 
 
         for (const e of data) {
             if (e.type == "vertex") {
                 g.delete_vertex(e.index);
-                emit_graph = true;
+                deleted_vertex = true;
             }
             else if (e.type == "link") {
                 g.delete_link(e.index);
-                emit_graph = true;
+                delete_link = true;
             }
             else if (e.type == "stroke") {
                 g.delete_stroke(e.index);
-                emit_stroke = true;
+                delete_stroke = true;
             }
         }
 
-        if(emit_graph){
-            emit_graph_to_room(); 
+        if(deleted_vertex || delete_link){
+            emit_graph_to_room(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC])); 
         }
         
-        if(emit_stroke){
+        if(delete_stroke){
             emit_strokes_to_room();
         }
     }

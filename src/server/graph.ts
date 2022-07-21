@@ -6,6 +6,14 @@ import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
 
+
+export enum SENSIBILITY {
+    GEOMETRIC = "GEOMETRIC", // Move of vertex/link
+    COLOR = "COLOR", // Change of color for vertices/links
+    ELEMENT = "ELEMENT" // Create/delete vertex/link
+}
+
+
 export class Graph {
     vertices: Map<number, Vertex>;
     links: Map<number, Link>;

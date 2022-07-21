@@ -122,11 +122,36 @@
 
 #area_list_container {
     position: fixed;
-    bottom: 5px;
+    bottom: 9px;
+    left: 7px;
     font-family: sans-serif;
 }
 
 .reload_img {
     width: 18px;
     margin-left: 5px;
+}
+
+.inactive_boolean_result {
+    width: 18px;
+    height: 18px;
+    background-color: #000;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.true_boolean_result {
+    width: 18px;
+    height: 18px;
+    background-color: rgb(44, 138, 28);
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.false_boolean_result {
+    width: 18px;
+    height: 18px;
+    background-color: rgb(220, 15, 18);
+    border-radius: 50%;
+    border: 2px solid white;
 }

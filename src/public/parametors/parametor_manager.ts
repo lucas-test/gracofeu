@@ -1,6 +1,6 @@
 import { draw, invertColor } from '../draw';
-import { param_is_connected, param_nb_edges, param_nb_vertices } from './some_parametors';
-import { Parametor } from './parametor';
+import { param_is_connected, param_nb_edges, param_nb_vertices, param_number_colors, param_number_geo } from './some_parametors';
+import { Parametor, SENSIBILITY } from './parametor';
 import { Graph } from '../local_graph';
 import { Area } from '../area';
 
@@ -11,7 +11,7 @@ export let params_available = []
 
 
 export function setup_parametors_available() {
-    params_available.push(param_nb_edges, param_nb_vertices, param_is_connected);
+    params_available.push(param_nb_edges, param_nb_vertices, param_is_connected, param_number_colors, param_number_geo);
 }
 
 
@@ -66,36 +66,40 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
     // Add parametor to document and list of loaded parametors
     document.getElementById("params_loaded").appendChild(newDiv);
     params_loaded.push(param_to_load);
-    update_params_loaded(g, true);
+    // update_params_loaded(g, new Set(), true);
+    if(param.is_live){
+        update_parametor(g, param_to_load);
+    }
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
 
 
 
 
-export function update_params_loaded(g:Graph, force_compute?:boolean) {
+export function update_params_loaded(g:Graph, sensibilities:Set<SENSIBILITY>, force_compute?:boolean) {
     if(force_compute === undefined){
         force_compute = false;
     }
 
     for (let param of params_loaded) {
-        if(force_compute || param.parametor.is_live){
+        if((force_compute || param.parametor.is_live) && param.parametor.is_sensible(sensibilities)){
             update_parametor(g, param);
         }
+        
     }
 }
 
 
 function update_parametor(g:Graph, param){
+    const result_span = document.getElementById("span_result_" + param.html_id);
     if(param.area_id === null){
         var result = param.parametor.compute(g);
-        document.getElementById("span_result_" + param.html_id).innerHTML = result;
+        update_result_span(result, param.parametor, result_span);
     }
     else{
         if(g.areas.has(param.area_id)){
-            const area = g.areas.get(param.area_id);
             var result = param.parametor.compute(g.get_subgraph_from_area(param.area_id));
-            document.getElementById("span_result_" + param.html_id).innerHTML = result;
+            update_result_span(result, param.parametor, result_span);
         }
         else{
             remove_loaded_param(param.html_id, param.area_id);
@@ -103,6 +107,23 @@ function update_parametor(g:Graph, param){
     }
 }
 
+
+function update_result_span(result:string, param, result_span:HTMLElement){
+    if(param.is_boolean){
+        console.log("hey, boolean!!")
+        if(result == "true"){
+            result_span.classList.remove("inactive_boolean_result", "false_boolean_result");
+            result_span.classList.add("true_boolean_result");
+        }
+        else{
+            result_span.classList.remove("inactive_boolean_result", "true_boolean_result");
+            result_span.classList.add("false_boolean_result");
+        }
+    }
+    else{
+        result_span.textContent = result;
+    }
+}
 
 function remove_loaded_param(param_id: string, area_id:string) {
     

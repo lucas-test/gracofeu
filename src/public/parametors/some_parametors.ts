@@ -1,15 +1,15 @@
 
 import { Graph, LocalVertex, ORIENTATION } from '../local_graph';
-import { Parametor } from './parametor';
+import { Parametor, SENSIBILITY } from './parametor';
 
-export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", true, false);
+export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", true, false, [SENSIBILITY.ELEMENT]);
 
 param_nb_vertices.compute = ((g: Graph) => {
     return String(g.vertices.size)
 })
 
 
-export let param_nb_edges = new Parametor("Edges number", "edge_number", true, false);
+export let param_nb_edges = new Parametor("Edges number", "edge_number", true, false, [SENSIBILITY.ELEMENT]);
 
 param_nb_edges.compute = ((g: Graph) => {
     let counter = 0;
@@ -23,7 +23,7 @@ param_nb_edges.compute = ((g: Graph) => {
 
 
 
-export let param_is_connected = new Parametor("Is connected?", "is_connected", false, true);
+export let param_is_connected = new Parametor("Is connected?", "is_connected", true, true, [SENSIBILITY.ELEMENT]);
 
 param_is_connected.compute = ((g: Graph) =>{
 
@@ -47,6 +47,32 @@ param_is_connected.compute = ((g: Graph) =>{
     }
     return "true";
 });
+
+export let param_number_colors = new Parametor("Number vertex colors", "nb_vertex_colors", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
+
+param_number_colors.compute = ((g: Graph) =>{
+    let colors_set = new Set<string>();
+    for(const v of g.vertices.values())
+    {
+        colors_set.add(v.color);
+    }
+    return String(colors_set.size);
+
+});
+
+
+export let param_number_geo = new Parametor("GEO", "geo", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]);
+
+param_number_geo.compute = ((g: Graph) =>{
+    let n = 0;
+    for(const v of g.vertices.values())
+    {
+        n += v.pos.x > 0?0:1;
+    }
+    return String(n);
+
+});
+
 
 
 function DFS_recursive(g:Graph, v_index : number, visited:Map<number, boolean>){
