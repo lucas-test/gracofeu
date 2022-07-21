@@ -1,5 +1,5 @@
 import { draw, invertColor } from '../draw';
-import { param_nb_edges, param_nb_vertices } from './some_parametors';
+import { param_is_connected, param_nb_edges, param_nb_vertices } from './some_parametors';
 import { Parametor } from './parametor';
 import { Graph } from '../local_graph';
 import { Area } from '../area';
@@ -11,7 +11,7 @@ export let params_available = []
 
 
 export function setup_parametors_available() {
-    params_available.push(param_nb_edges, param_nb_vertices)
+    params_available.push(param_nb_edges, param_nb_vertices, param_is_connected);
 }
 
 

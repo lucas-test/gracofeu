@@ -167,6 +167,21 @@ export class Graph {
     }
 
 
+    get_neighbors_list(i: number) {
+        let neighbors = new Array<number>();
+        for (let e of this.links.values()) {
+            if (e.orientation == ORIENTATION.UNDIRECTED) {
+                if (e.start_vertex == i) {
+                    neighbors.push(e.end_vertex);
+                } else if (e.end_vertex == i) {
+                    neighbors.push(e.start_vertex);
+                }
+            }
+        }
+        return neighbors;
+    }
+
+
     deselect_all_vertices() {
         this.vertices.forEach(vertex => {
             vertex.is_selected = false;

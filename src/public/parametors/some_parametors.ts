@@ -1,5 +1,5 @@
 
-import { Graph, ORIENTATION } from '../local_graph';
+import { Graph, LocalVertex, ORIENTATION } from '../local_graph';
 import { Parametor } from './parametor';
 
 export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", true, false);
@@ -8,8 +8,8 @@ param_nb_vertices.compute = ((g: Graph) => {
     return String(g.vertices.size)
 })
 
-//TODO: Change into true, false
-export let param_nb_edges = new Parametor("Edges number", "edge_number", false, false);
+
+export let param_nb_edges = new Parametor("Edges number", "edge_number", true, false);
 
 param_nb_edges.compute = ((g: Graph) => {
     let counter = 0;
@@ -20,3 +20,66 @@ param_nb_edges.compute = ((g: Graph) => {
     }
     return String(counter);
 })
+
+
+
+export let param_is_connected = new Parametor("Is connected?", "is_connected", false, true);
+
+param_is_connected.compute = ((g: Graph) =>{
+
+    if(g.vertices.size < 2){
+        return "true";
+    }
+
+    const indices = Array.from(g.vertices.keys());
+    const visited = new Map();
+    for(const index of g.vertices.keys()){
+        visited.set(index, false);
+    }
+
+    DFS_recursive(g, indices[0], visited);
+
+    for(const is_visited of visited.values()){
+        if(! is_visited)
+        {
+            return "false";
+        }
+    }
+    return "true";
+});
+
+
+function DFS_recursive(g:Graph, v_index : number, visited:Map<number, boolean>){
+    visited.set(v_index, true);
+    const neighbors = g.get_neighbors_list(v_index);
+
+    for(const u_index of neighbors){
+        if(visited.has(u_index) && !visited.get(u_index)){
+            DFS_recursive(g, u_index, visited);
+        }
+    }
+}
+
+function DFS_iterative(g:Graph, v_index : number){
+    const visited = new Map();
+    for(const index of g.vertices.keys()){
+        visited.set(index, false);
+    }
+    console.log(visited);
+
+    const S = Array();
+    S.push(v_index);
+
+    while(S.length !== 0){
+        const u_index = S.pop();
+        if(!visited.get(u_index)){
+            visited.set(u_index, true);
+            const neighbors = g.get_neighbors_list(u_index);
+            for(const n_index of neighbors){
+                S.push(n_index);
+            }
+        }
+    }
+
+    return visited;
+}
