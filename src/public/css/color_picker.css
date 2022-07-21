@@ -1,9 +1,12 @@
 #color_picker {
     position: fixed;
-    background-color: #333333;
-    color: white;
+    background-color: #fff;
+    color: #000;
     border-radius: 5px;
     transition: 200ms;
+    top: 50%;
+    left: -100px;
+    transform: translateY(calc(27px - 50%));
 }
 
 .color_choice {
@@ -11,11 +14,12 @@
     height: 30px;
     width: 30px;
     border-radius: 10px;
+    border: 1px solid #000;
+    box-sizing: border-box;
 }
 
 .color_choice.selected {
-    border: 3px solid #fff;
-    box-sizing: border-box;
+    border: 3px solid #000;
 }
 
 .color_picker_input {
