@@ -143,10 +143,17 @@ export function center_canvas_on_rectangle(top_left:CanvasCoord, bot_right:Canva
     const h = bot_right.y - top_left.y;
     const shift_x = (canvas.width - w)/2 - top_left.x;
     const shift_y = (canvas.height - h)/2 - top_left.y;
-    const ratio_w = canvas.width/w;
-    const ratio_h = canvas.height/h;
 
     view.translate_camera(new Coord(shift_x, shift_y));
+
+    if ( w <= 0 || h <= 0 ){
+        g.update_canvas_pos();
+        update_users_canvas_pos();
+        return;
+    }
+
+    const ratio_w = canvas.width/w;
+    const ratio_h = canvas.height/h;
 
     const center = new CanvasCoord(canvas.width/2, canvas.height/2);
     view.apply_zoom_to_center(center, Math.min(ratio_h, ratio_w)*0.8);

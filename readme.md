@@ -98,12 +98,12 @@ npm run dev
 
 - parametre
     - [ ] ranger par area
-    - [ ] mise à jour pas tout le temps pour genre ceux qui ont pas besoin de la position
+    - [X] mise à jour pas tout le temps pour genre ceux qui ont pas besoin de la position
     - [X] bouton remove parametor marche pas
     - [X] mettre en place la structure sans attribut
-    - [ ] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
-    - [ ] update parametre
-    - [ ] parametres classiques : distance (diametre), degré (min, max, moyen, sequence), is_currently_planar, is_planar, is_bipartite, is_sparse, is_connected 
+    - [X] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
+    - [X] update parametre
+    - [ ] parametres classiques : distance (diametre), degré (min, max, moyen, sequence), is_currently_planar, is_planar, is_bipartite, is_sparse 
 
 
 
@@ -147,5 +147,6 @@ npm run dev
     OU
     interdire le zoom pendant la création ?
 - start resizing area, then leave mouse out of window, stop clicking, then mouse back on window = bug -> pareil avec création de link, couleur, pen ... solution avec événement outofscreen si existe ?
+- bug avec param Geometric et sommet qui rentre dans area
 
 

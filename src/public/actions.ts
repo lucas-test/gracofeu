@@ -99,13 +99,13 @@ load_file_action.trigger = () => {
 }
 
 
-let change_to_none_index = new Action("index_type_none", "None", "index_none.svg", "");
+let change_to_none_index = new Action("index_type_none", "Remove all labels", "index_none.svg", "");
 change_to_none_index.trigger = () => {
     view.index_type = INDEX_TYPE.NONE;
     local_graph.compute_vertices_index_string();
 }
 
-let change_to_number_stable_index = new Action("index_type_number_stable", "Stable numeric", "index_number_stable.svg", "");
+let change_to_number_stable_index = new Action("index_type_number_stable", "Set labels to numeric and maintain the label after vertices deletions", "index_number_stable.svg", "");
 change_to_number_stable_index.trigger = () => {
     view.index_type = INDEX_TYPE.NUMBER_STABLE;
     local_graph.compute_vertices_index_string();
@@ -211,33 +211,40 @@ export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderin
                 requestAnimationFrame(function () { draw(canvas, ctx, g) });
             };
             new_subactions_div.appendChild(new_subaction_div);
+
+            add_recap_div(subaction, new_subaction_div, 130);
         }
 
-        // RECAP
-        let div_recap = document.createElement("div");
-        div_recap.classList.add("interactor_recap");
-        if ( action.shortcut != ""){
-            div_recap.innerHTML = action.info + " <span class='shortcut'>" + action.shortcut + "</span>";
-        }else {
-            div_recap.innerHTML = action.info;
-        }
-        document.body.appendChild(div_recap);
-
-        newDiv.onmouseenter = function () {
-            var offsets = newDiv.getBoundingClientRect();
-            div_recap.style.display = "block";
-            div_recap.style.left = String(offsets.left); 
-            div_recap.style.top = "70";
-        }
-
-        newDiv.onmouseleave = function () {
-            div_recap.style.display = "none";
-        }
+        add_recap_div(action, newDiv, 70);
+       
 
 
         // APPEND TO DOCUMENT
         document.body.appendChild(new_subactions_div);
 
 
-    }
+    }   
+}
+
+// RECAP
+function add_recap_div(action: Action, newDiv: HTMLDivElement, top: number){
+     let div_recap = document.createElement("div");
+     div_recap.classList.add("interactor_recap");
+     if ( action.shortcut != ""){
+         div_recap.innerHTML = action.info + " <span class='shortcut'>" + action.shortcut + "</span>";
+     }else {
+         div_recap.innerHTML = action.info;
+     }
+     document.body.appendChild(div_recap);
+
+     newDiv.onmouseenter = function () {
+         var offsets = newDiv.getBoundingClientRect();
+         div_recap.style.display = "block";
+         div_recap.style.left = String(offsets.left); 
+         div_recap.style.top = String(top);
+     }
+
+     newDiv.onmouseleave = function () {
+         div_recap.style.display = "none";
+     }
 }
