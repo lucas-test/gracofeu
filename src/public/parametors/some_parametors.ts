@@ -23,7 +23,7 @@ param_nb_edges.compute = ((g: Graph) => {
 
 
 
-export let param_is_connected = new Parametor("Is connected?", "is_connected", true, true, [SENSIBILITY.ELEMENT]);
+export let param_is_connected = new Parametor("Is connected?", "is_connected", false, true, [SENSIBILITY.ELEMENT]);
 
 param_is_connected.compute = ((g: Graph) =>{
 

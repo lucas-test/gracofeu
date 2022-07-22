@@ -1,3 +1,4 @@
+import { Area } from "../area";
 import { Graph } from "../local_graph";
 
 export enum SENSIBILITY {
@@ -46,6 +47,10 @@ export class Parametor {
     is_sensible(s : Set<SENSIBILITY>){
         const intersection = new Set([...this.sensibility].filter(x=>s.has(x)));
         return intersection.size > 0;
+    }
+
+    get_parametor_html_id(a:Area){
+        return this.id + "_area_" +( a==null?"null":a.id);
     }
 }
 

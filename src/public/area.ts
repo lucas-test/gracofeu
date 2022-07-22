@@ -1,7 +1,11 @@
+import { init_parametor_div } from "./area_div";
 import { center_canvas_on_rectangle, view } from "./camera";
 import { CanvasCoord, corner_bottom_right, corner_top_left, ServerCoord } from "./coord";
 import { draw } from "./draw";
+import { Graph } from "./local_graph";
 import { Multicolor } from "./multicolor";
+import { Parametor } from "./parametors/parametor";
+import { params_available, params_loaded } from "./parametors/parametor_manager";
 import { socket } from "./socket";
 
 
@@ -219,19 +223,8 @@ export class Area{
         this.corner_top_left = view.serverCoord2(c2.add2(vector));
     }
 
-    get_span_for_area():HTMLSpanElement{
-        if(this!== null){
-            const span_area = document.createElement('span');
-            span_area.classList.add("span_area_name_parametor");
-            span_area.textContent = this.label;
-            span_area.style.background = this.multicolor.color;
-            span_area.style.color = this.multicolor.contrast;
-            span_area.style.borderColor = this.multicolor.contrast;
-            return span_area;
-        }
-        return null;
-    }
-    
+
+   
 }
 
 

@@ -8,7 +8,7 @@ import { update_params_loaded } from "./parametors/parametor_manager";
 import { Area } from "./area";
 import { update_options_graphs } from "./parametors/div_parametor";
 import { Coord, ServerCoord } from "./coord";
-import { make_list_areas } from "./area_div";
+import { init_list_parametors_for_area, make_list_areas } from "./area_div";
 import { get_sensibilities, SENSIBILITY } from "./parametors/parametor";
 export const socket = io()
 
@@ -146,11 +146,12 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         for(const s of data){
             const new_area = new Area(s[0], s[1].label, s[1].c1, s[1].c2, s[1].color);
             g.areas.set(s[0], new_area);
+            init_list_parametors_for_area(g, new_area, canvas, ctx);
             //console.log(g.areas.get(s[0]).get_subgraph(g));
         }
         update_params_loaded(g, new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]), false);
         update_options_graphs(canvas, ctx, g);
-        make_list_areas(canvas, ctx, g);
+        // make_list_areas(canvas, ctx, g);
         requestAnimationFrame(function () { 
             draw(canvas, ctx, g) 
         });
@@ -213,6 +214,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.compute_vertices_index_string();
 
+        init_list_parametors_for_area(g, null, canvas, ctx);
+
         const sensi = get_sensibilities(sensibilities);
         update_params_loaded(g, sensi, false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -249,4 +252,3 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
 }
-
