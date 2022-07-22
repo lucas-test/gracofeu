@@ -1,4 +1,4 @@
-import { draw, invertColor } from '../draw';
+import { draw } from '../draw';
 import { param_is_connected, param_nb_edges, param_nb_vertices, param_number_colors, param_number_geo } from './some_parametors';
 import { Parametor, SENSIBILITY } from './parametor';
 import { Graph } from '../board/graph';
