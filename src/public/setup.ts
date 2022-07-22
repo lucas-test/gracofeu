@@ -1,14 +1,14 @@
 import { setup_actions_div } from "./actions";
-import { view } from "./camera";
 import { draw, resizeCanvas } from "./draw";
 import { interactor_edge } from "./interactors/edge_interactor";
 import { setup_interactions, select_interactor, setup_interactors_div } from "./interactors/interactor_manager";
-import { local_graph } from "./local_graph";
 import { params_available_turn_off_div, params_available_turn_on_div, update_params_available_div } from "./parametors/div_parametor";
 import { setup_parametors_available } from "./parametors/parametor_manager";
 import { setup_socket, socket } from "./socket";
+import { Board } from "./board/board";
 
 
+export const local_board = new Board();
 
 
 function setup() {
@@ -17,22 +17,22 @@ function setup() {
     const ctx = canvas.getContext('2d');
 
 
-    setup_socket(canvas, ctx, local_graph);
+    setup_socket(canvas, ctx, local_board);
 
     ctx.canvas.width = window.innerWidth;
     ctx.canvas.height = window.innerHeight;
     window.addEventListener('resize', function () { 
-        resizeCanvas(canvas, ctx, local_graph); 
+        resizeCanvas(canvas, ctx, local_board.graph); 
     }, false);
     document.addEventListener('contextmenu', event => event.preventDefault());
-    setup_interactions(canvas, ctx, local_graph);
-    setup_interactors_div(canvas, ctx, local_graph);
-    select_interactor(interactor_edge, canvas, ctx, local_graph, null);
+    setup_interactions(canvas, ctx, local_board.graph);
+    setup_interactors_div(canvas, ctx, local_board.graph);
+    select_interactor(interactor_edge, canvas, ctx, local_board.graph, null);
 
-    setup_actions_div(canvas, ctx, local_graph);
+    setup_actions_div(canvas, ctx, local_board.graph);
 
     setup_parametors_available();
-    update_params_available_div(canvas, ctx, local_graph);
+    update_params_available_div(canvas, ctx, local_board.graph);
 
     let params_loaded_button = document.getElementById("params_loaded_button");
     params_loaded_button?.addEventListener('click', () => {
@@ -48,7 +48,7 @@ function setup() {
 
 
 
-    draw(canvas, ctx, local_graph);
+    draw(canvas, ctx, local_board.graph);
 }
 
 setup()

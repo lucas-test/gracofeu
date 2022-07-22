@@ -1,6 +1,6 @@
-import { view } from "./camera";
 import { CanvasCoord, ServerCoord } from "./coord";
-import { Multicolor } from "./multicolor";
+import { Multicolor } from "../multicolor";
+import { local_board } from "../setup";
 
 export class Stroke{
     positions:Array<ServerCoord>;
@@ -35,7 +35,7 @@ export class Stroke{
     }
 
     is_nearby(pos:CanvasCoord, r:number){
-        const server_pos = view.serverCoord2(pos);
+        const server_pos = local_board.view.serverCoord2(pos);
         if (server_pos.x > this.bot_right.x || server_pos.x < this.top_left.x || server_pos.y > this.bot_right.y || server_pos.y < this.top_left.y)
         {
             return false;

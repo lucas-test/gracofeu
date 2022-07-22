@@ -1,5 +1,5 @@
-import { CanvasCoord, ServerCoord } from "../coord";
-import { Graph } from "../local_graph";
+import { CanvasCoord, ServerCoord } from "../board/coord";
+import { Graph } from "../board/local_graph";
 
 
 

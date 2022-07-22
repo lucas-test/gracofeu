@@ -1,5 +1,5 @@
 
-import { CanvasCoord } from '../coord';
+import { CanvasCoord } from '../board/coord';
 import { socket } from '../socket';
 import { Interactor, DOWN_TYPE } from './interactor'
 import { last_down, last_down_index } from './interactor_manager';

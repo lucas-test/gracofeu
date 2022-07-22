@@ -1,7 +1,7 @@
-import { view } from "./camera";
-import { CanvasCoord, ServerCoord } from "./coord";
+import { CanvasCoord, ServerCoord } from "./board/coord";
 import { COLOR_BACKGROUND, invertColor, shadeColor } from "./draw";
 import { Multicolor } from "./multicolor";
+import { local_board } from "./setup";
 import { socket } from "./socket";
 
 
@@ -19,7 +19,7 @@ export class User {
         
         if (typeof pos !== 'undefined') {
             this.pos = pos;
-            this.canvas_pos = view.canvasCoord(this.pos);
+            this.canvas_pos = local_board.view.canvasCoord(this.pos);
         }
         else{
             this.pos = null;
@@ -30,7 +30,7 @@ export class User {
     set_pos(x: number, y: number) {
         this.pos.x = x;
         this.pos.y = y;
-        this.canvas_pos = view.canvasCoord(this.pos);
+        this.canvas_pos = local_board.view.canvasCoord(this.pos);
     }
 
     set_color(color:string){
@@ -67,7 +67,7 @@ export function update_user_list_div() {
         newDiv.dataset.label = u.label;
 
         newDiv.onclick = function () {
-            if(view.following === u.id){
+            if(local_board.view.following === u.id){
                 self_user.unfollow(u.id);
             }
             else{
@@ -81,7 +81,7 @@ export function update_user_list_div() {
 
 export function update_users_canvas_pos() {
     for (const user of users.values()){
-        user.canvas_pos = view.canvasCoord(user.pos);
+        user.canvas_pos = local_board.view.canvasCoord(user.pos);
     }
 }
 
@@ -119,18 +119,18 @@ export class Self{
         if(users.has(id)){
             const borderDIV = document.getElementById("border");
             const u = users.get(id);
-            view.following = id;
+            local_board.view.following = id;
             borderDIV.style.borderColor = u.multicolor.color;
             socket.emit("follow", id);
         }
         else{
-            view.following = null;
+            local_board.view.following = null;
         }
     }
 
     unfollow(id:string){
         const borderDIV = document.getElementById("border");
-        view.following = null;
+        local_board.view.following = null;
         borderDIV.style.borderColor = COLOR_BACKGROUND;
         socket.emit("unfollow", id);
     }

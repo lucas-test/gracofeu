@@ -1,8 +1,8 @@
 import {Interactor,DOWN_TYPE} from './interactor'
 import {socket} from '../socket';
-import {view} from '../camera';
-import {local_graph,ORIENTATION} from '../local_graph';
-import {Stroke} from '../stroke';
+import {ORIENTATION} from '../board/local_graph';
+import {Stroke} from '../board/stroke';
+import { local_board } from '../setup';
 
 
 // INTERACTOR STROKE
@@ -16,7 +16,7 @@ var gap_refresh = 0;
 export var interactor_stroke = new Interactor("pen", "p", "stroke.svg", new Set([DOWN_TYPE.VERTEX]));
 
 interactor_stroke.mousedown = ((  canvas, ctx, g, e) => {
-    const server_pos = view.serverCoord2(e);
+    const server_pos = local_board.view.serverCoord2(e);
     last_stroke = new Stroke([server_pos], "#ffffff", 2);
 
     // TO CHANGE
@@ -32,7 +32,7 @@ interactor_stroke.mousemove = ((canvas, ctx, g, e) => {
     if(last_stroke !== null){
         gap_refresh++ ;
         if(gap_refresh % 5 === 0){
-            const server_pos = view.serverCoord2(e);
+            const server_pos = local_board.view.serverCoord2(e);
             g.strokes.get(index_last_stroke).push(server_pos);
             return true;
         }
@@ -42,7 +42,7 @@ interactor_stroke.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_stroke.mouseup = ((canvas, ctx, g, e) => {
-    const server_pos = view.serverCoord2(e);
+    const server_pos = local_board.view.serverCoord2(e);
     g.strokes.get(index_last_stroke).push(server_pos);
 
     const s = g.strokes.get(index_last_stroke);

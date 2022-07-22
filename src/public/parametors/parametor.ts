@@ -1,4 +1,4 @@
-import { Graph } from "../local_graph";
+import { Graph } from "../board/local_graph";
 
 export enum SENSIBILITY {
     GEOMETRIC = "GEOMETRIC", // Move of vertex/link

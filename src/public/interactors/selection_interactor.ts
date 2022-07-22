@@ -1,9 +1,9 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
-import { view } from '../camera';
 import { self_user, update_users_canvas_pos, users } from '../user';
-import { CanvasCoord, Coord } from '../coord';
+import { CanvasCoord, Coord } from '../board/coord';
 import { down_coord, has_moved, last_down, last_down_index } from './interactor_manager';
+import { local_board } from '../setup';
 
 
 // INTERACTOR SELECTION
@@ -41,12 +41,12 @@ interactor_selection.mousedown = (( canvas, ctx, g, e) => {
 
         // TODO
         if (false) { //(e.ctrlKey) {
-            view.is_rectangular_selecting = true;
-            view.selection_corner_1 = e; // peut etre faut copier
-            view.selection_corner_2 = e; // peut etre faut copier
+            local_board.view.is_rectangular_selecting = true;
+            local_board.view.selection_corner_1 = e; // peut etre faut copier
+            local_board.view.selection_corner_2 = e; // peut etre faut copier
         }
         else {
-            view.save_camera();
+            local_board.view.save_camera();
         }
     }
 })
@@ -60,7 +60,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 const data_socket = new Array();
 
                 const mouse_canvas_coord = g.align_position(e, g.get_selected_vertices(), canvas);
-                const mouse_server_coord = view.serverCoord2(mouse_canvas_coord);
+                const mouse_server_coord = local_board.view.serverCoord2(mouse_canvas_coord);
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
                     if (v.is_selected) {
@@ -78,7 +78,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                     if (v.is_selected && w.is_selected) {
                         link.cp.x = link.old_cp.x + mouse_server_coord.x - origin_vertex.old_pos.x
                         link.cp.y = link.old_cp.y + mouse_server_coord.y - origin_vertex.old_pos.y
-                        link.canvas_cp = view.canvasCoord(link.cp);
+                        link.canvas_cp = local_board.view.canvasCoord(link.cp);
                         data_socket2.push({ index: index, cp: link.cp })
                     }
                     else if (v.is_selected && !w.is_selected) {
@@ -96,7 +96,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                 const v = g.vertices.get(last_down_index)
                 const mouse_canvas_coord = g.align_position(e, new Set([last_down_index]), canvas);
                 v.canvas_pos = mouse_canvas_coord;
-                v.pos = view.serverCoord2(v.canvas_pos);
+                v.pos = local_board.view.serverCoord2(v.canvas_pos);
 
                 const data_socket = new Array();
                 for (let [index, link] of g.links.entries()) {
@@ -116,26 +116,26 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             break;
 
         case DOWN_TYPE.EMPTY:
-            if (view.is_rectangular_selecting) {
-                view.selection_corner_2 = e; // peut etre faut copier
+            if (local_board.view.is_rectangular_selecting) {
+                local_board.view.selection_corner_2 = e; // peut etre faut copier
             } else {
-                view.translate_camera_from_old(e.sub(down_coord));
+                local_board.view.translate_camera_from_old(e.sub(down_coord));
                 g.update_canvas_pos();
                 update_users_canvas_pos();
  
                 
-                if(view.following !== null){
-                    self_user.unfollow(view.following);
+                if(local_board.view.following !== null){
+                    self_user.unfollow(local_board.view.following);
                 }
-                socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
+                socket.emit("my_view", local_board.view.camera.x, local_board.view.camera.y, local_board.view.zoom);
             }
             return true;
             break;
 
         case DOWN_TYPE.CONTROL_POINT:
             var link = g.links.get(last_down_index);
-            link.cp = view.serverCoord2(e);
-            link.canvas_cp = view.canvasCoord(link.cp);
+            link.cp = local_board.view.serverCoord2(e);
+            link.canvas_cp = local_board.view.canvasCoord(link.cp);
             socket.emit("update_control_point", last_down_index, link.cp)
             return true;
             break;
@@ -204,13 +204,13 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
         }
     }
     else if (last_down === DOWN_TYPE.EMPTY) {
-        if (view.is_rectangular_selecting) {
-            view.is_rectangular_selecting = false;
-            g.select_vertices_in_rect(view.selection_corner_1, view.selection_corner_2);
-            g.select_links_in_rect(view.selection_corner_1, view.selection_corner_2);
+        if (local_board.view.is_rectangular_selecting) {
+            local_board.view.is_rectangular_selecting = false;
+            g.select_vertices_in_rect(local_board.view.selection_corner_1, local_board.view.selection_corner_2);
+            g.select_links_in_rect(local_board.view.selection_corner_1, local_board.view.selection_corner_2);
 
         } else {
-            view.save_camera();
+            local_board.view.save_camera();
             g.clear_all_selections();
         }
 

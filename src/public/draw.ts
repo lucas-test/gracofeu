@@ -6,17 +6,18 @@ const ARC_ARROW_LENGTH = 12
 const COLOR_ALIGNEMENT_LINE = "#555555"
 
 
-import { INDEX_TYPE, view } from './camera';
+import { INDEX_TYPE } from './board/camera';
 import { User, users } from './user';
-import {  Graph, ORIENTATION } from './local_graph';
-import { Stroke } from './stroke';
-import { Area } from './area';
+import {  Graph, ORIENTATION } from './board/local_graph';
+import { Stroke } from './board/stroke';
+import { Area } from './board/area';
 import { interactor_loaded } from './interactors/interactor_manager';
 import { DOWN_TYPE } from './interactors/interactor';
 import { clamp } from './utils';
 import { Multicolor } from './multicolor';
 import { interactor_area } from './interactors/area_interactor';
-import { CanvasCoord } from './coord';
+import { CanvasCoord } from './board/coord';
+import { local_board } from './setup';
 
 
 
@@ -33,7 +34,7 @@ export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 function draw_head(ctx: CanvasRenderingContext2D, start_pos: CanvasCoord, end_pos: CanvasCoord) {
     const headlen = ARC_ARROW_LENGTH;
     let vertex_radius = VERTEX_RADIUS;
-    if (view.index_type != INDEX_TYPE.NONE) {
+    if (local_board.view.index_type != INDEX_TYPE.NONE) {
         vertex_radius = VERTEX_RADIUS * 2;
     }
     const d = Math.sqrt(start_pos.dist2(end_pos))
@@ -57,7 +58,7 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     ctx.rect(0, 0, canvas.width, canvas.height);
     ctx.fill();
 
-    if (view.grid_show) {
+    if (local_board.view.grid_show) {
         draw_grid(canvas, ctx);
     }
 }
@@ -86,7 +87,7 @@ export function draw_circle(center: CanvasCoord, fillStyle: string, radius: numb
 export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
     const vertex = g.vertices.get(index);
     let vertex_radius = VERTEX_RADIUS;
-    if (view.index_type != INDEX_TYPE.NONE) {
+    if (local_board.view.index_type != INDEX_TYPE.NONE) {
         vertex_radius = 2 * VERTEX_RADIUS;
     }
 
@@ -99,7 +100,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     draw_circle(vertex.canvas_pos, vertex.color, vertex_radius - 2, 1, ctx);
 
     // DRAW INDEX 
-    if (view.index_type != INDEX_TYPE.NONE) {
+    if (local_board.view.index_type != INDEX_TYPE.NONE) {
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
         ctx.fillStyle = "white"
@@ -217,10 +218,10 @@ export function draw_user(user: User, canvas: HTMLCanvasElement, ctx: CanvasRend
 
 
 function draw_rectangular_selection(ctx: CanvasRenderingContext2D) {
-    if (view.is_rectangular_selecting) {
+    if (local_board.view.is_rectangular_selecting) {
         ctx.beginPath();
         ctx.strokeStyle = SELECTION_COLOR;
-        ctx.rect(view.selection_corner_1.x, view.selection_corner_1.y, view.selection_corner_2.x - view.selection_corner_1.x, view.selection_corner_2.y - view.selection_corner_1.y);
+        ctx.rect(local_board.view.selection_corner_1.x, local_board.view.selection_corner_1.y, local_board.view.selection_corner_2.x - local_board.view.selection_corner_1.x, local_board.view.selection_corner_2.y - local_board.view.selection_corner_1.y);
         ctx.stroke();
 
         ctx.globalAlpha = 0.07;
@@ -232,9 +233,9 @@ function draw_rectangular_selection(ctx: CanvasRenderingContext2D) {
 }
 
 function draw_grid(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
-    const grid_size = view.grid_size;
+    const grid_size = local_board.view.grid_size;
 
-    for (let i = view.camera.x % grid_size; i < canvas.width; i += grid_size) {
+    for (let i = local_board.view.camera.x % grid_size; i < canvas.width; i += grid_size) {
         ctx.beginPath();
         ctx.strokeStyle = GRID_COLOR;
         ctx.lineWidth = 1;
@@ -243,7 +244,7 @@ function draw_grid(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
         ctx.stroke();
     }
 
-    for (let i = view.camera.y % grid_size; i < canvas.height; i += grid_size) {
+    for (let i = local_board.view.camera.y % grid_size; i < canvas.height; i += grid_size) {
         ctx.beginPath();
         ctx.strokeStyle = GRID_COLOR;
         ctx.lineWidth = 1;
@@ -263,8 +264,8 @@ function draw_users(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
 
 
 function draw_following(ctx: CanvasRenderingContext2D){
-    if(view.following !== null){
-        const following_user = users.get(view.following);
+    if(local_board.view.following !== null){
+        const following_user = users.get(local_board.view.following);
         if(following_user){
             ctx.beginPath();
             ctx.strokeStyle = following_user.multicolor.color;
@@ -273,7 +274,7 @@ function draw_following(ctx: CanvasRenderingContext2D){
             ctx.stroke();
         }
         else{
-            view.following = null;
+            local_board.view.following = null;
         }
     }
 }
@@ -314,26 +315,26 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
 }
 
 function draw_vertex_creating(ctx: CanvasRenderingContext2D){
-    if (view.is_creating_vertex){
-        draw_circle(view.creating_vertex_pos, "grey", 10, 0.5, ctx);
+    if (local_board.view.is_creating_vertex){
+        draw_circle(local_board.view.creating_vertex_pos, "grey", 10, 0.5, ctx);
     }
 }
 
 function draw_link_creating(ctx: CanvasRenderingContext2D) {
-    if (view.is_link_creating) {
-        draw_line(view.link_creating_start, view.creating_vertex_pos, ctx, "white");
-        if (view.link_creating_type == ORIENTATION.DIRECTED) {
-            draw_head(ctx, view.link_creating_start, view.creating_vertex_pos);
+    if (local_board.view.is_link_creating) {
+        draw_line(local_board.view.link_creating_start, local_board.view.creating_vertex_pos, ctx, "white");
+        if (local_board.view.link_creating_type == ORIENTATION.DIRECTED) {
+            draw_head(ctx, local_board.view.link_creating_start, local_board.view.creating_vertex_pos);
         }
     }
 }
 
 function draw_alignements(ctx: CanvasRenderingContext2D) {
-    if (view.alignement_horizontal) {
-        draw_line(new CanvasCoord(0, view.alignement_horizontal_y), new CanvasCoord(window.innerWidth, view.alignement_horizontal_y), ctx, COLOR_ALIGNEMENT_LINE);
+    if (local_board.view.alignement_horizontal) {
+        draw_line(new CanvasCoord(0, local_board.view.alignement_horizontal_y), new CanvasCoord(window.innerWidth, local_board.view.alignement_horizontal_y), ctx, COLOR_ALIGNEMENT_LINE);
     }
-    if (view.alignement_vertical) {
-        draw_line(new CanvasCoord(view.alignement_vertical_x, 0), new CanvasCoord(view.alignement_vertical_x, window.innerHeight), ctx, COLOR_ALIGNEMENT_LINE);
+    if (local_board.view.alignement_vertical) {
+        draw_line(new CanvasCoord(local_board.view.alignement_vertical_x, 0), new CanvasCoord(local_board.view.alignement_vertical_x, window.innerHeight), ctx, COLOR_ALIGNEMENT_LINE);
     }
 
 }
@@ -342,8 +343,8 @@ function draw_alignements(ctx: CanvasRenderingContext2D) {
 function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
     if(s.positions.length > 0){ 
         if(s.is_selected){
-            const tlcanvas = view.canvasCoord(s.top_left);
-            const brcanvas = view.canvasCoord(s.bot_right);
+            const tlcanvas = local_board.view.canvasCoord(s.top_left);
+            const brcanvas = local_board.view.canvasCoord(s.bot_right);
             ctx.beginPath();
             ctx.strokeStyle = SELECTION_COLOR;
             ctx.lineWidth = 1;
@@ -352,24 +353,24 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
             ctx.stroke();
 
             
-            let position_canvas = view.canvasCoord(s.positions[0]);
+            let position_canvas = local_board.view.canvasCoord(s.positions[0]);
             ctx.beginPath();
             ctx.lineWidth = s.width + 4;
             ctx.moveTo(position_canvas.x, position_canvas.y);
             for(let i = 1; i<s.positions.length; i++){
-                position_canvas = view.canvasCoord(s.positions[i]);
+                position_canvas = local_board.view.canvasCoord(s.positions[i]);
                 ctx.lineTo(position_canvas.x, position_canvas.y);
             }
             ctx.stroke();
         }
 
-        let position_canvas = view.canvasCoord(s.positions[0]);
+        let position_canvas = local_board.view.canvasCoord(s.positions[0]);
         ctx.beginPath();
         ctx.strokeStyle = s.multicolor.color;
         ctx.lineWidth = s.width;
         ctx.moveTo(position_canvas.x, position_canvas.y);
         for(let i = 1; i<s.positions.length; i++){
-            position_canvas = view.canvasCoord(s.positions[i]);
+            position_canvas = local_board.view.canvasCoord(s.positions[i]);
             ctx.lineTo(position_canvas.x, position_canvas.y);
         }
         ctx.stroke();
@@ -391,8 +392,8 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
     ctx.beginPath();
     ctx.strokeStyle = a.multicolor.color;
     ctx.lineWidth = 2;
-    const c1canvas = view.canvasCoord(a.corner_top_left);
-    const c2canvas = view.canvasCoord(a.corner_bottom_right);
+    const c1canvas = local_board.view.canvasCoord(a.corner_top_left);
+    const c2canvas = local_board.view.canvasCoord(a.corner_bottom_right);
     ctx.rect(c1canvas.x , c1canvas.y, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
     ctx.stroke();
 
@@ -405,7 +406,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
     ctx.font = "400 24px Arial";
     const measure = ctx.measureText(a.label);
     ctx.fillStyle = a.multicolor.color;
-    const text_canvas_pos = view.canvasCoord(a.bot_left_corner());
+    const text_canvas_pos = local_board.view.canvasCoord(a.bot_left_corner());
     ctx.rect(text_canvas_pos.x, text_canvas_pos.y - 29, measure.width + 10, 29);
     ctx.fill();
 
@@ -418,9 +419,9 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
 
 
     if(interactor_loaded && interactor_loaded === interactor_area){
-        const top_left = view.canvasCoord(a.top_left_corner());
-        const top_right = view.canvasCoord(a.top_right_corner());
-        const bot_right = view.canvasCoord(a.bot_right_corner());
+        const top_left = local_board.view.canvasCoord(a.top_left_corner());
+        const top_right = local_board.view.canvasCoord(a.top_right_corner());
+        const bot_right = local_board.view.canvasCoord(a.bot_right_corner());
 
         const corner_side = 18;
 

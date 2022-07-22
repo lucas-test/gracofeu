@@ -1,9 +1,9 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
-import { view } from '../camera';
-import { AREA_CORNER, AREA_SIDE } from '../area';
-import { ServerCoord } from '../coord';
+import { AREA_CORNER, AREA_SIDE } from '../board/area';
+import { ServerCoord } from '../board/coord';
 import { down_coord, last_down, last_down_index } from './interactor_manager';
+import { local_board } from '../setup';
 
 
 export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]))
@@ -20,7 +20,7 @@ let corner_number: AREA_CORNER;
 interactor_area.mousedown = (( canvas, ctx, g, e) => {
     if (last_down === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
-        first_corner = view.serverCoord2(e);
+        first_corner = local_board.view.serverCoord2(e);
         socket.emit("add_area", first_corner.x, first_corner.y, first_corner.x, first_corner.y, "G", "", 
         (response: number) => { last_created_area_index = response });
     } else if (last_down === DOWN_TYPE.AREA_CORNER){
@@ -37,7 +37,7 @@ interactor_area.mousedown = (( canvas, ctx, g, e) => {
 })
 
 interactor_area.mousemove = ((canvas, ctx, g, e) => {
-    const esc  = view.serverCoord2(e);
+    const esc  = local_board.view.serverCoord2(e);
     if(is_creating_area){
         if( last_created_area_index != null && g.areas.has(last_created_area_index)){
             const last_created_area = g.areas.get(last_created_area_index);
@@ -110,7 +110,7 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_area.mouseup = ((canvas, ctx, g, e) => {
-    const esc  = view.serverCoord2(e);
+    const esc  = local_board.view.serverCoord2(e);
     if (last_down === DOWN_TYPE.EMPTY) {
         socket.emit("area_move_corner", last_created_area_index, esc.x, esc.y, AREA_CORNER.TOP_RIGHT);
         is_creating_area = false;

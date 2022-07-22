@@ -1,8 +1,6 @@
 import {Interactor,DOWN_TYPE} from './interactor'
 import {socket} from '../socket';
-import {view} from '../camera';
-import {local_graph,ORIENTATION} from '../local_graph';
-import {Stroke} from '../stroke';
+import {Stroke} from '../board/stroke';
 import { last_down, last_down_index } from './interactor_manager';
 
 

@@ -1,4 +1,4 @@
-import { Graph } from '../local_graph';
+import { Graph } from '../board/local_graph';
 import { Parametor } from './parametor';
 import { load_param, params_available, params_loaded } from './parametor_manager';
 

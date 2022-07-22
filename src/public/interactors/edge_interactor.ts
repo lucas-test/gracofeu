@@ -1,10 +1,10 @@
 
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
-import { view } from '../camera';
-import { local_graph, ORIENTATION } from '../local_graph';
-import { CanvasCoord } from '../coord';
+import {  ORIENTATION } from '../board/local_graph';
+import { CanvasCoord } from '../board/coord';
 import { last_down, last_down_index } from './interactor_manager';
+import { local_board } from '../setup';
 
 
 // INTERACTOR EDGE
@@ -16,28 +16,28 @@ export var interactor_edge = new Interactor("edge", "e", "edition.svg", new Set(
 
 interactor_edge.mousedown = (( canvas, ctx, g, e) => {
     if (last_down == DOWN_TYPE.EMPTY) {
-        view.is_link_creating = true;
+        local_board.view.is_link_creating = true;
         const pos = g.align_position(e, new Set(), canvas);
 
-        view.link_creating_start = pos;
-        view.link_creating_type = ORIENTATION.UNDIRECTED;
-        const server_pos = view.serverCoord2(pos);
+        local_board.view.link_creating_start = pos;
+        local_board.view.link_creating_type = ORIENTATION.UNDIRECTED;
+        const server_pos = local_board.view.serverCoord2(pos);
         socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => { index_last_created_vertex = response });
     }
     if (last_down === DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(last_down_index);
-        view.is_link_creating = true;
-        view.link_creating_start = vertex.canvas_pos;
+        local_board.view.is_link_creating = true;
+        local_board.view.link_creating_start = vertex.canvas_pos;
     }
 })
 
 interactor_edge.mousemove = ((canvas, ctx, g, e) => {
-    view.creating_vertex_pos = g.align_position(e, new Set(), canvas);
+    local_board.view.creating_vertex_pos = g.align_position(e, new Set(), canvas);
     return true;
 })
 
 interactor_edge.mouseup = ((canvas, ctx, g, e) => {
-    view.is_link_creating = false;
+    local_board.view.is_link_creating = false;
     if (last_down == DOWN_TYPE.VERTEX) {
         let index = g.get_vertex_index_nearby(e);
         if (index !== null && last_down_index != index) { // there is a vertex nearby and it is not the previous one
@@ -47,7 +47,7 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
             if (last_down_index !== index) { // We check if we are not creating a vertex on another one
                 let save_last_down_index = last_down_index; // see not below
                 const mouse_canvas_coord = g.align_position(e, new Set(), canvas);
-                const server_pos = view.serverCoord2(mouse_canvas_coord);
+                const server_pos = local_board.view.serverCoord2(mouse_canvas_coord);
                 socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => {
                     socket.emit("add_link", save_last_down_index, response, "undirected");
                     // we cant do socket.emit("add_edge", interactor_edge.last_down_index, response);
@@ -62,7 +62,7 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
         } else {
             if (index_last_created_vertex !== index) { // We check if we are not creating another vertex where we created the one with the mousedown 
                 const aligned_mouse_pos = g.align_position(e, new Set(), canvas);
-                const server_pos = view.serverCoord2(aligned_mouse_pos);
+                const server_pos = local_board.view.serverCoord2(aligned_mouse_pos);
                 socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => {
                     socket.emit("add_link", index_last_created_vertex, response, "undirected");
                 });
@@ -74,6 +74,6 @@ interactor_edge.mouseup = ((canvas, ctx, g, e) => {
 })
 
 interactor_edge.trigger = (mouse_pos: CanvasCoord) => {
-    view.is_creating_vertex = true;
-    view.creating_vertex_pos = mouse_pos;
+    local_board.view.is_creating_vertex = true;
+    local_board.view.creating_vertex_pos = mouse_pos;
 }

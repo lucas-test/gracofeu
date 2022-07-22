@@ -1,20 +1,22 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
 import { Self, self_user, update_self_user_div, update_users_canvas_pos, update_user_list_div, User, users } from "./user";
-import { Graph, Link, LocalVertex, ORIENTATION } from "./local_graph";
-import { view } from "./camera";
-import { Stroke } from "./stroke";
+import { Graph, Link, LocalVertex, ORIENTATION } from "./board/local_graph";
+import { Stroke } from "./board/stroke";
 import { update_params_loaded } from "./parametors/parametor_manager";
-import { Area } from "./area";
+import { Area } from "./board/area";
 import { update_options_graphs } from "./parametors/div_parametor";
-import { Coord, ServerCoord } from "./coord";
-import { make_list_areas } from "./area_div";
+import { Coord, ServerCoord } from "./board/coord";
+import { make_list_areas } from "./board/area_div";
 import { get_sensibilities, SENSIBILITY } from "./parametors/parametor";
+import { local_board } from "./setup";
+import { Board } from "./board/board";
 export const socket = io()
 
 
-export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
-
+export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, board: Board) {
+    const g = board.graph;
+    
     // USERS
     socket.on('myId', handle_my_id);
     socket.on('update_user', update_user);
@@ -27,23 +29,23 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function handle_update_view_follower(x:number, y:number, zoom:number, id:string){
         // console.log("FOLLOWING USER:", x,y,zoom, id);
-        if(users.has(id) && view.following == id){
+        if(users.has(id) && local_board.view.following == id){
             // console.log("Following......")
-            view.camera = new Coord(x, y);
-            view.zoom = zoom;
+            local_board.view.camera = new Coord(x, y);
+            local_board.view.zoom = zoom;
             g.update_canvas_pos();
             update_users_canvas_pos();
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
         else{
             // console.log("reset....");
-            view.following = null;
+            local_board.view.following = null;
         }
     }
 
     function handle_send_view(){
         // console.log("SENDING MY VIEW");
-        socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
+        socket.emit("my_view", local_board.view.camera.x, local_board.view.camera.y, local_board.view.zoom);
     }
 
     function update_other_self_user(id:string, label:string, color:string){
@@ -87,7 +89,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
     function remove_user(userid: string) {
-        if(view.following == userid){
+        if(local_board.view.following == userid){
             self_user.unfollow(userid);
         }
         users.delete(userid);
@@ -164,7 +166,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 const link = g.links.get(e.index);
                 link.cp.x = e.cp.x;
                 link.cp.y = e.cp.y;
-                link.canvas_cp = view.canvasCoord(link.cp);
+                link.canvas_cp = local_board.view.canvasCoord(link.cp);
             }
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
@@ -175,7 +177,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         const link = g.links.get(index);
         link.cp.x = c.x;
         link.cp.y = c.y;
-        link.canvas_cp = view.canvasCoord(link.cp);
+        link.canvas_cp = local_board.view.canvasCoord(link.cp);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]),false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -226,7 +228,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         const v = g.vertices.get(index);
         v.pos.x = x;
         v.pos.y = y;
-        v.canvas_pos = view.canvasCoord(v.pos);
+        v.canvas_pos = local_board.view.canvasCoord(v.pos);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -238,7 +240,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const v = g.vertices.get(e.index);
             v.pos.x = e.x;
             v.pos.y = e.y;
-            v.canvas_pos = view.canvasCoord(v.pos);
+            v.canvas_pos = local_board.view.canvasCoord(v.pos);
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });

@@ -2,9 +2,8 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { interactor_selection } from './selection_interactor';
 import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
-import { view } from '../camera';
 import { socket } from '../socket';
-import {  Graph } from '../local_graph';
+import {  Graph } from '../board/local_graph';
 import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';
@@ -12,7 +11,8 @@ import { interactor_eraser } from './eraser_interactor';
 import { interactor_area } from './area_interactor';
 import { actions_available, select_action } from '../actions';
 import { self_user, update_users_canvas_pos } from '../user';
-import { CanvasCoord } from '../coord';
+import { CanvasCoord } from '../board/coord';
+import { local_board } from '../setup';
 
 // INTERACTOR MANAGER
 
@@ -32,7 +32,7 @@ export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElem
         interactor_loaded.onleave();
     }
     interactor_loaded = interactor;
-    view.is_creating_vertex = false;
+    local_board.view.is_creating_vertex = false;
     interactor.trigger(pos);
     select_interactor_div(interactor);
     requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -83,18 +83,18 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener("wheel", function (e) {
         if (e.deltaY > 0) {
-            view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1 / 1.1);
+            local_board.view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1 / 1.1);
         } else {
-            view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1.1);
+            local_board.view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1.1);
         }
         g.update_canvas_pos();
         update_users_canvas_pos();
         
         
-        if(view.following !== null){
-            self_user.unfollow(view.following);
+        if(local_board.view.following !== null){
+            self_user.unfollow(local_board.view.following);
         }
-        socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
+        socket.emit("my_view", local_board.view.camera.x, local_board.view.camera.y, local_board.view.zoom);
         
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     });
@@ -106,8 +106,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             interactor_loaded.mouseup(canvas, ctx, g, click_pos);
             last_down = null;
             last_down_index = null;
-            view.alignement_horizontal = false;
-            view.alignement_vertical = false;
+            local_board.view.alignement_horizontal = false;
+            local_board.view.alignement_vertical = false;
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
     })
@@ -122,7 +122,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 draw(canvas, ctx, g)
             });
         }
-        const mouse_server_coord = view.serverCoord(e);
+        const mouse_server_coord = local_board.view.serverCoord(e);
         socket.emit("moving_cursor", mouse_server_coord.x, mouse_server_coord.y);
     })
 
@@ -166,7 +166,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 draw(canvas, ctx, g)
             });
         }
-        const mouse_server_coord = view.serverCoord2(mouse_pos);
+        const mouse_server_coord = local_board.view.serverCoord2(mouse_pos);
         socket.emit("moving_cursor", mouse_server_coord.x, mouse_server_coord.y);
     });
 
@@ -175,8 +175,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         interactor_loaded.mouseup(canvas, ctx, g, click_pos);
         last_down = null;
         last_down_index = null;
-        view.alignement_horizontal = false;
-        view.alignement_vertical = false;
+        local_board.view.alignement_horizontal = false;
+        local_board.view.alignement_vertical = false;
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     });
 

@@ -1,8 +1,9 @@
-import { INDEX_TYPE, view } from "./camera";
+import { INDEX_TYPE } from "./board/camera";
 import { draw } from "./draw";
-import { Graph, local_graph } from "./local_graph";
+import { Graph } from "./board/local_graph";
 import { socket } from "./socket";
 import { TikZ_create_file_data } from "./tikz";
+import { local_board } from "./setup";
 
 export class Action {
     name: string;
@@ -50,7 +51,7 @@ share_action.trigger = () => {
 
 const save_tikz_file = new Action("export_tex", "Export to .tex", "export_tex.svg", "");
 save_tikz_file.trigger = () => {
-    const tikz_data = TikZ_create_file_data(local_graph);
+    const tikz_data = TikZ_create_file_data(local_board.graph);
     const a = document.createElement("a");
     a.href = window.URL.createObjectURL(new Blob([tikz_data], { type: "text/plain" }));
     a.download = "file.tex";
@@ -101,32 +102,32 @@ load_file_action.trigger = () => {
 
 let change_to_none_index = new Action("index_type_none", "Remove all labels", "index_none.svg", "");
 change_to_none_index.trigger = () => {
-    view.index_type = INDEX_TYPE.NONE;
-    local_graph.compute_vertices_index_string();
+    local_board.view.index_type = INDEX_TYPE.NONE;
+    local_board.graph.compute_vertices_index_string();
 }
 
 let change_to_number_stable_index = new Action("index_type_number_stable", "Set labels to numeric and maintain the label after vertices deletions", "index_number_stable.svg", "");
 change_to_number_stable_index.trigger = () => {
-    view.index_type = INDEX_TYPE.NUMBER_STABLE;
-    local_graph.compute_vertices_index_string();
+    local_board.view.index_type = INDEX_TYPE.NUMBER_STABLE;
+    local_board.graph.compute_vertices_index_string();
 }
 
 let change_to_number_unstable_index = new Action("index_type_number_unstable", "Unstable numeric", "index_number_unstable.svg", "");
 change_to_number_unstable_index.trigger = () => {
-    view.index_type = INDEX_TYPE.NUMBER_UNSTABLE;
-    local_graph.compute_vertices_index_string();
+    local_board.view.index_type = INDEX_TYPE.NUMBER_UNSTABLE;
+    local_board.graph.compute_vertices_index_string();
 }
 
 let change_to_alpha_stable_index = new Action("index_type_alpha_stable", "Stable alphabetic", "index_alpha_stable.svg", "");
 change_to_alpha_stable_index.trigger = () => {
-    view.index_type = INDEX_TYPE.ALPHA_STABLE;
-    local_graph.compute_vertices_index_string();
+    local_board.view.index_type = INDEX_TYPE.ALPHA_STABLE;
+    local_board.graph.compute_vertices_index_string();
 }
 
 let change_to_alpha_unstable_index = new Action("index_type_number_stable", "Unstable alphabetic", "index_alpha_unstable.svg", "");
 change_to_alpha_unstable_index.trigger = () => {
-    view.index_type = INDEX_TYPE.ALPHA_UNSTABLE;
-    local_graph.compute_vertices_index_string();
+    local_board.view.index_type = INDEX_TYPE.ALPHA_UNSTABLE;
+    local_board.graph.compute_vertices_index_string();
 }
 
 
@@ -137,9 +138,9 @@ index_action.subactions.push(change_to_none_index, change_to_number_stable_index
 
 let align_action = new Action("align_mode", "Automatic alignement", "align.svg", "");
 align_action.trigger = () => {
-    view.is_aligning = !view.is_aligning;
+    local_board.view.is_aligning = !local_board.view.is_aligning;
     const align_div = document.getElementById("align_mode");
-    if (view.is_aligning) {
+    if (local_board.view.is_aligning) {
         align_div.classList.add("action_activated");
     }
     else {
@@ -151,9 +152,9 @@ align_action.trigger = () => {
 
 let grid_action = new Action("grid_mode", "Show Layout", "grid.svg", "l");
 grid_action.trigger = () => {
-    view.grid_show = !view.grid_show;
+    local_board.view.grid_show = !local_board.view.grid_show;
     const grid_div = document.getElementById("grid_mode");
-    if (view.grid_show) {
+    if (local_board.view.grid_show) {
         grid_div.classList.add("action_activated");
     }
     else {

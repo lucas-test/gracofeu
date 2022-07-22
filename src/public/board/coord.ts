@@ -1,4 +1,4 @@
-import { view } from "./camera";
+import { local_board } from "../setup";
 
 export class Coord {
     x: number;
@@ -69,11 +69,11 @@ export class ServerCoord extends Coord {
 
     constructor(x:number, y:number){
         super(x,y);
-        this.canvas_pos = view.canvasCoord(this);
+        this.canvas_pos = local_board.view.canvasCoord(this);
     }
 
     after_view_update(){
-        this.canvas_pos = view.canvasCoord(this);
+        this.canvas_pos = local_board.view.canvasCoord(this);
     }
 
     copy() {

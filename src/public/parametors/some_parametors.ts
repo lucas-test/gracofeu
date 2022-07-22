@@ -1,5 +1,5 @@
 
-import { Graph, LocalVertex, ORIENTATION } from '../local_graph';
+import { Graph, LocalVertex, ORIENTATION } from '../board/local_graph';
 import { Parametor, SENSIBILITY } from './parametor';
 
 export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", true, false, [SENSIBILITY.ELEMENT]);

@@ -1,8 +1,8 @@
-import { center_canvas_on_rectangle, view } from "./camera";
 import { CanvasCoord, corner_bottom_right, corner_top_left, ServerCoord } from "./coord";
-import { draw } from "./draw";
-import { Multicolor } from "./multicolor";
-import { socket } from "./socket";
+import { draw } from "../draw";
+import { Multicolor } from "../multicolor";
+import { socket } from "../socket";
+import { local_board } from "../setup";
 
 
 export enum AREA_CORNER {
@@ -46,7 +46,7 @@ export class Area{
         // |__       KO        |
         // |OK|________________|
 
-        const BL = view.canvasCoord(new ServerCoord(this.corner_top_left.x + 10, this.corner_bottom_right.y - 10));
+        const BL = local_board.view.canvasCoord(new ServerCoord(this.corner_top_left.x + 10, this.corner_bottom_right.y - 10));
         return BL.is_nearby(pos, r);
     }
 
@@ -79,8 +79,8 @@ export class Area{
         }
         let shift = avoid_corners?20:0;
 
-        const c1canvas = view.canvasCoord(this.corner_top_left);
-        const c2canvas = view.canvasCoord(this.corner_bottom_right);  
+        const c1canvas = local_board.view.canvasCoord(this.corner_top_left);
+        const c2canvas = local_board.view.canvasCoord(this.corner_bottom_right);  
         const minX = Math.min(c1canvas.x, c2canvas.x);
         const minY = Math.min(c1canvas.y, c2canvas.y);
         const maxX = Math.max(c1canvas.x, c2canvas.x);
@@ -213,10 +213,10 @@ export class Area{
 
     translate(vector: CanvasCoord){
         this.load_old_corners();
-        const c1 = view.canvasCoord(this.corner_bottom_right);
-        this.corner_bottom_right = view.serverCoord2(c1.add2(vector));
-        const c2 = view.canvasCoord(this.corner_top_left);
-        this.corner_top_left = view.serverCoord2(c2.add2(vector));
+        const c1 = local_board.view.canvasCoord(this.corner_bottom_right);
+        this.corner_bottom_right = local_board.view.serverCoord2(c1.add2(vector));
+        const c2 = local_board.view.canvasCoord(this.corner_top_left);
+        this.corner_top_left = local_board.view.serverCoord2(c2.add2(vector));
     }
 
     get_span_for_area():HTMLSpanElement{

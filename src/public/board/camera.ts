@@ -1,6 +1,6 @@
 import { CanvasCoord, Coord, ServerCoord } from "./coord";
 import { Graph, ORIENTATION } from "./local_graph";
-import { update_users_canvas_pos } from "./user";
+import { update_users_canvas_pos } from "../user";
 
 export enum INDEX_TYPE {
     NONE,
@@ -10,7 +10,7 @@ export enum INDEX_TYPE {
     ALPHA_UNSTABLE
 }
 
-class View {
+export class View {
     camera: Coord;
     old_camera: Coord;
     zoom: number;
@@ -106,7 +106,7 @@ class View {
     }
 
     serverCoord2(pos: CanvasCoord): ServerCoord {
-        return new ServerCoord((pos.x - this.camera.x) / view.zoom, (pos.y - this.camera.y) / view.zoom);
+        return new ServerCoord((pos.x - this.camera.x) / this.zoom, (pos.y - this.camera.y) / this.zoom);
     }
 
     // zoom factor is multiply by r
@@ -135,10 +135,9 @@ class View {
 
 }
 
-export let view = new View();
 
 
-export function center_canvas_on_rectangle(top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, g:Graph){
+export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, g:Graph){
     const w = bot_right.x - top_left.x;
     const h = bot_right.y - top_left.y;
     const shift_x = (canvas.width - w)/2 - top_left.x;

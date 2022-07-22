@@ -1,8 +1,11 @@
+// TODO virer l'utilisation de local_board
+
 import { Area, AREA_CORNER, AREA_SIDE } from "./area";
-import { INDEX_TYPE, view } from "./camera";
+import { INDEX_TYPE } from "./camera";
 import { CanvasCoord, ServerCoord } from "./coord";
-import { DOWN_TYPE } from "./interactors/interactor";
+import { DOWN_TYPE } from "../interactors/interactor";
 import { Stroke } from "./stroke";
+import { local_board } from "../setup";
 
 
 
@@ -23,7 +26,7 @@ export class LocalVertex {
         this.is_selected = false;
         this.index_string = "";
         this.color = "black";
-        this.canvas_pos = view.canvasCoord(pos);
+        this.canvas_pos = local_board.view.canvasCoord(pos);
     }
 
     save_pos() {
@@ -111,14 +114,14 @@ export class Link {
         this.cp = new ServerCoord(cp.x, cp.y);
         this.old_cp = new ServerCoord(cp.x, cp.y);
         this.orientation = orientation;
-        this.canvas_cp = view.canvasCoord(this.cp)
+        this.canvas_cp = local_board.view.canvasCoord(this.cp)
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
         //V1: is in rect if one of its extremities is in the rectangle
         //TODO: be more clever and select also when there is an intersection between the edge and the rectangle
 
-        return local_graph.vertices.get(this.start_vertex).is_in_rect(c1, c2) || local_graph.vertices.get(this.end_vertex).is_in_rect(c1, c2);
+        return local_board.graph.vertices.get(this.start_vertex).is_in_rect(c1, c2) || local_board.graph.vertices.get(this.end_vertex).is_in_rect(c1, c2);
     }
 
 
@@ -132,7 +135,7 @@ export class Link {
         var rho = u.getRho(nv)
         this.cp.x = w.x + rho * (Math.cos(theta) * (this.old_cp.x - w.x) - Math.sin(theta) * (this.old_cp.y - w.y))
         this.cp.y = w.y + rho * (Math.sin(theta) * (this.old_cp.x - w.x) + Math.cos(theta) * (this.old_cp.y - w.y))
-        this.canvas_cp = view.canvasCoord(this.cp);
+        this.canvas_cp = local_board.view.canvasCoord(this.cp);
     }
 
     save_pos() {
@@ -294,7 +297,7 @@ export class Graph {
         const link = this.links.get(link_index);
         const v = this.vertices.get(link.start_vertex)
         const w = this.vertices.get(link.end_vertex)
-        const linkcp_canvas = view.canvasCoord(link.cp);
+        const linkcp_canvas = local_board.view.canvasCoord(link.cp);
         const v_canvas_pos = v.canvas_pos;
         const w_canvas_pos = w.canvas_pos
 
@@ -353,14 +356,14 @@ export class Graph {
     compute_vertices_index_string() {
         const letters = "abcdefghijklmnopqrstuvwxyz";
         this.vertices.forEach((vertex, index) => {
-            if (view.index_type == INDEX_TYPE.NONE) {
+            if (local_board.view.index_type == INDEX_TYPE.NONE) {
                 vertex.index_string = "";
-            } else if (view.index_type == INDEX_TYPE.NUMBER_STABLE) {
+            } else if (local_board.view.index_type == INDEX_TYPE.NUMBER_STABLE) {
                 vertex.index_string = "v" + String(index)
-            } else if (view.index_type == INDEX_TYPE.ALPHA_STABLE) {
+            } else if (local_board.view.index_type == INDEX_TYPE.ALPHA_STABLE) {
                 vertex.index_string = letters.charAt(index % letters.length);
             }
-            else if (view.index_type == INDEX_TYPE.NUMBER_UNSTABLE) {
+            else if (local_board.view.index_type == INDEX_TYPE.NUMBER_UNSTABLE) {
                 let counter = 0;
                 for (const key of this.vertices.keys()) {
                     if (key < index) {
@@ -369,7 +372,7 @@ export class Graph {
                 }
                 vertex.index_string = "v" + String(counter)
             }
-            else if (view.index_type == INDEX_TYPE.ALPHA_UNSTABLE) {
+            else if (local_board.view.index_type == INDEX_TYPE.ALPHA_UNSTABLE) {
                 let counter = 0;
                 for (const key of this.vertices.keys()) {
                     if (key < index) {
@@ -385,35 +388,35 @@ export class Graph {
     // return a CanvasCoord near mouse_canvas_coord which aligned on other vertices or on the grid
     align_position(pos_to_align: CanvasCoord, excluded_indices: Set<number>, canvas: HTMLCanvasElement) {
         const aligned_pos = new CanvasCoord(pos_to_align.x, pos_to_align.y);
-        if (view.is_aligning) {
-            view.alignement_horizontal = false;
-            view.alignement_vertical = false;
+        if (local_board.view.is_aligning) {
+            local_board.view.alignement_horizontal = false;
+            local_board.view.alignement_vertical = false;
             this.vertices.forEach((vertex, index) => {
                 if (excluded_indices.has(index) == false) {
                     if (Math.abs(vertex.canvas_pos.y - pos_to_align.y) <= 15) {
                         aligned_pos.y = vertex.canvas_pos.y;
-                        view.alignement_horizontal = true;
-                        view.alignement_horizontal_y = view.canvasCoordY(vertex.pos.y);
+                        local_board.view.alignement_horizontal = true;
+                        local_board.view.alignement_horizontal_y = local_board.view.canvasCoordY(vertex.pos.y);
                         return;
                     }
                     if (Math.abs(vertex.canvas_pos.x - pos_to_align.x) <= 15) {
                         aligned_pos.x = vertex.canvas_pos.x;
-                        view.alignement_vertical = true;
-                        view.alignement_vertical_x = view.canvasCoordX(vertex.pos.x);
+                        local_board.view.alignement_vertical = true;
+                        local_board.view.alignement_vertical_x = local_board.view.canvasCoordX(vertex.pos.x);
                         return;
                     }
                 }
             })
         }
-        if (view.grid_show) {
-            const grid_size = view.grid_size;
-            for (let x = view.camera.x % grid_size; x < canvas.width; x += grid_size) {
+        if (local_board.view.grid_show) {
+            const grid_size = local_board.view.grid_size;
+            for (let x = local_board.view.camera.x % grid_size; x < canvas.width; x += grid_size) {
                 if (Math.abs(x - pos_to_align.x) <= 15) {
                     aligned_pos.x = x;
                     break;
                 }
             }
-            for (let y = view.camera.y % grid_size; y < canvas.height; y += grid_size) {
+            for (let y = local_board.view.camera.y % grid_size; y < canvas.height; y += grid_size) {
                 if (Math.abs(y - pos_to_align.y) <= 15) {
                     aligned_pos.y = y;
                     break;
@@ -435,10 +438,10 @@ export class Graph {
 
     update_canvas_pos() {
         for (const v of this.vertices.values()) {
-            v.canvas_pos = view.canvasCoord(v.pos);
+            v.canvas_pos = local_board.view.canvasCoord(v.pos);
         }
         for (const link of this.links.values()) {
-            link.canvas_cp = view.canvasCoord(link.cp)
+            link.canvas_cp = local_board.view.canvasCoord(link.cp)
         }
         // TODO when area and stroke will have canvas_pos
         /*
@@ -454,8 +457,8 @@ export class Graph {
     get_subgraph_from_area(area_index: number){
         const area = this.areas.get(area_index);
         const subgraph = new Graph();
-        const c1canvas = view.canvasCoord(area.corner_top_left);
-        const c2canvas = view.canvasCoord(area.corner_bottom_right);   
+        const c1canvas = local_board.view.canvasCoord(area.corner_top_left);
+        const c2canvas = local_board.view.canvasCoord(area.corner_bottom_right);   
 
          for (const [index, v] of this.vertices.entries()) {
             if(v.is_in_rect(c1canvas, c2canvas)){
@@ -508,6 +511,3 @@ function bezierValue(t: number, p0: number, p1: number, p2: number) {
 
 
 
-
-
-export const local_graph = new Graph();
