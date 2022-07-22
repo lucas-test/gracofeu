@@ -1,6 +1,6 @@
 import { CanvasCoord } from "../board/coord";
 import { draw } from "../draw";
-import {  ORIENTATION } from "../board/local_graph";
+import {  ORIENTATION } from "../board/link";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
 import { last_down, last_down_index } from "./interactor_manager";

@@ -1,6 +1,6 @@
 import {Interactor,DOWN_TYPE} from './interactor'
 import {socket} from '../socket';
-import {ORIENTATION} from '../board/local_graph';
+import {ORIENTATION} from '../board/link';
 import {Stroke} from '../board/stroke';
 import { local_board } from '../setup';
 

@@ -1,5 +1,5 @@
 import { Area } from "../board/area";
-import { Graph } from "../board/local_graph";
+import { Graph } from "../board/graph";
 
 export enum SENSIBILITY {
     GEOMETRIC = "GEOMETRIC", // Move of vertex/link

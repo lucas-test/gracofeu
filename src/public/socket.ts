@@ -1,7 +1,6 @@
 import { io } from "socket.io-client";
 import { draw, draw_circle, draw_vertex } from "./draw";
 import { Self, self_user, update_self_user_div, update_users_canvas_pos, update_user_list_div, User, users } from "./user";
-import { Graph, Link, LocalVertex, ORIENTATION } from "./board/local_graph";
 import { Stroke } from "./board/stroke";
 import { update_params_loaded } from "./parametors/parametor_manager";
 import { Area } from "./board/area";
@@ -11,6 +10,8 @@ import { init_list_parametors_for_area, make_list_areas } from "./board/area_div
 import { get_sensibilities, SENSIBILITY } from "./parametors/parametor";
 import { local_board } from "./setup";
 import { Board } from "./board/board";
+import { LocalVertex } from "./board/vertex";
+import { Link, ORIENTATION } from "./board/link";
 export const socket = io()
 
 

@@ -1,5 +1,5 @@
 import { View } from "./camera";
-import { Graph } from "./local_graph";
+import { Graph } from "./graph";
 
 export class Board {
     graph: Graph;

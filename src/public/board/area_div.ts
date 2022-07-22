@@ -2,7 +2,7 @@ import { Area } from "./area";
 import { center_canvas_on_rectangle } from "./camera";
 import { CanvasCoord } from "./coord";
 import { COLOR_BACKGROUND, draw } from "../draw";
-import { Graph } from "./local_graph";
+import { Graph } from "./graph";
 import { Parametor } from "../parametors/parametor";
 import { params_available, params_loaded, update_parametor } from "../parametors/parametor_manager";
 import { socket } from "../socket";

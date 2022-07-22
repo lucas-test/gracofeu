@@ -3,7 +3,7 @@ import { interactor_selection } from './selection_interactor';
 import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
 import { socket } from '../socket';
-import {  Graph } from '../board/local_graph';
+import {  Graph } from '../board/graph';
 import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';

@@ -1,6 +1,6 @@
 import { INDEX_TYPE } from "./board/camera";
 import { draw } from "./draw";
-import { Graph } from "./board/local_graph";
+import { Graph } from "./board/graph";
 import { socket } from "./socket";
 import { TikZ_create_file_data } from "./tikz";
 import { local_board } from "./setup";

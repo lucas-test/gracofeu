@@ -1,7 +1,7 @@
 
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
-import {  ORIENTATION } from '../board/local_graph';
+import {  ORIENTATION } from '../board/link';
 import { CanvasCoord } from '../board/coord';
 import { last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';

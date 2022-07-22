@@ -1,6 +1,7 @@
 import { CanvasCoord, Coord, ServerCoord } from "./coord";
-import { Graph, ORIENTATION } from "./local_graph";
+import { Graph } from "./graph";
 import { update_users_canvas_pos } from "../user";
+import { ORIENTATION } from "./link";
 
 export enum INDEX_TYPE {
     NONE,

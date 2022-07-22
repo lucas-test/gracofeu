@@ -69,6 +69,7 @@ npm run dev
 - [ ] serverCoord -> inclus automatiquement canvasCoord
 - [X] interactor: visibilité et cliquabilité de certains éléments
 - [ ] curseur des interacteurs
+- [ ] ne pas utiliser local_board dans le dossier board
 
 ## V0.5 Chercheurs proches
 
@@ -91,13 +92,13 @@ npm run dev
     - [ ] affichage en live (plus tard, interet ??)
 
 - area 
-    - [ ] clic sur label dans parametre -> centrer sur area
+    - [X] clic sur label dans parametre -> centrer sur area
     - [X] modifier rectangle area
     - [X] déplacer area
     - [X] voir l'area se créer
 
 - parametre
-    - [ ] ranger par area
+    - [X] ranger par area
     - [X] mise à jour pas tout le temps pour genre ceux qui ont pas besoin de la position
     - [X] bouton remove parametor marche pas
     - [X] mettre en place la structure sans attribut
@@ -111,6 +112,7 @@ npm run dev
         - [ ] is_planar 
         - [ ] is_bipartite
         - [ ] is_sparse 
+        - [ ] is_coloring_propre
 
 
 
@@ -130,9 +132,13 @@ npm run dev
     - [ ] déplacer les calculs dans le serveur ??
 
 
-### Modifyer
-- [ ] structure
-- [ ] attributs
+- modifyer
+    - [ ] structure
+    - [ ] attributs
+    - classiques :
+        - [ ] random_graph(n,p) et directed
+        - [ ] random_tournament(n)
+        - [ ] Paley
 
 ## V2 DMANET
 
