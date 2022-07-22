@@ -15,7 +15,7 @@ npm run dev
 - [X] amélioration code pour demander une modification sur le graphe (et que toutes les fonctions sur le graphe soit automatiquement restranscrite)
 - [X] faire une classe Graph local pour qu'il n'y ait pas d'utilisation de données serveur (conseil Charly) 
 
-- [x] draw edge
+- [X] draw edge
 - [X] draw selected
 
 - [X] move vertices
@@ -103,7 +103,14 @@ npm run dev
     - [X] mettre en place la structure sans attribut
     - [X] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
     - [X] update parametre
-    - [ ] parametres classiques : distance (diametre), degré (min, max, moyen, sequence), is_currently_planar, is_planar, is_bipartite, is_sparse 
+    - parametres classiques : 
+        - [ ] distance (diametre)
+        - [ ] degré (min, max, moyen, sequence)
+        - [ ] is_connected
+        - [ ] is_currently_planar
+        - [ ] is_planar 
+        - [ ] is_bipartite
+        - [ ] is_sparse 
 
 
 

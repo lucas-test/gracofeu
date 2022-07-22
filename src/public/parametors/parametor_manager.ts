@@ -3,6 +3,7 @@ import { param_is_connected, param_nb_edges, param_nb_vertices, param_number_col
 import { Parametor, SENSIBILITY } from './parametor';
 import { Graph } from '../board/local_graph';
 import { Area } from '../board/area';
+import { get_title_span_for_area, remove_loaded_param } from '../board/area_div';
 
 
 
@@ -18,59 +19,77 @@ export function setup_parametors_available() {
 
 
 export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, a: Area) {
-    // Some IDs for the html
     const html_id =  param.id + "_area_" +( a==null?"null":a.id);
     const area_id = (a==null?null:a.id);
     const param_to_load = {parametor:param, html_id:html_id, area_id : area_id};
 
-    // Div for the parametor
-    let newDiv = document.createElement("div");
-    newDiv.classList.add("param");
-    newDiv.id = "param_" + html_id;
+    let div_parametor = document.getElementById("param_" + html_id);
+    if(div_parametor !== null){
+        params_loaded.push(param_to_load);
+        div_parametor.classList.remove("inactive_parametor");
 
-    // Remove button
-    let button = document.createElement('div');
-    button.innerHTML = "-";
-    button.classList.add("div_button");
-    button.classList.add("remove_param_button");
-    button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
-    newDiv.appendChild(button);
-
-    // Span for label
-    let span_name = document.createElement('span');
-    if(a!== null){
-        let span_area_name = a.get_span_for_area();
-        newDiv.appendChild(span_area_name);
-    }
-    span_name.innerHTML = param.name + ": ";
-    newDiv.appendChild(span_name);
-
-    // Span for the result
-    let span_result = document.createElement("span");
-    span_result.id = "span_result_" + html_id;
-    span_result.innerHTML = "";
-    span_result.classList.add("result_span");
-    if(param.is_boolean){
-        span_result.classList.add("inactive_boolean_result");
-    }
-    newDiv.appendChild(span_result);
-    if(!param.is_live){
-        let svg_reload_parametor = document.createElement("img");
-        svg_reload_parametor.id = "img_reload_" + html_id;
-        svg_reload_parametor.src = "img/parametor/reload.svg";
-        svg_reload_parametor.addEventListener('click', ()=>{update_parametor(g,param_to_load)});
-        svg_reload_parametor.classList.add("reload_img");
-        newDiv.appendChild(svg_reload_parametor);
+        if(param.is_live){
+            update_parametor(g, param_to_load);
+            requestAnimationFrame(function () { draw(canvas, ctx, g) })
+        }
     }
 
-    // Add parametor to document and list of loaded parametors
-    document.getElementById("params_loaded").appendChild(newDiv);
-    params_loaded.push(param_to_load);
-    // update_params_loaded(g, new Set(), true);
-    if(param.is_live){
-        update_parametor(g, param_to_load);
-    }
-    requestAnimationFrame(function () { draw(canvas, ctx, g) })
+
+
+
+    // // Some IDs for the html
+    // const html_id =  param.id + "_area_" +( a==null?"null":a.id);
+    // const area_id = (a==null?null:a.id);
+    // const param_to_load = {parametor:param, html_id:html_id, area_id : area_id};
+
+    // // Div for the parametor
+    // let newDiv = document.createElement("div");
+    // newDiv.classList.add("param");
+    // newDiv.id = "param_" + html_id;
+
+    // // Remove button
+    // let button = document.createElement('div');
+    // button.innerHTML = "-";
+    // button.classList.add("div_button");
+    // button.classList.add("remove_param_button");
+    // button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
+    // newDiv.appendChild(button);
+
+    // // Span for label
+    // let span_name = document.createElement('span');
+    // if(a!== null){
+    //     let span_area_name = get_title_span_for_area(a);
+    //     newDiv.appendChild(span_area_name);
+    // }
+    // span_name.innerHTML = param.name + ": ";
+    // newDiv.appendChild(span_name);
+
+    // // Span for the result
+    // let span_result = document.createElement("span");
+    // span_result.id = "span_result_" + html_id;
+    // span_result.innerHTML = "";
+    // span_result.classList.add("result_span");
+    // if(param.is_boolean){
+    //     span_result.classList.add("inactive_boolean_result");
+    // }
+    // newDiv.appendChild(span_result);
+    // if(!param.is_live){
+    //     let svg_reload_parametor = document.createElement("img");
+    //     svg_reload_parametor.id = "img_reload_" + html_id;
+    //     svg_reload_parametor.src = "img/parametor/reload.svg";
+    //     svg_reload_parametor.addEventListener('click', ()=>{update_parametor(g,param_to_load)});
+    //     svg_reload_parametor.classList.add("reload_img");
+    //     newDiv.appendChild(svg_reload_parametor);
+    // }
+
+    // // Add parametor to document and list of loaded parametors
+    // document.getElementById("params_loaded").appendChild(newDiv);
+    // params_loaded.push(param_to_load);
+    // // update_params_loaded(g, new Set(), true);
+    // if(param.is_live){
+    //     update_parametor(g, param_to_load);
+    // }
+    // requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
 
 
@@ -90,7 +109,7 @@ export function update_params_loaded(g:Graph, sensibilities:Set<SENSIBILITY>, fo
 }
 
 
-function update_parametor(g:Graph, param){
+export function update_parametor(g:Graph, param){
     const result_span = document.getElementById("span_result_" + param.html_id);
     if(param.area_id === null){
         var result = param.parametor.compute(g);
@@ -110,7 +129,6 @@ function update_parametor(g:Graph, param){
 
 function update_result_span(result:string, param, result_span:HTMLElement){
     if(param.is_boolean){
-        console.log("hey, boolean!!")
         if(result == "true"){
             result_span.classList.remove("inactive_boolean_result", "false_boolean_result");
             result_span.classList.add("true_boolean_result");
@@ -125,18 +143,21 @@ function update_result_span(result:string, param, result_span:HTMLElement){
     }
 }
 
-function remove_loaded_param(param_id: string, area_id:string) {
+// function remove_loaded_param(param_id: string, area_id:string) {
     
-    for (var i = 0; i < params_loaded.length; i++) {
-        if (params_loaded[i].parametor.id == param_id && area_id == params_loaded[i].area_id) {
-            const DOM = document.getElementById("param_" + params_loaded[i].html_id);
+//     for (var i = 0; i < params_loaded.length; i++) {
+//         if (params_loaded[i].parametor.id == param_id && area_id == params_loaded[i].area_id) {
+//             const DOM = document.getElementById("param_" + params_loaded[i].html_id);
 
-            if(DOM !== null){
-                DOM.remove()
-                params_loaded.splice(i, 1)
-                return
-            }
-        }
-    }
-}
+//             if(DOM !== null){
+//                 DOM.remove()
+//                 params_loaded.splice(i, 1)
+//                 return
+//             }
+//         }
+//     }
+// }
+
+
+
 
