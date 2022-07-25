@@ -101,11 +101,19 @@ export function update_params_loaded(g:Graph, sensibilities:Set<SENSIBILITY>, fo
     }
 
     for (let param of params_loaded) {
+        if(!param.parametor.is_live && param.parametor.is_sensible(sensibilities)){
+            invalid_parametor(param);
+        }
         if((force_compute || param.parametor.is_live) && param.parametor.is_sensible(sensibilities)){
             update_parametor(g, param);
         }
         
     }
+}
+
+function invalid_parametor(param){
+    const result_span = document.getElementById("span_result_" + param.html_id);
+    update_result_span("", param.parametor, result_span);
 }
 
 
@@ -133,9 +141,13 @@ function update_result_span(result:string, param, result_span:HTMLElement){
             result_span.classList.remove("inactive_boolean_result", "false_boolean_result");
             result_span.classList.add("true_boolean_result");
         }
-        else{
+        else if(result == "false") {
             result_span.classList.remove("inactive_boolean_result", "true_boolean_result");
             result_span.classList.add("false_boolean_result");
+        }
+        else{
+            result_span.classList.remove("false_boolean_result", "true_boolean_result");
+            result_span.classList.add("inactive_boolean_result");
         }
     }
     else{
