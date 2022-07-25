@@ -76,6 +76,112 @@ param_number_geo.compute = ((g: Graph) =>{
 
 
 
+export let param_min_degree = new Parametor("Minimum degree", "min_degree", true, false, [SENSIBILITY.ELEMENT]);
+
+param_min_degree.compute = ((g: Graph) =>{
+    const data = get_degrees_data(g);
+    return String(data.min_value);
+});
+
+
+export let param_max_degree = new Parametor("Maximum degree", "max_degree", true, false, [SENSIBILITY.ELEMENT]);
+
+param_max_degree.compute = ((g: Graph) =>{
+    const data = get_degrees_data(g);
+    return String(data.max_value);
+});
+
+export let param_average_degree = new Parametor("Average degree", "avg_degree", true, false, [SENSIBILITY.ELEMENT]);
+
+param_average_degree.compute = ((g: Graph) =>{
+    const data = get_degrees_data(g);
+    const avg = Math.round((data.avg + Number.EPSILON) * 100) / 100
+
+    return String(avg);
+});
+
+
+export let param_has_proper_coloring = new Parametor("Has proper coloring?", "has_proper_coloring", false, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
+
+param_has_proper_coloring.compute = ((g: Graph) =>{
+
+    if(g.vertices.size == 0){
+        return "true";
+    }
+
+    const visited = new Map();
+    for(const index of g.vertices.keys()){
+        visited.set(index, false);
+    }
+
+    const v_index = g.vertices.keys().next().value;
+
+    const S = Array();
+    S.push(v_index);
+
+    while(S.length !== 0){
+        const v_index = S.pop();
+        if(!visited.get(v_index)){
+            visited.set(v_index, true);
+            const v = g.vertices.get(v_index);
+            const neighbors = g.get_neighbors_list(v_index);
+            for(const u_index of neighbors){
+                const u = g.vertices.get(u_index);
+                if(u.color === v.color){
+                    return "false";
+                }
+                S.push(u_index);
+            }
+        }
+    }
+
+    return "true";
+
+});
+
+
+
+
+function get_degrees_data(g:Graph){
+    if(g.vertices.size == 0){
+        return {min_value:0, min_vertices:null, max_value:0, max_vertices:null, avg:0};
+    }
+
+    const index_first = g.vertices.keys().next().value;
+    let min_indices = new Set([index_first]);
+    let min_degree = g.get_neighbors_list(index_first).length;
+    let max_indices = new Set([index_first]);
+    let max_degree = g.get_neighbors_list(index_first).length;
+    let average = 0.0;
+    
+    for(const v_index of g.vertices.keys())
+    {
+        const neighbors = g.get_neighbors_list(v_index);
+        if(min_degree > neighbors.length){
+            min_degree = neighbors.length;
+            min_indices = new Set([v_index]);
+        }
+        if(min_degree === neighbors.length){
+            min_indices.add(v_index);
+        }
+
+        if(max_degree < neighbors.length){
+            max_degree = neighbors.length;
+            max_indices = new Set([v_index]);
+        }
+        if(max_degree === neighbors.length){
+            max_indices.add(v_index);
+        }
+
+        average+= neighbors.length;
+    }
+
+    average = average/g.vertices.size;
+
+    return {min_value:min_degree, min_vertices:min_indices, max_value:max_degree, max_vertices:max_indices, avg:average};
+}
+
+
 function DFS_recursive(g:Graph, v_index : number, visited:Map<number, boolean>){
     visited.set(v_index, true);
     const neighbors = g.get_neighbors_list(v_index);

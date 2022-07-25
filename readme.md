@@ -106,13 +106,14 @@ npm run dev
     - [X] update parametre
     - parametres classiques : 
         - [ ] distance (diametre)
-        - [ ] degré (min, max, moyen, sequence)
-        - [ ] is_connected
+        - [X] degré (min, max, moyen)
+        - [ ] séquence degrés
+        - [X] is_connected
         - [ ] is_currently_planar
         - [ ] is_planar 
         - [ ] is_bipartite
         - [ ] is_sparse 
-        - [ ] is_coloring_propre
+        - [X] is_coloring_propre
 
 
 
