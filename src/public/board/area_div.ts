@@ -2,26 +2,27 @@ import { Area } from "./area";
 import { center_canvas_on_rectangle } from "./camera";
 import { CanvasCoord } from "./coord";
 import { COLOR_BACKGROUND, draw } from "../draw";
-import { Graph } from "./graph";
 import { Parametor } from "../parametors/parametor";
 import { params_available, params_loaded, update_parametor } from "../parametors/parametor_manager";
 import { socket } from "../socket";
-import { local_board } from "../setup";
+import { Board } from "./board";
 
 
 
-export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph){
+export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, board: Board){
+    const g = board.graph;
+    const view = board.view;
     const list_area_DOM = document.getElementById("area_list_container");
     if(list_area_DOM){
         list_area_DOM.innerHTML = "";
         for(const a of g.areas.values()){
             const span_area = get_title_span_for_area(a);
             span_area.addEventListener("click", (e)=>{
-                center_canvas_on_rectangle(local_board.view, local_board.view.canvasCoord(a.top_left_corner()), local_board.view.canvasCoord(a.bot_right_corner()), canvas, g); // .canvas_pos est pas encore implémenté
+                center_canvas_on_rectangle(view, view.canvasCoord(a.top_left_corner()), view.canvasCoord(a.bot_right_corner()), canvas, g); // .canvas_pos est pas encore implémenté
                 requestAnimationFrame(function () { 
                     draw(canvas, ctx, g) 
                 });
-                socket.emit("my_view", local_board.view.camera.x, local_board.view.camera.y, local_board.view.zoom);
+                socket.emit("my_view", view.camera.x, view.camera.y, view.zoom);
             })
             list_area_DOM.appendChild(span_area);
         }
@@ -29,7 +30,8 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 }
 
 
-export function init_parametor_div(param:Parametor, a:Area, g:Graph):HTMLElement{
+export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLElement{
+    const g = board.graph;
     const html_id =  param.get_parametor_html_id(a);
     const area_id = (a==null?null:a.id);
     const param_to_load = {parametor:param, html_id:html_id, area_id : area_id};
@@ -114,7 +116,9 @@ export function get_title_span_for_area(a:Area):HTMLSpanElement{
     return span_area;
 }
 
-export function init_list_parametors_for_area(g:Graph, a:Area, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
+export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
+    const g = board.graph;
+    const view = board.view;
     const a_id = (a==null?"null":a.id);
     let area_DOM = document.getElementById("area_"+ a_id);
 
@@ -133,7 +137,7 @@ export function init_list_parametors_for_area(g:Graph, a:Area, canvas: HTMLCanva
             if(a!== null){
                 // Center on the area on click
                 titleDOM.addEventListener("click",  (e)=>{
-                    center_canvas_on_rectangle(local_board.view, local_board.view.canvasCoord(a.top_left_corner()), local_board.view.canvasCoord(a.bot_right_corner()), canvas, g); // .canvas_pos est pas encore implémenté
+                    center_canvas_on_rectangle(view, view.canvasCoord(a.top_left_corner()), view.canvasCoord(a.bot_right_corner()), canvas, g); // .canvas_pos est pas encore implémenté
                     requestAnimationFrame(function () { 
                         draw(canvas, ctx, g) 
                     });
@@ -172,7 +176,7 @@ export function init_list_parametors_for_area(g:Graph, a:Area, canvas: HTMLCanva
                         bot_right_corner = new CanvasCoord(xMax, yMax);
                     }
 
-                    center_canvas_on_rectangle(local_board.view, top_left_corner, bot_right_corner, canvas, g);
+                    center_canvas_on_rectangle(view, top_left_corner, bot_right_corner, canvas, g);
                     requestAnimationFrame(function () { 
                         draw(canvas, ctx, g) 
                     });
@@ -183,7 +187,7 @@ export function init_list_parametors_for_area(g:Graph, a:Area, canvas: HTMLCanva
         const param_containerDOM = document.createElement("div");
         param_containerDOM.classList.add("param_list_container");
         for(const param of params_available){
-            const div_parametor = init_parametor_div(param, a, g);
+            const div_parametor = init_parametor_div(param, a, board);
             if(div_parametor !== null){
                 param_containerDOM.appendChild(div_parametor);
             }

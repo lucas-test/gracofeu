@@ -1,5 +1,5 @@
 import { CanvasCoord, ServerCoord } from "./board/coord";
-import { COLOR_BACKGROUND, invertColor, shadeColor } from "./draw";
+import { COLOR_BACKGROUND } from "./draw";
 import { Multicolor } from "./multicolor";
 import { local_board } from "./setup";
 import { socket } from "./socket";

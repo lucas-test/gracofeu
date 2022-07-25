@@ -149,7 +149,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         for(const s of data){
             const new_area = new Area(s[0], s[1].label, s[1].c1, s[1].c2, s[1].color);
             g.areas.set(s[0], new_area);
-            init_list_parametors_for_area(g, new_area, canvas, ctx);
+            init_list_parametors_for_area(board, new_area, canvas, ctx);
             //console.log(g.areas.get(s[0]).get_subgraph(g));
         }
         update_params_loaded(g, new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]), false);
@@ -217,7 +217,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.compute_vertices_index_string();
 
-        init_list_parametors_for_area(g, null, canvas, ctx);
+        init_list_parametors_for_area(board, null, canvas, ctx);
 
         const sensi = get_sensibilities(sensibilities);
         update_params_loaded(g, sensi, false);
