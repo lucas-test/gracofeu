@@ -89,7 +89,7 @@ npm run dev
     - [X] déplacer
     - [X] effacer serveur
     - [ ] effacer mieux (plus tard)
-    - [ ] affichage en live (plus tard, interet ??)
+    - [ ] création et translation en live (plus tard, interet ??)
 
 - area 
     - [X] clic sur label dans parametre -> centrer sur area

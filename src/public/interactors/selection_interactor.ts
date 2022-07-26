@@ -95,8 +95,8 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             else {
                 const v = g.vertices.get(last_down_index)
                 const mouse_canvas_coord = g.align_position(e, new Set([last_down_index]), canvas);
-                v.canvas_pos = mouse_canvas_coord;
-                v.pos = local_board.view.serverCoord2(v.canvas_pos);
+                v.pos.canvas_pos = mouse_canvas_coord;
+                v.pos.update_from_canvas_pos(local_board.view);
 
                 const data_socket = new Array();
                 for (let [index, link] of g.links.entries()) {

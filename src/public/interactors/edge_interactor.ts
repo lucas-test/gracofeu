@@ -27,7 +27,7 @@ interactor_edge.mousedown = (( canvas, ctx, g, e) => {
     if (last_down === DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(last_down_index);
         local_board.view.is_link_creating = true;
-        local_board.view.link_creating_start = vertex.canvas_pos;
+        local_board.view.link_creating_start = vertex.pos.canvas_pos;
     }
 })
 

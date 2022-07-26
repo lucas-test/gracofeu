@@ -25,8 +25,8 @@ export class Stroke{
                 this.bot_right.y = Math.max(pos[i].y, this.bot_right.y);
                 this.top_left.y = Math.min(pos[i].y, this.top_left.y);
             }
-            this.top_left.after_view_update(local_board.view);
-            this.bot_right.after_view_update(local_board.view);
+            this.top_left.update_canvas_pos(local_board.view);
+            this.bot_right.update_canvas_pos(local_board.view);
         }
         else{
             this.top_left = null;
@@ -35,10 +35,10 @@ export class Stroke{
     }
 
     update_canvas_pos(view: View){
-        this.bot_right.after_view_update(view);
-        this.top_left.after_view_update(view);
+        this.bot_right.update_canvas_pos(view);
+        this.top_left.update_canvas_pos(view);
         for( const position of this.positions){
-            position.after_view_update(view);
+            position.update_canvas_pos(view);
         }
     }
 

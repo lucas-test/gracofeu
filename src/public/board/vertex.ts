@@ -11,7 +11,6 @@ export class LocalVertex {
     is_selected: boolean;
     old_pos: ServerCoord;
     index_string: string;
-    canvas_pos: CanvasCoord;
 
     constructor(pos: ServerCoord) {
         this.pos = new ServerCoord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
@@ -19,7 +18,6 @@ export class LocalVertex {
         this.is_selected = false;
         this.index_string = "";
         this.color = "black";
-        this.canvas_pos = local_board.view.canvasCoord(pos);
     }
 
     save_pos() {
@@ -29,11 +27,11 @@ export class LocalVertex {
 
 
     is_nearby(pos: CanvasCoord, r: number) {
-        return this.canvas_pos.dist2(pos) <= r;
+        return this.pos.canvas_pos.dist2(pos) <= r;
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
-        return this.canvas_pos.is_in_rect(c1,c2);
+        return this.pos.canvas_pos.is_in_rect(c1,c2);
     }
 
     get_tikz_coordinate(index: number) {

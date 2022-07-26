@@ -254,7 +254,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         const v = g.vertices.get(index);
         v.pos.x = x;
         v.pos.y = y;
-        v.canvas_pos = local_board.view.canvasCoord(v.pos);
+        v.pos.update_canvas_pos(local_board.view);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -266,7 +266,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const v = g.vertices.get(e.index);
             v.pos.x = e.x;
             v.pos.y = e.y;
-            v.canvas_pos = local_board.view.canvasCoord(v.pos);
+            v.pos.update_canvas_pos(local_board.view);
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });

@@ -143,8 +143,8 @@ export class Graph {
         const v = this.vertices.get(link.start_vertex)
         const w = this.vertices.get(link.end_vertex)
         const linkcp_canvas = local_board.view.canvasCoord(link.cp);
-        const v_canvas_pos = v.canvas_pos;
-        const w_canvas_pos = w.canvas_pos
+        const v_canvas_pos = v.pos.canvas_pos;
+        const w_canvas_pos = w.pos.canvas_pos
         return e.is_nearby_beziers_1cp(v_canvas_pos, linkcp_canvas, w_canvas_pos);
     }
 
@@ -186,16 +186,16 @@ export class Graph {
         if (local_board.view.is_aligning) {
             local_board.view.alignement_horizontal = false;
             local_board.view.alignement_vertical = false;
-            this.vertices.forEach((vertex, index) => {
+            this.vertices.forEach((vertex: LocalVertex, index) => {
                 if (excluded_indices.has(index) == false) {
-                    if (Math.abs(vertex.canvas_pos.y - pos_to_align.y) <= 15) {
-                        aligned_pos.y = vertex.canvas_pos.y;
+                    if (Math.abs(vertex.pos.canvas_pos.y - pos_to_align.y) <= 15) {
+                        aligned_pos.y = vertex.pos.canvas_pos.y;
                         local_board.view.alignement_horizontal = true;
                         local_board.view.alignement_horizontal_y = local_board.view.canvasCoordY(vertex.pos.y);
                         return;
                     }
-                    if (Math.abs(vertex.canvas_pos.x - pos_to_align.x) <= 15) {
-                        aligned_pos.x = vertex.canvas_pos.x;
+                    if (Math.abs(vertex.pos.canvas_pos.x - pos_to_align.x) <= 15) {
+                        aligned_pos.x = vertex.pos.canvas_pos.x;
                         local_board.view.alignement_vertical = true;
                         local_board.view.alignement_vertical_x = local_board.view.canvasCoordX(vertex.pos.x);
                         return;
@@ -233,7 +233,7 @@ export class Graph {
 
     update_canvas_pos() {
         for (const v of this.vertices.values()) {
-            v.canvas_pos = local_board.view.canvasCoord(v.pos);
+            v.pos.update_canvas_pos(local_board.view);
         }
         for (const link of this.links.values()) {
             link.canvas_cp = local_board.view.canvasCoord(link.cp)

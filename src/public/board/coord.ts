@@ -168,7 +168,7 @@ export class ServerCoord extends Coord {
         this.update_from_canvas_pos(view);
     }
 
-    after_view_update(view : View){
+    update_canvas_pos(view : View){
         this.canvas_pos = view.canvasCoord(this);
         this.old_canvas_pos.copy_from(this.canvas_pos);
     }

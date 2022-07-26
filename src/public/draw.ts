@@ -93,19 +93,19 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     }
 
     if (vertex.is_selected) {
-        draw_circle(vertex.canvas_pos, SELECTION_COLOR, vertex_radius, 1, ctx);
+        draw_circle(vertex.pos.canvas_pos, SELECTION_COLOR, vertex_radius, 1, ctx);
     } else {
-        draw_circle(vertex.canvas_pos, "white", vertex_radius, 1, ctx);
+        draw_circle(vertex.pos.canvas_pos, "white", vertex_radius, 1, ctx);
     }
 
-    draw_circle(vertex.canvas_pos, vertex.color, vertex_radius - 2, 1, ctx);
+    draw_circle(vertex.pos.canvas_pos, vertex.color, vertex_radius - 2, 1, ctx);
 
     // DRAW INDEX 
     if (local_board.view.index_type != INDEX_TYPE.NONE) {
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
         ctx.fillStyle = "white"
-        const pos = vertex.canvas_pos
+        const pos = vertex.pos.canvas_pos
         ctx.fillText(vertex.index_string, pos.x - measure.width / 2, pos.y + 5);
     }
 }
@@ -294,8 +294,8 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         let u = g.vertices.get(link.start_vertex);
         let v = g.vertices.get(link.end_vertex);
 
-        const posu = u.canvas_pos; 
-        const posv = v.canvas_pos; 
+        const posu = u.pos.canvas_pos; 
+        const posv = v.pos.canvas_pos; 
         const poscp = link.canvas_cp;
         ctx.beginPath();
         ctx.moveTo(posu.x, posu.y);

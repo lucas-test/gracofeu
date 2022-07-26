@@ -157,10 +157,10 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
                         let yMax = v.canvas_pos.y;
 
                         for(const u of g.vertices.values()){
-                            xMin = Math.min(xMin, u.canvas_pos.x);
-                            yMin = Math.min(yMin, u.canvas_pos.y);
-                            xMax = Math.max(xMax, u.canvas_pos.x);
-                            yMax = Math.max(yMax, u.canvas_pos.y);
+                            xMin = Math.min(xMin, u.pos.canvas_pos.x);
+                            yMin = Math.min(yMin, u.pos.canvas_pos.y);
+                            xMax = Math.max(xMax, u.pos.canvas_pos.x);
+                            yMax = Math.max(yMax, u.pos.canvas_pos.y);
                         }
 
                         top_left_corner = new CanvasCoord(xMin, yMin);
