@@ -177,6 +177,14 @@ export class ServerCoord extends Coord {
         this.old_canvas_pos.copy_from(this.canvas_pos);
     }
 
+    update_canvas_pos_without_saving(view : View){
+        this.canvas_pos = view.canvasCoord(this);
+    }
+
+    save_canvas_pos(){
+        this.old_canvas_pos.copy_from(this.canvas_pos);
+    }
+
     copy() {
         return new ServerCoord( this.x, this.y);
     }

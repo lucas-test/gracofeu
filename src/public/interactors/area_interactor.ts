@@ -1,6 +1,6 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
-import { AREA_CORNER, AREA_SIDE } from '../board/area';
+import { Area, AREA_CORNER, AREA_SIDE } from '../board/area';
 import { ServerCoord } from '../board/coord';
 import { down_coord, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
@@ -33,6 +33,19 @@ interactor_area.mousedown = (( canvas, ctx, g, e) => {
         is_moving_area = true;
     } else if ( last_down == DOWN_TYPE.AREA){
         is_moving_area = true;
+        const area = g.areas.get(last_down_index);
+        for( const vertex of g.vertices.values()){
+            if (area.is_containing_vertex(vertex)){
+                vertex.save_pos();
+            }
+        }
+        for (var link of g.links.values()) {
+            const v1 = g.vertices.get(link.start_vertex);
+            const v2 = g.vertices.get(link.end_vertex);
+            if(area.is_containing_vertex(v1) || area.is_containing_vertex(v2)){
+                link.save_pos();
+            }
+        }
     }
 })
 
@@ -54,7 +67,8 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
         {
             moving_area.resize_corner_area(e, corner_number, local_board.view);
         } else if ( last_down == DOWN_TYPE.AREA){
-            moving_area.translate(e.sub2(down_coord), local_board.view);
+            g.translate_area(e.sub2(down_coord), last_down_index);
+            //moving_area.translate(e.sub2(down_coord), local_board.view);
         }
         return true;
     }
@@ -128,8 +142,24 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
     }
     else if ( last_down == DOWN_TYPE.AREA){
         const moved_area = g.areas.get(last_down_index);
+        const data_socket_vertices = new Array();
+        g.vertices.forEach((vertex, index) => {
+            if (moved_area.is_containing_vertex(vertex)) {
+                data_socket_vertices.push({ index: index, x: vertex.pos.x, y: vertex.pos.y });
+            }
+        })
+        const data_socket_links = new Array();
+        g.links.forEach((link, index) => {
+            const v1 = g.vertices.get(link.start_vertex);
+            const v2 = g.vertices.get(link.end_vertex);
+            if(moved_area.is_containing_vertex(v1) || moved_area.is_containing_vertex(v2)){
+                data_socket_links.push({index: index, cp: link.cp })
+            }
+        });
         socket.emit("area_translate", last_down_index, moved_area.corner_top_left, moved_area.corner_bottom_right);  
         is_moving_area = false;
+        socket.emit("update_control_points", data_socket_links);
+        socket.emit("update_positions", data_socket_vertices);
     }
 })
 

@@ -188,9 +188,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         for (const e of data) {
             if (g.links.has(e.index)) {
                 const link = g.links.get(e.index);
-                link.cp.x = e.cp.x;
-                link.cp.y = e.cp.y;
-                link.canvas_cp = local_board.view.canvasCoord(link.cp);
+                link.cp = new ServerCoord(e.cp.x, e.cp.y);
             }
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
@@ -199,9 +197,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function handle_update_control_point(index: number, c: Coord) {
         const link = g.links.get(index);
-        link.cp.x = c.x;
-        link.cp.y = c.y;
-        link.canvas_cp = local_board.view.canvasCoord(link.cp);
+        link.cp = new ServerCoord(c.x, c.y);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]),false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -254,7 +250,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         const v = g.vertices.get(index);
         v.pos.x = x;
         v.pos.y = y;
-        v.pos.update_canvas_pos(local_board.view);
+        v.pos.update_canvas_pos_without_saving(local_board.view);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -266,7 +262,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const v = g.vertices.get(e.index);
             v.pos.x = e.x;
             v.pos.y = e.y;
-            v.pos.update_canvas_pos(local_board.view);
+            v.pos.update_canvas_pos_without_saving(local_board.view);
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });

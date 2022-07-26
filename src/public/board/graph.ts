@@ -75,7 +75,7 @@ export class Graph {
         }
        
         for (const [index, link] of this.links.entries()) {
-            if (interactable_element_type.has(DOWN_TYPE.CONTROL_POINT) && link.canvas_cp.is_nearby(pos, 150)) {
+            if (interactable_element_type.has(DOWN_TYPE.CONTROL_POINT) && link.cp.canvas_pos.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.CONTROL_POINT, index: index };
             }
             if (interactable_element_type.has(DOWN_TYPE.LINK) && this.is_click_over_link(index, pos)) {
@@ -236,7 +236,7 @@ export class Graph {
             v.pos.update_canvas_pos(local_board.view);
         }
         for (const link of this.links.values()) {
-            link.canvas_cp = local_board.view.canvasCoord(link.cp)
+            link.update_canvas_pos(local_board.view);
         }
         for (const area of this.areas.values()){
             area.update_canvas_pos(local_board.view);
@@ -250,8 +250,8 @@ export class Graph {
     get_subgraph_from_area(area_index: number){
         const area = this.areas.get(area_index);
         const subgraph = new Graph();
-        const c1canvas = local_board.view.canvasCoord(area.corner_top_left);
-        const c2canvas = local_board.view.canvasCoord(area.corner_bottom_right);   
+        const c1canvas = area.corner_top_left.canvas_pos;
+        const c2canvas = area.corner_bottom_right.canvas_pos;   
 
          for (const [index, v] of this.vertices.entries()) {
             if(v.is_in_rect(c1canvas, c2canvas)){
@@ -268,6 +268,31 @@ export class Graph {
             }
         }
         return subgraph;
+    }
+
+    translate_area(shift: CanvasCoord, area_index: number){
+        if( this.areas.has(area_index)){
+            const area = this.areas.get(area_index);
+            for (const vertex of this.vertices.values()){
+                if (area.is_containing_vertex(vertex)){
+                    vertex.translate(shift, local_board.view);
+                }
+            }
+            for( const link of this.links.values()){
+                const v1 = this.vertices.get(link.start_vertex);
+                const v2 = this.vertices.get(link.end_vertex);
+                if(area.is_containing_vertex(v1) && area.is_containing_vertex(v2)){
+                    link.translate_cp(shift, local_board.view);
+                }
+                else if(area.is_containing_vertex(v1)){ // and thus not v2
+                    link.transform_control_point(v1, v2, local_board.view);
+                }else if(area.is_containing_vertex(v2)) { // and thus not v1
+                    link.transform_control_point(v2, v1, local_board.view);
+                }
+            }
+            area.translate(shift, local_board.view);
+            
+        }
     }
 
 }

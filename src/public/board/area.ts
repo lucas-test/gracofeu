@@ -1,6 +1,7 @@
 import { CanvasCoord, corner_bottom_right, corner_top_left, ServerCoord } from "./coord";
 import { Multicolor } from "../multicolor";
 import { View } from "./camera";
+import { LocalVertex } from "./vertex";
 
 
 export enum AREA_CORNER {
@@ -210,6 +211,9 @@ export class Area{
         this.corner_top_left.update_canvas_pos(view); 
     }
 
+    is_containing_vertex(v: LocalVertex): boolean{
+        return v.is_in_rect(this.corner_top_left.canvas_pos, this.corner_bottom_right.canvas_pos);
+    }
    
 }
 

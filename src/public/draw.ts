@@ -296,7 +296,7 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
 
         const posu = u.pos.canvas_pos; 
         const posv = v.pos.canvas_pos; 
-        const poscp = link.canvas_cp;
+        const poscp = link.cp.canvas_pos;
         ctx.beginPath();
         ctx.moveTo(posu.x, posu.y);
         ctx.strokeStyle = link.color;
@@ -344,8 +344,8 @@ function draw_alignements(ctx: CanvasRenderingContext2D) {
 function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
     if(s.positions.length > 0){ 
         if(s.is_selected){
-            const tlcanvas = local_board.view.canvasCoord(s.top_left);
-            const brcanvas = local_board.view.canvasCoord(s.bot_right);
+            const tlcanvas = s.top_left.canvas_pos;
+            const brcanvas = s.bot_right.canvas_pos;
             ctx.beginPath();
             ctx.strokeStyle = SELECTION_COLOR;
             ctx.lineWidth = 1;
@@ -354,24 +354,24 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
             ctx.stroke();
 
             
-            let position_canvas = local_board.view.canvasCoord(s.positions[0]);
+            let position_canvas = s.positions[0].canvas_pos;
             ctx.beginPath();
             ctx.lineWidth = s.width + 4;
             ctx.moveTo(position_canvas.x, position_canvas.y);
             for(let i = 1; i<s.positions.length; i++){
-                position_canvas = local_board.view.canvasCoord(s.positions[i]);
+                position_canvas = s.positions[i].canvas_pos;
                 ctx.lineTo(position_canvas.x, position_canvas.y);
             }
             ctx.stroke();
         }
 
-        let position_canvas = local_board.view.canvasCoord(s.positions[0]);
+        let position_canvas = s.positions[0].canvas_pos;
         ctx.beginPath();
         ctx.strokeStyle = s.multicolor.color;
         ctx.lineWidth = s.width;
         ctx.moveTo(position_canvas.x, position_canvas.y);
         for(let i = 1; i<s.positions.length; i++){
-            position_canvas = local_board.view.canvasCoord(s.positions[i]);
+            position_canvas = s.positions[i].canvas_pos;
             ctx.lineTo(position_canvas.x, position_canvas.y);
         }
         ctx.stroke();

@@ -1,4 +1,5 @@
 import { local_board } from "../setup";
+import { View } from "./camera";
 import { CanvasCoord, ServerCoord } from "./coord";
 import { LocalVertex } from "./vertex";
 
@@ -18,9 +19,7 @@ export class Link {
     color: string;
 
     // local attributes
-    old_cp: ServerCoord;
     is_selected: boolean;
-    canvas_cp: CanvasCoord;
 
 
     constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string) {
@@ -29,9 +28,7 @@ export class Link {
         this.color = color;
         this.is_selected = false;
         this.cp = new ServerCoord(cp.x, cp.y);
-        this.old_cp = new ServerCoord(cp.x, cp.y);
         this.orientation = orientation;
-        this.canvas_cp = local_board.view.canvasCoord(this.cp)
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
@@ -43,21 +40,30 @@ export class Link {
 
 
 
-    transform_control_point(moved_vertex: LocalVertex, fixed_vertex: LocalVertex) {
-        var v = moved_vertex
-        var w = fixed_vertex.pos
-        let u = v.old_pos.sub(w);
-        let nv = v.pos.sub(w);
-        var theta = nv.getTheta(u)
-        var rho = u.getRho(nv)
-        this.cp.x = w.x + rho * (Math.cos(theta) * (this.old_cp.x - w.x) - Math.sin(theta) * (this.old_cp.y - w.y))
-        this.cp.y = w.y + rho * (Math.sin(theta) * (this.old_cp.x - w.x) + Math.cos(theta) * (this.old_cp.y - w.y))
-        this.canvas_cp = local_board.view.canvasCoord(this.cp);
+    transform_control_point(moved_vertex: LocalVertex, fixed_vertex: LocalVertex, view: View) {
+        const w = fixed_vertex.pos.canvas_pos;
+        const u = moved_vertex.pos.old_canvas_pos.sub2(w);
+        const nv = moved_vertex.pos.canvas_pos.sub2(w);
+        const theta = nv.getTheta(u)
+        const rho = u.getRho(nv)
+        const old_cp = this.cp.old_canvas_pos;
+        this.cp.canvas_pos.x = w.x + rho * (Math.cos(theta) * (old_cp.x - w.x) - Math.sin(theta) * (old_cp.y - w.y))
+        this.cp.canvas_pos.y = w.y + rho * (Math.sin(theta) * (old_cp.x - w.x) + Math.cos(theta) * (old_cp.y - w.y))
+        this.cp.update_from_canvas_pos(view);
     }
 
     save_pos() {
-        this.old_cp.x = this.cp.x;
-        this.old_cp.y = this.cp.y;
+        this.cp.save_canvas_pos();
+        //this.old_cp.x = this.cp.x;
+        //this.old_cp.y = this.cp.y;
+    }
+
+    update_canvas_pos(view: View){
+        this.cp.update_canvas_pos(view);
+    }
+
+    translate_cp(shift: CanvasCoord, view: View){
+        this.cp.translate(shift, view);
     }
 
     tikzify_link(start: LocalVertex, start_index: number, end: LocalVertex, end_index: number) {

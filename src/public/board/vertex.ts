@@ -1,4 +1,4 @@
-import { local_board } from "../setup";
+import { View } from "./camera";
 import { CanvasCoord, ServerCoord } from "./coord";
 
 
@@ -21,13 +21,16 @@ export class LocalVertex {
     }
 
     save_pos() {
-        this.old_pos.x = this.pos.x;
-        this.old_pos.y = this.pos.y;
+        this.pos.save_canvas_pos();
     }
 
 
     is_nearby(pos: CanvasCoord, r: number) {
         return this.pos.canvas_pos.dist2(pos) <= r;
+    }
+
+    translate(shift: CanvasCoord, view: View){
+        this.pos.translate(shift, view);
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {

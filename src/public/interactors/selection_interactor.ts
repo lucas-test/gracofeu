@@ -76,16 +76,18 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                     const v = g.vertices.get(link.start_vertex)
                     const w = g.vertices.get(link.end_vertex)
                     if (v.is_selected && w.is_selected) {
-                        link.cp.x = link.old_cp.x + mouse_server_coord.x - origin_vertex.old_pos.x
-                        link.cp.y = link.old_cp.y + mouse_server_coord.y - origin_vertex.old_pos.y
-                        link.canvas_cp = local_board.view.canvasCoord(link.cp);
+                        // TODO
+                        // link.translate_cp(shift, local_board.view);
+                        // link.cp.x = link.old_cp.x + mouse_server_coord.x - origin_vertex.old_pos.x
+                        // link.cp.y = link.old_cp.y + mouse_server_coord.y - origin_vertex.old_pos.y
+                        link.update_canvas_pos(local_board.view);
                         data_socket2.push({ index: index, cp: link.cp })
                     }
                     else if (v.is_selected && !w.is_selected) {
-                        link.transform_control_point(v, w)
+                        link.transform_control_point(v, w, local_board.view)
                         data_socket2.push({ index: index, cp: link.cp })
                     } else if (!v.is_selected && w.is_selected) {
-                        link.transform_control_point(w, v)
+                        link.transform_control_point(w, v, local_board.view)
                         data_socket2.push({ index: index, cp: link.cp })
                     }
                 }
@@ -95,8 +97,9 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             else {
                 const v = g.vertices.get(last_down_index)
                 const mouse_canvas_coord = g.align_position(e, new Set([last_down_index]), canvas);
-                v.pos.canvas_pos = mouse_canvas_coord;
-                v.pos.update_from_canvas_pos(local_board.view);
+                v.translate(mouse_canvas_coord.sub2(down_coord), local_board.view);
+                //v.pos.canvas_pos = mouse_canvas_coord;
+                //v.pos.update_from_canvas_pos(local_board.view);
 
                 const data_socket = new Array();
                 for (let [index, link] of g.links.entries()) {
@@ -105,7 +108,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                         if (link.start_vertex == last_down_index) {
                             w = g.vertices.get(link.end_vertex)
                         }
-                        link.transform_control_point(v, w)
+                        link.transform_control_point(v, w, local_board.view)
                         data_socket.push({ index: index, cp: link.cp })
                     }
                 }
@@ -135,7 +138,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
         case DOWN_TYPE.CONTROL_POINT:
             var link = g.links.get(last_down_index);
             link.cp = local_board.view.serverCoord2(e);
-            link.canvas_cp = local_board.view.canvasCoord(link.cp);
+            link.update_canvas_pos(local_board.view);
             socket.emit("update_control_point", last_down_index, link.cp)
             return true;
         case DOWN_TYPE.STROKE:

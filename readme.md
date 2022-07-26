@@ -64,10 +64,10 @@ npm run dev
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 
 - serverCoord -> inclus automatiquement canvasCoord
-    - [X] vertex
-    - [ ] link
+    - [ ] vertex  clean Vertex
+    - [X] link
     - [X] stroke
-    - [ ] area
+    - [X] area
 - [X] interactor: visibilité et cliquabilité de certains éléments
 - [ ] curseur des interacteurs
 - [ ] ne pas utiliser local_board dans le dossier board
@@ -97,6 +97,7 @@ npm run dev
     - [X] modifier rectangle area
     - [X] déplacer area
     - [X] voir l'area se créer
+    - [ ] déplacer area avec les sommets dedans -> bug quand on rencontre un sommet initialement pas dedans
 
 - parametre
     - [X] ranger par area
