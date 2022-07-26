@@ -117,7 +117,7 @@ export class Graph {
 
 
 
-    add_stroke(positions_data:any, old_pos_data:any, color:string, width:number, top_left_data:any, bot_right_data:any) {
+    add_stroke(positions_data:any, color:string, width:number, top_left_data:any, bot_right_data:any) {
         // console.log(positions_data, old_pos_data, color, width, top_left_data, bot_right_data);
         const index = this.get_next_available_index_strokes();
         const positions = [];
@@ -125,11 +125,10 @@ export class Graph {
             // console.log(e);
             positions.push(new Coord(e[1].x, e[1].y));
         });
-        const old_pos = new Coord(old_pos_data.x, old_pos_data.y);
         const top_left = new Coord(top_left_data.x, top_left_data.y);
         const bot_right = new Coord(bot_right_data.x, bot_right_data.y);
 
-        this.strokes.set(index, new Stroke(positions, old_pos, color, width, top_left, bot_right));
+        this.strokes.set(index, new Stroke(positions, color, width, top_left, bot_right));
     }
 
 

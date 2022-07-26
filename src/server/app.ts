@@ -211,21 +211,7 @@ io.sockets.on('connection', function (client) {
     client.on('area_translate', handle_area_translate);
     client.on('update_strokes', handle_update_strokes);
 
-    function handle_update_strokes(data) {
-        console.log("handle_update_strokes");
-        for (const element of data) {
-            console.log(element);
-            if (g.strokes.has(element.index)) {
-                const stroke = g.strokes.get(element.index);
-                for( let i = 0 ; i < stroke.positions.length ; i ++){
-                    console.log(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y)
-                    stroke.positions[i] = new Coord(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y);
-                }
-                element.stroke_data.color = element.stroke_data.multicolor.color;
-            }
-        }
-        io.sockets.in(room_id).emit('update_strokes', data);
-    }
+    
 
     // AREAS 
     function handle_area_translate(index: number, corner_top_left: Coord, corner_bottom_right: Coord){
@@ -310,8 +296,8 @@ io.sockets.on('connection', function (client) {
 
 
     // STROKES
-    function handle_add_stroke(positions:any, old_pos:any, color:string, width:number, top_left:any, bot_right:any){
-        g.add_stroke(positions, old_pos, color, width, top_left, bot_right);
+    function handle_add_stroke(positions:any, color:string, width:number, top_left:any, bot_right:any){
+        g.add_stroke(positions, color, width, top_left, bot_right);
         emit_strokes_to_room();
     }
 
@@ -322,6 +308,19 @@ io.sockets.on('connection', function (client) {
             g.delete_stroke(index);
         }
         emit_strokes_to_room();
+    }
+
+    function handle_update_strokes(data) {
+        for (const element of data) {
+            if (g.strokes.has(element.index)) {
+                const stroke = g.strokes.get(element.index);
+                for( let i = 0 ; i < stroke.positions.length ; i ++){
+                    stroke.positions[i] = new Coord(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y);
+                }
+                element.stroke_data.color = element.stroke_data.multicolor.color;
+            }
+        }
+        io.sockets.in(room_id).emit('update_strokes', data);
     }
    
 

@@ -88,7 +88,6 @@ npm run dev
     - [X] selectionner mieux
     - [X] déplacer
     - [X] effacer serveur
-    - [ ] backend: nettoyer la classe
     - [ ] effacer mieux (plus tard)
     - [ ] affichage en live (plus tard, interet ??)
 

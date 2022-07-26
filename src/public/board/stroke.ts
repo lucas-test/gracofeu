@@ -5,7 +5,6 @@ import { View } from "./camera";
 
 export class Stroke{
     positions:Array<ServerCoord>;
-    old_pos:ServerCoord;
     multicolor:Multicolor;
     width:number;
     top_left: ServerCoord;
@@ -18,7 +17,6 @@ export class Stroke{
         this.width = width;
         this.is_selected = false;
         if(pos.length>0){
-            this.old_pos = new ServerCoord(pos[0].x, pos[0].y);
             this.top_left = new ServerCoord(pos[0].x, pos[0].y);
             this.bot_right = new ServerCoord(pos[0].x, pos[0].y);
             for(let i = 1; i<pos.length; i++){
@@ -31,7 +29,6 @@ export class Stroke{
             this.bot_right.after_view_update(local_board.view);
         }
         else{
-            this.old_pos = null;
             this.top_left = null;
             this.bot_right = null;
         }

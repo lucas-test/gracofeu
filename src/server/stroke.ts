@@ -2,15 +2,13 @@ import { Coord } from "./coord";
 
 export class Stroke{
     positions:Array<Coord>;
-    old_pos:Coord;
     color:string;
     width:number;
     top_left: Coord;
     bot_right: Coord;
     
-    constructor(positions:any, old_pos: Coord, color:string, width:number, top_left:Coord, bot_right:Coord){
+    constructor(positions:any, color:string, width:number, top_left:Coord, bot_right:Coord){
         this.positions = positions;
-        this.old_pos = old_pos;
         this.color = color;
         this.width = width;
         this.top_left = top_left;
