@@ -37,24 +37,24 @@ interactor_area.mousedown = (( canvas, ctx, g, e) => {
 })
 
 interactor_area.mousemove = ((canvas, ctx, g, e) => {
-    const esc  = local_board.view.serverCoord2(e);
+
     if(is_creating_area){
         if( last_created_area_index != null && g.areas.has(last_created_area_index)){
             const last_created_area = g.areas.get(last_created_area_index);
-            last_created_area.resize_corner_area(esc, AREA_CORNER.TOP_RIGHT);
+            last_created_area.resize_corner_area(e, AREA_CORNER.TOP_RIGHT, local_board.view);
         }
         return true;
     }
     else if(is_moving_area){
         const moving_area = g.areas.get(last_down_index);
         if(side_number != null){
-            moving_area.resize_side_area(esc, side_number)
+            moving_area.resize_side_area(e, side_number, local_board.view)
         }
         else if(corner_number != null)
         {
-            moving_area.resize_corner_area(esc, corner_number);
+            moving_area.resize_corner_area(e, corner_number, local_board.view);
         } else if ( last_down == DOWN_TYPE.AREA){
-            moving_area.translate(e.sub2(down_coord));
+            moving_area.translate(e.sub2(down_coord), local_board.view);
         }
         return true;
     }

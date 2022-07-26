@@ -393,8 +393,8 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
     ctx.beginPath();
     ctx.strokeStyle = a.multicolor.color;
     ctx.lineWidth = 2;
-    const c1canvas = local_board.view.canvasCoord(a.corner_top_left);
-    const c2canvas = local_board.view.canvasCoord(a.corner_bottom_right);
+    const c1canvas = a.corner_top_left.canvas_pos;
+    const c2canvas = a.corner_bottom_right.canvas_pos;
     ctx.rect(c1canvas.x , c1canvas.y, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
     ctx.stroke();
 
@@ -420,9 +420,9 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
 
 
     if(interactor_loaded && interactor_loaded === interactor_area){
-        const top_left = local_board.view.canvasCoord(a.top_left_corner());
+        const top_left = a.corner_top_left.canvas_pos;
         const top_right = local_board.view.canvasCoord(a.top_right_corner());
-        const bot_right = local_board.view.canvasCoord(a.bot_right_corner());
+        const bot_right = a.corner_bottom_right.canvas_pos;
 
         const corner_side = 18;
 

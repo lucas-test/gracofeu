@@ -1,6 +1,6 @@
 import { CanvasCoord, corner_bottom_right, corner_top_left, ServerCoord } from "./coord";
 import { Multicolor } from "../multicolor";
-import { local_board } from "../setup";
+import { View } from "./camera";
 
 
 export enum AREA_CORNER {
@@ -22,8 +22,6 @@ export enum AREA_SIDE{
 export class Area{
     corner_top_left : ServerCoord;
     corner_bottom_right : ServerCoord;
-    old_corner_top_left: ServerCoord;
-    old_corner_bottom_right: ServerCoord;
     multicolor:Multicolor;
     label:string;
     id:string;
@@ -31,8 +29,6 @@ export class Area{
     constructor(id: string, label:string, c1:ServerCoord, c2:ServerCoord, color:string){
         this.corner_top_left = corner_top_left(c1,c2);
         this.corner_bottom_right = corner_bottom_right(c1,c2);
-        this.old_corner_bottom_right = this.corner_bottom_right.copy();
-        this.old_corner_top_left = this.corner_top_left.copy();
         this.label = label;
         this.multicolor = new Multicolor(color);
         this.id = id;
@@ -44,7 +40,7 @@ export class Area{
         // |__       KO        |
         // |OK|________________|
 
-        const BL = local_board.view.canvasCoord(new ServerCoord(this.corner_top_left.x + 10, this.corner_bottom_right.y - 10));
+        const BL = new CanvasCoord(this.corner_top_left.canvas_pos.x + 10, this.corner_bottom_right.canvas_pos.y - 10);
         return BL.is_nearby(pos, r);
     }
 
@@ -77,8 +73,8 @@ export class Area{
         }
         let shift = avoid_corners?20:0;
 
-        const c1canvas = local_board.view.canvasCoord(this.corner_top_left);
-        const c2canvas = local_board.view.canvasCoord(this.corner_bottom_right);  
+        const c1canvas = this.corner_top_left.canvas_pos;
+        const c2canvas = this.corner_bottom_right.canvas_pos;  
         const minX = Math.min(c1canvas.x, c2canvas.x);
         const minY = Math.min(c1canvas.y, c2canvas.y);
         const maxX = Math.max(c1canvas.x, c2canvas.x);
@@ -100,17 +96,8 @@ export class Area{
         return AREA_SIDE.NONE;
     }
 
-
-    top_left_corner():ServerCoord{
-        return this.corner_top_left;
-    }
-
     top_right_corner():ServerCoord{
         return new ServerCoord(this.corner_bottom_right.x, this.corner_top_left.y);
-    }
-    
-    bot_right_corner():ServerCoord{
-        return this.corner_bottom_right;
     }
     
     bot_left_corner():ServerCoord{
@@ -122,7 +109,7 @@ export class Area{
         if(s == undefined){
             s = 20;
         }
-        const TL = this.top_left_corner().canvas_pos;
+        const TL = this.corner_top_left.canvas_pos;
         return pos.x > TL.x && pos.x < TL.x + s && pos.y > TL.y && pos.y < TL.y + s;
     }
 
@@ -130,7 +117,7 @@ export class Area{
         if(s == undefined){
             s = 20;
         }
-        const TR = this.top_right_corner().canvas_pos;
+        const TR = new CanvasCoord(this.corner_bottom_right.canvas_pos.x, this.corner_top_left.canvas_pos.y)
         return pos.x < TR.x && pos.x > TR.x - s && pos.y > TR.y && pos.y < TR.y + s;
     }
 
@@ -138,7 +125,7 @@ export class Area{
         if(s == undefined){
             s = 20;
         }
-        const BL = this.bot_left_corner().canvas_pos;
+        const BL = new CanvasCoord(this.corner_top_left.canvas_pos.x, this.corner_bottom_right.canvas_pos.y)
         return pos.x > BL.x && pos.x < BL.x + s && pos.y > BL.y - s && pos.y < BL.y;
     }
 
@@ -146,77 +133,82 @@ export class Area{
         if(s == undefined){
             s = 20;
         }
-        const BR = this.bot_right_corner().canvas_pos;
+        const BR = this.corner_bottom_right.canvas_pos;
         return pos.x < BR.x && pos.x > BR.x - s && pos.y > BR.y - s && pos.y < BR.y;
     }
 
-    recompute_corners(){
-        const c1 = this.corner_top_left;
-        const c2 = this.corner_bottom_right;
-        this.corner_top_left = corner_top_left(c1,c2);
-        this.corner_bottom_right = corner_bottom_right(c1,c2);
+    recompute_corners(view: View){
+        const c1 = this.corner_top_left.canvas_pos.copy();
+        const c2 = this.corner_bottom_right.canvas_pos.copy();
+        this.corner_top_left.canvas_pos.x = Math.min(c1.x, c2.x);
+        this.corner_top_left.canvas_pos.y = Math.min(c1.y, c2.y);
+        this.corner_bottom_right.canvas_pos.x = Math.max(c1.x, c2.x);
+        this.corner_bottom_right.canvas_pos.y = Math.max(c1.y, c2.y);
+        this.corner_top_left.update_from_canvas_pos(view);
+        this.corner_bottom_right.update_from_canvas_pos(view);
     }
 
-    load_old_corners(){
-        this.corner_bottom_right = this.old_corner_bottom_right.copy();
-        this.corner_top_left = this.old_corner_top_left.copy();
+    load_old_canvas_corners(){
+        this.corner_bottom_right.load_old_canvas_pos();
+        this.corner_top_left.load_old_canvas_pos();
     }
 
 
-    resize_side_area(pos:ServerCoord, side_number:AREA_SIDE){
-        this.load_old_corners();
+    resize_side_area(pos:CanvasCoord, side_number:AREA_SIDE, view: View){
+        this.load_old_canvas_corners();
         switch(side_number){
             case AREA_SIDE.TOP:
-                this.corner_top_left.y = pos.y;
+                this.corner_top_left.canvas_pos.y = pos.y;
                 break;
             case AREA_SIDE.RIGHT:
-                this.corner_bottom_right.x = pos.x;
+                this.corner_bottom_right.canvas_pos.x = pos.x;
                 break;
             case AREA_SIDE.BOT:
-                this.corner_bottom_right.y = pos.y;
+                this.corner_bottom_right.canvas_pos.y = pos.y;
                 break;
             case AREA_SIDE.LEFT:
-                this.corner_top_left.x = pos.x;
+                this.corner_top_left.canvas_pos.x = pos.x;
                 break;
             default:
                 break;
         }
-        this.recompute_corners();
+        this.recompute_corners(view);
     }
 
 
 
-    resize_corner_area(pos:ServerCoord, corner_number:AREA_CORNER){
-        this.load_old_corners();
+    resize_corner_area(pos:CanvasCoord, corner_number:AREA_CORNER, view: View){
+        this.load_old_canvas_corners();
         switch(corner_number){
             case AREA_CORNER.TOP_LEFT:
-                this.corner_top_left = pos;
+                this.corner_top_left.canvas_pos.copy_from(pos);
                 break;
             case AREA_CORNER.TOP_RIGHT:
-                this.corner_top_left.y = pos.y;
-                this.corner_bottom_right.x = pos.x;
+                this.corner_top_left.canvas_pos.y = pos.y;
+                this.corner_bottom_right.canvas_pos.x = pos.x;
                 break;
             case AREA_CORNER.BOT_RIGHT:
-                this.corner_bottom_right = pos;
+                this.corner_bottom_right.canvas_pos.copy_from(pos);
                 break;
             case AREA_CORNER.BOT_LEFT:
-                this.corner_bottom_right.y = pos.y;
-                this.corner_top_left.x = pos.x;
+                this.corner_bottom_right.canvas_pos.y = pos.y;
+                this.corner_top_left.canvas_pos.x = pos.x;
                 break;
             default:
                 break;
         }
-        this.recompute_corners();
+        this.recompute_corners(view);
     }
 
-    translate(vector: CanvasCoord){
-        this.load_old_corners();
-        const c1 = local_board.view.canvasCoord(this.corner_bottom_right);
-        this.corner_bottom_right = local_board.view.serverCoord2(c1.add2(vector));
-        const c2 = local_board.view.canvasCoord(this.corner_top_left);
-        this.corner_top_left = local_board.view.serverCoord2(c2.add2(vector));
+    translate(shift: CanvasCoord, view: View){
+        this.corner_bottom_right.translate(shift, view);
+        this.corner_top_left.translate(shift, view);
     }
 
+    update_canvas_pos(view: View){
+        this.corner_bottom_right.update_canvas_pos(view);
+        this.corner_top_left.update_canvas_pos(view); 
+    }
 
    
 }

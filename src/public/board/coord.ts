@@ -157,6 +157,10 @@ export class ServerCoord extends Coord {
         this.old_canvas_pos = this.canvas_pos.copy();
     }
 
+    load_old_canvas_pos(){
+        this.canvas_pos.copy_from(this.old_canvas_pos);
+    }
+
     update_from_canvas_pos(view: View){
         const lol = view.serverCoord2(this.canvas_pos);
         this.x = lol.x;

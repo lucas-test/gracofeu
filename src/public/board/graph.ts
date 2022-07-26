@@ -238,12 +238,9 @@ export class Graph {
         for (const link of this.links.values()) {
             link.canvas_cp = local_board.view.canvasCoord(link.cp)
         }
-        // TODO when area and stroke will have canvas_pos
-        /*
         for (const area of this.areas.values()){
-            area.update_canvas_pos();
+            area.update_canvas_pos(local_board.view);
         }
-        */
         for( const stroke of this.strokes.values()){
             stroke.update_canvas_pos(local_board.view);
         }
