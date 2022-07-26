@@ -56,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -83,7 +83,7 @@
        inkscape:transform-center-y="4.153761" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:52.8816px;line-height:1.25;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.32204;"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:52.8816px;line-height:1.25;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.32204"
        x="15.776155"
        y="53.092949"
        id="text837"><tspan
@@ -91,7 +91,7 @@
          id="tspan835"
          x="15.776155"
          y="53.092949"
-         style="fill:#000000;fill-opacity:1;stroke-width:1.32204;">0</tspan></text>
+         style="fill:#000000;fill-opacity:1;stroke-width:1.32204">0</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64.1685px;line-height:1.25;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.60421"
@@ -104,11 +104,11 @@
          y="81.763786"
          style="stroke-width:1.60421">a</tspan></text>
     <path
-       style="fill:none;stroke:#000000;stroke-width:7.465;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 16.31077,83.225461 C 38.452108,60.866591 60.6193,38.481614 82.773565,16.10969"
+       style="fill:none;stroke:#000000;stroke-width:5.22595;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M 34.318159,79.016226 C 44.461576,59.461875 54.616837,39.884693 64.766176,20.318925"
        id="path843"
        inkscape:path-effect="#path-effect845"
-       inkscape:original-d="M 16.31077,83.225461 C 38.452374,60.866854 60.619565,38.481877 82.773565,16.10969"
+       inkscape:original-d="M 34.318159,79.016226 C 44.461808,59.461995 54.617069,39.884813 64.766176,20.318925"
        sodipodi:nodetypes="cc" />
   </g>
 </svg>

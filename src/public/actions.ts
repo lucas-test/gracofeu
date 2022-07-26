@@ -106,25 +106,25 @@ change_to_none_index.trigger = () => {
     local_board.graph.compute_vertices_index_string();
 }
 
-let change_to_number_stable_index = new Action("index_type_number_stable", "Set labels to numeric and maintain the label after vertices deletions", "index_number_stable.svg", "");
+let change_to_number_stable_index = new Action("index_type_number_stable", "[Stable numerical] Set automatically labels to numeric and maintain labels after vertices deletions.", "index_number_stable.svg", "");
 change_to_number_stable_index.trigger = () => {
     local_board.view.index_type = INDEX_TYPE.NUMBER_STABLE;
     local_board.graph.compute_vertices_index_string();
 }
 
-let change_to_number_unstable_index = new Action("index_type_number_unstable", "Unstable numeric", "index_number_unstable.svg", "");
+let change_to_number_unstable_index = new Action("index_type_number_unstable", "[Unstable numerical] Set automatically labels to numeric. Labels will be recomputed after vertices deletions so that there are between 0 and n-1.", "index_number_unstable.svg", "");
 change_to_number_unstable_index.trigger = () => {
     local_board.view.index_type = INDEX_TYPE.NUMBER_UNSTABLE;
     local_board.graph.compute_vertices_index_string();
 }
 
-let change_to_alpha_stable_index = new Action("index_type_alpha_stable", "Stable alphabetic", "index_alpha_stable.svg", "");
+let change_to_alpha_stable_index = new Action("index_type_alpha_stable", "[Stable alphabetical] Set automatically labels to alphabetic and maintain labels after vertices deletions.", "index_alpha_stable.svg", "");
 change_to_alpha_stable_index.trigger = () => {
     local_board.view.index_type = INDEX_TYPE.ALPHA_STABLE;
     local_board.graph.compute_vertices_index_string();
 }
 
-let change_to_alpha_unstable_index = new Action("index_type_number_stable", "Unstable alphabetic", "index_alpha_unstable.svg", "");
+let change_to_alpha_unstable_index = new Action("index_type_number_stable", "[Unstable alphabetic] Set automatically labels to alphabetic. Labels will be recomputed after vertices deletions so that there are between a and z.", "index_alpha_unstable.svg", "");
 change_to_alpha_unstable_index.trigger = () => {
     local_board.view.index_type = INDEX_TYPE.ALPHA_UNSTABLE;
     local_board.graph.compute_vertices_index_string();

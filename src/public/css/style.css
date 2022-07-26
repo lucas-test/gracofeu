@@ -80,6 +80,7 @@ body {
 .interactor_recap {
     position: fixed;
     background-color: #303030;
+    max-width: 350px;
     color: white;
     border-radius: 2px;
     padding: 10px;

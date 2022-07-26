@@ -35,9 +35,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="146.09"
-     inkscape:cy="187.62567"
+     inkscape:zoom="0.5"
+     inkscape:cx="427.54619"
+     inkscape:cy="289.78785"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -56,7 +56,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -83,14 +83,14 @@
        inkscape:transform-center-y="4.153761" />
     <text
        xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:52.8816px;line-height:1.25;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.32204"
-       x="6.6900516"
-       y="68.349915"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.7236px;line-height:1.25;font-family:Cantarell;-inkscape-font-specification:'Cantarell, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-feature-settings:normal;text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.34309"
+       x="21.607071"
+       y="68.642097"
        id="text837"><tspan
          sodipodi:role="line"
          id="tspan835"
-         x="6.6900516"
-         y="68.349915"
-         style="fill:#000000;fill-opacity:1;stroke-width:1.32204">012</tspan></text>
+         x="21.607071"
+         y="68.642097"
+         style="fill:#000000;fill-opacity:1;stroke-width:1.34309">v0</tspan></text>
   </g>
 </svg>

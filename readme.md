@@ -50,11 +50,8 @@ npm run dev
 - [X] sélection au clic d'arête courbée
 - [X] arc
 - [X] vertex index
-    - [ ] icones plus claires
-    - [ ] décalage d'indice ?
-    - [ ] get_new_index devrait pas renvoyer le max des index +1 ? (pour suivre la création chronologique des sommets)
-    - [ ] aide sur les actions
-    - [ ] possibilité de modifier les labels
+    - [X] icones plus claires
+    - [X] aide sur les actions
     
 
 - utilisateur
@@ -66,7 +63,11 @@ npm run dev
 - [ ] Genre en faisant g.add_vertex(x,y), ça appelle socket.emit("add_vertex",x,y)
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 
-- [ ] serverCoord -> inclus automatiquement canvasCoord
+- serverCoord -> inclus automatiquement canvasCoord
+    - [X] vertex
+    - [ ] link
+    - [X] stroke
+    - [ ] area
 - [X] interactor: visibilité et cliquabilité de certains éléments
 - [ ] curseur des interacteurs
 - [ ] ne pas utiliser local_board dans le dossier board
@@ -115,6 +116,9 @@ npm run dev
         - [ ] is_sparse 
         - [X] is_coloring_propre
 
+- labels
+    - [ ] modifier les labels
+    - [ ] placement des labels
 
 
 ## V1 GDRIM
