@@ -121,6 +121,28 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_control_points', handle_update_control_points); // CP MOVE
     socket.on('areas', handle_areas); // AREA
     socket.on('strokes', handle_strokes); // STROKES
+    socket.on('update_strokes', handle_update_strokes);
+
+    function handle_update_strokes(data){
+        console.log("handle_update_strokes")
+        for (const element of data){
+            console.log(element);
+            if ( g.strokes.has(element.index)){
+                const stroke = g.strokes.get(element.index);
+                for(let i = 0 ; i < element.stroke_data.positions.length; i ++){
+                    stroke.positions[i] = new ServerCoord(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y);
+                }
+                const positions = [];
+                element.stroke_data.positions.forEach(e => {
+                    positions.push(new ServerCoord(e.x, e.y));
+                });
+                console.log(element.stroke_data.color);
+                console.log(element.stroke_data.width);
+                const new_stroke = new Stroke(positions, element.stroke_data.color, element.stroke_data.width);
+                g.strokes.set(element.index, new_stroke);
+            }
+        }
+    }
 
 
     function handle_strokes(data){

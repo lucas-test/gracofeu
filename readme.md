@@ -85,9 +85,10 @@ npm run dev
 - [ ] optimisation possible en Math.floor() dans view.canvasCoord
 
 - stroke
-    - [ ] selectionner mieux
-    - [ ] déplacer
+    - [X] selectionner mieux
+    - [X] déplacer
     - [X] effacer serveur
+    - [ ] backend: nettoyer la classe
     - [ ] effacer mieux (plus tard)
     - [ ] affichage en live (plus tard, interet ??)
 

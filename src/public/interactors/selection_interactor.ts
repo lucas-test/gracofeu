@@ -35,7 +35,7 @@ interactor_selection.mousedown = (( canvas, ctx, g, e) => {
         // TODO : what to do ? 
     }
     else if(last_down === DOWN_TYPE.STROKE) {
-        console.log("down stroke");
+        // console.log("down stroke");
     }
     else if (last_down === DOWN_TYPE.EMPTY) {
 
@@ -138,7 +138,10 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             link.canvas_cp = local_board.view.canvasCoord(link.cp);
             socket.emit("update_control_point", last_down_index, link.cp)
             return true;
-            break;
+        case DOWN_TYPE.STROKE:
+            const stroke = g.strokes.get(last_down_index);
+            stroke.translate(e.sub2(down_coord), local_board.view);
+            return true;
     }
 
 
@@ -146,7 +149,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_selection.mouseup = ((canvas, ctx, g, e) => {
-    console.log("mouseup", has_moved);
+    
     if (last_down === DOWN_TYPE.VERTEX) {
         if (has_moved === false) {
             if (g.vertices.get(last_down_index).is_selected) {
@@ -201,6 +204,11 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                     g.strokes.get(last_down_index).is_selected = true;
                 }
             }
+        } else {
+            const stroke = g.strokes.get(last_down_index);
+            const data_socket = new Array();
+            data_socket.push({index: last_down_index, stroke_data: stroke});
+            socket.emit("update_strokes", data_socket);
         }
     }
     else if (last_down === DOWN_TYPE.EMPTY) {

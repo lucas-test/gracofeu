@@ -1,6 +1,7 @@
 import { CanvasCoord, ServerCoord } from "./coord";
 import { Multicolor } from "../multicolor";
 import { local_board } from "../setup";
+import { View } from "./camera";
 
 export class Stroke{
     positions:Array<ServerCoord>;
@@ -26,6 +27,8 @@ export class Stroke{
                 this.bot_right.y = Math.max(pos[i].y, this.bot_right.y);
                 this.top_left.y = Math.min(pos[i].y, this.top_left.y);
             }
+            this.top_left.after_view_update(local_board.view);
+            this.bot_right.after_view_update(local_board.view);
         }
         else{
             this.old_pos = null;
@@ -34,16 +37,24 @@ export class Stroke{
         }
     }
 
-    is_nearby(pos:CanvasCoord, r:number){
-        const server_pos = local_board.view.serverCoord2(pos);
-        if (server_pos.x > this.bot_right.x || server_pos.x < this.top_left.x || server_pos.y > this.bot_right.y || server_pos.y < this.top_left.y)
+    update_canvas_pos(view: View){
+        this.bot_right.after_view_update(view);
+        this.top_left.after_view_update(view);
+        for( const position of this.positions){
+            position.after_view_update(view);
+        }
+    }
+
+    is_nearby(pos:CanvasCoord): number | false{
+        const bot_right_canvas = this.bot_right.canvas_pos;
+        const top_left_canvas = this.top_left.canvas_pos;
+        if (pos.x > bot_right_canvas.x +5 || pos.x < top_left_canvas.x - 5 || pos.y > bot_right_canvas.y +5 || pos.y < top_left_canvas.y - 5)
         {
             return false;
         }
 
-        for(let i = 0; i<this.positions.length; i++){
-            // TODO: Next to the LINE between the two last instead of checking the vertices only.
-            if(server_pos.dist2(this.positions[i]) <= r){
+        for(let i = 0; i<this.positions.length-1; i++){
+            if(pos.is_nearby_beziers_1cp(this.positions[i].canvas_pos, this.positions[i].canvas_pos.middle(this.positions[i+1].canvas_pos) , this.positions[i+1].canvas_pos )){
                 return i;
             }
         }
@@ -60,4 +71,11 @@ export class Stroke{
         this.top_left.y = Math.min(pos.y, this.top_left.y);
     }
 
+    translate(shift: CanvasCoord, view: View){
+        this.bot_right.translate(shift, view);
+        this.top_left.translate(shift, view);
+        for ( const position of this.positions){
+            position.translate(shift, view);
+        }
+    }
 }

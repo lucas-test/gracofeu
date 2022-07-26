@@ -33,16 +33,7 @@ export class LocalVertex {
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
-        const canvas_pos = this.canvas_pos;
-        if (c1.x <= c2.x && c1.y <= c2.y) {
-            return (c1.x <= canvas_pos.x && canvas_pos.x <= c2.x && c1.y <= canvas_pos.y && canvas_pos.y <= c2.y)
-        } else if (c1.x <= c2.x && c2.y <= c1.y) {
-            return (c1.x <= canvas_pos.x && canvas_pos.x <= c2.x && c2.y <= canvas_pos.y && canvas_pos.y <= c1.y)
-        } else if (c2.x <= c1.x && c2.y <= c1.y) {
-            return (c2.x <= canvas_pos.x && canvas_pos.x <= c1.x && c2.y <= canvas_pos.y && canvas_pos.y <= c1.y)
-        } else if (c2.x <= c1.x && c1.y <= c2.y) {
-            return (c2.x <= canvas_pos.x && canvas_pos.x <= c1.x && c1.y <= canvas_pos.y && canvas_pos.y <= c2.y)
-        }
+        return this.canvas_pos.is_in_rect(c1,c2);
     }
 
     get_tikz_coordinate(index: number) {

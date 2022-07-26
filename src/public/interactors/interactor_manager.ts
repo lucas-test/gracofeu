@@ -13,6 +13,7 @@ import { actions_available, select_action } from '../actions';
 import { self_user, update_users_canvas_pos } from '../user';
 import { CanvasCoord } from '../board/coord';
 import { local_board } from '../setup';
+import { interactor_detector } from './detector_interactor';
 
 // INTERACTOR MANAGER
 
@@ -190,7 +191,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
 
-let interactors_available = [interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_area];
+let interactors_available = [interactor_detector, interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_area];
 
 function deselect_all_interactor_div() {
     for (let div of document.getElementsByClassName("interactor")) {

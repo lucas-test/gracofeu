@@ -209,7 +209,23 @@ io.sockets.on('connection', function (client) {
     client.on('area_move_side', handle_move_side_area);
     client.on('area_move_corner', handle_move_corner_area);
     client.on('area_translate', handle_area_translate);
+    client.on('update_strokes', handle_update_strokes);
 
+    function handle_update_strokes(data) {
+        console.log("handle_update_strokes");
+        for (const element of data) {
+            console.log(element);
+            if (g.strokes.has(element.index)) {
+                const stroke = g.strokes.get(element.index);
+                for( let i = 0 ; i < stroke.positions.length ; i ++){
+                    console.log(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y)
+                    stroke.positions[i] = new Coord(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y);
+                }
+                element.stroke_data.color = element.stroke_data.multicolor.color;
+            }
+        }
+        io.sockets.in(room_id).emit('update_strokes', data);
+    }
 
     // AREAS 
     function handle_area_translate(index: number, corner_top_left: Coord, corner_bottom_right: Coord){

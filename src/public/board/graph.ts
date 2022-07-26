@@ -101,7 +101,7 @@ export class Graph {
 
         if (interactable_element_type.has(DOWN_TYPE.STROKE)) {
             for(const [index,s] of this.strokes.entries()){
-                if(s.is_nearby(pos, 150)){     
+                if(typeof s.is_nearby(pos) == "number"){     
                     return { type: DOWN_TYPE.STROKE, index: index };
                 }
             }
@@ -139,74 +139,13 @@ export class Graph {
     }
 
     is_click_over_link(link_index: number, e: CanvasCoord) {
-
-        let xA = e.x - 5
-        let yA = e.y - 5
-        let xB = e.x + 5
-        let yB = e.y + 5
-
-        let minX = xA
-        let minY = yA
-        let maxX = xB
-        let maxY = yB
-
         const link = this.links.get(link_index);
         const v = this.vertices.get(link.start_vertex)
         const w = this.vertices.get(link.end_vertex)
         const linkcp_canvas = local_board.view.canvasCoord(link.cp);
         const v_canvas_pos = v.canvas_pos;
         const w_canvas_pos = w.canvas_pos
-
-        let x0 = v_canvas_pos.x;
-        let y0 = v_canvas_pos.y;
-        let x1 = linkcp_canvas.x;
-        let y1 = linkcp_canvas.y;
-        let x2 = w_canvas_pos.x;
-        let y2 = w_canvas_pos.y;
-
-
-        // case where one of the endvertices is already on the box
-        if (v.is_in_rect(new CanvasCoord(xA, yA), new CanvasCoord(xB, yB)) || w.is_in_rect(new CanvasCoord(xA, yA), new CanvasCoord(xB, yB))) {
-            return true
-        } else {
-            // we get the quadratic equation of the intersection of the bended edge and the sides of the box
-            let aX = (x2 + x0 - 2 * x1);
-            let bX = 2 * (x1 - x0);
-            let cXmin = x0 - minX;
-            let cXmax = x0 - maxX;
-
-            let aY = (y2 + y0 - 2 * y1);
-            let bY = 2 * (y1 - y0);
-            let cYmin = y0 - minY;
-            let cYmax = y0 - maxY;
-
-            // the candidates for the intersections
-            let tXmin = solutionQuadratic(aX, bX, cXmin);
-            let tXmax = solutionQuadratic(aX, bX, cXmax);
-            let tYmin = solutionQuadratic(aY, bY, cYmin);
-            let tYmax = solutionQuadratic(aY, bY, cYmax);
-
-
-            for (let t of tXmax.concat(tXmin)) { // we look for the candidates that are touching vertical sides
-                if (t >= 0 && t <= 1) {
-                    let y = bezierValue(t, y0, y1, y2);
-                    if ((minY <= y && y <= maxY)) { // the candidate touches the box
-                        return true;
-                    }
-                }
-            }
-
-            for (let t of tYmax.concat(tYmin)) {
-                if (t >= 0 && t <= 1) {
-                    let x = bezierValue(t, x0, x1, x2);
-                    if ((minX <= x && x <= maxX)) {
-                        return true;
-                    }
-                }
-            }
-
-        }
-        return false;
+        return e.is_nearby_beziers_1cp(v_canvas_pos, linkcp_canvas, w_canvas_pos);
     }
 
     compute_vertices_index_string() {
@@ -304,10 +243,11 @@ export class Graph {
         for (const area of this.areas.values()){
             area.update_canvas_pos();
         }
-        for( const stroke of this.strokes.values()){
-            stroke.update_canvas_pos();
-        }
         */
+        for( const stroke of this.strokes.values()){
+            stroke.update_canvas_pos(local_board.view);
+        }
+        
     }
 
     get_subgraph_from_area(area_index: number){
@@ -337,32 +277,6 @@ export class Graph {
 
 
 
-
-function solutionQuadratic(a: number, b: number, c: number) {
-    if (b == 0 && a == 0) {
-        return [];
-    }
-
-    if (a == 0) {
-        return [-c / b];
-    }
-
-    let delta = b * b - 4 * a * c;
-    if (delta > 0) {
-        return [(-b + Math.sqrt(delta)) / (2 * a), (-b - Math.sqrt(delta)) / (2 * a)];
-    }
-    if (delta == 0) {
-        return [-b / (2 * a)];
-    }
-    return [];
-}
-
-
-
-function bezierValue(t: number, p0: number, p1: number, p2: number) {
-    return (1.0 - t) * (1.0 - t) * p0 + 2.0 * (1.0 - t) * t * p1 + t * t * p2;
-    // return bezierPoint(p0, p1, p1, p2, t);
-}
 
 
 
