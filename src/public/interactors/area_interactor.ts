@@ -78,12 +78,20 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
         for (const a of g.areas.values()) {
             const corner_number = a.is_nearby_corner(e);
             const side_number = a.is_nearby_side(e, undefined, true);
-            if(corner_number === AREA_CORNER.NONE && side_number === AREA_SIDE.NONE){
+            const is_on_label = a.is_nearby(e);
+
+            if(corner_number === AREA_CORNER.NONE && side_number === AREA_SIDE.NONE && !is_on_label){
                 continue;
             }
             else{
                 cursor_changed = true;
             }
+
+            if(is_on_label){
+                document.body.style.cursor="grab";
+                break;
+            }
+
             if(corner_number === AREA_CORNER.TOP_LEFT || corner_number === AREA_CORNER.BOT_RIGHT)
             {
                 document.body.style.cursor = "nw-resize";

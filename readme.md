@@ -111,6 +111,7 @@ npm run dev
         - [X] degré (min, max, moyen)
         - [ ] séquence degrés
         - [X] is_connected
+        - [X] number connected components
         - [ ] is_currently_planar
         - [ ] is_planar 
         - [ ] is_bipartite

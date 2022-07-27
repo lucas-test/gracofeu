@@ -35,14 +35,21 @@ export class Area{
         this.id = id;
     }
 
-    is_nearby(pos:CanvasCoord, r:number){ 
+    is_nearby(pos:CanvasCoord, r?:number){ 
         // ____________________
         // |                   |
         // |__       KO        |
         // |OK|________________|
+        if(r == undefined){
+            r = 30;
+        }
+        const BL = new CanvasCoord(this.corner_top_left.canvas_pos.x, this.corner_bottom_right.canvas_pos.y)
+        return pos.x >= BL.x && pos.x <= BL.x + r && pos.y >= BL.y - r && pos.y <= BL.y;
+  
 
-        const BL = new CanvasCoord(this.corner_top_left.canvas_pos.x + 10, this.corner_bottom_right.canvas_pos.y - 10);
-        return BL.is_nearby(pos, r);
+
+        // const BL = new CanvasCoord(this.corner_top_left.canvas_pos.x + 10, this.corner_bottom_right.canvas_pos.y - 10);
+        // return BL.is_nearby(pos, r);
     }
 
     is_nearby_corner(pos:CanvasCoord, r?:number):AREA_CORNER{
@@ -111,7 +118,7 @@ export class Area{
             s = 20;
         }
         const TL = this.corner_top_left.canvas_pos;
-        return pos.x > TL.x && pos.x < TL.x + s && pos.y > TL.y && pos.y < TL.y + s;
+        return pos.x >= TL.x && pos.x <= TL.x + s && pos.y >= TL.y && pos.y <= TL.y + s;
     }
 
     is_nearby_top_right_corner(pos:CanvasCoord, s?:number){      
@@ -119,7 +126,7 @@ export class Area{
             s = 20;
         }
         const TR = new CanvasCoord(this.corner_bottom_right.canvas_pos.x, this.corner_top_left.canvas_pos.y)
-        return pos.x < TR.x && pos.x > TR.x - s && pos.y > TR.y && pos.y < TR.y + s;
+        return pos.x <= TR.x && pos.x >= TR.x - s && pos.y >= TR.y && pos.y <= TR.y + s;
     }
 
     is_nearby_bot_left_corner(pos:CanvasCoord, s?:number){      
@@ -127,7 +134,7 @@ export class Area{
             s = 20;
         }
         const BL = new CanvasCoord(this.corner_top_left.canvas_pos.x, this.corner_bottom_right.canvas_pos.y)
-        return pos.x > BL.x && pos.x < BL.x + s && pos.y > BL.y - s && pos.y < BL.y;
+        return pos.x >= BL.x && pos.x <= BL.x + s && pos.y >= BL.y - s && pos.y <= BL.y;
     }
 
     is_nearby_bot_right_corner(pos:CanvasCoord, s?:number){      
@@ -135,7 +142,7 @@ export class Area{
             s = 20;
         }
         const BR = this.corner_bottom_right.canvas_pos;
-        return pos.x < BR.x && pos.x > BR.x - s && pos.y > BR.y - s && pos.y < BR.y;
+        return pos.x <= BR.x && pos.x >= BR.x - s && pos.y >= BR.y - s && pos.y <= BR.y;
     }
 
     recompute_corners(view: View){

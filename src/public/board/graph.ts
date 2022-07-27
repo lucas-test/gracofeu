@@ -84,7 +84,7 @@ export class Graph {
         }
 
         for(const [index,a] of this.areas.entries()){
-            if(interactable_element_type.has(DOWN_TYPE.AREA) && a.is_nearby(pos, 200)){
+            if(interactable_element_type.has(DOWN_TYPE.AREA) && a.is_nearby(pos)){
                 return{ type: DOWN_TYPE.AREA, index: index };
             }
             const corner_index = a.is_nearby_corner(pos);
