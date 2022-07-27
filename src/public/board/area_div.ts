@@ -86,7 +86,7 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         let span_result = document.createElement("span");
         span_result.id = "span_result_" + html_id;
         span_result.textContent = "?";
-        span_result.title="Not computed yet. Click on refresh icon to launch the computation."
+        span_result.title="Not computed yet. Click on the refresh icon to launch the computation."
         span_result.classList.add("result_span");
         if(param.is_boolean){
             span_result.classList.add("boolean_result", "inactive_boolean_result");
