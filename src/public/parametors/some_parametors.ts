@@ -94,6 +94,7 @@ param_max_degree.compute = ((g: Graph) =>{
 export let param_average_degree = new Parametor("Average degree", "avg_degree", true, false, [SENSIBILITY.ELEMENT]);
 
 param_average_degree.compute = ((g: Graph) =>{
+    // Remark : If no loop, we can simply use that sum(degree) = 2|E| so avg(degree) = 2|E|/|V|
     const data = get_degrees_data(g);
     const avg = Math.round((data.avg + Number.EPSILON) * 100) / 100
 
