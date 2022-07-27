@@ -102,6 +102,7 @@ export function update_params_loaded(g:Graph, sensibilities:Set<SENSIBILITY>, fo
 
     for (let param of params_loaded) {
         if(!param.parametor.is_live && param.parametor.is_sensible(sensibilities)){
+            const result_span = document.getElementById("span_result_" + param.html_id);
             invalid_parametor(param);
         }
         if((force_compute || param.parametor.is_live) && param.parametor.is_sensible(sensibilities)){
@@ -113,7 +114,7 @@ export function update_params_loaded(g:Graph, sensibilities:Set<SENSIBILITY>, fo
 
 function invalid_parametor(param){
     const result_span = document.getElementById("span_result_" + param.html_id);
-    update_result_span("", param.parametor, result_span);
+    update_result_span("", param.parametor, result_span, true);
 }
 
 
@@ -135,23 +136,37 @@ export function update_parametor(g:Graph, param){
 }
 
 
-function update_result_span(result:string, param, result_span:HTMLElement){
+function update_result_span(result:string, param, result_span:HTMLElement, invalid?:boolean){
+    if(invalid == undefined){
+        invalid = false;
+    }
     if(param.is_boolean){
         if(result == "true"){
             result_span.classList.remove("inactive_boolean_result", "false_boolean_result");
             result_span.classList.add("true_boolean_result");
+            result_span.title="";
         }
         else if(result == "false") {
             result_span.classList.remove("inactive_boolean_result", "true_boolean_result");
             result_span.classList.add("false_boolean_result");
+            result_span.title="";
         }
         else{
             result_span.classList.remove("false_boolean_result", "true_boolean_result");
             result_span.classList.add("inactive_boolean_result");
+            result_span.title="Be careful, the result may have changed! Reload the computation.";
         }
     }
     else{
-        result_span.textContent = result;
+        if(invalid){
+            result_span.classList.add("invalid_result");
+            result_span.title="Be careful, the result may have changed! Reload the computation.";
+        }
+        else{
+            result_span.textContent = result;
+            result_span.title="";
+            result_span.classList.remove("invalid_result");
+        }
     }
 }
 

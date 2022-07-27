@@ -25,9 +25,9 @@ export class Area{
     corner_bottom_right : ServerCoord;
     multicolor:Multicolor;
     label:string;
-    id:string;
+    id:number;
 
-    constructor(id: string, label:string, c1:ServerCoord, c2:ServerCoord, color:string){
+    constructor(id: number, label:string, c1:ServerCoord, c2:ServerCoord, color:string){
         this.corner_top_left = corner_top_left(c1,c2);
         this.corner_bottom_right = corner_bottom_right(c1,c2);
         this.label = label;

@@ -7,6 +7,7 @@ import { params_available, params_loaded, update_parametor } from "../parametors
 import { socket } from "../socket";
 import { Board } from "./board";
 import { LocalVertex } from "./vertex";
+import { local_board } from "../setup";
 
 
 
@@ -84,7 +85,8 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         // Span for the result
         let span_result = document.createElement("span");
         span_result.id = "span_result_" + html_id;
-        span_result.textContent = "";
+        span_result.textContent = "?";
+        span_result.title="Not computed yet. Click on refresh icon to launch the computation."
         span_result.classList.add("result_span");
         if(param.is_boolean){
             span_result.classList.add("boolean_result", "inactive_boolean_result");
@@ -161,7 +163,8 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
                 if(a!== null){
                     // Center on the area on click
                     titleDOM.addEventListener("click",  (e)=>{
-                        center_canvas_on_rectangle(view, view.canvasCoord(a.corner_top_left), view.canvasCoord(a.corner_bottom_right), canvas, g); // .canvas_pos est pas encore implémenté
+                        const area = local_board.graph.areas.get(a.id); // It seems we have to reget the area since the corners may have change
+                        center_canvas_on_rectangle(view, view.canvasCoord(area.corner_top_left), view.canvasCoord(area.corner_bottom_right), canvas, g); // .canvas_pos est pas encore implémenté
                         requestAnimationFrame(function () { 
                             draw(canvas, ctx, g) 
                         });
@@ -245,7 +248,7 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
 
 
 
-export function remove_loaded_param(param_id: string, area_id:string) {
+export function remove_loaded_param(param_id: string, area_id:number) {
     for (var i = 0; i < params_loaded.length; i++) {
         if (params_loaded[i].parametor.id == param_id && area_id == params_loaded[i].area_id) {
             const DOM = document.getElementById("param_" + params_loaded[i].html_id);

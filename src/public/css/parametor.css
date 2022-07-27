@@ -287,3 +287,7 @@
 .hidden_list {
     display: none;
 }
+
+.invalid_result {
+    color: #bf7979;
+}
