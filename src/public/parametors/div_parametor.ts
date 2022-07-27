@@ -30,7 +30,7 @@ export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRend
     // console.log("LISTE PARAM", params_available);
 
     for(const param of params_available){
-        console.log("SETTING UP ", param.id)
+        // console.log("SETTING UP ", param.id)
 
         // We first remove the previous click event on the parametor div by cloning it
         let div_original = document.getElementById(`param_div_${param.id}`);

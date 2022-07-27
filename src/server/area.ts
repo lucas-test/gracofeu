@@ -11,7 +11,7 @@ export class Area{
         this.c1 = c1;
         this.c2 = c2;
         this.label = label;
-        this.color = "#ee4512";
+        this.color = "#E60007";
     }
 
     // get_subgraph(g:Graph){

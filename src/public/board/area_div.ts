@@ -51,7 +51,7 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         button.src = "img/parametor/trash.svg";
         button.classList.add("remove_param_button");
         button.title = "Remove parameter";
-        button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); console.log("REMOVE", param, area_id) });
+        button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
         div_parametor.appendChild(button);
 
         
@@ -73,12 +73,12 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         // Span for label
         let span_name = document.createElement('span');
         span_name.classList.add("parametor_name");
-        span_name.title = param.name;
+        span_name.title = param.title;
         // if(a!== null){
         //     let span_area_name = a.get_span_for_area();
         //     div_parametor.appendChild(span_area_name);
         // }
-        span_name.textContent = param.name + (param.is_boolean?"":":");
+        span_name.textContent = param.short_name + (param.is_boolean?"":":");
         div_parametor.appendChild(span_name);
 
         // Span for the result
@@ -218,9 +218,6 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
                 const param_container = document.getElementById("param_list_container_area_"+a_id);
                 if(param_container){
                     param_container.classList.toggle("hidden_list");
-                }
-                else{
-                    console.log("not found", "param_list_container_area_"+a_id)
                 }
             })
 

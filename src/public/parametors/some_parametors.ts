@@ -3,14 +3,14 @@ import { ORIENTATION } from '../board/link';
 import { Graph } from '../board/graph';
 import { Parametor, SENSIBILITY } from './parametor';
 
-export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", true, false, [SENSIBILITY.ELEMENT]);
+export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", "#vertices", "Print the number of vertices", true, false, [SENSIBILITY.ELEMENT]);
 
 param_nb_vertices.compute = ((g: Graph) => {
     return String(g.vertices.size)
 })
 
 
-export let param_nb_edges = new Parametor("Edges number", "edge_number", true, false, [SENSIBILITY.ELEMENT]);
+export let param_nb_edges = new Parametor("Edges number", "edge_number", "#edges", "Print the number of edges", true, false, [SENSIBILITY.ELEMENT]);
 
 param_nb_edges.compute = ((g: Graph) => {
     let counter = 0;
@@ -24,7 +24,7 @@ param_nb_edges.compute = ((g: Graph) => {
 
 
 
-export let param_is_connected = new Parametor("Is connected?", "is_connected", false, true, [SENSIBILITY.ELEMENT]);
+export let param_is_connected = new Parametor("Is connected?", "is_connected","is connected?", "Is the graph/area connected?", false, true, [SENSIBILITY.ELEMENT]);
 
 param_is_connected.compute = ((g: Graph) =>{
 
@@ -49,7 +49,49 @@ param_is_connected.compute = ((g: Graph) =>{
     return "true";
 });
 
-export let param_number_colors = new Parametor("Number vertex colors", "nb_vertex_colors", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
+
+
+export let param_number_connected_comp = new Parametor("Number connected component", "number_connected_comp", "#connected comp.", "Compute the number of connected component (undirected)", false, false, [SENSIBILITY.ELEMENT]);
+
+param_number_connected_comp.compute = ((g: Graph) =>{
+
+    if(g.vertices.size < 1){
+        return "0";
+    }
+    const visited = new Map();
+    for(const index of g.vertices.keys()){
+        visited.set(index, false);
+    }
+
+    let cc = 0;
+    let all_visited = false;
+
+    while(!all_visited){
+        all_visited = true;
+        let first_vertex_index; 
+
+        for (const index of g.vertices.keys()) {
+            if(visited.get(index) === false){
+                first_vertex_index = index;
+                all_visited = false;
+                cc++; 
+                break;
+            }
+        }
+
+        if(all_visited)
+        {
+            break;
+        }
+
+        DFS_recursive(g, first_vertex_index, visited);
+
+    }
+    return String(cc);
+});
+
+
+export let param_number_colors = new Parametor("Number vertex colors", "nb_vertex_colors", "#colors (vertices)", "Print the number of different colors used on the vertices", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
 
 param_number_colors.compute = ((g: Graph) =>{
     let colors_set = new Set<string>();
@@ -62,7 +104,7 @@ param_number_colors.compute = ((g: Graph) =>{
 });
 
 
-export let param_number_geo = new Parametor("GEO", "geo", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]);
+export let param_number_geo = new Parametor("GEO", "geo", "geo", "just a test. to remove", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]);
 
 param_number_geo.compute = ((g: Graph) =>{
     let n = 0;
@@ -76,7 +118,7 @@ param_number_geo.compute = ((g: Graph) =>{
 
 
 
-export let param_min_degree = new Parametor("Minimum degree", "min_degree", true, false, [SENSIBILITY.ELEMENT]);
+export let param_min_degree = new Parametor("Minimum degree", "min_degree", "min degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT]);
 
 param_min_degree.compute = ((g: Graph) =>{
     const data = get_degrees_data(g);
@@ -84,14 +126,14 @@ param_min_degree.compute = ((g: Graph) =>{
 });
 
 
-export let param_max_degree = new Parametor("Maximum degree", "max_degree", true, false, [SENSIBILITY.ELEMENT]);
+export let param_max_degree = new Parametor("Maximum degree", "max_degree", "max degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT]);
 
 param_max_degree.compute = ((g: Graph) =>{
     const data = get_degrees_data(g);
     return String(data.max_value);
 });
 
-export let param_average_degree = new Parametor("Average degree", "avg_degree", true, false, [SENSIBILITY.ELEMENT]);
+export let param_average_degree = new Parametor("Average degree", "avg_degree", "avg. degree", "Print the average degree", true, false, [SENSIBILITY.ELEMENT]);
 
 param_average_degree.compute = ((g: Graph) =>{
     // Remark : If no loop, we can simply use that sum(degree) = 2|E| so avg(degree) = 2|E|/|V|
@@ -102,7 +144,7 @@ param_average_degree.compute = ((g: Graph) =>{
 });
 
 
-export let param_has_proper_coloring = new Parametor("Has proper coloring?", "has_proper_coloring", false, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
+export let param_has_proper_coloring = new Parametor("Proper vertex-coloring?", "has_proper_coloring", "proper vertex-coloring?","Print if the current coloring of the vertices is proper or not", false, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
 
 param_has_proper_coloring.compute = ((g: Graph) =>{
 

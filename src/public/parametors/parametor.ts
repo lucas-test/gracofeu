@@ -35,10 +35,14 @@ export class Parametor {
     is_live:boolean;
     is_boolean:boolean;
     sensibility:Set<SENSIBILITY>;
+    short_name:string;
+    title:string;
 
-    constructor(name: string, id:string, is_live:boolean, is_boolean:boolean, sensibility:Array<SENSIBILITY>) {
+    constructor(name: string, id:string, short_name:string, title:string, is_live:boolean, is_boolean:boolean, sensibility:Array<SENSIBILITY>) {
         this.name = name;
         this.id = id;
+        this.short_name = short_name;
+        this.title = title;
         this.is_live = is_live;
         this.is_boolean = is_boolean;
         this.sensibility = new Set(sensibility);
