@@ -58,16 +58,14 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             if (g.vertices.get(last_down_index).is_selected) {
                 const origin_vertex = g.vertices.get(last_down_index);
                 const data_socket = new Array();
-
                 const mouse_canvas_coord = g.align_position(e, g.get_selected_vertices(), canvas);
-                const mouse_server_coord = local_board.view.serverCoord2(mouse_canvas_coord);
+                const shift = mouse_canvas_coord.sub2(down_coord);
+
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
                     if (v.is_selected) {
-                        const nx = mouse_server_coord.x + v.old_pos.x - origin_vertex.old_pos.x;
-                        const ny = mouse_server_coord.y + v.old_pos.y - origin_vertex.old_pos.y;
-                        data_socket.push({ index: index, x: nx, y: ny });
-                        // socket.emit("update_position", index, e.pageX - view.camera.x + v.old_pos.x - origin_vertex.old_pos.x, e.pageY - view.camera.y + v.old_pos.y - origin_vertex.old_pos.y);
+                        v.translate(shift, local_board.view);
+                        data_socket.push({ index: index, x: v.pos.x, y: v.pos.y });
                     }
                 }
 
@@ -76,11 +74,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
                     const v = g.vertices.get(link.start_vertex)
                     const w = g.vertices.get(link.end_vertex)
                     if (v.is_selected && w.is_selected) {
-                        // TODO
-                        // link.translate_cp(shift, local_board.view);
-                        // link.cp.x = link.old_cp.x + mouse_server_coord.x - origin_vertex.old_pos.x
-                        // link.cp.y = link.old_cp.y + mouse_server_coord.y - origin_vertex.old_pos.y
-                        link.update_canvas_pos(local_board.view);
+                        link.translate_cp(shift, local_board.view);
                         data_socket2.push({ index: index, cp: link.cp })
                     }
                     else if (v.is_selected && !w.is_selected) {

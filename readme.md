@@ -64,7 +64,7 @@ npm run dev
 - [ ] constantes dans un fichier .json ou juste .ts ?? ou avec un css ???
 
 - serverCoord -> inclus automatiquement canvasCoord
-    - [ ] vertex  clean Vertex
+    - [X] vertex
     - [X] link
     - [X] stroke
     - [X] area

@@ -9,12 +9,10 @@ export class LocalVertex {
 
     // local attributes:
     is_selected: boolean;
-    old_pos: ServerCoord;
     index_string: string;
 
     constructor(pos: ServerCoord) {
-        this.pos = new ServerCoord(pos.x, pos.y); // this.pos = pos; does not copy the methods of Coord ...
-        this.old_pos = new ServerCoord(pos.x, pos.y);
+        this.pos = new ServerCoord(pos.x, pos.y);
         this.is_selected = false;
         this.index_string = "";
         this.color = "black";
