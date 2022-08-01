@@ -218,6 +218,11 @@ export class Area{
         this.corner_top_left.update_canvas_pos(view); 
     }
 
+    save_canvas_pos(){
+        this.corner_bottom_right.save_canvas_pos();
+        this.corner_top_left.save_canvas_pos();
+    }
+
     is_containing_vertex(v: LocalVertex): boolean{
         return v.is_in_rect(this.corner_top_left.canvas_pos, this.corner_bottom_right.canvas_pos);
     }

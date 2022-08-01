@@ -97,7 +97,7 @@ npm run dev
     - [X] modifier rectangle area
     - [X] déplacer area
     - [X] voir l'area se créer
-    - [ ] déplacer area avec les sommets dedans -> bug quand on rencontre un sommet initialement pas dedans
+    - [X] déplacer area avec les sommets dedans
 
 - parametre
     - [X] ranger par area

@@ -270,29 +270,39 @@ export class Graph {
         return subgraph;
     }
 
-    translate_area(shift: CanvasCoord, area_index: number){
+    translate_area(shift: CanvasCoord, area_index: number, vertices_contained: Set<number>){
         if( this.areas.has(area_index)){
             const area = this.areas.get(area_index);
-            for (const vertex of this.vertices.values()){
-                if (area.is_containing_vertex(vertex)){
+            this.vertices.forEach((vertex, vertex_index) => {
+                if (vertices_contained.has(vertex_index)){
                     vertex.translate(shift, local_board.view);
                 }
-            }
+            })
             for( const link of this.links.values()){
                 const v1 = this.vertices.get(link.start_vertex);
                 const v2 = this.vertices.get(link.end_vertex);
-                if(area.is_containing_vertex(v1) && area.is_containing_vertex(v2)){
+                if(vertices_contained.has(link.start_vertex) && vertices_contained.has(link.end_vertex)){
                     link.translate_cp(shift, local_board.view);
                 }
-                else if(area.is_containing_vertex(v1)){ // and thus not v2
+                else if(vertices_contained.has(link.start_vertex)){ // and thus not v2
                     link.transform_control_point(v1, v2, local_board.view);
-                }else if(area.is_containing_vertex(v2)) { // and thus not v1
+                }else if(vertices_contained.has(link.end_vertex)) { // and thus not v1
                     link.transform_control_point(v2, v1, local_board.view);
                 }
             }
             area.translate(shift, local_board.view);
             
         }
+    }
+
+    vertices_contained_by_area(area: Area): Set<number>{
+        const set = new Set<number>();
+        this.vertices.forEach((vertex,vertex_index)=> {
+            if (area.is_containing_vertex(vertex)){
+                set.add(vertex_index);
+            }
+        })
+        return set;
     }
 
 }
