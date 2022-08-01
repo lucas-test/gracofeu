@@ -4,3 +4,4 @@ dist
 .vscode
 src/public/img/dracofeu.png
 src/server/.env.json
+src/public/.env.json
