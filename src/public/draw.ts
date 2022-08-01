@@ -1,8 +1,7 @@
 const SELECTION_COLOR = 'green' // avant c'était '#00ffff'
 export const COLOR_BACKGROUND = "#1e1e1e";
 const GRID_COLOR = '#777777';
-const VERTEX_RADIUS = 8;
-const ARC_ARROW_LENGTH = 12
+export const VERTEX_RADIUS = 8;
 const COLOR_ALIGNEMENT_LINE = "#555555"
 
 
@@ -19,6 +18,7 @@ import { interactor_area } from './interactors/area_interactor';
 import { CanvasCoord } from './board/coord';
 import { local_board } from './setup';
 import { ORIENTATION } from './board/link';
+import { drawRoundRect, draw_circle, draw_head, draw_line } from './draw_basics';
 
 
 
@@ -32,25 +32,7 @@ export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     requestAnimationFrame(function () { draw(canvas, ctx, g) })
 }
 
-function draw_head(ctx: CanvasRenderingContext2D, start_pos: CanvasCoord, end_pos: CanvasCoord) {
-    const headlen = ARC_ARROW_LENGTH;
-    let vertex_radius = VERTEX_RADIUS;
-    if (local_board.view.index_type != INDEX_TYPE.NONE) {
-        vertex_radius = VERTEX_RADIUS * 2;
-    }
-    const d = Math.sqrt(start_pos.dist2(end_pos))
-    const tox2 = end_pos.x + (start_pos.x - end_pos.x) * vertex_radius / d
-    const toy2 = end_pos.y + (start_pos.y - end_pos.y) * vertex_radius / d
-    const dx = tox2 - start_pos.x;
-    const dy = toy2 - start_pos.y;
-    const angle = Math.atan2(dy, dx);
-    ctx.beginPath();
-    ctx.moveTo(tox2, toy2);
-    ctx.lineTo(tox2 - headlen * Math.cos(angle - Math.PI / 6), toy2 - headlen * Math.sin(angle - Math.PI / 6));
-    ctx.moveTo(tox2, toy2);
-    ctx.lineTo(tox2 - headlen * Math.cos(angle + Math.PI / 6), toy2 - headlen * Math.sin(angle + Math.PI / 6));
-    ctx.stroke();
-}
+
 
 
 export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
@@ -64,26 +46,6 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     }
 }
 
-export function draw_line(start: CanvasCoord, end: CanvasCoord, ctx: CanvasRenderingContext2D, color: string) {
-    ctx.beginPath();
-    ctx.strokeStyle = color;
-    ctx.moveTo(start.x, start.y);
-    ctx.lineTo(end.x, end.y);
-    ctx.stroke();
-}
-
-
-export function draw_circle(center: CanvasCoord, fillStyle: string, radius: number, alpha: number, ctx: CanvasRenderingContext2D) {
-    if(center != null){
-        ctx.beginPath();
-        ctx.fillStyle = fillStyle;
-        ctx.arc(center.x, center.y, radius, 0, 2 * Math.PI);
-        ctx.globalAlpha = alpha;
-
-        ctx.fill();
-        ctx.globalAlpha = 1;
-    }
-}
 
 export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
     const vertex = g.vertices.get(index);
@@ -468,32 +430,6 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_vertex_creating(ctx);
     draw_rectangular_selection(ctx);
     // draw_following(ctx);
-}
-
-
-
-
-function drawRoundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number, fillColor?: string, strokeColor?: string) {
-    if (w < 2 * r) r = w / 2;
-    if (h < 2 * r) r = h / 2;
-
-    ctx.beginPath();
-    if (typeof fillColor !== 'undefined') {
-        ctx.fillStyle = fillColor;
-    }
-    if (typeof strokeColor !== 'undefined') {
-        ctx.strokeStyle = strokeColor;
-    }
-    ctx.moveTo(x + r, y);
-    ctx.arcTo(x + w, y, x + w, y + h, r);
-    ctx.arcTo(x + w, y + h, x, y + h, r);
-    ctx.arcTo(x, y + h, x, y, r);
-    ctx.arcTo(x, y, x + w, y, r);
-
-    if (typeof fillColor !== 'undefined') {
-        ctx.fill();
-    }
-    ctx.closePath();
 }
 
 

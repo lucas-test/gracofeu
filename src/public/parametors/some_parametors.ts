@@ -2,6 +2,7 @@
 import { ORIENTATION } from '../board/link';
 import { Graph } from '../board/graph';
 import { Parametor, SENSIBILITY } from './parametor';
+import { is_segments_intersection, is_triangles_intersection } from '../utils';
 
 export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", "#vertices", "Print the number of vertices", true, false, [SENSIBILITY.ELEMENT]);
 
@@ -104,16 +105,29 @@ param_number_colors.compute = ((g: Graph) =>{
 });
 
 
-export let param_number_geo = new Parametor("GEO", "geo", "geo", "just a test. to remove", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]);
+export let param_number_geo = new Parametor("Is currently planar?", "planar_current", "planar_current", "Return true iff currently planar", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]);
 
 param_number_geo.compute = ((g: Graph) =>{
-    let n = 0;
-    for(const v of g.vertices.values())
-    {
-        n += v.pos.x > 0?0:1;
+    
+    for ( const link_index of g.links.keys()){
+        const link1 = g.links.get(link_index);
+        const v1 = g.vertices.get(link1.start_vertex);
+        const w1 = g.vertices.get(link1.end_vertex);
+        const z1 = link1.cp;
+        for ( const link_index2 of g.links.keys()){
+            const link2 = g.links.get(link_index2);
+            const v2 = g.vertices.get(link2.start_vertex);
+            const w2 = g.vertices.get(link2.end_vertex);
+            const z2 = link2.cp;
+            if( link_index2 != link_index && 
+                //is_segments_intersection(v1.pos, w1.pos, v2.pos, w2.pos)
+                is_triangles_intersection(v1.pos,w1.pos,z1, v2.pos,w2.pos,z2)
+                ){
+                return "false";
+            }
+        }
     }
-    return String(n);
-
+    return "true";
 });
 
 
