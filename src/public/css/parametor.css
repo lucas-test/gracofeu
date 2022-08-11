@@ -285,7 +285,7 @@
 }
 
 .hidden_list {
-    display: none;
+    display: none!important;
 }
 
 .invalid_result {

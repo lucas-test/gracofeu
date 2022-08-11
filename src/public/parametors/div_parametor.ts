@@ -95,7 +95,7 @@ export function params_available_turn_on_div() {
 
 
 function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx:CanvasRenderingContext2D, g:Graph){
-    console.log("CLICKY CLICKY", param);
+    // console.log("CLICKY CLICKY", param);
 
 
     // if there is no area, click on the parametor just computes it on the full graph
@@ -109,7 +109,7 @@ function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx
         const containerDOM = document.getElementById(`param_div_${param.id}_list_graph_container`);
 
         // We toggle its visibility
-        console.log("AVANT", containerDOM.style.display)
+        // console.log("AVANT", containerDOM.style.display)
         if(containerDOM.style.display != "block"){
             containerDOM.style.display = "block"
         }
@@ -117,6 +117,6 @@ function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx
             containerDOM.style.display = "none"
         }
 
-        console.log("APRES", containerDOM.style.display)
+        // console.log("APRES", containerDOM.style.display)
     }
 }
