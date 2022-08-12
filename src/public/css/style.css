@@ -3,15 +3,15 @@ body {
     margin: 0;
     width: 100vw;
     height: 100vh;
-    background-color: #1e1e1e;
+    background-color: var(--background_color_page);
 }
 
 #actions {
     border-radius: 5px;
-    background-color: white;
-    position: fixed;
+    background-color: var(--background_color_div);
+    /* position: fixed;
     top: 7px;
-    left: 7px;
+    left: 7px; */
 }
 
 .action {
@@ -28,7 +28,7 @@ body {
 
 .subaction_container {
     border-radius: 5px;
-    background-color: white;
+    background-color: var(--background_color_div);
     position: fixed;
     top: 70px;
     left: 7px;
@@ -54,7 +54,7 @@ body {
 
 #interaction_mode_selector {
     border-radius: 5px;
-    background-color: white;
+    background-color: var(--background_color_div);
     position: fixed;
     top: 50%;
     left: 7px;
@@ -65,7 +65,7 @@ body {
     margin: 8px;
     padding: 6px;
     transition: 250ms;
-    background-color: white;
+    /* background-color: white; */
 }
 
 .interactor:hover {
@@ -113,7 +113,7 @@ body {
 
 #border {
     box-sizing: border-box;
-    border: #1e1e1e 5px solid;
+    border: var(--background_color_page) 5px solid;
     padding: 0;
     margin: 0;
     display: flex;
@@ -123,4 +123,14 @@ body {
 #main {
     width: calc(100vw - 10px);
     height: calc(100vh - 10px);
+}
+
+#top_left_container {
+    position: fixed;
+    top: 7px;
+    left: 7px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    column-gap: 5px;
 }

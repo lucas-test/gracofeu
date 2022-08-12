@@ -21,6 +21,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     // USERS
     socket.on('myId', handle_my_id);
     socket.on('room_id', handle_room_id);
+    socket.on('update_room_id', handle_update_room_id);
     socket.on('update_user', update_user);
     socket.on('remove_user', remove_user);
     socket.on('clients', handle_clients);
@@ -35,6 +36,10 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         if (room_id === "null") {
             window.history.replaceState(null, null, "?room_id="+romm_id);
         }
+    }
+
+    function handle_update_room_id(new_romm_id:number){
+            window.history.replaceState(null, null, "?room_id="+new_romm_id);
     }
 
     function handle_update_view_follower(x:number, y:number, zoom:number, id:string){

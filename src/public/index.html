@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Graccoon</title>
+    <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/modifyers.css">
     <link rel="stylesheet" href="css/parametor.css">
@@ -17,18 +18,25 @@
     <div id="border">
         <canvas id="main"></canvas>
     </div>
+    <div id="top_left_container">
+
+        <div id="actions"></div>
+        <div id="users_div">
+            <div id="self_user">
+                <div id="self_user_color"></div>
+                <div contenteditable="true" spellcheck="false" id="self_user_label"></div>
+            </div>
+            <div id="user_list"></div>
+        </div>
+    </div>
+
     <div id="interaction_mode_selector"></div>
+
     <div id="params_loaded">
         <div id="params_loaded_button" class="div_button">+</div>
         <div id="subgraph_list"></div>
     </div>
-    <div id="users_div">
-        <div id="self_user">
-            <div id="self_user_color"></div>
-            <div contenteditable="true" spellcheck="false" id="self_user_label"></div>
-        </div>
-        <div id="user_list"></div>
-    </div>
+
     <div id="params_available">Parameters<span id="params_available_button"></span></div>
     <!--
     <div id="modifyor"><button onclick="modifyers_list_turn_on_div()">Modify</button></div>
@@ -36,7 +44,6 @@
         <h3>Modifyers:</h3><button onclick="modifyers_list_turn_off_div()">Close</button>
     </div>
     -->
-    <div id="actions"></div>
     <div id="area_list_container"></div>
 </body>
 

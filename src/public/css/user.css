@@ -1,9 +1,10 @@
 #users_div {
-    background-color: #fff;
+    background-color: var(--background_color_div);
+    color: var(--color_div);
     border-radius: 5px;
-    position: fixed;
+    /* position: fixed;
     top: 7px;
-    left: 342px;
+    left: 342px; */
     font-family: sans-serif;
     display: flex;
     /* align-items: center; */

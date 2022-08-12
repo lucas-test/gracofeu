@@ -145,7 +145,8 @@ io.sockets.on('connection', function (client) {
             console.log(clientRooms);
         }
         else {
-            console.log("asked room does not exist")
+            console.log("asked room does not exist");
+            client.emit("update_room_id", room_id);
         }
     }
 

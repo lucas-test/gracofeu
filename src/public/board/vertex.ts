@@ -1,3 +1,4 @@
+import { COLOR_INNER_VERTEX_DEFAULT } from "../draw";
 import { View } from "./camera";
 import { CanvasCoord, ServerCoord } from "./coord";
 
@@ -15,7 +16,7 @@ export class LocalVertex {
         this.pos = new ServerCoord(pos.x, pos.y);
         this.is_selected = false;
         this.index_string = "";
-        this.color = "black";
+        this.color = COLOR_INNER_VERTEX_DEFAULT;
     }
 
     save_pos() {

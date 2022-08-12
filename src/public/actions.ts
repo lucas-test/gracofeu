@@ -1,5 +1,5 @@
 import { INDEX_TYPE } from "./board/camera";
-import { draw } from "./draw";
+import { COLOR_BACKGROUND, draw, toggle_dark_mode } from "./draw";
 import { Graph } from "./board/graph";
 import { socket } from "./socket";
 import { TikZ_create_file_data } from "./tikz";
@@ -23,6 +23,21 @@ export class Action {
     }
 }
 
+
+let dark_mode_action = new Action("dark_mode", "Toggle dark mode", "dark_mode.svg", "");
+
+dark_mode_action.trigger = () =>
+{
+    if(local_board.view.dark_mode){
+        toggle_dark_mode(false);
+        local_board.view.dark_mode = false;
+    }
+    else{
+        toggle_dark_mode(true);
+        local_board.view.dark_mode = true;
+    }
+
+}
 
 
 let share_action = new Action("share_link", "Share url", "share.svg", "");
@@ -165,7 +180,7 @@ grid_action.trigger = () => {
 
 
 export let actions_available = new Array<Action>();
-actions_available.push(grid_action, align_action, index_action, share_action, save_file_action, load_file_action)
+actions_available.push(grid_action, align_action, index_action, dark_mode_action, share_action, save_file_action, load_file_action)
 
 export function select_action(action: Action, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph){
     document.getElementById(action.name + "_subactions").style.display = "block";

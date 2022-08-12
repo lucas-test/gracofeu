@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="100mm"
+   height="100mm"
+   viewBox="0 0 100 100"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   sodipodi:docname="dark_mode.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="220.71833"
+     inkscape:cy="246.9823"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="2367"
+     inkscape:window-y="1791"
+     inkscape:window-maximized="1"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:6.53604;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers stroke fill"
+       id="rect837"
+       width="8.4611244"
+       height="0.34828904"
+       x="23.631384"
+       y="6.646554"
+       ry="0.1023342"
+       transform="matrix(0.73579854,0.6772005,-0.6801622,0.73306165,0,0)"
+       inkscape:transform-center-x="-1.2948038"
+       inkscape:transform-center-y="-1.7803558" />
+    <a
+       id="a963"
+       transform="matrix(1.3484096,0,0,1.3484096,-12.297926,-18.626126)">
+      <path
+         sodipodi:type="star"
+         style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers stroke fill"
+         id="path857"
+         sodipodi:sides="37"
+         sodipodi:cx="50.005692"
+         sodipodi:cy="49.96777"
+         sodipodi:r1="21.051039"
+         sodipodi:r2="20.975201"
+         sodipodi:arg1="-0.80025467"
+         sodipodi:arg2="-0.71534676"
+         inkscape:flatsided="true"
+         inkscape:rounded="0"
+         inkscape:randomized="0"
+         d="m 64.668245,34.862944 2.341821,2.695253 1.852635,3.052253 1.310154,3.321447 0.729981,3.495088 0.128808,3.568181 -0.47607,3.538625 -1.067253,3.407269 -1.627732,3.177892 -2.141386,2.857093 -2.593434,2.4541 -2.970875,1.980508 -3.26285,1.449939 -3.460957,0.877659 -3.5595,0.28013 -3.555641,-0.325457 -3.449495,-0.921683 -3.244111,-1.491392 -2.945401,-2.018198 -2.561958,-2.486943 -2.10481,-2.884143 -1.587113,-3.198372 -1.023755,-3.42059 -0.430947,-3.544403 0.174258,-3.566251 0.774452,-3.485504 1.352364,-3.304485 1.891373,-3.028402 2.375969,-2.665198 2.792214,-2.22532 3.128132,-1.721425 3.374058,-1.168007 3.52292,-0.580988 3.570433,0.02275 3.515232,0.625825 3.358903,1.210899 3.105946,1.76114 z"
+         inkscape:transform-center-x="0.0046140673"
+         inkscape:transform-center-y="0.026129671"
+         transform="matrix(0.81070515,0,0,0.81070515,20.783348,10.037422)" />
+      <path
+         sodipodi:type="spiral"
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:5;stroke-dasharray:none"
+         id="path907"
+         sodipodi:cx="33.261906"
+         sodipodi:cy="79.752975"
+         sodipodi:expansion="0"
+         sodipodi:revolution="2.9889388"
+         sodipodi:radius="17.075993"
+         sodipodi:argument="-18.325956"
+         sodipodi:t0="0.75741833"
+         d="m 23.468548,93.74153 c -7.62002,-5.33476 -9.529957,-16.161893 -4.195197,-23.781913 5.33476,-7.620019 16.161893,-9.529956 23.781913,-4.195196 6.797347,4.758808 9.191861,14.022313 5.552087,21.479003"
+         transform="matrix(0.19565426,-0.97920389,0.97920389,0.19565426,-44.536954,67.502616)" />
+    </a>
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:6.53604;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers stroke fill"
+       id="rect965"
+       width="8.4611244"
+       height="0.34828904"
+       x="10.427929"
+       y="-40.12677"
+       ry="0.1023342"
+       transform="matrix(0.01241239,0.99992296,-0.99996489,0.00837996,0,0)"
+       inkscape:transform-center-x="-2.1835219"
+       inkscape:transform-center-y="-0.28006882" />
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:6.53604;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers stroke fill"
+       id="rect967"
+       width="8.4611244"
+       height="0.34828904"
+       x="80.987686"
+       y="-39.832737"
+       ry="0.1023342"
+       transform="matrix(0.01241239,0.99992296,-0.99996489,0.00837996,0,0)"
+       inkscape:transform-center-x="-2.18352"
+       inkscape:transform-center-y="-0.2800713" />
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:6.53604;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers stroke fill"
+       id="rect969"
+       width="8.4611244"
+       height="0.34828904"
+       x="43.238224"
+       y="-60.632141"
+       ry="0.1023342"
+       transform="matrix(-0.62251672,0.7826065,-0.78008975,-0.62566763,0,0)"
+       inkscape:transform-center-x="-1.8688902"
+       inkscape:transform-center-y="1.1633853" />
+    <rect
+       style="fill:#000000;stroke:#000000;stroke-width:6.51121;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:none;paint-order:markers stroke fill"
+       id="rect971"
+       width="7.9516511"
+       height="0.36779392"
+       x="-12.104172"
+       y="-47.375698"
+       ry="0.10806511"
+       transform="matrix(-0.99991675,-0.01290297,0.01380726,-0.99990468,0,0)"
+       inkscape:transform-center-x="-0.21409299"
+       inkscape:transform-center-y="2.3122705" />
+  </g>
+</svg>

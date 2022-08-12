@@ -42,6 +42,8 @@ export class View {
 
     following: string;
 
+    dark_mode: boolean;
+
     // window_height:number;
     // window_width:number;
 
@@ -66,6 +68,7 @@ export class View {
 
         this.following = null;
 
+        this.dark_mode = true;
         // this.window_width = window.innerWidth;
         // this.window_height = window.innerHeight;
     }
