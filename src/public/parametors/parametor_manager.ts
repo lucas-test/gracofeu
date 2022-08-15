@@ -121,12 +121,12 @@ function invalid_parametor(param){
 export function update_parametor(g:Graph, param){
     const result_span = document.getElementById("span_result_" + param.html_id);
     if(param.area_id === null){
-        var result = param.parametor.compute(g);
+        var result = param.parametor.compute(g, true);
         update_result_span(result, param.parametor, result_span);
     }
     else{
         if(g.areas.has(param.area_id)){
-            var result = param.parametor.compute(g.get_subgraph_from_area(param.area_id));
+            var result = param.parametor.compute(g.get_subgraph_from_area(param.area_id), true);
             update_result_span(result, param.parametor, result_span);
         }
         else{

@@ -134,8 +134,17 @@ param_number_geo.compute = ((g: Graph) =>{
 
 export let param_min_degree = new Parametor("Minimum degree", "min_degree", "min degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT]);
 
-param_min_degree.compute = ((g: Graph) =>{
+param_min_degree.compute = ((g: Graph, verbose) =>{
     const data = get_degrees_data(g);
+    if( verbose){
+        for( const vertex_index of data.min_vertices){
+            const vertex = g.vertices.get(vertex_index);
+            vertex.color = "red";
+        }
+        g.vertices.forEach((vertex, vertex_index)=> {
+            vertex.update_param(param_min_degree.id, String(g.get_neighbors_list(vertex_index).length));
+        })
+    }
     return String(data.min_value);
 });
 

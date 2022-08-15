@@ -31,12 +31,15 @@ export function get_sensibilities(s:Array<string>):Set<SENSIBILITY>{
 export class Parametor {
     name: string;
     id:string;
-    compute: (g: Graph) => string;
+    compute: (g: Graph, verbose: boolean) => string;
     is_live:boolean;
     is_boolean:boolean;
     sensibility:Set<SENSIBILITY>;
     short_name:string;
     title:string;
+
+    // Instance
+    is_verbose: boolean;
 
     constructor(name: string, id:string, short_name:string, title:string, is_live:boolean, is_boolean:boolean, sensibility:Array<SENSIBILITY>) {
         this.name = name;

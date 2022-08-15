@@ -1,6 +1,13 @@
 import { View } from "./camera";
 import { CanvasCoord, ServerCoord } from "./coord";
 
+export class ParameterValue {
+    value: string;
+
+    constructor(value: string){
+        this.value = value;
+    }
+}
 
 export class LocalVertex {
     // server attributes:
@@ -10,12 +17,18 @@ export class LocalVertex {
     // local attributes:
     is_selected: boolean;
     index_string: string;
+    parameter_values: Map<string,ParameterValue>;
 
     constructor(pos: ServerCoord) {
         this.pos = new ServerCoord(pos.x, pos.y);
         this.is_selected = false;
         this.index_string = "";
         this.color = "black";
+        this.parameter_values = new Map();
+    }
+
+    update_param(param_id: string, value: string){
+        this.parameter_values.set(param_id, new ParameterValue(value));
     }
 
     save_pos() {

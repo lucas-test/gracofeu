@@ -70,6 +70,15 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
         const pos = vertex.pos.canvas_pos
         ctx.fillText(vertex.index_string, pos.x - measure.width / 2, pos.y + 5);
     }
+
+    // DRAW PARAMETER VALUES
+    for( const pv of vertex.parameter_values.values()){
+        ctx.font = "17px Arial";
+        const measure = ctx.measureText(pv.value);
+        ctx.fillStyle = "white"
+        const pos = vertex.pos.canvas_pos
+        ctx.fillText(pv.value, pos.x - measure.width / 2, pos.y + 25);
+    }
 }
 
 function draw_user_label(x:number, y:number, label:string, multicolor:Multicolor, ctx: CanvasRenderingContext2D){
