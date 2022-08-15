@@ -20,6 +20,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     
     // USERS
     socket.on('myId', handle_my_id);
+    socket.on('room_id', handle_room_id);
+    socket.on('update_room_id', handle_update_room_id);
     socket.on('update_user', update_user);
     socket.on('remove_user', remove_user);
     socket.on('clients', handle_clients);
@@ -27,6 +29,18 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('send_view', handle_send_view);
     socket.on('view_follower', handle_update_view_follower);
 
+    function handle_room_id(romm_id:number){
+        let url = new URL(document.URL);
+        let urlsp = url.searchParams;
+        let room_id = encodeURI(urlsp.get("room_id"));
+        if (room_id === "null") {
+            window.history.replaceState(null, null, "?room_id="+romm_id);
+        }
+    }
+
+    function handle_update_room_id(new_romm_id:number){
+            window.history.replaceState(null, null, "?room_id="+new_romm_id);
+    }
 
     function handle_update_view_follower(x:number, y:number, zoom:number, id:string){
         // console.log("FOLLOWING USER:", x,y,zoom, id);

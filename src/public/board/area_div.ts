@@ -3,7 +3,7 @@ import { center_canvas_on_rectangle } from "./camera";
 import { CanvasCoord } from "./coord";
 import { COLOR_BACKGROUND, draw } from "../draw";
 import { Parametor } from "../parametors/parametor";
-import { params_available, params_loaded, update_parametor } from "../parametors/parametor_manager";
+import { params_available, params_loaded, remove_loaded_param, update_parametor } from "../parametors/parametor_manager";
 import { socket } from "../socket";
 import { Board } from "./board";
 import { LocalVertex } from "./vertex";
@@ -233,6 +233,7 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
         const param_containerDOM = document.createElement("div");
         param_containerDOM.classList.add("param_list_container");
         param_containerDOM.id = "param_list_container_area_"+a_id;
+        param_containerDOM.style.display="none";
         for(const param of params_available){
             const div_parametor = init_parametor_div(param, a, board);
             if(div_parametor !== null){
@@ -243,21 +244,5 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
 
         const param_list = document.getElementById("subgraph_list");
         param_list.appendChild(area_DOM);
-    }
-}
-
-
-
-export function remove_loaded_param(param_id: string, area_id:number) {
-    for (var i = 0; i < params_loaded.length; i++) {
-        if (params_loaded[i].parametor.id == param_id && area_id == params_loaded[i].area_id) {
-            const DOM = document.getElementById("param_" + params_loaded[i].html_id);
-            // console.log("FOUND DOM", DOM);
-            if(DOM !== null){
-                DOM.classList.add("inactive_parametor");
-            }
-            params_loaded.splice(i, 1);
-            return
-        }
     }
 }

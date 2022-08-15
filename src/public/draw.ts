@@ -1,8 +1,11 @@
 const SELECTION_COLOR = 'green' // avant c'était '#00ffff'
-export const COLOR_BACKGROUND = "#1e1e1e";
+export let COLOR_BACKGROUND = "#1e1e1e";
 const GRID_COLOR = '#777777';
 export const VERTEX_RADIUS = 8;
-const COLOR_ALIGNEMENT_LINE = "#555555"
+const COLOR_ALIGNEMENT_LINE = "#555555";
+export let COLOR_INDEX = "#ffffff";
+export let COLOR_BORDER_VERTEX = "#ffffff";
+export let COLOR_INNER_VERTEX_DEFAULT = "#000000";
 
 
 import { INDEX_TYPE } from './board/camera';
@@ -21,6 +24,49 @@ import { ORIENTATION } from './board/link';
 import { drawRoundRect, draw_circle, draw_head, draw_line } from './draw_basics';
 
 
+export function toggle_dark_mode(enable:boolean){
+    const action_DOM = document.getElementById("actions");
+    const interactor_DOM = document.getElementById("interaction_mode_selector");
+    const border_DOM = document.getElementById("border"); // TODO: Change border color and check if someone is followed first
+    if(enable){
+        COLOR_BACKGROUND = "#1e1e1e";
+        // COLOR_INDEX = "#ffffff";
+        COLOR_BORDER_VERTEX = "#ffffff";
+        document.documentElement.style.setProperty(`--background_color_div`, "#ffffff"); 
+        document.documentElement.style.setProperty(`--color_div`, "#000000"); 
+
+        const action_svgs = action_DOM.getElementsByTagName('img');
+        for(const svg of action_svgs){
+            svg.style.filter = "";
+        }
+
+        const interactor_svgs = interactor_DOM.getElementsByTagName('img');
+        for(const svg of interactor_svgs){
+            svg.style.filter = "";
+        }
+        // action_DOM.style.backgroundColor = "#fff";
+    }
+    else{
+        COLOR_BACKGROUND = "#f1f1f1";
+        // COLOR_INDEX = "#ffffff";
+        COLOR_BORDER_VERTEX = "#000000";
+
+        
+        document.documentElement.style.setProperty(`--background_color_div`, "#202124"); 
+        document.documentElement.style.setProperty(`--color_div`, "#ffffff"); 
+
+        const action_svgs = action_DOM.getElementsByTagName('img');
+        for(const svg of action_svgs){
+            svg.style.filter = "invert(100%) sepia(0%) saturate(2%) hue-rotate(115deg) brightness(102%) contrast(100%)";
+            console.log(svg.style);
+        }
+
+        const interactor_svgs = interactor_DOM.getElementsByTagName('img');
+        for(const svg of interactor_svgs){
+            svg.style.filter = "invert(100%) sepia(0%) saturate(2%) hue-rotate(115deg) brightness(102%) contrast(100%)";
+        }
+    }
+}
 
 
 
@@ -57,7 +103,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     if (vertex.is_selected) {
         draw_circle(vertex.pos.canvas_pos, SELECTION_COLOR, vertex_radius, 1, ctx);
     } else {
-        draw_circle(vertex.pos.canvas_pos, "white", vertex_radius, 1, ctx);
+        draw_circle(vertex.pos.canvas_pos, COLOR_BORDER_VERTEX, vertex_radius, 1, ctx);
     }
 
     draw_circle(vertex.pos.canvas_pos, vertex.color, vertex_radius - 2, 1, ctx);
@@ -66,7 +112,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     if (local_board.view.index_type != INDEX_TYPE.NONE) {
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
-        ctx.fillStyle = "white"
+        ctx.fillStyle = COLOR_INDEX;
         const pos = vertex.pos.canvas_pos
         ctx.fillText(vertex.index_string, pos.x - measure.width / 2, pos.y + 5);
     }

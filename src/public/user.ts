@@ -62,6 +62,7 @@ export function update_user_list_div() {
         newDiv.classList.add("user");
         newDiv.style.color = u.multicolor.contrast;
         newDiv.innerHTML = u.label.substring(0, 1);
+        newDiv.title = "Click to follow " + u.label;
         newDiv.style.background = u.multicolor.color;
         newDiv.style.borderColor = u.multicolor.color;
         newDiv.dataset.label = u.label;
@@ -74,7 +75,7 @@ export function update_user_list_div() {
                 self_user.follow(u.id);
             }
         }
-        div.appendChild(newDiv)
+        div.appendChild(newDiv);
     }
 }
 

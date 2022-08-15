@@ -3,7 +3,7 @@ import { param_average_degree, param_has_proper_coloring, param_is_connected, pa
 import { Parametor, SENSIBILITY } from './parametor';
 import { Graph } from '../board/graph';
 import { Area } from '../board/area';
-import { get_title_span_for_area, remove_loaded_param } from '../board/area_div';
+import { get_title_span_for_area } from '../board/area_div';
 
 
 
@@ -32,7 +32,10 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
             update_parametor(g, param_to_load);
             requestAnimationFrame(function () { draw(canvas, ctx, g) })
         }
+        
+        toggle_list_separator(area_id, true);
     }
+    
 
 
 
@@ -186,5 +189,40 @@ function update_result_span(result:string, param, result_span:HTMLElement, inval
 // }
 
 
+function toggle_list_separator(area_id:number, toggle:boolean){
+    const list_container_DOM = document.getElementById("param_list_container_area_"+area_id);
+    if(list_container_DOM){
+       if(toggle){
+        list_container_DOM.style.display = "block";
+       }
+       else{
+        list_container_DOM.style.display = "none";
+       }
+    }
+    console.log("Toggled !!!")
+}
+
+
+export function remove_loaded_param(param_id: string, area_id:number) {
+    for (var i = 0; i < params_loaded.length; i++) {
+        if (params_loaded[i].parametor.id == param_id && area_id == params_loaded[i].area_id) {
+            const DOM = document.getElementById("param_" + params_loaded[i].html_id);
+            //Removing DOM
+            if(DOM !== null){
+                DOM.classList.add("inactive_parametor");
+            }
+            params_loaded.splice(i, 1);
+            break;
+        }
+    }
+      
+    // Checking if there are loaded parametors for the area
+    for (var j = 0; j < params_loaded.length; j++) {
+        if (area_id == params_loaded[j].area_id) {
+            return
+        }
+    }
+    toggle_list_separator(area_id, false);
+}
 
 
