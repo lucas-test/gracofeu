@@ -92,30 +92,44 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
                 break;
             }
 
-            if(corner_number === AREA_CORNER.TOP_LEFT || corner_number === AREA_CORNER.BOT_RIGHT)
+            if(corner_number === AREA_CORNER.TOP_LEFT)
             {
                 document.body.style.cursor = "nw-resize";
                 break;
             }
+            if(corner_number === AREA_CORNER.BOT_RIGHT)
+            {
+                document.body.style.cursor = "se-resize";
+                break;
+            }
             if(corner_number === AREA_CORNER.TOP_RIGHT)
+            {
+                document.body.style.cursor = "ne-resize";
+                break;
+            }
+            if(corner_number === AREA_CORNER.BOT_LEFT)
             {
                 document.body.style.cursor = "sw-resize";
                 break;
             }
-            // if(corner_number === AREA_CORNER.BOT_LEFT)
-            // {
-            //     document.body.style.cursor = "ne-resize";
-            //     break;
-            // }
     
-            if(side_number === AREA_SIDE.TOP || side_number === AREA_SIDE.BOT)
-            {
+            if(side_number === AREA_SIDE.TOP){
                 document.body.style.cursor = "n-resize";
                 break;
             }
-            if(side_number === AREA_SIDE.LEFT || side_number === AREA_SIDE.RIGHT)
+            if(side_number === AREA_SIDE.BOT)
             {
+                document.body.style.cursor = "s-resize";
+                break;
+            }
+
+            if(side_number === AREA_SIDE.LEFT){
                 document.body.style.cursor = "w-resize";
+                break;
+            }
+            if(side_number === AREA_SIDE.RIGHT)
+            {
+                document.body.style.cursor = "e-resize";
                 break;
             }
     
