@@ -107,7 +107,7 @@ npm run dev
     - [X] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
     - [X] update parametre
     - parametres classiques : 
-        - [ ] distance (diametre)
+        - [X] distance (diametre)
         - [X] degré (min, max, moyen)
         - [ ] séquence degrés
         - [X] is_connected
@@ -161,7 +161,7 @@ npm run dev
 
 # Known issues 
 - Chrome : no export to file? 
-- Parametors may appear several times
+- Diameter : Only non oriented
 - zoom and create links
     solution : changer les canvasCoord en serverCoord (genre link_creating_start) puis au zoom mettre à jour les serverCoord dans view
     OU

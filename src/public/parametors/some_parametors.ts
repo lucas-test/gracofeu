@@ -207,6 +207,28 @@ param_has_proper_coloring.compute = ((g: Graph) =>{
 
 
 
+export let param_diameter = new Parametor("Diameter", "diameter", "diameter","Print the diameter of the graph", false, false, [SENSIBILITY.ELEMENT]);
+
+param_diameter.compute = ((g: Graph) =>{
+    const FW = Floyd_Warhall(g);
+    let diameter = 0;
+
+    for(const v_index of g.vertices.keys()){
+        for(const u_index of g.vertices.keys()){
+            if(diameter < FW.distances.get(v_index).get(u_index)){
+                diameter = FW.distances.get(v_index).get(u_index);
+            }
+        }
+    }
+
+    if(diameter === Infinity){
+        return String("+∞")
+    }
+    return String(diameter);
+});
+
+
+
 
 function get_degrees_data(g:Graph){
     if(g.vertices.size == 0){
@@ -281,4 +303,57 @@ function DFS_iterative(g:Graph, v_index : number){
     }
 
     return visited;
+}
+
+
+
+function Floyd_Warhall(g:Graph){
+    const dist = new Map<number, Map<number, number>>();
+    const next = new Map<number, Map<number, number>>();
+
+    for(const v_index of g.vertices.keys()){
+        dist.set(v_index, new Map<number, number>());
+        next.set(v_index, new Map<number, number>());
+
+        for(const u_index of g.vertices.keys()){
+            if(v_index===u_index){
+                dist.get(v_index).set(v_index, 0);
+                next.get(v_index).set(v_index, v_index);
+            }
+            else {
+                dist.get(v_index).set(u_index, Infinity);
+                next.get(v_index).set(u_index, Infinity);
+            }
+        }
+    }
+
+    for(const e_index of g.links.keys())
+    {
+        const e = g.links.get(e_index);
+        // TODO: Change 1 into weight of the edge
+        // TODO: Oriented Case
+        dist.get(e.start_vertex).set(e.end_vertex, 1);
+        dist.get(e.end_vertex).set(e.start_vertex, 1);
+
+        next.get(e.start_vertex).set(e.end_vertex, e.start_vertex);
+        next.get(e.end_vertex).set(e.start_vertex, e.end_vertex);
+    }
+
+    for(const k_index of g.vertices.keys()){
+        for(const i_index of g.vertices.keys()){
+            for(const j_index of g.vertices.keys()){
+                const direct = dist.get(i_index).get(j_index);
+                const shortcut_part_1 = dist.get(i_index).get(k_index);
+                const shortcut_part_2 = dist.get(k_index).get(j_index);
+
+                if(direct > shortcut_part_1 + shortcut_part_2){
+                    dist.get(i_index).set(j_index, shortcut_part_1+shortcut_part_2);
+                    next.get(i_index).set(j_index, next.get(i_index).get(k_index));
+                }
+            }
+        }
+    }
+
+    return {distances:dist, next:next};
+
 }
