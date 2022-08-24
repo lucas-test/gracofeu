@@ -203,13 +203,12 @@ function toggle_list_separator(area_id:number, toggle:boolean){
     const list_container_DOM = document.getElementById("param_list_container_area_"+area_id);
     if(list_container_DOM){
        if(toggle){
-        list_container_DOM.style.display = "block";
+        list_container_DOM.style.display = "flex";
        }
        else{
         list_container_DOM.style.display = "none";
        }
     }
-    console.log("Toggled !!!")
 }
 
 

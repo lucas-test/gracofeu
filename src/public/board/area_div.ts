@@ -42,33 +42,20 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         
     if( div_parametor === null)
     {
+        let nb_hidden_buttons = 1;
+        if(!param.is_live){
+            nb_hidden_buttons++;
+        }
+
         // Div for the parametor
         div_parametor = document.createElement("div");
         div_parametor.classList.add("parametor_printed", "inactive_parametor");
         div_parametor.id = "param_" + html_id;
 
-        // Remove button
-        let button = document.createElement('img');
-        button.src = "img/parametor/trash.svg";
-        button.classList.add("remove_param_button");
-        button.title = "Remove parameter";
-        button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
-        div_parametor.appendChild(button);
-
-        
-        if(!param.is_live){
-            let svg_reload_parametor = document.createElement("img");
-            svg_reload_parametor.id = "img_reload_" + html_id;
-            svg_reload_parametor.title = "Recompute parameter";
-            svg_reload_parametor.src = "img/parametor/reload.svg";
-            svg_reload_parametor.addEventListener('click', ()=>{update_parametor(g,param_to_load)});
-            svg_reload_parametor.classList.add("reload_img");
-            div_parametor.appendChild(svg_reload_parametor);
-        }
-        else{
-            let empty_reload_parametor = document.createElement("span");
-            div_parametor.appendChild(empty_reload_parametor);
-        }
+        //Div for label and result
+        let div_label_and_result = document.createElement("div");
+        div_label_and_result.classList.add("param_name_result_container", `hiding_buttons-${nb_hidden_buttons}`);
+        div_parametor.appendChild(div_label_and_result);
 
 
         // Span for label
@@ -80,18 +67,68 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         //     div_parametor.appendChild(span_area_name);
         // }
         span_name.textContent = param.short_name + (param.is_boolean?"":":");
-        div_parametor.appendChild(span_name);
+        div_label_and_result.appendChild(span_name);
+
+
 
         // Span for the result
         let span_result = document.createElement("span");
         span_result.id = "span_result_" + html_id;
-        span_result.textContent = "?";
+        if(!param.is_boolean){
+            span_result.textContent = "?";
+        }
         span_result.title="Not computed yet. Click on the refresh icon to launch the computation."
         span_result.classList.add("result_span");
         if(param.is_boolean){
             span_result.classList.add("boolean_result", "inactive_boolean_result");
         }
-        div_parametor.appendChild(span_result);
+        div_label_and_result.appendChild(span_result);
+
+
+
+        //Div for hidden_buttons
+        let div_hidden_buttons = document.createElement("div");
+
+        div_hidden_buttons.classList.add("hidden_buttons_container", `hided_buttons-${nb_hidden_buttons}`);
+        div_parametor.appendChild(div_hidden_buttons);
+
+
+
+        // Reload button
+        if(!param.is_live){
+            let div_button = document.createElement("div");
+            div_button.classList.add("hidden_button_div", "hidden_reload");
+
+            let svg_reload_parametor = document.createElement("img");
+            div_button.appendChild(svg_reload_parametor);
+
+            svg_reload_parametor.classList.add("white_svg", "hidden_button");
+            svg_reload_parametor.id = "img_reload_" + html_id;
+            svg_reload_parametor.title = "Recompute parameter";
+            svg_reload_parametor.src = "img/parametor/reload.svg";
+            svg_reload_parametor.addEventListener('click', ()=>{update_parametor(g,param_to_load)});
+            svg_reload_parametor.classList.add("reload_img");
+            div_hidden_buttons.appendChild(div_button);
+        }
+        else{
+            let empty_reload_parametor = document.createElement("span");
+            div_hidden_buttons.appendChild(empty_reload_parametor);
+        }
+
+        // Remove button
+        let div_button = document.createElement("div");
+        div_button.classList.add("hidden_button_div", "hidden_trash");
+
+        let button = document.createElement('img');
+        div_button.appendChild(button);
+        button.src = "img/parametor/trash.svg";
+        button.classList.add("remove_param_button", "white_svg", "hidden_button");
+        button.title = "Remove parameter";
+        button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
+        div_hidden_buttons.appendChild(div_button);
+
+        
+     
 
         return div_parametor;
     }
@@ -220,7 +257,13 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
                 expand_list_button.classList.toggle("expanded");
                 const param_container = document.getElementById("param_list_container_area_"+a_id);
                 if(param_container){
-                    param_container.classList.toggle("hidden_list");
+                    // if(param_container.style.display == 'none'){
+                    //     param_container.style.display = "flex";
+                    // }
+                    // else{
+                    //     param_container.style.display = 'none'
+                    // }
+                   param_container.classList.toggle("hidden_list");
                 }
             })
 
