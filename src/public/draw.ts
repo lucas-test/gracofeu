@@ -34,7 +34,8 @@ export function toggle_dark_mode(enable:boolean){
         COLOR_BORDER_VERTEX = "#ffffff";
         document.documentElement.style.setProperty(`--background_color_div`, "#ffffff"); 
         document.documentElement.style.setProperty(`--color_div`, "#000000"); 
-
+        document.documentElement.style.setProperty(`--background_color_page`, "#ffffff"); 
+        
         const action_svgs = action_DOM.getElementsByTagName('img');
         for(const svg of action_svgs){
             svg.style.filter = "";
@@ -50,11 +51,11 @@ export function toggle_dark_mode(enable:boolean){
         COLOR_BACKGROUND = "#f1f1f1";
         // COLOR_INDEX = "#ffffff";
         COLOR_BORDER_VERTEX = "#000000";
-
         
         document.documentElement.style.setProperty(`--background_color_div`, "#202124"); 
         document.documentElement.style.setProperty(`--color_div`, "#ffffff"); 
-
+        document.documentElement.style.setProperty(`--background_color_page`, "#f1f1f1"); 
+ 
         const action_svgs = action_DOM.getElementsByTagName('img');
         for(const svg of action_svgs){
             svg.style.filter = "invert(100%) sepia(0%) saturate(2%) hue-rotate(115deg) brightness(102%) contrast(100%)";
