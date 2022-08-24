@@ -37,8 +37,8 @@ export class LocalVertex {
     }
 
 
-    is_nearby(pos: CanvasCoord, r: number) {
-        return this.pos.canvas_pos.dist2(pos) <= r;
+    is_nearby(pos: CanvasCoord, rsquared: number) {
+        return this.pos.canvas_pos.dist2(pos) <= rsquared;
     }
 
     translate(shift: CanvasCoord, view: View){

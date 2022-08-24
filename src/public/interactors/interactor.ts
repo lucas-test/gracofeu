@@ -25,6 +25,7 @@ export class Interactor {
     mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
     trigger: (mouse_pos: CanvasCoord) => void;
     onleave: () => void;
+    draw: (ctx: CanvasRenderingContext2D) => void;
 
     constructor(name: string, shortcut: string, img_src: string, interactable_element_type: Set<DOWN_TYPE>) {
         this.name = name;
@@ -33,6 +34,7 @@ export class Interactor {
         this.interactable_element_type = interactable_element_type;
         this.trigger = (e) => { };
         this.onleave = () => {};
+        this.draw = () => {};
     }
 }
 

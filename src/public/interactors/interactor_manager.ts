@@ -26,7 +26,7 @@ export let down_coord: CanvasCoord = null;
 export let last_down: DOWN_TYPE = null;
 export let last_down_index: number = null;
 export let has_moved: boolean = false;
-let mouse_pos = new CanvasCoord(0, 0);
+export let mouse_pos = new CanvasCoord(0, 0);
 
 
 export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, pos: CanvasCoord) {

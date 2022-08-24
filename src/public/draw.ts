@@ -473,6 +473,11 @@ function draw_areas(ctx:CanvasRenderingContext2D, g:Graph)
     });
 }
 
+function draw_interactor(ctx: CanvasRenderingContext2D)
+{
+    interactor_loaded.draw(ctx)
+}
+
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
     draw_areas(ctx, g);
@@ -484,6 +489,7 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_users(canvas, ctx);
     draw_vertex_creating(ctx);
     draw_rectangular_selection(ctx);
+    draw_interactor(ctx);
     // draw_following(ctx);
 }
 
