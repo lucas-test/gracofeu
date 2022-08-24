@@ -34,7 +34,7 @@ export function toggle_dark_mode(enable:boolean){
         COLOR_BORDER_VERTEX = "#ffffff";
         document.documentElement.style.setProperty(`--background_color_div`, "#ffffff"); 
         document.documentElement.style.setProperty(`--color_div`, "#000000"); 
-        document.documentElement.style.setProperty(`--background_color_page`, "#ffffff"); 
+        document.documentElement.style.setProperty(`--background_color_page`, "#1e1e1e"); 
         
         const action_svgs = action_DOM.getElementsByTagName('img');
         for(const svg of action_svgs){
