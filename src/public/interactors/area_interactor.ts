@@ -6,7 +6,7 @@ import { down_coord, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
 
 
-export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]))
+export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]), 'default')
 
 let is_creating_area : boolean;
 let last_created_area_index: number = null;
@@ -88,55 +88,55 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
             }
 
             if(is_on_label){
-                document.body.style.cursor="grab";
+                canvas.style.cursor="grab";
                 break;
             }
 
             if(corner_number === AREA_CORNER.TOP_LEFT)
             {
-                document.body.style.cursor = "nw-resize";
+                canvas.style.cursor = "nw-resize";
                 break;
             }
             if(corner_number === AREA_CORNER.BOT_RIGHT)
             {
-                document.body.style.cursor = "se-resize";
+                canvas.style.cursor = "se-resize";
                 break;
             }
             if(corner_number === AREA_CORNER.TOP_RIGHT)
             {
-                document.body.style.cursor = "ne-resize";
+                canvas.style.cursor = "ne-resize";
                 break;
             }
             if(corner_number === AREA_CORNER.BOT_LEFT)
             {
-                document.body.style.cursor = "sw-resize";
+                canvas.style.cursor = "sw-resize";
                 break;
             }
     
             if(side_number === AREA_SIDE.TOP){
-                document.body.style.cursor = "n-resize";
+                canvas.style.cursor = "n-resize";
                 break;
             }
             if(side_number === AREA_SIDE.BOT)
             {
-                document.body.style.cursor = "s-resize";
+                canvas.style.cursor = "s-resize";
                 break;
             }
 
             if(side_number === AREA_SIDE.LEFT){
-                document.body.style.cursor = "w-resize";
+                canvas.style.cursor = "w-resize";
                 break;
             }
             if(side_number === AREA_SIDE.RIGHT)
             {
-                document.body.style.cursor = "e-resize";
+                canvas.style.cursor = "e-resize";
                 break;
             }
     
     
         }
         if(!cursor_changed){
-            document.body.style.cursor = "default";
+            canvas.style.cursor = "default";
         }
         
         return false;

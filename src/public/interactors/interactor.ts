@@ -20,6 +20,7 @@ export class Interactor {
     shortcut: string;
     img_src: string;
     interactable_element_type: Set<DOWN_TYPE>;
+    cursor_style: string;
     mousedown: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
     mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => boolean;
     mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
@@ -27,11 +28,12 @@ export class Interactor {
     onleave: () => void;
     draw: (ctx: CanvasRenderingContext2D) => void;
 
-    constructor(name: string, shortcut: string, img_src: string, interactable_element_type: Set<DOWN_TYPE>) {
+    constructor(name: string, shortcut: string, img_src: string, interactable_element_type: Set<DOWN_TYPE>, cursor_style: string) {
         this.name = name;
         this.shortcut = shortcut;
         this.img_src = img_src;
         this.interactable_element_type = interactable_element_type;
+        this.cursor_style = cursor_style;
         this.trigger = (e) => { };
         this.onleave = () => {};
         this.draw = () => {};

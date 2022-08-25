@@ -69,7 +69,7 @@ npm run dev
     - [X] stroke
     - [X] area
 - [X] interactor: visibilité et cliquabilité de certains éléments
-- [ ] curseur des interacteurs
+- [X] curseur des interacteurs
 - [ ] ne pas utiliser local_board dans le dossier board
 
 ## V0.5 Chercheurs proches
@@ -79,11 +79,9 @@ npm run dev
     - [X] arête
     - [X] interactor utilisation
     - [X] color picker utilisation
-- [ ] zone texte
+
 - [X] grille magnétique
 - [X] aligner horizontalement/verticalement sur d'autres sommets
-- [ ] gestion tablette
-- [ ] optimisation possible en Math.floor() dans view.canvasCoord
 
 - stroke
     - [X] selectionner mieux
@@ -106,6 +104,8 @@ npm run dev
     - [X] mettre en place la structure sans attribut
     - [X] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
     - [X] update parametre
+    - [ ] doc
+    - [ ] verbose
     - parametres classiques : 
         - [X] distance (diametre)
         - [X] degré (min, max, moyen)
@@ -121,6 +121,10 @@ npm run dev
 - labels
     - [ ] modifier les labels
     - [ ] placement des labels
+
+- [ ] gestion tablette
+- [ ] optimisation possible en Math.floor() dans view.canvasCoord
+- [ ] zone texte
 
 
 ## V1 GDRIM

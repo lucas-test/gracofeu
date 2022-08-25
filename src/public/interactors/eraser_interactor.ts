@@ -10,7 +10,7 @@ import { VERTEX_RADIUS } from '../draw';
 var is_erasing = false;
 const erase_distance = 8;
 
-export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new Set([DOWN_TYPE.STROKE]));
+export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new Set([DOWN_TYPE.STROKE]), 'url("../img/cursors/eraser.svg"), auto')
 
 interactor_eraser.mousedown = ((canvas, ctx, g, e) => {
     if (last_down === DOWN_TYPE.STROKE) {

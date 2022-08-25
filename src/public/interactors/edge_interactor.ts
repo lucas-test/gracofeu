@@ -12,7 +12,7 @@ import { local_board } from '../setup';
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 
 
-export var interactor_edge = new Interactor("edge", "e", "edition.svg", new Set([DOWN_TYPE.VERTEX]));
+export var interactor_edge = new Interactor("edge", "e", "edition.svg", new Set([DOWN_TYPE.VERTEX]), 'default');
 
 interactor_edge.mousedown = (( canvas, ctx, g, e) => {
     if (last_down == DOWN_TYPE.EMPTY) {

@@ -8,7 +8,7 @@ import { local_board } from '../setup';
 
 // INTERACTOR SELECTION
 
-export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE]))
+export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE]), 'default')
 
 
 interactor_selection.mousedown = (( canvas, ctx, g, e) => {

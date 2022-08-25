@@ -2,7 +2,7 @@ import { Interactor, DOWN_TYPE } from './interactor'
 
 // INTERACTOR DETECTOR
 
-export const interactor_detector = new Interactor("detector", "d", "detector.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]))
+export const interactor_detector = new Interactor("detector", "d", "detector.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]), 'default')
 
 
 interactor_detector.mousedown = ((canvas, ctx, g, e) => { });

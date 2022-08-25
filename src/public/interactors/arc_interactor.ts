@@ -6,7 +6,7 @@ import { DOWN_TYPE, Interactor } from "./interactor";
 import { last_down, last_down_index } from "./interactor_manager";
 import { local_board } from "../setup";
 
-export var interactor_arc = new Interactor("arc", "a", "arc.svg", new Set([DOWN_TYPE.VERTEX]));
+export var interactor_arc = new Interactor("arc", "a", "arc.svg", new Set([DOWN_TYPE.VERTEX]), 'default');
 
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 

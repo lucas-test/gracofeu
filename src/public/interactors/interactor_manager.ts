@@ -34,6 +34,7 @@ export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElem
         interactor_loaded.onleave();
     }
     interactor_loaded = interactor;
+    canvas.style.cursor = interactor.cursor_style;
     local_board.view.is_creating_vertex = false;
     interactor.trigger(pos);
     select_interactor_div(interactor);
