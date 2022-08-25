@@ -1,0 +1,70 @@
+<h1 id="number-connected-component-undirected">Number connected component (undirected)</h1>
+<p>A connected component is a maximal connected subgraph of an undirected graph. Each vertex belongs to exactly one connected component. 
+This algorithm returns the number of connected components an undirected graph $G$ have. </p>
+<p>To compute the result, we use a <strong>Depth-first search</strong> algorithm (see pseudo-code below).  </p>
+<p><strong>This parameter is not computed live.</strong></p>
+<h2 id="inputoutput">Input/Output</h2>
+<ul>
+<li>Input: An undirected graph $G$ </li>
+<li>Output: The number of connected components of $G$.</li>
+</ul>
+<h2 id="pseudo-code">Pseudo Code</h2>
+<pre><code>procedure DFS(G: Graph, v:vertex, visited:Map&lt;vertex, boolean&gt;)
+    visited[v] ← true
+    for all edges (v, w) in A(G) do
+        if not visited[w]
+            DFS(G, w, visited)
+        end if
+    end for
+end procedure
+
+
+procedure is_connected(G: Graph): number
+    if |V(G)| &lt; 1 
+        return 0
+    end if
+    
+    visited ← new Map()
+    for each vertex u in V(G)
+        visited[u] ← false
+    end for
+
+    nb_cc ← 0
+    all_visited ← false
+    while not all_visited 
+        all_visited ← true
+
+        for each vertex v in V(G)
+            if not visited[v]
+                initial_vertex ← v
+                all_visited ← false
+                nb_cc ← nb_cc + 1
+                break
+            end if
+        end for
+
+        if all_visited
+            break
+        end if
+
+
+        DFS(G, initial_vertex, visited)
+    end while
+
+    return nb_cc
+</code></pre>
+<h2 id="complexity">Complexity</h2>
+<p>This implementation of the algorithm runs in $O(n + m)$, where $n$ and $m$ are the number of vertices and edges, respectively.  </p>
+<h2 id="example">Example</h2>
+<p>TO DO</p>
+<h2 id="comments">Comments</h2>
+<h2 id="more-information">More information</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Connectivity_(graph_theory)">Connectivity on Wikipedia</a> </li>
+<li><a href="https://en.wikipedia.org/wiki/Component_(graph_theory)">Component on Wikipedia</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Depth-first_search">Depth First Search algorithm on Wikipedia</a></li>
+</ul>
+<h2 id="changes">Changes</h2>
+<ul>
+<li><strong>v1</strong> Initial implementation of DFS algorithm</li>
+</ul>
