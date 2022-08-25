@@ -37,11 +37,12 @@ export class Parametor {
     sensibility:Set<SENSIBILITY>;
     short_name:string;
     title:string;
+    has_info:boolean;
 
     // Instance
     is_verbose: boolean;
 
-    constructor(name: string, id:string, short_name:string, title:string, is_live:boolean, is_boolean:boolean, sensibility:Array<SENSIBILITY>) {
+    constructor(name: string, id:string, short_name:string, title:string, is_live:boolean, is_boolean:boolean, sensibility:Array<SENSIBILITY>, has_info:boolean) {
         this.name = name;
         this.id = id;
         this.short_name = short_name;
@@ -49,6 +50,7 @@ export class Parametor {
         this.is_live = is_live;
         this.is_boolean = is_boolean;
         this.sensibility = new Set(sensibility);
+        this.has_info = has_info;
     }
 
     is_sensible(s : Set<SENSIBILITY>){

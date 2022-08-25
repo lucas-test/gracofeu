@@ -46,6 +46,9 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         if(!param.is_live){
             nb_hidden_buttons++;
         }
+        if(param.has_info){
+            nb_hidden_buttons++;
+        }
 
         // Div for the parametor
         div_parametor = document.createElement("div");
@@ -115,6 +118,8 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
             div_hidden_buttons.appendChild(empty_reload_parametor);
         }
 
+       
+
         // Remove button
         let div_button = document.createElement("div");
         div_button.classList.add("hidden_button_div", "hidden_trash");
@@ -127,7 +132,27 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
         button.addEventListener('click', () => { remove_loaded_param(param.id, area_id); });
         div_hidden_buttons.appendChild(div_button);
 
-        
+
+         // Info button
+         if(param.has_info){
+            let div_button = document.createElement("div");
+            div_button.classList.add("hidden_button_div", "hidden_info");
+
+            let svg_info_parametor = document.createElement("img");
+            div_button.appendChild(svg_info_parametor);
+
+            svg_info_parametor.classList.add("white_svg", "hidden_button");
+            svg_info_parametor.id = "img_info_" + html_id;
+            svg_info_parametor.title = "Information on this parameter";
+            svg_info_parametor.src = "img/parametor/info.svg";
+            svg_info_parametor.addEventListener('click', ()=>{console.log("INFO")});
+            // svg_info_parametor.classList.add("reload_img");
+            div_hidden_buttons.appendChild(div_button);
+        }
+        // else{
+        //     let empty_reload_parametor = document.createElement("span");
+        //     div_hidden_buttons.appendChild(empty_reload_parametor);
+        // }
      
 
         return div_parametor;

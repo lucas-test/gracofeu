@@ -4,14 +4,14 @@ import { Graph } from '../board/graph';
 import { Parametor, SENSIBILITY } from './parametor';
 import { is_segments_intersection, is_triangles_intersection } from '../utils';
 
-export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", "#vertices", "Print the number of vertices", true, false, [SENSIBILITY.ELEMENT]);
+export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", "#vertices", "Print the number of vertices", true, false, [SENSIBILITY.ELEMENT], false);
 
 param_nb_vertices.compute = ((g: Graph) => {
     return String(g.vertices.size)
 })
 
 
-export let param_nb_edges = new Parametor("Edges number", "edge_number", "#edges", "Print the number of edges", true, false, [SENSIBILITY.ELEMENT]);
+export let param_nb_edges = new Parametor("Edges number", "edge_number", "#edges", "Print the number of edges", true, false, [SENSIBILITY.ELEMENT], false);
 
 param_nb_edges.compute = ((g: Graph) => {
     let counter = 0;
@@ -25,7 +25,7 @@ param_nb_edges.compute = ((g: Graph) => {
 
 
 
-export let param_is_connected = new Parametor("Is connected?", "is_connected","is connected?", "Is the graph/area connected?", false, true, [SENSIBILITY.ELEMENT]);
+export let param_is_connected = new Parametor("Is connected?", "is_connected","is connected?", "Is the graph/area connected?", false, true, [SENSIBILITY.ELEMENT], true);
 
 param_is_connected.compute = ((g: Graph) =>{
 
@@ -52,7 +52,7 @@ param_is_connected.compute = ((g: Graph) =>{
 
 
 
-export let param_number_connected_comp = new Parametor("Number connected component", "number_connected_comp", "#connected comp.", "Compute the number of connected component (undirected)", false, false, [SENSIBILITY.ELEMENT]);
+export let param_number_connected_comp = new Parametor("Number connected component", "number_connected_comp", "#connected comp.", "Compute the number of connected component (undirected)", false, false, [SENSIBILITY.ELEMENT], true);
 
 param_number_connected_comp.compute = ((g: Graph) =>{
 
@@ -92,7 +92,7 @@ param_number_connected_comp.compute = ((g: Graph) =>{
 });
 
 
-export let param_number_colors = new Parametor("Number vertex colors", "nb_vertex_colors", "#colors (vertices)", "Print the number of different colors used on the vertices", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
+export let param_number_colors = new Parametor("Number vertex colors", "nb_vertex_colors", "#colors (vertices)", "Print the number of different colors used on the vertices", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR], false);
 
 param_number_colors.compute = ((g: Graph) =>{
     let colors_set = new Set<string>();
@@ -105,7 +105,7 @@ param_number_colors.compute = ((g: Graph) =>{
 });
 
 
-export let param_number_geo = new Parametor("Is currently planar?", "planar_current", "planar_current", "Return true iff currently planar", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]);
+export let param_number_geo = new Parametor("Is currently planar?", "planar_current", "planar_current", "Return true iff currently planar", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC], false);
 
 param_number_geo.compute = ((g: Graph) =>{
     
@@ -132,7 +132,7 @@ param_number_geo.compute = ((g: Graph) =>{
 
 
 
-export let param_min_degree = new Parametor("Minimum degree", "min_degree", "min degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT]);
+export let param_min_degree = new Parametor("Minimum degree", "min_degree", "min degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT], false);
 
 param_min_degree.compute = ((g: Graph, verbose) =>{
     const data = get_degrees_data(g);
@@ -149,14 +149,14 @@ param_min_degree.compute = ((g: Graph, verbose) =>{
 });
 
 
-export let param_max_degree = new Parametor("Maximum degree", "max_degree", "max degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT]);
+export let param_max_degree = new Parametor("Maximum degree", "max_degree", "max degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT], false);
 
 param_max_degree.compute = ((g: Graph) =>{
     const data = get_degrees_data(g);
     return String(data.max_value);
 });
 
-export let param_average_degree = new Parametor("Average degree", "avg_degree", "avg. degree", "Print the average degree", true, false, [SENSIBILITY.ELEMENT]);
+export let param_average_degree = new Parametor("Average degree", "avg_degree", "avg. degree", "Print the average degree", true, false, [SENSIBILITY.ELEMENT], false);
 
 param_average_degree.compute = ((g: Graph) =>{
     // Remark : If no loop, we can simply use that sum(degree) = 2|E| so avg(degree) = 2|E|/|V|
@@ -167,7 +167,7 @@ param_average_degree.compute = ((g: Graph) =>{
 });
 
 
-export let param_has_proper_coloring = new Parametor("Proper vertex-coloring?", "has_proper_coloring", "proper vertex-coloring?","Print if the current coloring of the vertices is proper or not", false, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR]);
+export let param_has_proper_coloring = new Parametor("Proper vertex-coloring?", "has_proper_coloring", "proper vertex-coloring?","Print if the current coloring of the vertices is proper or not", false, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR], false);
 
 param_has_proper_coloring.compute = ((g: Graph) =>{
 
@@ -207,7 +207,7 @@ param_has_proper_coloring.compute = ((g: Graph) =>{
 
 
 
-export let param_diameter = new Parametor("Diameter", "diameter", "diameter","Print the diameter of the graph", false, false, [SENSIBILITY.ELEMENT]);
+export let param_diameter = new Parametor("Diameter", "diameter", "diameter","Print the diameter of the graph", false, false, [SENSIBILITY.ELEMENT], true);
 
 param_diameter.compute = ((g: Graph) =>{
     const FW = Floyd_Warhall(g);
