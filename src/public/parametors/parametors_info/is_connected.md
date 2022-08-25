@@ -2,6 +2,7 @@
 This algorithm returns if an undirected graph $G$ is connected or not, that is if there is a path between any two pairs of vertices or not.
 To compute the result, we use a **Depth-first search** algorithm (see pseudo-code below).  
 
+**This parameter is not computed live.**
 
 ## Input/Output
 - Input: An undirected graph $G$ 

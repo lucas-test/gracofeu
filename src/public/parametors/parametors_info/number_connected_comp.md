@@ -4,6 +4,7 @@ This algorithm returns the number of connected components an undirected graph $G
 
 To compute the result, we use a **Depth-first search** algorithm (see pseudo-code below).  
 
+**This parameter is not computed live.**
 
 ## Input/Output
 - Input: An undirected graph $G$ 

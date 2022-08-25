@@ -5,6 +5,7 @@ $$d(G) = max_{v\in V(G)} max_{u\in V(G)} d(u,v)$$
 
 To compute the diameter, we use the **Floyd Warshall** algorithm (see pseudo-code below).  
 
+**This parameter is not computed live.**
 
 ## Input/Output
 - Input: An undirected graph $G$ 
