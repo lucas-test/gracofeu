@@ -23,7 +23,6 @@ end procedure
 
 
 procedure is_connected(G: Graph): boolean
-
     if |V(G)| < 2 
         return true
     end if
@@ -35,7 +34,6 @@ procedure is_connected(G: Graph): boolean
     end for
 
     u ← an arbitrary vertex of G
-
     DFS(G, u, visited)
 
     for each vertex v in V(G)
@@ -45,6 +43,8 @@ procedure is_connected(G: Graph): boolean
     end for
 
     return true
+end procedure
+
 ```
 
 ## Complexity

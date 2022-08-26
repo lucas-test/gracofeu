@@ -145,7 +145,27 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
             svg_info_parametor.id = "img_info_" + html_id;
             svg_info_parametor.title = "Information on this parameter";
             svg_info_parametor.src = "img/parametor/info.svg";
-            svg_info_parametor.addEventListener('click', ()=>{console.log("INFO")});
+            svg_info_parametor.addEventListener('click', ()=>{
+                console.log("INFO")
+
+
+                var xhr= new XMLHttpRequest();
+                xhr.open('GET', `img/${param.id}.html`, true);
+                xhr.onreadystatechange= function() {
+                    if (this.readyState!==4) return;
+                    if (this.status!==200) return; // or whatever error handling you want
+                    // document.getElementById('y').innerHTML= this.responseText;
+                    document.getElementById('info_content').innerHTML = this.responseText;
+                    document.getElementById('info_parametor_container').classList.toggle("show");
+                    document.getElementById('info_closing_button').onclick = () => {
+                        document.getElementById('info_content').innerHTML = "";
+                        document.getElementById('info_parametor_container').classList.remove("show");
+                    }
+                };
+                xhr.send();
+
+
+            });
             // svg_info_parametor.classList.add("reload_img");
             div_hidden_buttons.appendChild(div_button);
         }

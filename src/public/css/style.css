@@ -134,3 +134,33 @@ body {
     flex-direction: row;
     column-gap: 5px;
 }
+
+
+/* Firefox */
+
+
+/* * {
+    scrollbar-width: auto;
+    scrollbar-color: transparent var(--background_color_div);
+} */
+
+
+/* Chrome, Edge, and Safari */
+
+
+/* 
+*::-webkit-scrollbar {
+    width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+    background: none;
+}
+
+*::-webkit-scrollbar-thumb {
+    background-color: var(--background_color_div);
+    border-radius: 10px;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    z-index: 3;
+} */
