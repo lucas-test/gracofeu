@@ -150,7 +150,7 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
 
 
                 var xhr= new XMLHttpRequest();
-                xhr.open('GET', `img/${param.id}.html`, true);
+                xhr.open('GET', `parameters_info/${param.id}.html`, true);
                 xhr.onreadystatechange= function() {
                     if (this.readyState!==4) return;
                     if (this.status!==200) return; // or whatever error handling you want
