@@ -3,16 +3,40 @@
         "dark": "#ffffff",
         "light": "#000000"
     },
+    "gray": {
+        "dark": "#929191",
+        "light": "#7B7B7B"
+    },
+    "green": {
+        "dark": "#08D454",
+        "light": "#08D454"
+    },
+    "blue": {
+        "dark": "#56B4E9",
+        "light": "#56B4E9"
+    },
+    "pink": {
+        "dark": "#EC95C6",
+        "light": "#EC95C6"
+    },
+    "purple": {
+        "dark": "#CB46F7",
+        "light": "#AB38D2"
+    },
     "red": {
         "dark": "red",
         "light": "#dd0000"
     },
-    "green": {
-        "dark": "green",
-        "light": "green"
+    "yellow": {
+        "dark": "#F1D943",
+        "light": "#f3d411"
     },
-    "blue": {
-        "dark": "#3333ff",
-        "light": "blue"
+    "orange": {
+        "dark": "#E66700",
+        "light": "#E66700"
+    },
+    "brown": {
+        "dark": "#8C3F04",
+        "light": "#8C3F04"
     }
 }
