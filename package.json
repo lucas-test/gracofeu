@@ -6,7 +6,7 @@
     "scripts": {
         "clean": "rimraf dist/*",
         "gen-param-doc": "mkdir \"./dist/public/parameters_info\" && run-for-every-file --src \"./src/public/parametors/parametors_info/\" --dest \"./dist/public/parameters_info/\" --file \"*.md\" --run \"marked  {{src-file}} -o {{dest}}{{file-name}}.html\"",
-        "build": "npm run gen-param-doc && tsc && shx cp -r src/public/img dist/public/ && parcel build src/public/index.html --no-optimize --dist-dir dist/public",
+        "build": " tsc && shx cp -r src/public/img dist/public/ && parcel build src/public/index.html --no-optimize --dist-dir dist/public && npm run gen-param-doc",
         "build-client": "npm run clean  && parcel build src/public/index.html --no-optimize --dist-dir dist/public && npm run gen-param-doc && shx cp -r src/public/img dist/public/",
         "start": "node dist/server/app.js",
         "dev": " npm run clean && npm run build && npm start",
