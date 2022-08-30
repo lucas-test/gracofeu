@@ -1,0 +1,18 @@
+{
+    "black": {
+        "dark": "#ffffff",
+        "light": "#000000"
+    },
+    "red": {
+        "dark": "red",
+        "light": "#dd0000"
+    },
+    "green": {
+        "dark": "green",
+        "light": "green"
+    },
+    "blue": {
+        "dark": "#3333ff",
+        "light": "blue"
+    }
+}

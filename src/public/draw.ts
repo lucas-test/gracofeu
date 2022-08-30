@@ -21,8 +21,7 @@ import { interactor_area } from './interactors/area_interactor';
 import { CanvasCoord } from './board/coord';
 import { local_board } from './setup';
 import { ORIENTATION } from './board/link';
-import { drawRoundRect, draw_circle, draw_head, draw_line } from './draw_basics';
-
+import { drawRoundRect, draw_circle, draw_head, draw_line, real_color } from './draw_basics';
 
 export function toggle_dark_mode(enable:boolean){
     const action_DOM = document.getElementById("actions");
@@ -104,10 +103,13 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     if (vertex.is_selected) {
         draw_circle(vertex.pos.canvas_pos, SELECTION_COLOR, vertex_radius, 1, ctx);
     } else {
+        /* DISABLED for new draw of vertices
         draw_circle(vertex.pos.canvas_pos, COLOR_BORDER_VERTEX, vertex_radius, 1, ctx);
+        */
     }
-
-    draw_circle(vertex.pos.canvas_pos, vertex.color, vertex_radius - 2, 1, ctx);
+    
+    const color = real_color(vertex.color, local_board.view.dark_mode);
+    draw_circle(vertex.pos.canvas_pos, color, vertex_radius - 2, 1, ctx);
 
     // DRAW INDEX 
     if (local_board.view.index_type != INDEX_TYPE.NONE) {
@@ -317,7 +319,7 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         const poscp = link.cp.canvas_pos;
         ctx.beginPath();
         ctx.moveTo(posu.x, posu.y);
-        ctx.strokeStyle = link.color;
+        ctx.strokeStyle = real_color(link.color, local_board.view.dark_mode);
         if (link.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
         ctx.lineWidth = 3;
         //ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
@@ -341,7 +343,7 @@ function draw_vertex_creating(ctx: CanvasRenderingContext2D){
 
 function draw_link_creating(ctx: CanvasRenderingContext2D) {
     if (local_board.view.is_link_creating) {
-        draw_line(local_board.view.link_creating_start, local_board.view.creating_vertex_pos, ctx, "white");
+        draw_line(local_board.view.link_creating_start, local_board.view.creating_vertex_pos, ctx, real_color("black", local_board.view.dark_mode));
         if (local_board.view.link_creating_type == ORIENTATION.DIRECTED) {
             draw_head(ctx, local_board.view.link_creating_start, local_board.view.creating_vertex_pos);
         }
@@ -385,7 +387,7 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
 
         let position_canvas = s.positions[0].canvas_pos;
         ctx.beginPath();
-        ctx.strokeStyle = s.multicolor.color;
+        ctx.strokeStyle = real_color(s.multicolor.color, local_board.view.dark_mode);
         ctx.lineWidth = s.width;
         ctx.moveTo(position_canvas.x, position_canvas.y);
         for(let i = 1; i<s.positions.length; i++){
@@ -496,3 +498,13 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
 
 
 
+// je pense qu'il faut que ça soit une méthode de local_board
+/*
+export function color_after_color_mode(color: string){
+    if ( local_board.view.dark_mode && (color == "black" || color == "#000000" )){
+        return "white";
+    }else {
+        return color;
+    }
+}
+*/

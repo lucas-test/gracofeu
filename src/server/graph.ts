@@ -103,7 +103,7 @@ export class Graph {
         const index = this.get_next_available_index_links();
         const v1 = this.vertices.get(i);
         const v2 = this.vertices.get(j);
-        this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), orientation, "white"));
+        this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), orientation, "black"));
         return index;
     }
 

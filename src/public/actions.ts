@@ -4,6 +4,7 @@ import { Graph } from "./board/graph";
 import { socket } from "./socket";
 import { TikZ_create_file_data } from "./tikz";
 import { local_board } from "./setup";
+import BASIC_COLORS from "./basic_colors.json";
 
 export class Action {
     name: string;
@@ -31,10 +32,16 @@ dark_mode_action.trigger = () =>
     if(local_board.view.dark_mode){
         toggle_dark_mode(false);
         local_board.view.dark_mode = false;
+        for( const name in BASIC_COLORS){
+            document.getElementById("color_choice_" + name).style.backgroundColor = BASIC_COLORS[name].light;
+        } 
     }
     else{
         toggle_dark_mode(true);
         local_board.view.dark_mode = true;
+        for( const name in BASIC_COLORS){
+            document.getElementById("color_choice_" + name).style.backgroundColor = BASIC_COLORS[name].dark;
+        } 
     }
 
 }

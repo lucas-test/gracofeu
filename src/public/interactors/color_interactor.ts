@@ -3,13 +3,17 @@ import { CanvasCoord } from '../board/coord';
 import { socket } from '../socket';
 import { Interactor, DOWN_TYPE } from './interactor'
 import { last_down, last_down_index } from './interactor_manager';
+import BASIC_COLORS from '../basic_colors.json';
 
 export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK]), 'url("../img/cursors/color.svg"), auto');
 
 // Local variables
 let color_selected = "red";
 const colors_available = new Array();
-colors_available.push("red", "green", "blue", "black", "white"); // initial colors
+
+for ( const name in BASIC_COLORS){
+    colors_available.push(name)
+}
 
 // Color picker HTML div
 const color_picker_div = document.createElement("div");
@@ -29,7 +33,7 @@ color_picker_input.onchange = (() => {
 color_picker_div.onmouseleave = ((e) => {
     move_back_color_picker_div();
 });
-color_picker_div.appendChild(color_picker_input);
+//color_picker_div.appendChild(color_picker_input); // color_picker_input DISABLED
 
 for (const basic_color of colors_available) {
     add_available_color(basic_color);
@@ -54,13 +58,13 @@ function move_back_color_picker_div() {
 }
 
 
-function add_available_color(color: string) {
+function add_available_color(color_name) {
     const color_div = document.createElement("div");
-    color_div.id = "color_choice_" + color;
+    color_div.id = "color_choice_" + color_name;
     color_div.classList.add("color_choice");
-    color_div.style.backgroundColor = color;
+    color_div.style.backgroundColor = BASIC_COLORS[color_name].dark;
     color_div.onclick = () => {
-        color_selected = color;
+        color_selected = color_name;
         update_selected_available_color();
         move_back_color_picker_div();
     }

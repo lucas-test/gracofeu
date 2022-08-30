@@ -17,7 +17,7 @@ export var interactor_stroke = new Interactor("pen", "p", "stroke.svg", new Set(
 
 interactor_stroke.mousedown = ((  canvas, ctx, g, e) => {
     const server_pos = local_board.view.serverCoord2(e);
-    last_stroke = new Stroke([server_pos], "#ffffff", 2);
+    last_stroke = new Stroke([server_pos], "#000000", 2);
 
     // TO CHANGE
     let index = 0;
