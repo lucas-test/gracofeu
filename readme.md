@@ -172,5 +172,6 @@ npm run dev
     interdire le zoom pendant la création ?
 - start resizing area, then leave mouse out of window, stop clicking, then mouse back on window = bug -> pareil avec création de link, couleur, pen ... solution avec événement outofscreen si existe ?
 - bug avec param Geometric et sommet qui rentre dans area
-
+- vertex align bug avec la grille
+- vertex align crée des sommets sur d'autres sommets
 
