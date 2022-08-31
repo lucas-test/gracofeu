@@ -58,8 +58,8 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             if (g.vertices.get(last_down_index).is_selected) {
                 const origin_vertex = g.vertices.get(last_down_index);
                 const data_socket = new Array();
-                const mouse_canvas_coord = g.align_position(e, g.get_selected_vertices(), canvas);
-                const shift = mouse_canvas_coord.sub2(down_coord);
+                const mouse_canvas_coord = g.align_position(origin_vertex.pos.old_canvas_pos.add2(e.sub2(down_coord)), g.get_selected_vertices(), canvas);
+                const shift = mouse_canvas_coord.sub2(origin_vertex.pos.old_canvas_pos);
 
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
@@ -90,8 +90,8 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             }
             else {
                 const v = g.vertices.get(last_down_index)
-                const mouse_canvas_coord = g.align_position(e, new Set([last_down_index]), canvas);
-                v.translate(mouse_canvas_coord.sub2(down_coord), local_board.view);
+                const mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), new Set([last_down_index]), canvas);   
+                v.translate(mouse_canvas_coord.sub2(v.pos.old_canvas_pos), local_board.view);
                 //v.pos.canvas_pos = mouse_canvas_coord;
                 //v.pos.update_from_canvas_pos(local_board.view);
 
