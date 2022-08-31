@@ -1,0 +1,7 @@
+.detector_infobox {
+    position: fixed;
+    width: 250;
+    padding: 3px;
+    background-color: rgb(28, 28, 53);
+    color: white;
+}
