@@ -16,6 +16,15 @@ function setup() {
     const canvas = document.getElementById('main') as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
 
+    canvas.onmouseleave = ((e) => {
+        local_board.view.is_drawing_interactor = false;
+        draw(canvas, ctx, local_board.graph);
+    });
+
+    canvas.onmouseenter = ((e) => {
+        local_board.view.is_drawing_interactor = true;
+        draw(canvas, ctx, local_board.graph);
+    })
 
     setup_socket(canvas, ctx, local_board);
 

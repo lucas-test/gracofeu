@@ -335,20 +335,9 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
     }
 }
 
-function draw_vertex_creating(ctx: CanvasRenderingContext2D){
-    if (local_board.view.is_creating_vertex){
-        draw_circle(local_board.view.creating_vertex_pos, "grey", 10, 0.5, ctx);
-    }
-}
 
-function draw_link_creating(ctx: CanvasRenderingContext2D) {
-    if (local_board.view.is_link_creating) {
-        draw_line(local_board.view.link_creating_start, local_board.view.creating_vertex_pos, ctx, real_color("black", local_board.view.dark_mode));
-        if (local_board.view.link_creating_type == ORIENTATION.DIRECTED) {
-            draw_head(ctx, local_board.view.link_creating_start, local_board.view.creating_vertex_pos);
-        }
-    }
-}
+
+
 
 function draw_alignements(ctx: CanvasRenderingContext2D) {
     if (local_board.view.alignement_horizontal) {
@@ -478,7 +467,9 @@ function draw_areas(ctx:CanvasRenderingContext2D, g:Graph)
 
 function draw_interactor(ctx: CanvasRenderingContext2D)
 {
-    interactor_loaded.draw(ctx)
+    if (local_board.view.is_drawing_interactor){
+       interactor_loaded.draw(ctx)
+    }
 }
 
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
@@ -487,24 +478,10 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_alignements(ctx);
     draw_strokes(ctx, g);
     draw_links(ctx, g);
-    draw_link_creating(ctx);
     draw_vertices(ctx, g);
     draw_users(canvas, ctx);
-    draw_vertex_creating(ctx);
     draw_rectangular_selection(ctx);
     draw_interactor(ctx);
     // draw_following(ctx);
 }
 
-
-
-// je pense qu'il faut que ça soit une méthode de local_board
-/*
-export function color_after_color_mode(color: string){
-    if ( local_board.view.dark_mode && (color == "black" || color == "#000000" )){
-        return "white";
-    }else {
-        return color;
-    }
-}
-*/

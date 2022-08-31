@@ -44,6 +44,8 @@ export class View {
 
     dark_mode: boolean;
 
+    is_drawing_interactor: boolean;
+
     // window_height:number;
     // window_width:number;
 
@@ -69,6 +71,7 @@ export class View {
         this.following = null;
 
         this.dark_mode = true;
+        this.is_drawing_interactor = true;
         // this.window_width = window.innerWidth;
         // this.window_height = window.innerHeight;
     }
