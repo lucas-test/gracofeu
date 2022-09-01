@@ -171,6 +171,10 @@ export class Graph {
         this.strokes.delete(stroke_index);
     }
 
+    delete_area(area_index: number) {
+        this.areas.delete(area_index);
+    }
+
     clear() {
         this.vertices.clear();
         this.links.clear();

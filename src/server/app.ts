@@ -441,6 +441,7 @@ io.sockets.on('connection', function (client) {
         let deleted_vertex = false;
         let delete_link = false;
         let delete_stroke = false; 
+        let delete_area = false;
 
         for (const e of data) {
             if (e.type == "vertex") {
@@ -455,6 +456,10 @@ io.sockets.on('connection', function (client) {
                 g.delete_stroke(e.index);
                 delete_stroke = true;
             }
+            else if (e.type == "area") {
+                g.delete_area(e.index);
+                delete_area = true;
+            }
         }
 
         if(deleted_vertex || delete_link){
@@ -463,6 +468,10 @@ io.sockets.on('connection', function (client) {
         
         if(delete_stroke){
             emit_strokes_to_room();
+        }
+
+        if(delete_area){
+            emit_areas_to_room();
         }
     }
    

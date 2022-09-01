@@ -180,14 +180,29 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
     function handle_areas(data){
-        // console.log(data);
+        let old_area_ids = new Set<number>();
+        for ( const index of g.areas.keys()){
+            old_area_ids.add(index);
+        }
+
         g.areas.clear();
         for(const s of data){
             const new_area = new Area(s[0], s[1].label, s[1].c1, s[1].c2, s[1].color);
             g.areas.set(s[0], new_area);
             init_list_parametors_for_area(board, new_area, canvas, ctx);
-            //console.log(g.areas.get(s[0]).get_subgraph(g));
         }
+
+        let new_area_ids = new Set<number>();
+        for ( const index of g.areas.keys()){
+            new_area_ids.add(index);
+        }
+
+        for ( const index of old_area_ids){
+            if (new_area_ids.has(index) == false){
+                document.getElementById("area_"+ index).remove();
+            }
+        }
+        
         update_params_loaded(g, new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]), false);
         update_options_graphs(canvas, ctx, g);
         // make_list_areas(canvas, ctx, g);

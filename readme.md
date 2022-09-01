@@ -130,7 +130,7 @@ npm run dev
 - [ ] trouver une autre visualisation des sommets et arêtes séléctionnés
 - [ ] interactor move (qui fait que déplacer la vue ou les éléments)
 - [ ] interactor select2: pas besoin de faire CTRL pour pas en avoir besoin pour la tablette ?
-- [ ] pouvoir supprimer les areas
+- [X] pouvoir supprimer les areas
 - [X] changer le svg du "load file"
 
 

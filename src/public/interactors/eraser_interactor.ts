@@ -38,6 +38,14 @@ function erase_at(g: Graph, e: CanvasCoord) : boolean{
             return true;
         }
     }
+    for(const [index,area] of g.areas.entries()){
+        if( area.is_nearby(e)){
+            const data_socket = new Array();
+            data_socket.push({ type: "area", index: index });
+            socket.emit("delete_selected_elements", data_socket);
+            return true;
+        }
+    }
     return false;
 }
 
