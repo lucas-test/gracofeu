@@ -2,7 +2,7 @@
 import { CanvasCoord } from '../board/coord';
 import { socket } from '../socket';
 import { Interactor, DOWN_TYPE } from './interactor'
-import { last_down, last_down_index } from './interactor_manager';
+import { key_states, last_down, last_down_index } from './interactor_manager';
 import BASIC_COLORS from '../basic_colors.json';
 
 export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK]), 'url("../img/cursors/color.svg"), auto');
@@ -100,6 +100,25 @@ function select_next_color() {
     }
 }
 
+function select_previous_color() {
+    console.log("hello")
+    for (let i = 0; i < colors_available.length; i++) {
+        const color = colors_available[i];
+        if (color == color_selected) {
+            if (i == 0) {
+                color_selected = colors_available[colors_available.length-1];
+            }
+            else {
+                console.log(color_selected)
+                color_selected = colors_available[i - 1];
+                console.log(color_selected)
+            }
+            update_selected_available_color()
+            return;
+        }
+    }
+}
+
 
 // Interactors methods
 
@@ -107,7 +126,12 @@ color_interactor.trigger = (mouse_pos: CanvasCoord) => {
     turn_on_color_picker_div();
     move_back_color_picker_div();
     if (color_picker_div.style.display == "block") {
-        select_next_color();
+        if (key_states.get("Shift")){
+            select_previous_color();
+        } else {
+            select_next_color();
+        }
+       
     }
 }
 

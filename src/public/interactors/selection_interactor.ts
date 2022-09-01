@@ -2,7 +2,7 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { self_user, update_users_canvas_pos, users } from '../user';
 import { CanvasCoord, Coord } from '../board/coord';
-import { down_coord, has_moved, last_down, last_down_index } from './interactor_manager';
+import { down_coord, has_moved, key_states, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
 
 
@@ -39,8 +39,7 @@ interactor_selection.mousedown = (( canvas, ctx, g, e) => {
     }
     else if (last_down === DOWN_TYPE.EMPTY) {
 
-        // TODO
-        if (false) { //(e.ctrlKey) {
+        if (key_states.get("Control")) {
             local_board.view.is_rectangular_selecting = true;
             local_board.view.selection_corner_1 = e; // peut etre faut copier
             local_board.view.selection_corner_2 = e; // peut etre faut copier
@@ -150,12 +149,12 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     if (last_down === DOWN_TYPE.VERTEX) {
         if (has_moved === false) {
             if (g.vertices.get(last_down_index).is_selected) {
-                if (false) { //e.ctrlKey) {
+                if (key_states.get("Control")) { 
                     g.vertices.get(last_down_index).is_selected = false;
                 }
             }
             else {
-                if (false) { //(e.ctrlKey) {
+                if (key_states.get("Control")) {
                     g.vertices.get(last_down_index).is_selected = true;
                 }
                 else {
@@ -168,12 +167,12 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     } else if (last_down === DOWN_TYPE.LINK) {
         if (has_moved === false) {
             if (g.links.get(last_down_index).is_selected) {
-                if (false) { //(e.ctrlKey) {
+                if (key_states.get("Control")) { 
                     g.links.get(last_down_index).is_selected = false;
                 }
             }
             else {
-                if (false) { //(e.ctrlKey) {
+                if (key_states.get("Control")) { 
                     g.links.get(last_down_index).is_selected = true;
                 }
                 else {
@@ -188,12 +187,12 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     {
         if (has_moved === false) {
             if (g.strokes.get(last_down_index).is_selected) {
-                if (false) { //e.ctrlKey) {
+                if (key_states.get("Control")) { 
                     g.strokes.get(last_down_index).is_selected = false;
                 }
             }
             else {
-                if (false) { //(e.ctrlKey) {
+                if (key_states.get("Control")) { 
                     g.strokes.get(last_down_index).is_selected = true;
                 }
                 else {

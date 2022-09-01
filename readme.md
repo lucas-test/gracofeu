@@ -104,7 +104,8 @@ npm run dev
     - [X] mettre en place la structure sans attribut
     - [X] paramètre en vert/rouge pour les booléens (genre is_connected, is_currently_planar)
     - [X] update parametre
-    - [ ] doc
+    - [X] doc
+    - [ ] doc gestion latex
     - [ ] verbose
     - parametres classiques : 
         - [X] distance (diametre)
@@ -125,6 +126,13 @@ npm run dev
 - [ ] gestion tablette
 - [ ] optimisation possible en Math.floor() dans view.canvasCoord
 - [ ] zone texte
+- [ ] quand on déplace un sommet sur un autre ça les fusionne
+- [ ] trouver une autre visualisation des sommets et arêtes séléctionnés
+- [ ] interactor move (qui fait que déplacer la vue ou les éléments)
+- [ ] interactor select2: pas besoin de faire CTRL pour pas en avoir besoin pour la tablette ?
+- [ ] pouvoir supprimer les areas
+- [ ] changer le svg du "load file"
+
 
 
 ## V1 GDRIM

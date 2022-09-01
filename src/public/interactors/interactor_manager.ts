@@ -27,6 +27,11 @@ export let last_down: DOWN_TYPE = null;
 export let last_down_index: number = null;
 export let has_moved: boolean = false;
 export let mouse_pos = new CanvasCoord(0, 0);
+export let key_states = new Map<string,boolean>();
+
+// key states
+key_states.set("Control",false);
+key_states.set("Shift",false);
 
 
 export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, pos: CanvasCoord) {
@@ -69,8 +74,14 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 socket.emit("delete_selected_elements", data_socket);
                 return;
             }
+            if (e.key == "Control"){
+                key_states.set("Control", true);
+            }
+            if (e.key == "Shift"){
+                key_states.set("Shift", true);
+            }
             for (let interactor of interactors_available) {
-                if (interactor.shortcut == e.key) {
+                if (interactor.shortcut == e.key.toLowerCase() ) {
                     deselect_all_interactor_div()
                     select_interactor(interactor, canvas, ctx, g, mouse_pos);
                     return;
@@ -83,6 +94,15 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             }
         }
     });
+
+    window.addEventListener('keyup', function (e) {
+        if (e.key == "Control"){
+            key_states.set("Control", false);
+        }
+        if (e.key == "Shift"){
+            key_states.set("Shift", false);
+        }
+    })
 
     canvas.addEventListener("wheel", function (e) {
         if (e.deltaY > 0) {
