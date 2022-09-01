@@ -131,7 +131,7 @@ npm run dev
 - [ ] interactor move (qui fait que déplacer la vue ou les éléments)
 - [ ] interactor select2: pas besoin de faire CTRL pour pas en avoir besoin pour la tablette ?
 - [ ] pouvoir supprimer les areas
-- [ ] changer le svg du "load file"
+- [X] changer le svg du "load file"
 
 
 

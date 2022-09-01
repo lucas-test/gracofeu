@@ -101,7 +101,6 @@ function select_next_color() {
 }
 
 function select_previous_color() {
-    console.log("hello")
     for (let i = 0; i < colors_available.length; i++) {
         const color = colors_available[i];
         if (color == color_selected) {
@@ -109,9 +108,7 @@ function select_previous_color() {
                 color_selected = colors_available[colors_available.length-1];
             }
             else {
-                console.log(color_selected)
                 color_selected = colors_available[i - 1];
-                console.log(color_selected)
             }
             update_selected_available_color()
             return;
