@@ -126,7 +126,11 @@ npm run dev
 - [ ] gestion tablette
 - [ ] optimisation possible en Math.floor() dans view.canvasCoord
 - [ ] zone texte
-- [ ] quand on déplace un sommet sur un autre ça les fusionne
+- quand on déplace un sommet sur un autre ça les fusionne
+    - [X] ça marche
+    - [ ] visuel qui dit que ça va fusionner quand on déplace
+    - [ ] aligner le sommet déplacé sur le sommet cible ?
+    - [ ] fusion des aretes : garder les couleurs et les cp ?
 - [ ] trouver une autre visualisation des sommets et arêtes séléctionnés
 - [ ] interactor move (qui fait que déplacer la vue ou les éléments)
 - [ ] interactor select2: pas besoin de faire CTRL pour pas en avoir besoin pour la tablette ?

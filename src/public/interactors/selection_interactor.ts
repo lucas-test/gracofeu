@@ -163,6 +163,15 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                 }
             }
         }
+        else {
+            const vertex_moved = g.vertices.get(last_down_index);
+            for( const [index,v] of g.vertices.entries()){
+                if( index != last_down_index && vertex_moved.is_nearby(v.pos.canvas_pos, 100)){
+                    socket.emit("vertices_merge", index, last_down_index);
+                    break;
+                }
+            }
+        }
 
     } else if (last_down === DOWN_TYPE.LINK) {
         if (has_moved === false) {

@@ -211,8 +211,7 @@ io.sockets.on('connection', function (client) {
     client.on('area_move_corner', handle_move_corner_area);
     client.on('area_translate', handle_area_translate);
     client.on('update_strokes', handle_update_strokes);
-
-    
+    client.on('vertices_merge', handle_vertices_merge);
 
     // AREAS 
     function handle_area_translate(index: number, corner_top_left: Coord, corner_bottom_right: Coord){
@@ -433,6 +432,11 @@ io.sockets.on('connection', function (client) {
         let index = g.add_vertex(x, y);
         emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
         return index;
+    }
+
+    function handle_vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number){
+        g.vertices_merge(vertex_index_fixed, vertex_index_to_remove);
+        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
     }
 
 

@@ -83,6 +83,12 @@ export class Graph {
 
 
     add_link(i: number, j: number, orientation: ORIENTATION) {
+        // do not add link if it is a loop (NO LOOP)
+        if ( i == j ){
+            return;
+        }
+
+        // do not add link if it was already existing (NO MULTIEDGE)
         for (const link of this.links.values()) {
             if (link.orientation == orientation) {
                 if (orientation == ORIENTATION.UNDIRECTED) {
@@ -178,6 +184,21 @@ export class Graph {
     clear() {
         this.vertices.clear();
         this.links.clear();
+    }
+
+
+    vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number){
+
+        this.links.forEach((link, link_index) => {
+            if (link.end_vertex == vertex_index_to_remove) {
+                this.add_link(link.start_vertex, vertex_index_fixed, link.orientation);
+            }
+            if (link.start_vertex == vertex_index_to_remove) {
+                this.add_link(vertex_index_fixed, link.end_vertex, link.orientation);
+            }
+        })
+
+        this.delete_vertex(vertex_index_to_remove);
     }
 
 }
