@@ -200,7 +200,7 @@ export function get_title_span_for_area(a:Area):HTMLSpanElement{
         span_area.textContent = a.label;
         span_area.style.background = a.multicolor.color;
         span_area.style.color = a.multicolor.contrast;
-        span_area.style.borderColor = a.multicolor.contrast;
+        // span_area.style.borderColor = a.multicolor.contrast;
     }
     else{
         span_area.textContent = "Everything";

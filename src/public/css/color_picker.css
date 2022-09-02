@@ -7,7 +7,6 @@
     top: 50%;
     left: -100px;
     transform: translateY(-50%);
-
     /* display: flex;
     flex-flow: column wrap; */
     width: 41px;
@@ -23,15 +22,13 @@
     border-radius: 10px;
     border: 1px solid var(--color_div);
     box-sizing: border-box;
-
     /* padding: 15px; */
-    transition: height 0.1s ease-in-out;
+    transition: all 0.1s ease-in-out;
 }
 
-.color_choice:hover{
-
-    height: 30px;
-
+.color_choice:hover {
+    /* height: 30px; */
+    margin-left: 10px;
 }
 
 .color_choice.selected {

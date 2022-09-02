@@ -70,7 +70,6 @@
     align-items: center;
     justify-content: end;
     padding: 1px 0px; */
-
     width: 130px;
     /* display: inline-block;
     display: -webkit-inline-box; */
@@ -93,7 +92,6 @@ align-items: center; */
     transition: right 0.3s ease-in-out;
     padding-right: 3px;
     font-size: 14px;
-
 }
 
 .hidden_buttons_container {
@@ -105,8 +103,6 @@ align-items: center; */
     top: 0;
     z-index: 1;
 }
-
-
 
 .hided_buttons-3 {
     right: 60px;
@@ -123,8 +119,6 @@ align-items: center; */
     width: 20px;
 }
 
-
-
 .parametor_printed:hover .param_name_result_container.hiding_buttons-3 {
     right: 60px;
 }
@@ -136,7 +130,6 @@ align-items: center; */
 .parametor_printed:hover .param_name_result_container.hiding_buttons-1 {
     right: 20px;
 }
-
 
 .hidden_button {
     width: 13px;
@@ -152,10 +145,6 @@ align-items: center; */
     align-items: center;
 }
 
-
-
-
-
 .hidden_trash {
     background: #ff2020;
 }
@@ -167,9 +156,6 @@ align-items: center; */
 .hidden_info {
     background: rgb(255, 177, 33);
 }
-
-
-
 
 .div_button {
     font-weight: bolder;
@@ -198,6 +184,7 @@ align-items: center; */
     cursor: pointer;
 }
 
+
 /* .remove_param_button {
     visibility: hidden;
     z-index: -10;
@@ -205,6 +192,7 @@ align-items: center; */
     transition: opacity ease-in 0.1s;
     cursor: pointer;
 } */
+
 
 /* .parametor_printed:hover .remove_param_button {
     visibility: visible;
@@ -234,9 +222,9 @@ align-items: center; */
 .span_area_name_parametor {
     font-weight: bold;
     padding: 4px 12px;
-    border-radius: 5px;
+    border-radius: 8px;
     /* margin-right: 4px; */
-    /* border: 1px solid black; */
+    border: 2px solid var(--background_color_div);
     cursor: pointer;
 }
 
@@ -310,7 +298,6 @@ align-items: center; */
     /* display: flex;
     flex-direction: column;
     position: relative; */
-
     top: 5px;
     right: 30px;
     display: flex;
@@ -319,6 +306,7 @@ align-items: center; */
     flex-direction: column;
     position: relative;
 }
+
 
 /* .param_list_container::after {
     content: "";

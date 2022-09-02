@@ -33,7 +33,7 @@ export function toggle_dark_mode(enable:boolean){
         COLOR_BORDER_VERTEX = "#ffffff";
         document.documentElement.style.setProperty(`--background_color_div`, "#ffffff"); 
         document.documentElement.style.setProperty(`--color_div`, "#000000"); 
-        document.documentElement.style.setProperty(`--background_color_page`, "#1e1e1e"); 
+        document.documentElement.style.setProperty(`--background_color_page`, COLOR_BACKGROUND); 
         
         const action_svgs = action_DOM.getElementsByTagName('img');
         for(const svg of action_svgs){
@@ -47,13 +47,13 @@ export function toggle_dark_mode(enable:boolean){
         // action_DOM.style.backgroundColor = "#fff";
     }
     else{
-        COLOR_BACKGROUND = "#f1f1f1";
+        COLOR_BACKGROUND = "#fafafa";
         // COLOR_INDEX = "#ffffff";
         COLOR_BORDER_VERTEX = "#000000";
         
         document.documentElement.style.setProperty(`--background_color_div`, "#202124"); 
         document.documentElement.style.setProperty(`--color_div`, "#ffffff"); 
-        document.documentElement.style.setProperty(`--background_color_page`, "#f1f1f1"); 
+        document.documentElement.style.setProperty(`--background_color_page`, COLOR_BACKGROUND); 
  
         const action_svgs = action_DOM.getElementsByTagName('img');
         for(const svg of action_svgs){
@@ -153,7 +153,9 @@ function draw_user_arrow(user: User, ctx: CanvasRenderingContext2D){
     ctx.strokeStyle = user.multicolor.darken;
     ctx.moveTo(user.canvas_pos.x - 2, user.canvas_pos.y + 1);
     ctx.lineTo(user.canvas_pos.x - 2, user.canvas_pos.y + 21);
+    ctx.globalAlpha = 0.35;
     ctx.stroke();
+    ctx.globalAlpha = 1;
 
     //Arrow
     ctx.beginPath();
