@@ -6,6 +6,7 @@ import { params_available_turn_off_div, params_available_turn_on_div, update_par
 import { setup_parametors_available } from "./parametors/parametor_manager";
 import { setup_socket, socket } from "./socket";
 import { Board } from "./board/board";
+import { setup_generators_div } from "./generators/dom";
 
 
 export const local_board = new Board();
@@ -39,6 +40,7 @@ function setup() {
     select_interactor(interactor_edge, canvas, ctx, local_board.graph, null);
 
     setup_actions_div(canvas, ctx, local_board.graph);
+    setup_generators_div();
 
     setup_parametors_available();
     update_params_available_div(canvas, ctx, local_board.graph);

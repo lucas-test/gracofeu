@@ -1,6 +1,6 @@
 import { Area, AREA_CORNER, AREA_SIDE } from "./area";
 import { INDEX_TYPE } from "./camera";
-import { CanvasCoord } from "./coord";
+import { CanvasCoord, middle, ServerCoord } from "./coord";
 import { DOWN_TYPE } from "../interactors/interactor";
 import { Stroke } from "./stroke";
 import { local_board } from "../setup";
@@ -23,6 +23,60 @@ export class Graph {
         this.links = new Map();
         this.strokes = new Map();
         this.areas = new Map();
+    }
+
+    get_next_available_index() {
+        let index = 0;
+        while (this.vertices.has(index)) {
+            index += 1;
+        }
+        return index;
+    }
+
+
+    get_next_available_index_links() {
+        let index = 0;
+        while (this.links.has(index)) {
+            index += 1;
+        }
+        return index;
+    }
+
+    add_vertex(x: number, y: number) {
+        let index = this.get_next_available_index();
+        this.vertices.set(index, new LocalVertex( new ServerCoord(x, y)));
+        return index;
+    }
+
+    add_edge(i: number, j: number) {
+        // do not add link if it is a loop (NO LOOP)
+        if ( i == j ){
+            return;
+        }
+
+        // do not add link if it was already existing (NO MULTIEDGE)
+        for (const link of this.links.values()) {
+            if (link.orientation == ORIENTATION.UNDIRECTED) {
+                    if ((link.start_vertex == i && link.end_vertex == j) || (link.start_vertex == j && link.end_vertex == i)) {
+                        return;
+                    }
+            }
+        }
+
+        const index = this.get_next_available_index_links();
+        const v1 = this.vertices.get(i);
+        const v2 = this.vertices.get(j);
+        this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), ORIENTATION.UNDIRECTED, "black"));
+        return index;
+    }
+
+    translate(shift: CanvasCoord){
+        for ( const vertex of this.vertices.values()){
+            vertex.translate(shift, local_board.view);
+        }
+        for ( const link of this.links.values()){
+            link.translate_cp(shift, local_board.view);
+        }
     }
 
 

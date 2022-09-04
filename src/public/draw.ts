@@ -22,6 +22,7 @@ import { CanvasCoord } from './board/coord';
 import { local_board } from './setup';
 import { ORIENTATION } from './board/link';
 import { drawRoundRect, draw_circle, draw_head, draw_line, real_color } from './draw_basics';
+import { graph_clipboard } from './generators/dom';
 
 export function toggle_dark_mode(enable:boolean){
     const action_DOM = document.getElementById("actions");
@@ -474,6 +475,14 @@ function draw_interactor(ctx: CanvasRenderingContext2D)
     }
 }
 
+function draw_graph_generated(ctx: CanvasRenderingContext2D){
+    if ( graph_clipboard != null){
+        console.log("hey")
+        draw_vertices(ctx, graph_clipboard);
+        draw_links(ctx, graph_clipboard);
+    }
+}
+
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
     draw_background(canvas, ctx);
     draw_areas(ctx, g);
@@ -484,6 +493,7 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_users(canvas, ctx);
     draw_rectangular_selection(ctx);
     draw_interactor(ctx);
+    draw_graph_generated(ctx);
     // draw_following(ctx);
 }
 

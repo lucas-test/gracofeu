@@ -205,3 +205,7 @@ export function corner_bottom_right(c1: ServerCoord, c2: ServerCoord){
 export function corner_top_right(c1: ServerCoord, c2: ServerCoord){
     return new ServerCoord(Math.max(c1.x, c2.x), Math.min(c1.y,c2.y));
 }
+
+export function middle(c1: ServerCoord, c2: ServerCoord): ServerCoord {
+    return new ServerCoord((c1.x + c2.x) / 2, (c1.y + c2.y) / 2)
+}

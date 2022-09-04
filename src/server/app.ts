@@ -212,6 +212,7 @@ io.sockets.on('connection', function (client) {
     client.on('area_translate', handle_area_translate);
     client.on('update_strokes', handle_update_strokes);
     client.on('vertices_merge', handle_vertices_merge);
+    client.on('paste_graph', handle_paste_graph);
 
     // AREAS 
     function handle_area_translate(index: number, corner_top_left: Coord, corner_bottom_right: Coord){
@@ -441,6 +442,33 @@ io.sockets.on('connection', function (client) {
 
 
     // OTHERS 
+    function handle_paste_graph(vertices_entries, links_entries){
+
+        const new_indices = new Map<number, number>();
+        for (const data of vertices_entries) {
+            let index = g.add_vertex(data[1].pos.x, data[1].pos.y);
+            new_indices.set(data[0], index);
+        }
+        
+        for (const data of links_entries) {
+            let orient = ORIENTATION.UNDIRECTED;
+            switch (data[1].orientation) {
+                case "UNDIRECTED":
+                    orient = ORIENTATION.UNDIRECTED
+                    break;
+                case "DIRECTED":
+                    orient = ORIENTATION.DIRECTED
+                    break;
+                case "DIGON":
+                    orient = ORIENTATION.DIGON
+                    break;
+            }
+            g.add_link(new_indices.get(data[1].start_vertex), new_indices.get(data[1].end_vertex), orient);
+        }
+
+        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]))
+    }
+
     function handle_delete_selected_elements(data) {
         let deleted_vertex = false;
         let delete_link = false;

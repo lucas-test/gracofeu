@@ -3,7 +3,7 @@ import { interactor_selection } from './selection_interactor';
 import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
 import { socket } from '../socket';
-import {  Graph } from '../board/graph';
+import { Graph } from '../board/graph';
 import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';
@@ -15,6 +15,7 @@ import { CanvasCoord } from '../board/coord';
 import { local_board } from '../setup';
 import { interactor_detector } from './detector_interactor';
 import ENV from '../.env.json';
+import { graph_clipboard, mouse_position_at_generation, paste_generated_graph } from '../generators/dom';
 
 // INTERACTOR MANAGER
 
@@ -27,15 +28,15 @@ export let last_down: DOWN_TYPE = null;
 export let last_down_index: number = null;
 export let has_moved: boolean = false;
 export let mouse_pos = new CanvasCoord(0, 0);
-export let key_states = new Map<string,boolean>();
+export let key_states = new Map<string, boolean>();
 
 // key states
-key_states.set("Control",false);
-key_states.set("Shift",false);
+key_states.set("Control", false);
+key_states.set("Shift", false);
 
 
 export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, pos: CanvasCoord) {
-    if ( interactor_loaded != null && interactor_loaded != interactor){
+    if (interactor_loaded != null && interactor_loaded != interactor) {
         interactor_loaded.onleave();
     }
     interactor_loaded = interactor;
@@ -51,7 +52,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
     window.addEventListener('keydown', function (e) {
-        if( document.activeElement.nodeName == "BODY"){ // otherwise focus is on a text
+        if (document.activeElement.nodeName == "BODY") { // otherwise focus is on a text
             if (e.key == "Delete") {
                 const data_socket = new Array();
                 for (const index of g.vertices.keys()) {
@@ -74,21 +75,21 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 socket.emit("delete_selected_elements", data_socket);
                 return;
             }
-            if (e.key == "Control"){
+            if (e.key == "Control") {
                 key_states.set("Control", true);
             }
-            if (e.key == "Shift"){
+            if (e.key == "Shift") {
                 key_states.set("Shift", true);
             }
             for (let interactor of interactors_available) {
-                if (interactor.shortcut == e.key.toLowerCase() ) {
+                if (interactor.shortcut == e.key.toLowerCase()) {
                     deselect_all_interactor_div()
                     select_interactor(interactor, canvas, ctx, g, mouse_pos);
                     return;
                 }
             }
-            for( const action of actions_available){
-                if( action.shortcut == e.key){
+            for (const action of actions_available) {
+                if (action.shortcut == e.key) {
                     select_action(action, canvas, ctx, g);
                 }
             }
@@ -96,10 +97,10 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     });
 
     window.addEventListener('keyup', function (e) {
-        if (e.key == "Control"){
+        if (e.key == "Control") {
             key_states.set("Control", false);
         }
-        if (e.key == "Shift"){
+        if (e.key == "Shift") {
             key_states.set("Shift", false);
         }
     })
@@ -112,13 +113,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         }
         g.update_canvas_pos();
         update_users_canvas_pos();
-        
-        
-        if(local_board.view.following !== null){
+
+
+        if (local_board.view.following !== null) {
             self_user.unfollow(local_board.view.following);
         }
         socket.emit("my_view", local_board.view.camera.x, local_board.view.camera.y, local_board.view.zoom);
-        
+
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     });
 
@@ -140,11 +141,17 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         mouse_pos.x = e.pageX;
         mouse_pos.y = e.pageY;
         has_moved = true;
-        if (interactor_loaded.mousemove(canvas, ctx, g, click_pos)) {
-            requestAnimationFrame(function () {
-                draw(canvas, ctx, g)
-            });
+        if (graph_clipboard != null) {
+            graph_clipboard.translate(click_pos.sub2(mouse_position_at_generation));
+            draw(canvas, ctx, g);
+        } else {
+            if (interactor_loaded.mousemove(canvas, ctx, g, click_pos)) {
+                requestAnimationFrame(function () {
+                    draw(canvas, ctx, g)
+                });
+            }
         }
+
         const mouse_server_coord = local_board.view.serverCoord(e);
         socket.emit("moving_cursor", mouse_server_coord.x, mouse_server_coord.y);
     })
@@ -154,13 +161,18 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             down_coord = new CanvasCoord(e.pageX, e.pageY);
             has_moved = false;
 
-            const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
-            console.log(element);
-            last_down = element.type;
-            last_down_index = element.index;
-            interactor_loaded.mousedown( canvas, ctx, g, down_coord)
-            if (element.type != DOWN_TYPE.EMPTY) {
-                requestAnimationFrame(function () { draw(canvas, ctx, g) });
+            if (graph_clipboard != null) {
+                paste_generated_graph();
+                draw(canvas, ctx, g);
+            } else {
+                const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
+                console.log(element);
+                last_down = element.type;
+                last_down_index = element.index;
+                interactor_loaded.mousedown(canvas, ctx, g, down_coord)
+                if (element.type != DOWN_TYPE.EMPTY) {
+                    requestAnimationFrame(function () { draw(canvas, ctx, g) });
+                }
             }
         }
     })
@@ -169,12 +181,12 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         console.log("touchstart");
         has_moved = false;
         const click_pos = new CanvasCoord(et.touches[0].clientX, et.touches[0].clientY);
-        
+
         const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
         console.log(element);
         last_down = element.type;
         last_down_index = element.index;
-        interactor_loaded.mousedown( canvas, ctx, g, click_pos)
+        interactor_loaded.mousedown(canvas, ctx, g, click_pos)
         if (element.type != DOWN_TYPE.EMPTY) {
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
@@ -215,11 +227,11 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 let interactors_available = [];
 
-if( ENV.mode == "dev"){
+if (ENV.mode == "dev") {
     interactors_available.push(interactor_detector);
 }
 
-interactors_available.push( interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_area)
+interactors_available.push(interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_area)
 
 
 
@@ -267,7 +279,7 @@ export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRend
         }
 
         newDiv.onclick = function () {
-            select_interactor(interactor, canvas,ctx, g, null);
+            select_interactor(interactor, canvas, ctx, g, null);
             div_recap.style.display = "none";
         };
     }

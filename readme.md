@@ -136,6 +136,7 @@ npm run dev
 - [ ] interactor select2: pas besoin de faire CTRL pour pas en avoir besoin pour la tablette ?
 - [X] pouvoir supprimer les areas
 - [X] changer le svg du "load file"
+- interactor distance ?? on clique sur un sommet et ça affiche une règle de mesure pour mesurer la distance à un autre sommet survolé. On peut faire ça pour d'autres paramètres ultra classiques (degré ?)
 
 
 
