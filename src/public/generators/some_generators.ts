@@ -68,8 +68,34 @@ import { GraphGenerator } from "./generator";
 
 // ----------------------------
 
+
+let random_star = new GraphGenerator("star", [new Integer("n")])
+
+random_star.generate = () => {
+   const graph = new Graph();
+   const n = random_star.attributes[0].value;
+   const r = 50;
+   const center = local_board.view.serverCoord2(mouse_position_at_generation) 
+   const cx = center.x; 
+   const cy = center.y;
+
+    if(n>0){
+        graph.add_vertex(cx, cy);
+        for ( let i = 0 ; i < n ; i ++){
+            graph.add_vertex(cx +  r*Math.cos( (2*Math.PI*i) /(n-1)), cy + r*Math.sin( (2*Math.PI*i) /(n-1)));
+            graph.add_edge(0,i);
+        }
+    }
+
+   return graph;
+}
+
+// ----------------------------
+
+
 export let generators_available = new Array<GraphGenerator>();
 generators_available.push(generate_random_independent);
 generators_available.push(random_clique);
 generators_available.push(random_GNP);
+generators_available.push(random_star);
 
