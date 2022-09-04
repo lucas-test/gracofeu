@@ -138,6 +138,19 @@ npm run dev
 - [X] changer le svg du "load file"
 - interactor distance ?? on clique sur un sommet et ça affiche une règle de mesure pour mesurer la distance à un autre sommet survolé. On peut faire ça pour d'autres paramètres ultra classiques (degré ?)
 
+- generators
+    - [X] ça marche
+    - [ ] gérer pour n = 0
+    - [ ] style
+    - [ ] unifier le style pour la croix qui ferme le div, j'ai une utilisé une classe "close_button"
+    - [ ] liste avec possibilité de faire une recherche
+    - [ ] prévisualisation du rendu ??
+    - autres générateurs :
+        - [ ] unit disk graph
+        - [ ] delaunay graph
+        - [ ] random independent placés au hasard
+        - [ ] tournament
+        - [ ] arbres
 
 
 ## V1 GDRIM

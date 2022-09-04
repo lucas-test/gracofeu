@@ -13,6 +13,14 @@ export function setup_generators_div() {
     main_div.id = "generators_div";
     document.body.appendChild(main_div);
 
+    const close_button = document.createElement("div");
+    close_button.classList.add("close_button");
+    close_button.innerHTML = '<img src="img/parametor/plus.svg" alt="">';
+    close_button.onclick = () => {
+        turn_off_generators_div();
+    }
+    main_div.appendChild(close_button);
+
     const generators_list = document.createElement("div");
     generators_list.id = "generators_list";
     main_div.appendChild(generators_list);
@@ -61,16 +69,7 @@ function activate_generator_div(gen: GraphGenerator) {
         const label = document.createElement("label");
         label.innerText = attribute.name + ": ";
         attribute_div.appendChild(label);
-
-        const input = document.createElement("input");
-        input.name = attribute.name;
-        input.type = "number";
-        input.value = String(attribute.value);
-        input.onchange = (e) => {
-            attribute.value = parseInt(input.value);
-            console.log(attribute.value);
-        }
-        attribute_div.appendChild(input);
+        attribute_div.appendChild(attribute.create_input_element());
         div.appendChild(attribute_div);
     }
 
@@ -80,6 +79,7 @@ function activate_generator_div(gen: GraphGenerator) {
         mouse_position_at_generation = new CanvasCoord(e.pageX, e.pageY);
         graph_clipboard = gen.generate();
         turn_off_generators_div();
+        document.body.style.cursor = "grab";
     }
     div.appendChild(generate_button);
 }
@@ -88,4 +88,5 @@ function activate_generator_div(gen: GraphGenerator) {
 export function paste_generated_graph() {
     socket.emit("paste_graph", [...graph_clipboard.vertices.entries()], [...graph_clipboard.links.entries()]);
     graph_clipboard = null;
+    document.body.style.cursor = "pointer";
 }

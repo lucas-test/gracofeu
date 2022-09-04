@@ -164,3 +164,17 @@ body {
     background-clip: padding-box;
     z-index: 3;
 } */
+
+
+.close_button {
+    width: 25px;
+    filter: invert(1);
+    transform: rotate(45deg);
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
+.close_button:hover {
+    background-color: red;
+}
