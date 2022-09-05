@@ -259,6 +259,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     break;
             }
             const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color);
+            new_link.weight = data[1].weight;
             g.links.set(data[0], new_link);
         }
 

@@ -89,6 +89,8 @@ npm run dev
     - [X] effacer serveur
     - [ ] effacer mieux (plus tard)
     - [ ] création et translation en live (plus tard, interet ??)
+    - [ ] améliorer pour plus de visibilité
+    - [ ] couleur
 
 - area 
     - [X] clic sur label dans parametre -> centrer sur area
@@ -119,13 +121,10 @@ npm run dev
         - [ ] is_sparse 
         - [X] is_coloring_propre
 
-- labels
-    - [ ] modifier les labels
-    - [ ] placement des labels
+
 
 - [ ] gestion tablette
 - [ ] optimisation possible en Math.floor() dans view.canvasCoord
-- [ ] zone texte
 - quand on déplace un sommet sur un autre ça les fusionne
     - [X] ça marche
     - [ ] visuel qui dit que ça va fusionner quand on déplace
@@ -152,6 +151,14 @@ npm run dev
         - [ ] tournament
         - [ ] arbres
 
+- text interactor
+    - [X] link weight
+    - [ ] vertex weight
+    - [ ] text zone
+    - [ ] manually positioning
+    - [ ] automatically positioning
+    - [ ] improve performance by saving the generated image
+    - [ ] latex
 
 ## V1 GDRIM
 

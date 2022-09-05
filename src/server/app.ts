@@ -213,6 +213,7 @@ io.sockets.on('connection', function (client) {
     client.on('update_strokes', handle_update_strokes);
     client.on('vertices_merge', handle_vertices_merge);
     client.on('paste_graph', handle_paste_graph);
+    client.on('update_weight', handle_update_weight);
 
     // AREAS 
     function handle_area_translate(index: number, corner_top_left: Coord, corner_bottom_right: Coord){
@@ -383,6 +384,14 @@ io.sockets.on('connection', function (client) {
         }
         g.add_link(vindex, windex, orient);
         emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+    }
+
+    function handle_update_weight(link_index: number, new_weight: string){
+        if( g.links.has(link_index)){
+            const link = g.links.get(link_index);
+            link.weight = new_weight;
+        }
+        emit_graph_to_room(new Set([]));
     }
 
 

@@ -20,6 +20,7 @@ export class Link {
 
     // local attributes
     is_selected: boolean;
+    weight: string = "";
 
 
     constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string) {

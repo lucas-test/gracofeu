@@ -16,6 +16,7 @@ import { local_board } from '../setup';
 import { interactor_detector } from './detector_interactor';
 import ENV from '../.env.json';
 import { graph_clipboard, mouse_position_at_generation, paste_generated_graph } from '../generators/dom';
+import { interactor_text } from './text';
 
 // INTERACTOR MANAGER
 
@@ -231,7 +232,7 @@ if (ENV.mode == "dev") {
     interactors_available.push(interactor_detector);
 }
 
-interactors_available.push(interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_area)
+interactors_available.push(interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area)
 
 
 

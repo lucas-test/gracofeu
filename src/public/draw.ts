@@ -335,6 +335,15 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         if (link.orientation == ORIENTATION.DIRECTED) {
             draw_head(ctx, poscp, posv);
         }
+
+        // draw Weight
+        if (link.weight != ""){
+            ctx.font = "17px Arial";
+            const measure = ctx.measureText(link.weight);
+            ctx.fillStyle = "white"
+            const pos = link.cp.canvas_pos;
+            ctx.fillText(link.weight, pos.x - measure.width / 2, pos.y + 25);
+        }
     }
 }
 

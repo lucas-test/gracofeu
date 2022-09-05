@@ -13,6 +13,7 @@ export class Link {
     cp: Coord; // control point
     orientation: ORIENTATION;
     color: string;
+    weight: string = "";
 
     constructor(i: number, j: number, cp: Coord, orientation: ORIENTATION, color: string) {
         this.start_vertex = i;
