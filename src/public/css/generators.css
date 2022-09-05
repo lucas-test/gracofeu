@@ -6,7 +6,7 @@
 
     background-color: rgb(56, 56, 56);
     padding: 30px;
-    display: flex;
+    display: none;
 }
 
 #generators_list {
