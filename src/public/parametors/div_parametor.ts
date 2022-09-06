@@ -3,7 +3,12 @@ import { Parametor } from './parametor';
 import { load_param, params_available, params_loaded } from './parametor_manager';
 
 export function update_params_available_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
-    let div = document.getElementById("params_available")
+    let div = document.getElementById("params_available");
+    
+    const title = document.createElement("h2");
+    title.innerText = "Parameters :";
+    div.appendChild(title);
+
     for (let param of params_available) {
         let param_div = document.createElement("div");
         // param_div.classList.add("param")

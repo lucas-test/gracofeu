@@ -1,5 +1,6 @@
 import { CanvasCoord } from "../board/coord";
 import { Graph } from "../board/graph";
+import { create_popup } from "../popup";
 import { socket } from "../socket";
 import { GraphGenerator } from "./generator";
 import { generators_available } from "./some_generators";
@@ -8,18 +9,10 @@ import { generators_available } from "./some_generators";
 export let graph_clipboard: Graph = null;
 export let mouse_position_at_generation: CanvasCoord = null;
 
-export function setup_generators_div() {
-    const main_div = document.createElement("div");
-    main_div.id = "generators_div";
-    document.body.appendChild(main_div);
 
-    const close_button = document.createElement("div");
-    close_button.classList.add("close_button");
-    close_button.innerHTML = '<img src="img/parametor/plus.svg" alt="">';
-    close_button.onclick = () => {
-        turn_off_generators_div();
-    }
-    main_div.appendChild(close_button);
+
+export function setup_generators_div() {
+    const main_div = create_popup("generators_div");
 
     const generators_list = document.createElement("div");
     generators_list.id = "generators_list";
@@ -63,9 +56,7 @@ function activate_generator_div(gen: GraphGenerator) {
     div.appendChild(title);
 
     for (const attribute of gen.attributes) {
-        // générer un input lié à la valeur de l'attribut
         const attribute_div = document.createElement("div");
-
         const label = document.createElement("label");
         label.innerText = attribute.name + ": ";
         attribute_div.appendChild(label);

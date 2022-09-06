@@ -1,0 +1,48 @@
+.popup {
+    position: fixed;
+    top: 100px;
+    left: 15%;
+    width: 800px;
+    border-radius: 5px;
+
+    background-color: rgb(41, 41, 41);
+    padding: 30px;
+    display: none;
+}
+
+/* OLD params available 
+css can be reused with .popup which is general */
+/*
+#params_available {
+    // background-color:#333333;
+    // color: #dddddd; 
+    position: fixed;
+    margin: 5px;
+    border-radius: 5px;
+    font-family: sans-serif;
+    display: none;
+    padding: 5px;
+    color: var(--color_div);
+    background-color: var(--background_color_div);
+    top: 50%;
+    right: calc(50% - 100px);
+    transform: translateY(calc(0px - 50%));
+    padding: 5px;
+    width: 200px;
+    text-align: center;
+    font-weight: bolder;
+}
+*/
+
+.close_button {
+    width: 25px;
+    filter: invert(1);
+    transform: rotate(45deg);
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
+.close_button:hover {
+    background-color: red;
+}

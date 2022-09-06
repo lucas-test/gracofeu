@@ -4,6 +4,7 @@ import { Parametor, SENSIBILITY } from './parametor';
 import { Graph } from '../board/graph';
 import { Area } from '../board/area';
 import { get_title_span_for_area } from '../board/area_div';
+import { create_popup } from '../popup';
 
 
 
@@ -23,6 +24,8 @@ export function setup_parametors_available() {
         param_average_degree,
         param_has_proper_coloring,
         param_diameter);
+    
+    create_popup("params_available")
 }
 
 
