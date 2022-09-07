@@ -102,7 +102,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     }
 
     if (vertex.is_selected) {
-        draw_circle(vertex.pos.canvas_pos, SELECTION_COLOR, vertex_radius, 1, ctx);
+        draw_circle(vertex.pos.canvas_pos, SELECTION_COLOR, vertex_radius+3, 1, ctx);
     } else {
         /* DISABLED for new draw of vertices
         draw_circle(vertex.pos.canvas_pos, COLOR_BORDER_VERTEX, vertex_radius, 1, ctx);
@@ -320,14 +320,26 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         const posu = u.pos.canvas_pos; 
         const posv = v.pos.canvas_pos; 
         const poscp = link.cp.canvas_pos;
+
+        if (link.is_selected) {
+            ctx.strokeStyle = SELECTION_COLOR; 
+            ctx.beginPath();
+            ctx.moveTo(posu.x, posu.y);
+            ctx.lineWidth = 7;
+            ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
+            //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
+            ctx.stroke();
+       }
+
         ctx.beginPath();
         ctx.moveTo(posu.x, posu.y);
         ctx.strokeStyle = real_color(link.color, local_board.view.dark_mode);
-        if (link.is_selected) { ctx.strokeStyle = SELECTION_COLOR; }
         ctx.lineWidth = 3;
-        //ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
-        ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
+        ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
+        //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
         ctx.stroke();
+
+        
 
         if ( interactor_loaded.interactable_element_type.has(DOWN_TYPE.CONTROL_POINT)){
             draw_circle(poscp, "grey", 4, 1, ctx);
@@ -343,6 +355,10 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
             ctx.fillStyle = "white"
             const pos = link.cp.canvas_pos;
             const newpos = pos.add(posu.sub2(posv).normalize().rotate_quarter().scale(14));
+            if (link.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
+            else {
+                ctx.fillStyle = "white";
+            }
             ctx.fillText(link.weight, newpos.x - measure.width / 2, newpos.y +6);
         }
     }
