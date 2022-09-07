@@ -150,6 +150,8 @@ npm run dev
         - [ ] random independent placés au hasard
         - [ ] tournament
         - [ ] arbres
+        - [ ] Petersen
+    - [ ] en faire plusieurs à la suite avec Ctrl
 
 - text interactor
     - [X] link weight
