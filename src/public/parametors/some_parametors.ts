@@ -210,7 +210,7 @@ param_has_proper_coloring.compute = ((g: Graph) =>{
 export let param_diameter = new Parametor("Diameter", "diameter", "diameter","Print the diameter of the graph", false, false, [SENSIBILITY.ELEMENT], true);
 
 param_diameter.compute = ((g: Graph) =>{
-    const FW = Floyd_Warhall(g);
+    const FW = Floyd_Warhall(g, false);
     let diameter = 0;
 
     for(const v_index of g.vertices.keys()){
@@ -227,7 +227,33 @@ param_diameter.compute = ((g: Graph) =>{
     return String(diameter);
 });
 
+// -----------------
 
+export let param_is_good_weight = new Parametor("Is good weight for our problem ?", "isgood", "isgood", "Paramètre trop stylé", false, true, [SENSIBILITY.ELEMENT], false);
+
+param_is_good_weight.compute = ((g: Graph) => {
+    const FW = Floyd_Warhall(g, true);
+
+    for(const v_index of g.vertices.keys()){
+        for(const u_index of g.vertices.keys()){
+            if ( u_index != v_index ){
+                for ( const w_index of g.vertices.keys()){
+                    if (w_index != u_index && w_index != v_index){
+                        if ( FW.distances.get(u_index).get(v_index)== FW.distances.get(v_index).get(w_index)){
+                            g.vertices.get(v_index).color = "red";
+                            g.vertices.get(u_index).color = "purple";
+                            g.vertices.get(w_index).color = "purple";
+                            return "false";
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return "true";
+})
+
+// --------------------
 
 
 function get_degrees_data(g:Graph){
@@ -307,7 +333,7 @@ function DFS_iterative(g:Graph, v_index : number){
 
 
 
-function Floyd_Warhall(g:Graph){
+function Floyd_Warhall(g:Graph, weighted: boolean ){
     const dist = new Map<number, Map<number, number>>();
     const next = new Map<number, Map<number, number>>();
 
@@ -330,10 +356,15 @@ function Floyd_Warhall(g:Graph){
     for(const e_index of g.links.keys())
     {
         const e = g.links.get(e_index);
-        // TODO: Change 1 into weight of the edge
         // TODO: Oriented Case
-        dist.get(e.start_vertex).set(e.end_vertex, 1);
-        dist.get(e.end_vertex).set(e.start_vertex, 1);
+        let weight = 1;
+        if ( weighted ){
+            
+            weight = parseFloat(e.weight);
+            console.log(e.weight, weight)
+        }
+        dist.get(e.start_vertex).set(e.end_vertex, weight);
+        dist.get(e.end_vertex).set(e.start_vertex, weight);
 
         next.get(e.start_vertex).set(e.end_vertex, e.start_vertex);
         next.get(e.end_vertex).set(e.start_vertex, e.end_vertex);

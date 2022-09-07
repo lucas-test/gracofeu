@@ -1,5 +1,5 @@
 import { draw } from '../draw';
-import { param_average_degree, param_diameter, param_has_proper_coloring, param_is_connected, param_max_degree, param_min_degree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo } from './some_parametors';
+import { param_average_degree, param_diameter, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo } from './some_parametors';
 import { Parametor, SENSIBILITY } from './parametor';
 import { Graph } from '../board/graph';
 import { Area } from '../board/area';
@@ -23,7 +23,9 @@ export function setup_parametors_available() {
         param_max_degree,
         param_average_degree,
         param_has_proper_coloring,
-        param_diameter);
+        param_diameter,
+        param_is_good_weight
+        );
     
     create_popup("params_available")
 }
