@@ -158,7 +158,7 @@ npm run dev
     - [ ] vertex weight
     - [ ] text zone
     - [ ] manually positioning
-    - [ ] automatically positioning
+    - [X] automatically positioning
     - [ ] improve performance by saving the generated image
     - [ ] latex
 

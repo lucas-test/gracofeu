@@ -51,6 +51,19 @@ export class Coord {
         this.x = c.x;
         this.y = c.y;
     }
+
+    normalize(): Coord {
+        const norm = Math.sqrt(this.norm2());
+        return new Coord(this.x/norm, this.y/norm);
+    }
+
+    rotate_quarter(){
+        return new Coord(this.y, - this.x);
+    }
+
+    scale(r: number){
+        return new Coord(this.x*r, this.y*r);
+    }
 }
 
 export class CanvasCoord extends Coord {

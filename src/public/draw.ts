@@ -342,7 +342,8 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
             const measure = ctx.measureText(link.weight);
             ctx.fillStyle = "white"
             const pos = link.cp.canvas_pos;
-            ctx.fillText(link.weight, pos.x - measure.width / 2, pos.y + 20);
+            const newpos = pos.add(posu.sub2(posv).normalize().rotate_quarter().scale(14));
+            ctx.fillText(link.weight, newpos.x - measure.width / 2, newpos.y +6);
         }
     }
 }
