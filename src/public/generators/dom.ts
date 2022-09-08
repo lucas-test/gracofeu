@@ -12,7 +12,7 @@ export let mouse_position_at_generation: CanvasCoord = null;
 
 
 export function setup_generators_div() {
-    const main_div = create_popup("generators_div");
+    const main_div = create_popup("generators_div", "Generators");
 
     const generators_list = document.createElement("div");
     generators_list.id = "generators_list";

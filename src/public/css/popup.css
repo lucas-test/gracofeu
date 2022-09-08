@@ -4,10 +4,21 @@
     left: 15%;
     width: 800px;
     border-radius: 5px;
-
+    height: 350px;
+    
     background-color: rgb(41, 41, 41);
-    padding: 30px;
     display: none;
+}
+
+.popup_header {
+    padding-left: 40px;
+    height: 30px;
+}
+
+.popup_content {
+    overflow-y: scroll;
+    height: 250px;
+    padding: 20px;
 }
 
 /* OLD params available 
@@ -35,14 +46,16 @@ css can be reused with .popup which is general */
 */
 
 .close_button {
+    border-radius: 50%;
     width: 25px;
     filter: invert(1);
     transform: rotate(45deg);
     position: absolute;
     left: 5px;
     top: 5px;
+    transition: 150ms;
 }
 
 .close_button:hover {
-    background-color: red;
+    background-color: black;
 }

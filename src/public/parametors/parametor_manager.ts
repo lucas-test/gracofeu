@@ -27,7 +27,7 @@ export function setup_parametors_available() {
         param_is_good_weight
         );
     
-    create_popup("params_available")
+    create_popup("params_available", "Parameters")
 }
 
 

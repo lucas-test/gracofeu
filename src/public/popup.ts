@@ -1,8 +1,15 @@
-export function create_popup(id: string){
+export function create_popup(id: string, title: string){
     const div = document.createElement("div");
     div.classList.add("popup");
     div.id = id;
     document.body.appendChild(div);
+
+    const title_div = document.createElement("div");
+    title_div.classList.add("popup_header");
+    const title_h2 = document.createElement("h2");
+    title_h2.textContent = title;
+    title_div.appendChild(title_h2);
+    div.appendChild(title_div);
 
     const close_button = document.createElement("div");
     close_button.classList.add("close_button");
@@ -11,5 +18,11 @@ export function create_popup(id: string){
         div.style.display = "none";
     }
     div.appendChild(close_button);
+
+    const div_content = document.createElement("div");
+    div_content.classList.add("popup_content");
+    div_content.id = id + "_content";
+    div.appendChild(div_content);
+    
     return div;
 }
