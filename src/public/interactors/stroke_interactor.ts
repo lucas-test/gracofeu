@@ -17,7 +17,7 @@ export var interactor_stroke = new Interactor("pen", "p", "stroke.svg", new Set(
 
 interactor_stroke.mousedown = ((  canvas, ctx, g, e) => {
     const server_pos = local_board.view.serverCoord2(e);
-    last_stroke = new Stroke([server_pos], "#000000", 2);
+    last_stroke = new Stroke([server_pos], "black", 2);
 
     // TO CHANGE
     let index = 0;
@@ -60,7 +60,7 @@ interactor_stroke.mouseup = ((canvas, ctx, g, e) => {
     // });
     // socket.emit("add_stroke", data_socket);
 
-    socket.emit("add_stroke", [... s.positions.entries()], s.multicolor.color, s.width, s.top_left, s.bot_right);
+    socket.emit("add_stroke", [... s.positions.entries()], s.color, s.width, s.top_left, s.bot_right);
 
     last_stroke = null;
     index_last_stroke = null;

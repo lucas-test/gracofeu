@@ -1,19 +1,19 @@
 import { CanvasCoord, ServerCoord } from "./coord";
-import { Multicolor } from "../multicolor";
 import { local_board } from "../setup";
 import { View } from "./camera";
+import { BasicColorName } from "../basic_colors";
 
 export class Stroke{
     positions:Array<ServerCoord>;
-    multicolor:Multicolor;
+    color:BasicColorName;
     width:number;
     top_left: ServerCoord;
     bot_right: ServerCoord;
     is_selected:boolean;
     
-    constructor(pos:Array<ServerCoord>, color:string, width:number){
+    constructor(pos:Array<ServerCoord>, color:BasicColorName, width:number){
         this.positions = pos;
-        this.multicolor = new Multicolor(color);
+        this.color = color;
         this.width = width;
         this.is_selected = false;
         if(pos.length>0){

@@ -319,7 +319,7 @@ io.sockets.on('connection', function (client) {
                 for( let i = 0 ; i < stroke.positions.length ; i ++){
                     stroke.positions[i] = new Coord(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y);
                 }
-                element.stroke_data.color = element.stroke_data.multicolor.color;
+                element.stroke_data.color = element.stroke_data.color;
             }
         }
         io.sockets.in(room_id).emit('update_strokes', data);
@@ -329,6 +329,7 @@ io.sockets.on('connection', function (client) {
 
     // COLORS
     function handle_update_colors(data) {
+        let is_stroke_modifying = false;
         for (const element of data) {
             if (element.type == "vertex") {
                 if (g.vertices.has(element.index)) {
@@ -342,9 +343,19 @@ io.sockets.on('connection', function (client) {
                     link.color = element.color;
                 }
             }
+            else if (element.type == "stroke"){
+                if(g.strokes.has(element.index)){
+                    is_stroke_modifying = true;
+                    const stroke = g.strokes.get(element.index);
+                    stroke.color = element.color;
+                }
+            }
         }
         // TODO:  Sensibility for colors ? 
         emit_graph_to_room(new Set([SENSIBILITY.COLOR]));
+        if (is_stroke_modifying){
+            emit_strokes_to_room()
+        }
     }
 
 

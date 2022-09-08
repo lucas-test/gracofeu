@@ -23,6 +23,7 @@ import { local_board } from './setup';
 import { ORIENTATION } from './board/link';
 import { drawRoundRect, draw_circle, draw_head, draw_line, real_color } from './draw_basics';
 import { graph_clipboard } from './generators/dom';
+import { real_color2 } from './basic_colors';
 
 export function toggle_dark_mode(enable:boolean){
     const action_DOM = document.getElementById("actions");
@@ -405,7 +406,7 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
 
         let position_canvas = s.positions[0].canvas_pos;
         ctx.beginPath();
-        ctx.strokeStyle = real_color(s.multicolor.color, local_board.view.dark_mode);
+        ctx.strokeStyle = real_color2(s.color, local_board.view.dark_mode);
         ctx.lineWidth = s.width;
         ctx.moveTo(position_canvas.x, position_canvas.y);
         for(let i = 1; i<s.positions.length; i++){

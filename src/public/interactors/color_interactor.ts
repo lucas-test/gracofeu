@@ -5,7 +5,7 @@ import { Interactor, DOWN_TYPE } from './interactor'
 import { key_states, last_down, last_down_index } from './interactor_manager';
 import BASIC_COLORS from '../basic_colors.json';
 
-export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK]), 'url("../img/cursors/color.svg"), auto');
+export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]), 'url("../img/cursors/color.svg"), auto');
 
 // Local variables
 let color_selected = "red";
@@ -148,6 +148,11 @@ color_interactor.mousedown = (( canvas, ctx, g, e) => {
         data_socket.push({ type: "link", index: last_down_index, color: color_selected });
         socket.emit("update_colors", data_socket);
     }
+    else if (last_down == DOWN_TYPE.STROKE){
+        socket.emit("update_colors", 
+            [{ type: "stroke", index: last_down_index, color: color_selected }]
+        );
+    }
 })
 
 
@@ -165,6 +170,11 @@ color_interactor.mousemove = ((canvas, ctx, g, e) => {
             data_socket.push({ type: "link", index: elt.index, color: color_selected });
             socket.emit("update_colors", data_socket);
             return true;
+        }
+        else if (elt.type == DOWN_TYPE.STROKE){
+            socket.emit("update_colors", 
+                [{ type: "stroke", index: elt.index, color: color_selected }]
+            );
         }
         return false;
     }

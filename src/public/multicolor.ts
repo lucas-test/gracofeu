@@ -5,6 +5,7 @@ export class Multicolor{
     lighten : string; 
 
 
+    // color must be Hex
     constructor(color:string){
         this.color = color;
         this.contrast = invertColor(color);

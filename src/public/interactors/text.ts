@@ -23,6 +23,10 @@ interactor_text.mouseup = ((canvas, ctx, g, e) => {
 
 })
 
+interactor_text.onleave = () => {
+    remove_all_weight_inputs();
+}
+
 // ---------- SPECIFIC FUNCTIONS
 
 function create_weight_input(link_index: number, pos: CanvasCoord) {
