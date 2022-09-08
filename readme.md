@@ -188,6 +188,7 @@ npm run dev
 
 ## V2 DMANET
 
+- [ ] code break dans les compute function (voir la note dans le fichier parametor.ts)
 - [ ] copier/coller le sous-graphe induit par la sélection de sommets
 - [ ] turoriel
 - [ ] multi-arêtes

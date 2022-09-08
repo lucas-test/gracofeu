@@ -63,4 +63,29 @@ export class Parametor {
     }
 }
 
+/*
 
+# Note on Async:
+
+To make sleeps in compute function : 
+- Change compute to Promise<string>
+- add "async" to all compute functions
+then you can use "await new Promise(resolve => setTimeout(resolve, 100));"
+in the compute functions
+(get canvas and ctx with export from setup to call draw)
+
+---
+
+compute: (g: Graph, verbose: boolean) => Promise<string>;
+
+param_diameter.compute = ( async (g: Graph) =>{
+    const FW = Floyd_Warhall(g, false);
+    let diameter = 0;
+
+    for(const v_index of g.vertices.keys()){
+        g.vertices.get(v_index).color = "green";
+        draw(canvas, ctx, g);
+        await new Promise(resolve => setTimeout(resolve, 100)); 
+        ...
+
+*/
