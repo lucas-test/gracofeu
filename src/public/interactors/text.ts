@@ -6,12 +6,27 @@ import { last_down, last_down_index } from "./interactor_manager";
 
 export var interactor_text = new Interactor("text", "t", "text.svg", new Set([DOWN_TYPE.LINK]), 'default')
 
+// --------------
+
+let current_index = null;
+
+const input = document.createElement("input");
+input.classList.add("weight_input");
+input.id = "weight_input";
+input.type = "text";
+document.body.appendChild(input);
+
+// --------------
+
 interactor_text.mousedown = ((canvas, ctx, g, e) => {
+    validate_weight();
+
     if (last_down == DOWN_TYPE.LINK) {
-        remove_all_weight_inputs();
+        current_index = last_down_index;
         const link = g.links.get(last_down_index);
-        create_weight_input(last_down_index, link.cp.canvas_pos);
+        display_weight_input(link.cp.canvas_pos);
     }
+
 })
 
 interactor_text.mousemove = ((canvas, ctx, g, e) => {
@@ -24,31 +39,33 @@ interactor_text.mouseup = ((canvas, ctx, g, e) => {
 })
 
 interactor_text.onleave = () => {
-    remove_all_weight_inputs();
+    current_index = null;
+    turn_off_weight_input();
 }
 
 // ---------- SPECIFIC FUNCTIONS
 
-function create_weight_input(link_index: number, pos: CanvasCoord) {
-    const input = document.createElement("input");
-    input.classList.add("weight_input");
-    input.type = "text";
-    document.body.appendChild(input);
+function display_weight_input(pos: CanvasCoord) {
+    input.style.display = "block";
     input.style.top = String(pos.y);
     input.style.left = String(pos.x - 20);
     window.setTimeout(() => input.focus(), 0); // without timeout does not focus
     input.onkeyup = (e) => {
-        if (e.key == "Enter"){
-            if( local_board.graph.links.has(link_index)){
-                socket.emit("update_weight", link_index, input.value);
-                input.remove();
-            }
+        if (e.key == "Enter") {
+            validate_weight();
         }
     }
 }
 
-function remove_all_weight_inputs(){
-    for (const input of document.getElementsByClassName("weight_input")){
-        input.remove();
+function turn_off_weight_input() {
+    input.value = "";
+    input.style.display = "none";
+}
+
+function validate_weight() {
+    if (current_index != null && local_board.graph.links.has(current_index)) {
+        socket.emit("update_weight", current_index, input.value);
     }
+    current_index = null;
+    turn_off_weight_input();
 }
