@@ -4,7 +4,7 @@ import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
 import { last_down, last_down_index } from "./interactor_manager";
 
-export var interactor_text = new Interactor("text", "t", "text.svg", new Set([DOWN_TYPE.LINK]), 'default')
+export var interactor_text = new Interactor("text", "t", "text.svg", new Set([DOWN_TYPE.LINK, DOWN_TYPE.LINK_WEIGHT]), 'default')
 
 // --------------
 
@@ -21,7 +21,7 @@ document.body.appendChild(input);
 interactor_text.mousedown = ((canvas, ctx, g, e) => {
     validate_weight();
 
-    if (last_down == DOWN_TYPE.LINK) {
+    if (last_down == DOWN_TYPE.LINK || last_down == DOWN_TYPE.LINK_WEIGHT) {
         current_index = last_down_index;
         const link = g.links.get(last_down_index);
         display_weight_input(link.cp.canvas_pos);

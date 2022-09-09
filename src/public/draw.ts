@@ -354,13 +354,12 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
             ctx.font = "17px Arial";
             const measure = ctx.measureText(link.weight);
             ctx.fillStyle = "white"
-            const pos = link.cp.canvas_pos;
-            const newpos = pos.add(posu.sub2(posv).normalize().rotate_quarter().scale(14));
+            const wpos = link.weight_position;
             if (link.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
             else {
                 ctx.fillStyle = "white";
             }
-            ctx.fillText(link.weight, newpos.x - measure.width / 2, newpos.y +6);
+            ctx.fillText(link.weight, wpos.x - measure.width / 2, wpos.y +6);
         }
     }
 }

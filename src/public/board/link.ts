@@ -1,6 +1,6 @@
 import { local_board } from "../setup";
 import { View } from "./camera";
-import { CanvasCoord, ServerCoord } from "./coord";
+import { CanvasCoord, Coord, ServerCoord } from "./coord";
 import { LocalVertex } from "./vertex";
 
 export enum ORIENTATION {
@@ -17,10 +17,11 @@ export class Link {
     cp: ServerCoord;
     orientation: ORIENTATION;
     color: string;
+    weight: string = "";
 
     // local attributes
     is_selected: boolean;
-    weight: string = "";
+    weight_position: Coord = new Coord(0,0);
 
 
     constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string) {

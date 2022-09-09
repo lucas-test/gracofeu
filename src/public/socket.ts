@@ -218,6 +218,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             if (g.links.has(e.index)) {
                 const link = g.links.get(e.index);
                 link.cp = new ServerCoord(e.cp.x, e.cp.y);
+                g.automatic_weight_position(e.index);
             }
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
@@ -227,6 +228,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     function handle_update_control_point(index: number, c: Coord) {
         const link = g.links.get(index);
         link.cp = new ServerCoord(c.x, c.y);
+        g.automatic_weight_position(index);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]),false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -261,6 +263,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color);
             new_link.weight = data[1].weight;
             g.links.set(data[0], new_link);
+            g.automatic_weight_position(data[0]);
         }
 
         g.compute_vertices_index_string();
@@ -281,6 +284,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         v.pos.x = x;
         v.pos.y = y;
         v.pos.update_canvas_pos_without_saving(local_board.view);
+        g.automatic_link_weight_position_from_vertex(index);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -293,6 +297,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             v.pos.x = e.x;
             v.pos.y = e.y;
             v.pos.update_canvas_pos_without_saving(local_board.view);
+            g.automatic_link_weight_position_from_vertex(e.index);
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });

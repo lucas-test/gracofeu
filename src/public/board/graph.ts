@@ -135,6 +135,9 @@ export class Graph {
             if (interactable_element_type.has(DOWN_TYPE.LINK) && this.is_click_over_link(index, pos)) {
                 return { type: DOWN_TYPE.LINK, index: index };
             }
+            if( interactable_element_type.has(DOWN_TYPE.LINK_WEIGHT) && pos.dist2(link.weight_position) <= 100){
+                return { type: DOWN_TYPE.LINK_WEIGHT, index: index};
+            }
         }
 
         for(const [index,a] of this.areas.entries()){
@@ -359,6 +362,24 @@ export class Graph {
         return set;
     }
 
+    automatic_weight_position(link_index: number){
+        const link = this.links.get(link_index)
+        const u = this.vertices.get(link.start_vertex);
+        const v = this.vertices.get(link.end_vertex);
+
+        const posu = u.pos.canvas_pos; 
+        const posv = v.pos.canvas_pos; 
+        const pos = link.cp.canvas_pos;
+        link.weight_position = pos.add(posu.sub2(posv).normalize().rotate_quarter().scale(14));
+    }
+
+    automatic_link_weight_position_from_vertex(vertex_index: number){
+        for( const [link_index, link] of this.links.entries()){
+            if( link.start_vertex == vertex_index || link.end_vertex == vertex_index){
+                this.automatic_weight_position(link_index);
+            }
+        }
+    }
 }
 
 

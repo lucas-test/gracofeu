@@ -11,7 +11,8 @@ export enum DOWN_TYPE {
     STROKE = "STROKE",
     AREA = "AREA",
     AREA_CORNER = "AREA_CORNER",
-    AREA_SIDE = "AREA_SIDE"
+    AREA_SIDE = "AREA_SIDE",
+    LINK_WEIGHT = "LINK_WEIGHT"
 }
 
 
