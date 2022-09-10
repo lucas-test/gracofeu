@@ -1,3 +1,4 @@
+import katex from "katex";
 import { local_board } from "../setup";
 import { View } from "./camera";
 import { CanvasCoord, Coord, ServerCoord } from "./coord";
@@ -22,6 +23,7 @@ export class Link {
     // local attributes
     is_selected: boolean;
     weight_position: Coord = new Coord(0,0);
+    weight_div: HTMLDivElement = null;
 
 
     constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string) {
@@ -31,6 +33,10 @@ export class Link {
         this.is_selected = false;
         this.cp = new ServerCoord(cp.x, cp.y);
         this.orientation = orientation;
+        this.weight_div = document.createElement("div");
+        this.weight_div.classList.add("weight_link");
+        document.body.appendChild(this.weight_div);
+        
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
@@ -78,5 +84,9 @@ export class Link {
 
     }
 
+    update_weight(value: string){
+        this.weight = value;
+        this.weight_div.innerHTML = katex.renderToString(value);
+    }
 
 }

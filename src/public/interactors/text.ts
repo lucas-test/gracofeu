@@ -1,4 +1,5 @@
 import { CanvasCoord } from "../board/coord";
+import { Graph } from "../board/graph";
 import { local_board } from "../setup";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
@@ -22,9 +23,9 @@ interactor_text.mousedown = ((canvas, ctx, g, e) => {
     validate_weight();
 
     if (last_down == DOWN_TYPE.LINK || last_down == DOWN_TYPE.LINK_WEIGHT) {
-        current_index = last_down_index;
+        
         const link = g.links.get(last_down_index);
-        display_weight_input(link.cp.canvas_pos);
+        display_weight_input(last_down_index, link.cp.canvas_pos);
     }
 
 })
@@ -43,9 +44,14 @@ interactor_text.onleave = () => {
     turn_off_weight_input();
 }
 
+interactor_text.trigger = (mouse_pos, g: Graph) => {
+    
+}
+
 // ---------- SPECIFIC FUNCTIONS
 
-function display_weight_input(pos: CanvasCoord) {
+export function display_weight_input(link_index: number, pos: CanvasCoord) {
+    current_index = link_index;
     input.style.display = "block";
     input.style.top = String(pos.y);
     input.style.left = String(pos.x - 20);
@@ -60,9 +66,10 @@ function display_weight_input(pos: CanvasCoord) {
 function turn_off_weight_input() {
     input.value = "";
     input.style.display = "none";
+    input.blur();
 }
 
-function validate_weight() {
+export function validate_weight() {
     if (current_index != null && local_board.graph.links.has(current_index)) {
         socket.emit("update_weight", current_index, input.value);
     }

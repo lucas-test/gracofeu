@@ -1,4 +1,11 @@
 .weight_input {
     position: fixed;
     width: 3em;
+    z-index: 1;
+}
+
+.weight_link {
+    position: fixed;
+    background-color: black;
+    color: white;
 }

@@ -349,18 +349,7 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
             draw_head(ctx, poscp, posv);
         }
 
-        // draw Weight
-        if (link.weight != ""){
-            ctx.font = "17px Arial";
-            const measure = ctx.measureText(link.weight);
-            ctx.fillStyle = "white"
-            const wpos = link.weight_position;
-            if (link.is_selected) { ctx.fillStyle = SELECTION_COLOR; }
-            else {
-                ctx.fillStyle = "white";
-            }
-            ctx.fillText(link.weight, wpos.x - measure.width / 2, wpos.y +6);
-        }
+        // draw weight is automatic as it is a div
     }
 }
 

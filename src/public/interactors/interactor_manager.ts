@@ -43,7 +43,7 @@ export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElem
     interactor_loaded = interactor;
     canvas.style.cursor = interactor.cursor_style;
     local_board.view.is_creating_vertex = false;
-    interactor.trigger(pos);
+    interactor.trigger(pos,g);
     select_interactor_div(interactor);
     requestAnimationFrame(function () { draw(canvas, ctx, g) });
 }

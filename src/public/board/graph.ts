@@ -6,6 +6,8 @@ import { Stroke } from "./stroke";
 import { local_board } from "../setup";
 import { LocalVertex } from "./vertex";
 import { Link, ORIENTATION } from "./link";
+import { interactor_loaded } from "../interactors/interactor_manager";
+import { display_weight_input, validate_weight } from "../interactors/text";
 
 
 
@@ -66,7 +68,15 @@ export class Graph {
         const index = this.get_next_available_index_links();
         const v1 = this.vertices.get(i);
         const v2 = this.vertices.get(j);
-        this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), ORIENTATION.UNDIRECTED, "black"));
+        const new_link = new Link(i, j, middle(v1.pos, v2.pos), ORIENTATION.UNDIRECTED, "black")
+        this.links.set(index, new_link);
+        new_link.weight_div.onclick = (e) => {
+            if( interactor_loaded.name == "text"){
+                validate_weight();
+                display_weight_input(index, new CanvasCoord(new_link.weight_position.x, new_link.weight_position.y));
+            }
+            
+        }
         return index;
     }
 
@@ -371,6 +381,8 @@ export class Graph {
         const posv = v.pos.canvas_pos; 
         const pos = link.cp.canvas_pos;
         link.weight_position = pos.add(posu.sub2(posv).normalize().rotate_quarter().scale(14));
+        link.weight_div.style.top = String(link.weight_position.y - link.weight_div.clientHeight/2);
+        link.weight_div.style.left = String(link.weight_position.x- link.weight_div.clientWidth/2);
     }
 
     automatic_link_weight_position_from_vertex(vertex_index: number){
@@ -379,6 +391,13 @@ export class Graph {
                 this.automatic_weight_position(link_index);
             }
         }
+    }
+
+    clear_links(){
+        for( const link of this.links.values()){
+            link.weight_div.remove();
+        }
+        this.links.clear();
     }
 }
 

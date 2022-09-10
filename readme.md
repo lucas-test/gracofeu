@@ -159,8 +159,8 @@ npm run dev
     - [ ] text zone
     - [ ] manually positioning
     - [X] automatically positioning
-    - [ ] improve performance by saving the generated image
-    - [ ] latex
+    - [X] improve performance by saving the generated image
+    - [X] latex
 
 ## V1 GDRIM
 

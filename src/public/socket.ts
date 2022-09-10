@@ -5,13 +5,15 @@ import { Stroke } from "./board/stroke";
 import { update_params_loaded } from "./parametors/parametor_manager";
 import { Area } from "./board/area";
 import { update_options_graphs } from "./parametors/div_parametor";
-import { Coord, ServerCoord } from "./board/coord";
+import { CanvasCoord, Coord, ServerCoord } from "./board/coord";
 import { init_list_parametors_for_area, make_list_areas } from "./board/area_div";
 import { get_sensibilities, SENSIBILITY } from "./parametors/parametor";
 import { local_board } from "./setup";
 import { Board } from "./board/board";
 import { LocalVertex } from "./board/vertex";
 import { Link, ORIENTATION } from "./board/link";
+import { interactor_loaded } from "./interactors/interactor_manager";
+import { display_weight_input, validate_weight } from "./interactors/text";
 export const socket = io()
 
 
@@ -246,7 +248,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             g.vertices.set(data[0], new_vertex);
         }
 
-        g.links.clear();
+        g.clear_links();
         for (const data of links_entries) {
             let orient = ORIENTATION.UNDIRECTED;
             switch (data[1].orientation) {
@@ -261,9 +263,16 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     break;
             }
             const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color);
-            new_link.weight = data[1].weight;
+            new_link.update_weight(data[1].weight);
             g.links.set(data[0], new_link);
             g.automatic_weight_position(data[0]);
+            new_link.weight_div.onclick = (e) => {
+                if( interactor_loaded.name == "text"){
+                    validate_weight();
+                    display_weight_input(data[0], new CanvasCoord(new_link.weight_position.x, new_link.weight_position.y));
+                }
+                
+            }
         }
 
         g.compute_vertices_index_string();

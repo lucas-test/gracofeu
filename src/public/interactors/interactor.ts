@@ -25,7 +25,7 @@ export class Interactor {
     mousedown: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
     mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => boolean;
     mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
-    trigger: (mouse_pos: CanvasCoord) => void;
+    trigger: (mouse_pos: CanvasCoord, g: Graph) => void;
     onleave: () => void;
     draw: (ctx: CanvasRenderingContext2D) => void;
 
@@ -35,7 +35,7 @@ export class Interactor {
         this.img_src = img_src;
         this.interactable_element_type = interactable_element_type;
         this.cursor_style = cursor_style;
-        this.trigger = (e) => { };
+        this.trigger = (e, g) => { };
         this.onleave = () => {};
         this.draw = () => {};
     }
