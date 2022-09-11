@@ -3,13 +3,19 @@ import { Parametor } from './parametor';
 import { load_param, params_available, params_loaded } from './parametor_manager';
 
 export function update_params_available_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
-    let div = document.getElementById("params_available_content");
+    const div = document.getElementById("params_available_content");
+
+    const search_input = document.createElement("input");
+    search_input.type = "text";
+    search_input.id = "param_search_input";
+    search_input.onkeyup = handle_search_onkeyup;
+    search_input.placeholder = "Search for names..";
+    div.appendChild(search_input);
 
     for (let param of params_available) {
-        let param_div = document.createElement("div");
-        // param_div.classList.add("param")
+        const param_div = document.createElement("div");
         param_div.id = `param_div_${param.id}`;
-        let param_label_div = document.createElement("div");
+        const param_label_div = document.createElement("div");
         param_label_div.classList.add("param")
         param_label_div.id = `param_div_label_${param.id}`;
         param_label_div.innerHTML = param.name
@@ -17,6 +23,22 @@ export function update_params_available_div(canvas: HTMLCanvasElement, ctx: Canv
         // param_label_div.onclick = function () { load_param(param, canvas, ctx, g, null); params_available_turn_off_div(); }
         div.appendChild(param_div);
         param_div.appendChild(param_label_div);
+    }
+}
+
+function handle_search_onkeyup() {
+    const input = <HTMLInputElement>document.getElementById('param_search_input');
+    const filter = input.value.toUpperCase();
+    const div_content = document.getElementById("params_available_content");
+    const param_list = <HTMLCollectionOf<HTMLDivElement>>div_content.getElementsByClassName('param');
+
+    for (let i = 0; i < param_list.length; i++) {
+        const txtValue = param_list[i].innerHTML;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            param_list[i].style.display = "";
+        } else {
+            param_list[i].style.display = "none";
+        }
     }
 }
 

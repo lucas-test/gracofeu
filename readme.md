@@ -90,7 +90,7 @@ npm run dev
     - [ ] effacer mieux (plus tard)
     - [ ] création et translation en live (plus tard, interet ??)
     - [ ] améliorer pour plus de visibilité
-    - [ ] couleur
+    - [X] couleur
 
 - area 
     - [X] clic sur label dans parametre -> centrer sur area
@@ -141,7 +141,7 @@ npm run dev
     - [X] ça marche
     - [ ] gérer pour n = 0
     - [ ] style
-    - [ ] unifier le style pour la croix qui ferme le div, j'ai une utilisé une classe "close_button"
+    - [X] unifier le style pour la croix qui ferme le div, j'ai une utilisé une classe "close_button"
     - [ ] liste avec possibilité de faire une recherche
     - [ ] prévisualisation du rendu ??
     - autres générateurs :
@@ -171,7 +171,6 @@ npm run dev
 - [ ] export graphviz ?
 - [ ] interactor/parameter/modifyer: les mettre dans des fichiers séparés
 - [ ] diapo graphe
-- [ ] poids (nombre) sur sommets ou arêtes
 
 - parametre
     - [ ] attributs
@@ -185,6 +184,13 @@ npm run dev
         - [ ] random_graph(n,p) et directed
         - [ ] random_tournament(n)
         - [ ] Paley
+
+- graph moving modifyer
+    - modifie automatiquement le graphe en fonction du placement des sommets
+    - exemples 
+        - [ ] degreewidth
+        - [ ] unit disk graph (v est relié w ssi la distance graphique <= 1 )
+        
 
 ## V2 DMANET
 
