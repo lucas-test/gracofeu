@@ -18,3 +18,18 @@
     background-color: rgb(146, 81, 81);
 }
 
+
+.attribute_input.invalid {
+    background-color: red;
+}
+
+.attribute_input {
+    background-color: #1e1e1e;
+    color: white;
+    width: 80%;
+    padding: 12px 20px 12px 40px; 
+    border: 1px solid #ddd; 
+    margin-bottom: 12px;
+    transition: 200ms;
+}
+

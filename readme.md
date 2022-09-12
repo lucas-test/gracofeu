@@ -139,7 +139,7 @@ npm run dev
 
 - generators
     - [X] ça marche
-    - [ ] gérer pour n = 0
+    - [X] gérer pour n = 0
     - [ ] style
     - [X] unifier le style pour la croix qui ferme le div, j'ai une utilisé une classe "close_button"
     - [ ] liste avec possibilité de faire une recherche

@@ -67,6 +67,11 @@ function activate_generator_div(gen: GraphGenerator) {
     const generate_button = document.createElement("button");
     generate_button.textContent = "generate";
     generate_button.onclick = (e) => {
+        for( const attribute of gen.attributes.values() ){
+            if( attribute.input.classList.contains("invalid")){
+                return;
+            }
+        }
         mouse_position_at_generation = new CanvasCoord(e.pageX, e.pageY);
         graph_clipboard = gen.generate();
         turn_off_generators_div();

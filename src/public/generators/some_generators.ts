@@ -6,7 +6,7 @@ import { GraphGenerator } from "./generator";
 
 // ----------------------------
 
- let generate_random_independent = new GraphGenerator("independent", [new Integer("n")])
+ let generate_random_independent = new GraphGenerator("independent", [new Integer("n", 3)])
 
  generate_random_independent.generate = () => {
     const graph = new Graph();
@@ -23,7 +23,7 @@ import { GraphGenerator } from "./generator";
 
 // ----------------------------
 
- let random_clique = new GraphGenerator("clique", [new Integer("n")])
+ let random_clique = new GraphGenerator("clique", [new Integer("n", 3)])
 
  random_clique.generate = () => {
     const graph = new Graph();
@@ -43,7 +43,7 @@ import { GraphGenerator } from "./generator";
 
  // ----------------------------
 
- let random_GNP = new GraphGenerator("gnp", [new Integer("n"), new Percentage("p")]);
+ let random_GNP = new GraphGenerator("gnp", [new Integer("n", 3), new Percentage("p")]);
 
  random_GNP.generate = () => {
     const graph = new Graph();
@@ -69,7 +69,7 @@ import { GraphGenerator } from "./generator";
 // ----------------------------
 
 
-let random_star = new GraphGenerator("star", [new Integer("n")])
+let random_star = new GraphGenerator("star", [new Integer("n", 3)])
 
 random_star.generate = () => {
    const graph = new Graph();
