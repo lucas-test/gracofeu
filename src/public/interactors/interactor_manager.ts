@@ -15,7 +15,7 @@ import { CanvasCoord } from '../board/coord';
 import { local_board } from '../setup';
 import { interactor_detector } from './detector_interactor';
 import ENV from '../.env.json';
-import { graph_clipboard, mouse_position_at_generation, paste_generated_graph } from '../generators/dom';
+import { graph_clipboard, mouse_position_at_generation, paste_generated_graph, regenerate_graph } from '../generators/dom';
 import { interactor_text } from './text';
 
 // INTERACTOR MANAGER
@@ -53,6 +53,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
     window.addEventListener('keydown', function (e) {
+        if (e.key == "Control") {
+            key_states.set("Control", true);
+        }
+        if (e.key == "Shift") {
+            key_states.set("Shift", true);
+        }
+
         if (document.activeElement.nodeName == "BODY") { // otherwise focus is on a text
             if (e.key == "Delete") {
                 const data_socket = new Array();
@@ -75,12 +82,6 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
                 socket.emit("delete_selected_elements", data_socket);
                 return;
-            }
-            if (e.key == "Control") {
-                key_states.set("Control", true);
-            }
-            if (e.key == "Shift") {
-                key_states.set("Shift", true);
             }
             for (let interactor of interactors_available) {
                 if (interactor.shortcut == e.key.toLowerCase()) {
@@ -164,6 +165,9 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
             if (graph_clipboard != null) {
                 paste_generated_graph();
+                if( key_states.get("Control") ){
+                    regenerate_graph(e);
+                }
                 draw(canvas, ctx, g);
             } else {
                 const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);

@@ -492,7 +492,6 @@ function draw_interactor(ctx: CanvasRenderingContext2D)
 
 function draw_graph_generated(ctx: CanvasRenderingContext2D){
     if ( graph_clipboard != null){
-        console.log("hey")
         draw_vertices(ctx, graph_clipboard);
         draw_links(ctx, graph_clipboard);
     }

@@ -8,6 +8,7 @@ import { generators_available } from "./some_generators";
 // graph clipboard
 export let graph_clipboard: Graph = null;
 export let mouse_position_at_generation: CanvasCoord = null;
+let last_generator: GraphGenerator = null;
 
 
 
@@ -74,6 +75,7 @@ function activate_generator_div(gen: GraphGenerator) {
         }
         mouse_position_at_generation = new CanvasCoord(e.pageX, e.pageY);
         graph_clipboard = gen.generate();
+        last_generator = gen;
         turn_off_generators_div();
         document.body.style.cursor = "grab";
     }
@@ -85,4 +87,11 @@ export function paste_generated_graph() {
     socket.emit("paste_graph", [...graph_clipboard.vertices.entries()], [...graph_clipboard.links.entries()]);
     graph_clipboard = null;
     document.body.style.cursor = "pointer";
+}
+
+export function regenerate_graph(e: MouseEvent){
+    if ( last_generator !== null){
+        mouse_position_at_generation = new CanvasCoord(e.pageX, e.pageY);
+        graph_clipboard = last_generator.generate();
+    }
 }

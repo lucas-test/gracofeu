@@ -151,7 +151,7 @@ npm run dev
         - [ ] tournament
         - [ ] arbres
         - [ ] Petersen
-    - [ ] en faire plusieurs à la suite avec Ctrl
+    - [X] en faire plusieurs à la suite avec Ctrl
 
 - text interactor
     - [X] link weight
