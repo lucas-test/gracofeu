@@ -92,10 +92,38 @@ random_star.generate = () => {
 
 // ----------------------------
 
+let complete_bipartite = new GraphGenerator("complete_bipartite", [new Integer("n",1),new Integer("m",1)]);
+
+complete_bipartite.generate = () => {
+    const graph = new Graph();
+    const n = complete_bipartite.attributes[0].value;
+    const m = complete_bipartite.attributes[1].value;
+    const center = local_board.view.serverCoord2(mouse_position_at_generation) 
+    console.log(n, m);
+
+    for ( let i = 0 ; i < n ; i ++){
+        graph.add_vertex(center.x + i*30 , center.y);
+    }
+    for ( let j = 0 ; j < m ; j ++){
+        graph.add_vertex(center.x + j*30 , center.y+100);
+    }
+
+    for ( let i = 0 ; i < n ; i ++){
+        for ( let j = 0 ; j < m ; j ++){
+            graph.add_edge(i,n+j);
+        }
+    }
+    return graph;
+}
+
+
+// ----------------------------
+
 
 export let generators_available = new Array<GraphGenerator>();
 generators_available.push(generate_random_independent);
 generators_available.push(random_clique);
 generators_available.push(random_GNP);
 generators_available.push(random_star);
+generators_available.push(complete_bipartite);
 

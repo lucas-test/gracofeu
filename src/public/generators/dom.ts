@@ -12,7 +12,7 @@ let last_generator: GraphGenerator = null;
 
 
 
-export function setup_generators_div() {
+export function setup_generators_div(canvas: HTMLCanvasElement) {
     const main_div = create_popup("generators_div", "Generators");
 
     const generators_list = document.createElement("div");
@@ -32,7 +32,7 @@ export function setup_generators_div() {
         text.classList.add("generator_item");
         text.innerHTML = gen.name;
         text.onclick = () => {
-            activate_generator_div(gen);
+            activate_generator_div(canvas, gen);
         }
         generators_list.appendChild(text)
     }
@@ -48,7 +48,7 @@ export function turn_on_generators_div() {
     document.getElementById("generators_div").style.display = "flex";
 }
 
-function activate_generator_div(gen: GraphGenerator) {
+function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator) {
     const div = document.getElementById("generator_configuration");
     div.innerHTML = ""; // TODO clear better ??
 
@@ -77,16 +77,16 @@ function activate_generator_div(gen: GraphGenerator) {
         graph_clipboard = gen.generate();
         last_generator = gen;
         turn_off_generators_div();
-        document.body.style.cursor = "grab";
+        canvas.style.cursor = "grab";
     }
     div.appendChild(generate_button);
 }
 
 
-export function paste_generated_graph() {
+export function paste_generated_graph(canvas: HTMLCanvasElement) {
     socket.emit("paste_graph", [...graph_clipboard.vertices.entries()], [...graph_clipboard.links.entries()]);
     graph_clipboard = null;
-    document.body.style.cursor = "pointer";
+    canvas.style.cursor = "pointer";
 }
 
 export function regenerate_graph(e: MouseEvent){

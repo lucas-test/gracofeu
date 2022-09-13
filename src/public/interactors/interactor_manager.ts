@@ -164,7 +164,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             has_moved = false;
 
             if (graph_clipboard != null) {
-                paste_generated_graph();
+                paste_generated_graph(canvas);
                 if( key_states.get("Control") ){
                     regenerate_graph(e);
                 }

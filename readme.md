@@ -109,17 +109,23 @@ npm run dev
     - [X] doc
     - [ ] doc gestion latex
     - [ ] verbose
-    - parametres classiques : 
+    - parametres classiques : (https://en.wikipedia.org/wiki/List_of_graphs_by_edges_and_vertices)
         - [X] distance (diametre)
         - [X] degré (min, max, moyen)
-        - [ ] séquence degrés
         - [X] is_connected
         - [X] number connected components
         - [ ] is_currently_planar
         - [ ] is_planar 
         - [ ] is_bipartite
-        - [ ] is_sparse 
         - [X] is_coloring_propre
+        - [ ] radius
+        - [ ] girth
+        - [ ] chromatic number
+        - [ ] chromatic index
+    - parametres moins importants :
+        - [ ] séquence degrés
+        - [ ] is_sparse 
+
 
 
 
