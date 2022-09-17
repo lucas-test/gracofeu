@@ -327,6 +327,8 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
             ctx.beginPath();
             ctx.moveTo(posu.x, posu.y);
             ctx.lineWidth = 7;
+            // TODO: check if bended before using quadraticCurve
+            // ctx.lineTo(posv.x, posv.y);
             ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
             //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
             ctx.stroke();
@@ -336,6 +338,8 @@ function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
         ctx.moveTo(posu.x, posu.y);
         ctx.strokeStyle = real_color(link.color, local_board.view.dark_mode);
         ctx.lineWidth = 3;
+        // TODO: check if bended before using quadraticCurve
+        // ctx.lineTo(posv.x, posv.y);
         ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
         //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
         ctx.stroke();

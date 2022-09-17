@@ -224,7 +224,7 @@ export function setup_actions_div(canvas: HTMLCanvasElement, ctx: CanvasRenderin
             action.trigger();
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         };
-        newDiv.innerHTML = '<img src="img/actions/' + action.img_src + '" width="27px" />';
+        newDiv.innerHTML = '<img src="img/actions/' + action.img_src + '" width="30px" />';
         actions_div.appendChild(newDiv);
 
 

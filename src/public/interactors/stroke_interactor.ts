@@ -11,6 +11,7 @@ var last_stroke = null;
 // var begin_last_stroke = null;
 var index_last_stroke = null;
 var gap_refresh = 0;
+const sample_period = 3; // number of frames between two points, skipping the others; 3 is empirically a good value
 
 
 export var interactor_stroke = new Interactor("pen", "p", "stroke.svg", new Set([DOWN_TYPE.VERTEX]), 'default');
@@ -31,7 +32,7 @@ interactor_stroke.mousedown = ((  canvas, ctx, g, e) => {
 interactor_stroke.mousemove = ((canvas, ctx, g, e) => {
     if(last_stroke !== null){
         gap_refresh++ ;
-        if(gap_refresh % 5 === 0){
+        if(gap_refresh % sample_period === 0){
             const server_pos = local_board.view.serverCoord2(e);
             g.strokes.get(index_last_stroke).push(server_pos);
             return true;

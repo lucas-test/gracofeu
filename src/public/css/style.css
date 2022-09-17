@@ -16,7 +16,7 @@ body {
 
 .action {
     margin: 8px;
-    padding: 6px;
+    padding: 2px;
     transition: 250ms;
     display: inline-block;
 }
@@ -164,5 +164,3 @@ body {
     background-clip: padding-box;
     z-index: 3;
 } */
-
-

@@ -1,7 +1,7 @@
 import { Graph } from "../board/graph";
 import { local_board } from "../setup";
 import { Integer, Percentage } from "./attribute";
-import { mouse_position_at_generation } from "./dom";
+import { graph_clipboard, mouse_position_at_generation } from "./dom";
 import { GraphGenerator } from "./generator";
 
 // ----------------------------
@@ -120,10 +120,47 @@ complete_bipartite.generate = () => {
 // ----------------------------
 
 
+// ----------------------------
+
+let grid = new GraphGenerator("grid", [new Integer("n (column)",1),new Integer("m (row)",1)]);
+
+grid.generate = () => {
+    const graph = new Graph();
+    const n = grid.attributes[0].value;
+    const m = grid.attributes[1].value;
+    const center = local_board.view.serverCoord2(mouse_position_at_generation);
+    
+    for ( let i = 0 ; i < n ; i++){
+        for ( let j = 0 ; j < m ; j ++){
+            graph.add_vertex(center.x + i*30 , center.y+j*30);
+        }
+    }
+   
+
+    for ( let i = 0 ; i < n ; i ++){
+        for ( let j = 0 ; j < m ; j ++){
+            let current_index = i*m + j;
+            if(j < m - 1){
+                graph.add_edge(current_index, current_index + 1);
+            }
+            if(i<n-1){
+                graph.add_edge(current_index, current_index+m);
+            }
+        }
+    }
+    return graph;
+}
+
+
+// ----------------------------
+
+
+
 export let generators_available = new Array<GraphGenerator>();
 generators_available.push(generate_random_independent);
 generators_available.push(random_clique);
 generators_available.push(random_GNP);
 generators_available.push(random_star);
 generators_available.push(complete_bipartite);
+generators_available.push(grid);
 
