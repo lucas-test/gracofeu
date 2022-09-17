@@ -1,0 +1,8 @@
+input.search_filter{
+    background-color: #1e1e1e;
+    color: white;
+    width: 100%;
+    padding: 12px 20px 12px 40px; 
+    border: 1px solid #ddd; 
+    margin-bottom: 12px; 
+}

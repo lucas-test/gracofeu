@@ -6,6 +6,7 @@ export function update_params_available_div(canvas: HTMLCanvasElement, ctx: Canv
     const div = document.getElementById("params_available_content");
 
     const search_input = document.createElement("input");
+    search_input.classList.add("search_filter");
     search_input.type = "text";
     search_input.id = "param_search_input";
     search_input.onkeyup = handle_search_onkeyup;
