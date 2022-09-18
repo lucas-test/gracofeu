@@ -237,6 +237,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function update_graph(vertices_entries, links_entries, sensibilities) {
         console.log("I get a new graph");
+        console.time('update_graph')
 
         // pour les vertices_entries c'est parce que on peut pas envoyer des Map par socket ...
         // edges = new_graph.edges marche pas car bizarrement ça ne copie pas les méthodes ...
@@ -263,16 +264,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     break;
             }
             const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color);
-            new_link.update_weight(data[1].weight);
+            new_link.update_weight(data[1].weight, data[0]);
             g.links.set(data[0], new_link);
-            g.automatic_weight_position(data[0]);
-            new_link.weight_div.onclick = (e) => {
-                if( interactor_loaded.name == "text"){
-                    validate_weight();
-                    display_weight_input(data[0], new CanvasCoord(new_link.weight_position.x, new_link.weight_position.y));
-                }
-                
-            }
+            g.automatic_weight_position(data[0]);            
         }
 
         g.compute_vertices_index_string();
@@ -281,6 +275,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         const sensi = get_sensibilities(sensibilities);
         update_params_loaded(g, sensi, false);
+        console.timeEnd('update_graph')
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 

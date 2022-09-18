@@ -146,9 +146,9 @@ npm run dev
 - generators
     - [X] ça marche
     - [X] gérer pour n = 0
-    - [ ] style
+    - [X] style
     - [X] unifier le style pour la croix qui ferme le div, j'ai une utilisé une classe "close_button"
-    - [ ] liste avec possibilité de faire une recherche
+    - [X] liste avec possibilité de faire une recherche
     - [ ] prévisualisation du rendu ??
     - autres générateurs :
         - [ ] unit disk graph
@@ -167,7 +167,7 @@ npm run dev
     - [X] automatically positioning
     - [X] improve performance by saving the generated image
     - [X] latex
-    - [ ] optimiser les poids dans "i get graph"
+    - [X] optimiser les poids dans "i get graph"
 
 - copier coller
     - [X] ça marche

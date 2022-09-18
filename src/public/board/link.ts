@@ -1,4 +1,6 @@
 import katex from "katex";
+import { interactor_loaded } from "../interactors/interactor_manager";
+import { display_weight_input, validate_weight } from "../interactors/text";
 import { local_board } from "../setup";
 import { View } from "./camera";
 import { CanvasCoord, Coord, ServerCoord } from "./coord";
@@ -20,10 +22,10 @@ export class Link {
     color: string;
     weight: string = "";
 
-    // local attributes
+    // Client properties
     is_selected: boolean;
     weight_position: Coord = new Coord(0,0);
-    weight_div: HTMLDivElement = null;
+    weight_div: HTMLDivElement = null; // set to null until a non empty weight is used
 
 
     constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string) {
@@ -33,10 +35,6 @@ export class Link {
         this.is_selected = false;
         this.cp = new ServerCoord(cp.x, cp.y);
         this.orientation = orientation;
-        this.weight_div = document.createElement("div");
-        this.weight_div.classList.add("weight_link");
-        document.body.appendChild(this.weight_div);
-        
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
@@ -84,9 +82,30 @@ export class Link {
 
     }
 
-    update_weight(value: string){
+    init_weight_div(link_index: number){
+        this.weight_div = document.createElement("div");
+        this.weight_div.classList.add("weight_link");
+        document.body.appendChild(this.weight_div);
+
+        this.weight_div.onclick = (e) => {
+            if( interactor_loaded.name == "text"){
+                validate_weight();
+                display_weight_input(link_index, new CanvasCoord(this.weight_position.x, this.weight_position.y));
+            }
+            
+        }
+    }
+
+    update_weight(value: string, link_index: number){
         this.weight = value;
-        this.weight_div.innerHTML = katex.renderToString(value);
+        if ( this.weight_div == null){
+            if ( value != ""){
+                this.init_weight_div(link_index);
+                this.weight_div.innerHTML = katex.renderToString(value);
+            }
+        }else {
+            this.weight_div.innerHTML = katex.renderToString(value);
+        }
     }
 
 }

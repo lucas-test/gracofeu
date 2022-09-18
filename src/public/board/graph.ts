@@ -70,13 +70,6 @@ export class Graph {
         const v2 = this.vertices.get(j);
         const new_link = new Link(i, j, middle(v1.pos, v2.pos), ORIENTATION.UNDIRECTED, "black")
         this.links.set(index, new_link);
-        new_link.weight_div.onclick = (e) => {
-            if( interactor_loaded.name == "text"){
-                validate_weight();
-                display_weight_input(index, new CanvasCoord(new_link.weight_position.x, new_link.weight_position.y));
-            }
-            
-        }
         return index;
     }
 
@@ -393,16 +386,18 @@ export class Graph {
     }
 
     automatic_weight_position(link_index: number){
-        const link = this.links.get(link_index)
-        const u = this.vertices.get(link.start_vertex);
-        const v = this.vertices.get(link.end_vertex);
-
-        const posu = u.pos.canvas_pos; 
-        const posv = v.pos.canvas_pos; 
-        const pos = link.cp.canvas_pos;
-        link.weight_position = pos.add(posu.sub2(posv).normalize().rotate_quarter().scale(14));
-        link.weight_div.style.top = String(link.weight_position.y - link.weight_div.clientHeight/2);
-        link.weight_div.style.left = String(link.weight_position.x- link.weight_div.clientWidth/2);
+        const link = this.links.get(link_index);
+        if ( link.weight_div != null){
+            const u = this.vertices.get(link.start_vertex);
+            const v = this.vertices.get(link.end_vertex);
+    
+            const posu = u.pos.canvas_pos; 
+            const posv = v.pos.canvas_pos; 
+            const pos = link.cp.canvas_pos;
+            link.weight_position = pos.add(posu.sub2(posv).normalize().rotate_quarter().scale(14));
+            link.weight_div.style.top = String(link.weight_position.y - link.weight_div.clientHeight/2);
+            link.weight_div.style.left = String(link.weight_position.x- link.weight_div.clientWidth/2);
+        }
     }
 
     automatic_link_weight_position_from_vertex(vertex_index: number){
@@ -415,7 +410,9 @@ export class Graph {
 
     clear_links(){
         for( const link of this.links.values()){
-            link.weight_div.remove();
+            if (link.weight_div != null){
+                link.weight_div.remove();
+            }
         }
         this.links.clear();
     }
