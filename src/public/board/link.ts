@@ -2,6 +2,7 @@ import katex from "katex";
 import { interactor_loaded } from "../interactors/interactor_manager";
 import { display_weight_input, validate_weight } from "../interactors/text";
 import { local_board } from "../setup";
+import { socket } from "../socket";
 import { View } from "./camera";
 import { CanvasCoord, Coord, ServerCoord } from "./coord";
 import { LocalVertex } from "./vertex";
@@ -86,6 +87,18 @@ export class Link {
         this.weight_div = document.createElement("div");
         this.weight_div.classList.add("weight_link");
         document.body.appendChild(this.weight_div);
+
+        const link = this;
+        this.weight_div.addEventListener("wheel", function (e) {
+            const weight_value = parseInt(link.weight);
+            if ( isNaN(weight_value) == false){
+                if (e.deltaY < 0) {
+                    socket.emit("update_weight", link_index, String(weight_value+1));
+                }else {
+                    socket.emit("update_weight", link_index, String(weight_value-1));
+                }
+            }
+        })
 
         this.weight_div.onclick = (e) => {
             if( interactor_loaded.name == "text"){

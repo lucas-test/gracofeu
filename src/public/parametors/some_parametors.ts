@@ -229,7 +229,7 @@ param_diameter.compute = ((g: Graph) =>{
 
 // -----------------
 
-export let param_is_good_weight = new Parametor("Is good weight for our problem ?", "isgood", "isgood", "Paramètre trop stylé", false, true, [SENSIBILITY.ELEMENT], false);
+export let param_is_good_weight = new Parametor("Is good weight for our problem ?", "isgood", "isgood", "Paramètre trop stylé", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.WEIGHT], false);
 
 param_is_good_weight.compute = ((g: Graph) => {
     const FW = Floyd_Warhall(g, true);
@@ -359,9 +359,7 @@ function Floyd_Warhall(g:Graph, weighted: boolean ){
         // TODO: Oriented Case
         let weight = 1;
         if ( weighted ){
-            
             weight = parseFloat(e.weight);
-            console.log(e.weight, weight)
         }
         dist.get(e.start_vertex).set(e.end_vertex, weight);
         dist.get(e.end_vertex).set(e.start_vertex, weight);

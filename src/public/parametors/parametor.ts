@@ -4,7 +4,8 @@ import { Graph } from "../board/graph";
 export enum SENSIBILITY {
     GEOMETRIC = "GEOMETRIC", // Move of vertex/link
     COLOR = "COLOR", // Change of color for vertices/links
-    ELEMENT = "ELEMENT" // Create/delete vertex/link
+    ELEMENT = "ELEMENT", // Create/delete vertex/link
+    WEIGHT = "WEIGHT"
 }
 
 
@@ -16,16 +17,13 @@ function get_sensibility(s: string){
             return SENSIBILITY.GEOMETRIC;
         case "COLOR":
             return SENSIBILITY.COLOR;
+        case "WEIGHT":
+            return SENSIBILITY.WEIGHT;
     }
 }
 
-export function get_sensibilities(s:Array<string>):Set<SENSIBILITY>{
+export function get_sensibilities(s:Array<string>) : Set<SENSIBILITY>{
     return new Set(s.map(e => get_sensibility(e)));
-    // const sensi = new Set<SENSIBILITY>();
-    // s.forEach(e => {
-    //     sensi.add(get_sensibility(e));
-    // });
-    // return sensi;
 }
 
 export class Parametor {

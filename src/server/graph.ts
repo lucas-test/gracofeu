@@ -10,7 +10,8 @@ import { Area } from './area';
 export enum SENSIBILITY {
     GEOMETRIC = "GEOMETRIC", // Move of vertex/link
     COLOR = "COLOR", // Change of color for vertices/links
-    ELEMENT = "ELEMENT" // Create/delete vertex/link
+    ELEMENT = "ELEMENT", // Create/delete vertex/link
+    WEIGHT = "WEIGHT"
 }
 
 

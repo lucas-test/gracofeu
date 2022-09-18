@@ -402,7 +402,7 @@ io.sockets.on('connection', function (client) {
             const link = g.links.get(link_index);
             link.weight = new_weight;
         }
-        emit_graph_to_room(new Set([]));
+        emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
     }
 
 
