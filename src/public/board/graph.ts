@@ -6,10 +6,6 @@ import { Stroke } from "./stroke";
 import { local_board } from "../setup";
 import { LocalVertex } from "./vertex";
 import { Link, ORIENTATION } from "./link";
-import { interactor_loaded } from "../interactors/interactor_manager";
-import { display_weight_input, validate_weight } from "../interactors/text";
-
-
 
 
 
@@ -304,6 +300,7 @@ export class Graph {
         for( const stroke of this.strokes.values()){
             stroke.update_canvas_pos(local_board.view);
         }
+        this.set_automatic_weight_positions();
         
     }
 
@@ -405,6 +402,12 @@ export class Graph {
             if( link.start_vertex == vertex_index || link.end_vertex == vertex_index){
                 this.automatic_weight_position(link_index);
             }
+        }
+    }
+
+    set_automatic_weight_positions(){
+        for ( const link_index of this.links.keys()){
+            this.automatic_weight_position(link_index);
         }
     }
 
