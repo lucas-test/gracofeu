@@ -1,18 +1,18 @@
+import { CanvasCoord } from "../board/coord";
 import { Graph } from "../board/graph";
 import { local_board } from "../setup";
 import { Integer, Percentage } from "./attribute";
-import { graph_clipboard, mouse_position_at_generation } from "./dom";
 import { GraphGenerator } from "./generator";
 
 // ----------------------------
 
  let generate_random_independent = new GraphGenerator("independent", [new Integer("n", 3)])
 
- generate_random_independent.generate = () => {
+ generate_random_independent.generate = (pos: CanvasCoord) => {
     const graph = new Graph();
     const n = generate_random_independent.attributes[0].value;
     const r = 50;
-    const center = local_board.view.serverCoord2(mouse_position_at_generation) 
+    const center = local_board.view.serverCoord2(pos) 
     const cx = center.x; 
     const cy = center.y;
     for ( let i = 0 ; i < n ; i ++){
@@ -25,11 +25,11 @@ import { GraphGenerator } from "./generator";
 
  let random_clique = new GraphGenerator("clique", [new Integer("n", 3)])
 
- random_clique.generate = () => {
+ random_clique.generate = (pos: CanvasCoord) => {
     const graph = new Graph();
     const n = random_clique.attributes[0].value;
     const r = 50;
-    const center = local_board.view.serverCoord2(mouse_position_at_generation) 
+    const center = local_board.view.serverCoord2(pos) 
     const cx = center.x; 
     const cy = center.y;
     for ( let i = 0 ; i < n ; i ++){
@@ -45,11 +45,11 @@ import { GraphGenerator } from "./generator";
 
  let random_GNP = new GraphGenerator("gnp", [new Integer("n", 3), new Percentage("p")]);
 
- random_GNP.generate = () => {
+ random_GNP.generate = (pos: CanvasCoord) => {
     const graph = new Graph();
     const n = random_GNP.attributes[0].value;
     const p = random_GNP.attributes[1].value;
-    const center = local_board.view.serverCoord2(mouse_position_at_generation) 
+    const center = local_board.view.serverCoord2(pos) 
     const cx = center.x; 
     const cy = center.y;
     const r = 50;
@@ -71,11 +71,11 @@ import { GraphGenerator } from "./generator";
 
 let random_star = new GraphGenerator("star", [new Integer("n", 3)])
 
-random_star.generate = () => {
+random_star.generate = (pos: CanvasCoord) => {
    const graph = new Graph();
    const n = random_star.attributes[0].value;
    const r = 50;
-   const center = local_board.view.serverCoord2(mouse_position_at_generation) 
+   const center = local_board.view.serverCoord2(pos) 
    const cx = center.x; 
    const cy = center.y;
 
@@ -94,11 +94,11 @@ random_star.generate = () => {
 
 let complete_bipartite = new GraphGenerator("complete_bipartite", [new Integer("n",1),new Integer("m",1)]);
 
-complete_bipartite.generate = () => {
+complete_bipartite.generate = (pos: CanvasCoord) => {
     const graph = new Graph();
     const n = complete_bipartite.attributes[0].value;
     const m = complete_bipartite.attributes[1].value;
-    const center = local_board.view.serverCoord2(mouse_position_at_generation) 
+    const center = local_board.view.serverCoord2(pos) 
     console.log(n, m);
 
     for ( let i = 0 ; i < n ; i ++){
@@ -124,11 +124,11 @@ complete_bipartite.generate = () => {
 
 let grid = new GraphGenerator("grid", [new Integer("n (column)",1),new Integer("m (row)",1)]);
 
-grid.generate = () => {
+grid.generate = (pos: CanvasCoord) => {
     const graph = new Graph();
     const n = grid.attributes[0].value;
     const m = grid.attributes[1].value;
-    const center = local_board.view.serverCoord2(mouse_position_at_generation);
+    const center = local_board.view.serverCoord2(pos);
     
     for ( let i = 0 ; i < n ; i++){
         for ( let j = 0 ; j < m ; j ++){

@@ -22,8 +22,8 @@ import { CanvasCoord } from './board/coord';
 import { local_board } from './setup';
 import { ORIENTATION } from './board/link';
 import { drawRoundRect, draw_circle, draw_head, draw_line, real_color } from './draw_basics';
-import { graph_clipboard } from './generators/dom';
 import { real_color2 } from './basic_colors';
+import { graph_clipboard } from './clipboard';
 
 export function toggle_dark_mode(enable:boolean){
     const action_DOM = document.getElementById("actions");

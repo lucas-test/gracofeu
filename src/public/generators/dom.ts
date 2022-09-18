@@ -1,13 +1,10 @@
 import { CanvasCoord } from "../board/coord";
-import { Graph } from "../board/graph";
+import { set_clipboard } from "../clipboard";
 import { create_popup } from "../popup";
-import { socket } from "../socket";
 import { GraphGenerator } from "./generator";
 import { generators_available } from "./some_generators";
 
-// graph clipboard
-export let graph_clipboard: Graph = null;
-export let mouse_position_at_generation: CanvasCoord = null;
+
 let last_generator: GraphGenerator = null;
 
 
@@ -44,8 +41,6 @@ export function setup_generators_div(canvas: HTMLCanvasElement) {
         }
         generators_list.appendChild(text)
     }
-
-    // TODO recherche dans la liste
 }
 
 function turn_off_generators_div() {
@@ -81,26 +76,19 @@ function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator) 
                 return;
             }
         }
-        mouse_position_at_generation = new CanvasCoord(e.pageX, e.pageY);
-        graph_clipboard = gen.generate();
+        set_clipboard(gen.generate(new CanvasCoord(e.pageX, e.pageY)), new CanvasCoord(e.pageX, e.pageY) , true, canvas);
         last_generator = gen;
         turn_off_generators_div();
-        canvas.style.cursor = "grab";
     }
     div.appendChild(generate_button);
 }
 
 
-export function paste_generated_graph(canvas: HTMLCanvasElement) {
-    socket.emit("paste_graph", [...graph_clipboard.vertices.entries()], [...graph_clipboard.links.entries()]);
-    graph_clipboard = null;
-    canvas.style.cursor = "pointer";
-}
 
-export function regenerate_graph(e: MouseEvent){
+
+export function regenerate_graph(e: MouseEvent, canvas: HTMLCanvasElement){
     if ( last_generator !== null){
-        mouse_position_at_generation = new CanvasCoord(e.pageX, e.pageY);
-        graph_clipboard = last_generator.generate();
+        set_clipboard(last_generator.generate(new CanvasCoord(e.pageX, e.pageY)), new CanvasCoord(e.pageX, e.pageY), true, canvas);
     }
 }
 

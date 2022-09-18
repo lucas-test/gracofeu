@@ -167,11 +167,18 @@ npm run dev
     - [X] automatically positioning
     - [X] improve performance by saving the generated image
     - [X] latex
+    - [ ] optimiser les poids dans "i get graph"
+
+- copier coller
+    - [X] ça marche
+    - [ ] est ce que ça serait pas plus logique un Control D ?
+    - [ ] est ce que ça serait pas plus logique de juste faire Control et glisser ?
+    - [ ] est ce que faut prendre les aretes induites meme si elles sont pas séléctionnées ?
+    - [ ] est ce que faudrait pas un autre type de dupliquer qui conserve les links avec le reste ?
 
 ## V1 GDRIM
 
 - [ ] control Z
-- [ ] copier coller
 - [ ] exporter Latex
 - [ ] exporter pdf
 - [ ] export graphviz ?

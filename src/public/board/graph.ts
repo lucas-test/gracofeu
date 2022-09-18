@@ -337,6 +337,26 @@ export class Graph {
         return subgraph;
     }
 
+    get_induced_subgraph_from_selection(): Graph{
+        const subgraph = new Graph();
+        for (const [index, v] of this.vertices.entries()) {
+            if(v.is_selected){
+                const new_vertex = new LocalVertex(v.pos);
+                subgraph.vertices.set(index, new_vertex);
+            }
+        }
+
+        for (const [index, e] of this.links.entries()){
+            const u = this.vertices.get(e.start_vertex);
+            const v = this.vertices.get(e.end_vertex);
+            if(u.is_selected && v.is_selected){
+                const new_link = new Link(e.start_vertex, e.end_vertex, e.cp, e.orientation, e.color)
+                subgraph.links.set(index, new_link);
+            }
+        }
+        return subgraph;
+    }
+
     translate_area(shift: CanvasCoord, area_index: number, vertices_contained: Set<number>){
         if( this.areas.has(area_index)){
             const area = this.areas.get(area_index);

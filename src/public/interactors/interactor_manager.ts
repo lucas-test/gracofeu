@@ -15,8 +15,9 @@ import { CanvasCoord } from '../board/coord';
 import { local_board } from '../setup';
 import { interactor_detector } from './detector_interactor';
 import ENV from '../.env.json';
-import { graph_clipboard, mouse_position_at_generation, paste_generated_graph, regenerate_graph } from '../generators/dom';
+import { regenerate_graph } from '../generators/dom';
 import { interactor_text } from './text';
+import { clear_clipboard, clipboard_comes_from_generator, graph_clipboard, mouse_position_at_generation, paste_generated_graph, set_clipboard } from '../clipboard';
 
 // INTERACTOR MANAGER
 
@@ -81,6 +82,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 })
 
                 socket.emit("delete_selected_elements", data_socket);
+                return;
+            }
+            if ( e.key.toLowerCase() == "c" ){
+                const subgraph = g.get_induced_subgraph_from_selection();
+                if ( subgraph.vertices.size > 0){
+                    set_clipboard(subgraph, mouse_pos.copy(), false, canvas);
+                }
                 return;
             }
             for (let interactor of interactors_available) {
@@ -164,9 +172,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             has_moved = false;
 
             if (graph_clipboard != null) {
-                paste_generated_graph(canvas);
+                paste_generated_graph();
                 if( key_states.get("Control") ){
-                    regenerate_graph(e);
+                    if (clipboard_comes_from_generator){
+                        regenerate_graph(e, canvas);
+                    }                    
+                }else {
+                    clear_clipboard(canvas);
                 }
                 draw(canvas, ctx, g);
             } else {
