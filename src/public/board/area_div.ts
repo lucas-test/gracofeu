@@ -8,6 +8,7 @@ import { socket } from "../socket";
 import { Board } from "./board";
 import { LocalVertex } from "./vertex";
 import { local_board } from "../setup";
+import { params_available_turn_on_div } from "../parametors/div_parametor";
 
 
 
@@ -234,6 +235,10 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
             load_new_parametors_button.src = "img/parametor/plus.svg";
             load_new_parametors_button.title = "Load a new parameter";
             load_new_parametors_button.id = "load_parametor_area_"+a_id;
+            load_new_parametors_button.onclick = ((e) => {
+                params_available_turn_on_div();
+                // todo choose parameter for this area
+            });
             title_area_container.appendChild(load_new_parametors_button);
             
             let titleDOM = document.getElementById("title_area_"+ a_id);

@@ -84,7 +84,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 socket.emit("delete_selected_elements", data_socket);
                 return;
             }
-            if ( e.key.toLowerCase() == "c" ){
+            if ( key_states.get("Control") && e.key.toLowerCase() == "c" ){
                 const subgraph = g.get_induced_subgraph_from_selection();
                 if ( subgraph.vertices.size > 0){
                     set_clipboard(subgraph, mouse_pos.copy(), false, canvas);
