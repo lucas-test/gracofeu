@@ -45,7 +45,17 @@ export class Link {
         return local_board.graph.vertices.get(this.start_vertex).is_in_rect(c1, c2) || local_board.graph.vertices.get(this.end_vertex).is_in_rect(c1, c2);
     }
 
-
+    transform_cp(new_pos: Coord, previous_pos: Coord, fixed_end: Coord , view: View){
+        const w = fixed_end;
+        const u = previous_pos.sub(w);
+        const nv = new_pos.sub(w);
+        const theta = nv.getTheta(u);
+        const rho = u.getRho(nv);
+        const cp = this.cp.copy();
+        this.cp.x = w.x + rho * (Math.cos(theta) * (cp.x - w.x) - Math.sin(theta) * (cp.y - w.y))
+        this.cp.y = w.y + rho * (Math.sin(theta) * (cp.x - w.x) + Math.cos(theta) * (cp.y - w.y))
+        this.update_canvas_pos(view);
+    }
 
     transform_control_point(moved_vertex: LocalVertex, fixed_vertex: LocalVertex, view: View) {
         const w = fixed_vertex.pos.canvas_pos;

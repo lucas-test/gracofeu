@@ -91,6 +91,14 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 }
                 return;
             }
+            if (key_states.get("Control") && e.key.toLowerCase() == "z") {
+                console.log("Request: undo");
+                socket.emit("undo");
+            }
+            if (key_states.get("Control") && e.key.toLowerCase() == "y") {
+                console.log("Request: redo");
+                socket.emit("redo");
+            }
             for (let interactor of interactors_available) {
                 if (interactor.shortcut == e.key.toLowerCase()) {
                     deselect_all_interactor_div()

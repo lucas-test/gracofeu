@@ -5,6 +5,8 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
+import { AddLink, AddVertex, TranslateVertices, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { param_weighted_distance_identification } from './temp';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -194,26 +196,67 @@ io.sockets.on('connection', function (client) {
     // GRAPH API
     // ------------------------
 
+    // A handle function starts by treating the data
+    // forms a Modification
+    // calls g.try_implement(modif)
+    // send_the_graph 
+    // TODO just send the modif
+
+    // Elementary Actions
     client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
     client.on('add_link', handle_add_link);
-    client.on('update_position', handle_update_pos);
+    client.on('delete_selected_elements', handle_delete_selected_elements); // TODO modif
+    client.on('paste_graph', handle_paste_graph); // TODO modif
+    client.on('vertices_merge', handle_vertices_merge); // TODO modif
+
+    // Vertices Positions
+    client.on('translate_vertices', handle_translate_vertices);
+    // TODO remove these next handle
     client.on('update_positions', handle_update_positions);
-    client.on('delete_selected_elements', handle_delete_selected_elements);
-    client.on('get_json', handle_get_json);
-    client.on('load_json', handle_load_json);
-    client.on('update_control_point', handle_update_control_point);
+
+    // CP
+    // TODO change to translate
+    client.on('update_control_point', handle_update_control_point); // TODO: remove this one
     client.on('update_control_points', handle_update_control_points);
-    client.on('update_colors', handle_update_colors);
-    client.on('add_stroke', handle_add_stroke);
-    client.on('delete_stroke', handle_delete_stroke);
-    client.on('add_area', handle_add_area);
-    client.on('area_move_side', handle_move_side_area);
-    client.on('area_move_corner', handle_move_corner_area);
-    client.on('area_translate', handle_area_translate);
-    client.on('update_strokes', handle_update_strokes);
-    client.on('vertices_merge', handle_vertices_merge);
-    client.on('paste_graph', handle_paste_graph);
+
+    // Area
+    client.on('add_area', handle_add_area); // TODO modif
+    client.on('area_move_side', handle_move_side_area); // TODO modif
+    client.on('area_move_corner', handle_move_corner_area); // TODO modif
+    client.on('area_translate', handle_area_translate); // TODO modif
+
+    // Stroke
+    client.on('add_stroke', handle_add_stroke); // TODO modif
+    client.on('delete_stroke', handle_delete_stroke); // TODO: should be done in delete_selected_elements
+    client.on('update_strokes', handle_update_strokes); // TODO modif
+
+    // Vertices & Links & Strokes attributes
+    // TODO: merge them?
+    client.on('update_colors', handle_update_colors); // TODO modif
     client.on('update_weight', handle_update_weight);
+
+    // Not Elementary Actions
+    client.on('undo', handle_undo);
+    client.on('redo', handle_redo);
+    client.on('get_json', handle_get_json);
+    client.on('load_json', handle_load_json); // TODO modif
+
+
+    // ------------------------
+    //
+    // ------------------------
+
+    function handle_undo(){
+        console.log("Receive Request: undo");
+        const sensibilities = g.reverse_last_modification();
+        emit_graph_to_room(sensibilities);
+    }
+
+    function handle_redo(){
+        console.log("Receive Request: redo");
+        const sensibilities = g.redo();
+        emit_graph_to_room(sensibilities);
+    }
 
     // AREAS 
     function handle_area_translate(index: number, corner_top_left: Coord, corner_bottom_right: Coord){
@@ -361,13 +404,16 @@ io.sockets.on('connection', function (client) {
 
     // LINKS
     function handle_update_control_points(data) {
+        const previous_cps = new Map();
         for (const element of data) {
             if (g.links.has(element.index)) {
                 const link = g.links.get(element.index);
+                previous_cps.set(element.index, link.cp.copy());
                 link.cp.x = element.cp.x;
                 link.cp.y = element.cp.y;
             }
         }
+        g.add_modification(new UpdateSeveralControlPoints(previous_cps));
         client.in(room_id).emit('update_control_points', data);
     }
 
@@ -393,16 +439,22 @@ io.sockets.on('connection', function (client) {
                 orient = ORIENTATION.DIGON
                 break;
         }
-        g.add_link(vindex, windex, orient);
-        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+
+        const link_index = g.get_next_available_index_links();
+        const sensi = g.try_implement_modification( new AddLink(link_index,vindex, windex, orient) );
+        g.modifications_undoed.length = 0;
+
+        emit_graph_to_room(sensi);
+        //param_weighted_distance_identification(g);
     }
 
     function handle_update_weight(link_index: number, new_weight: string){
-        if( g.links.has(link_index)){
-            const link = g.links.get(link_index);
-            link.weight = new_weight;
+        if (g.links.has(link_index)){
+            const previous_weight = g.links.get(link_index).weight;
+            g.try_implement_modification(new UpdateLinkWeight(link_index, new_weight, previous_weight));
+            g.modifications_undoed.length = 0;
+            emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
         }
-        emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
     }
 
 
@@ -432,26 +484,36 @@ io.sockets.on('connection', function (client) {
 
 
     // VERTICES 
-    function handle_update_pos(vertexIndex: number, x: number, y: number) {
-        let vertex = g.vertices.get(vertexIndex);
-        vertex.pos.x = x;
-        vertex.pos.y = y;
-        io.sockets.in(room_id).emit('update_vertex_position', vertexIndex, vertex.pos.x, vertex.pos.y);
-    }
-
     function handle_update_positions(data) {
+        const previous_positions = new Map();
         for (const e of data) {
             let vertex = g.vertices.get(e.index);
+            previous_positions.set(e.index, vertex.pos.copy()); 
             vertex.pos.x = e.x;
             vertex.pos.y = e.y;
         }
+        g.add_modification(new UpdateSeveralVertexPos(previous_positions));
         io.sockets.in(room_id).emit('update_vertex_positions', data);
+    }
+
+    function handle_translate_vertices(raw_indices, shiftx: number, shifty: number){
+        //console.log("handle_translate_vertices")
+        //console.log(raw_indices);
+        const shift = new Coord(shiftx, shifty);
+        const indices = new Set<number>();
+        for ( const index of raw_indices.values()){
+            indices.add(index);
+        }
+        g.try_implement_modification(new TranslateVertices(indices, shift));
+        io.sockets.in(room_id).emit('translate_vertices', raw_indices, shiftx, shifty);
     }
 
 
     function handle_add_vertex(x: number, y: number) {
-        let index = g.add_vertex(x, y);
-        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+        let index = g.get_next_available_index();
+        const sensi = g.try_implement_modification( new AddVertex(index,x,y) );
+        g.modifications_undoed.length = 0;
+        emit_graph_to_room(sensi);
         return index;
     }
 

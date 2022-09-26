@@ -1,7 +1,7 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { self_user, update_users_canvas_pos, users } from '../user';
-import { CanvasCoord, Coord } from '../board/coord';
+import { CanvasCoord, Coord, ServerCoord } from '../board/coord';
 import { down_coord, has_moved, key_states, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
 
@@ -10,6 +10,7 @@ import { local_board } from '../setup';
 
 export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE]), 'default')
 
+let previous_shift: ServerCoord = null;
 
 interactor_selection.mousedown = (( canvas, ctx, g, e) => {
     if (last_down == DOWN_TYPE.VERTEX) {
@@ -54,60 +55,28 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
     // console.log("mousemove");
     switch (last_down) {
         case DOWN_TYPE.VERTEX:
+            const v = g.vertices.get(last_down_index)
+            let indices = new Array();
+            let mouse_canvas_coord: CanvasCoord;
+
             if (g.vertices.get(last_down_index).is_selected) {
-                const origin_vertex = g.vertices.get(last_down_index);
-                const data_socket = new Array();
-                const mouse_canvas_coord = g.align_position(origin_vertex.pos.old_canvas_pos.add2(e.sub2(down_coord)), g.get_selected_vertices(), canvas);
-                const shift = mouse_canvas_coord.sub2(origin_vertex.pos.old_canvas_pos);
-
-                for (const index of g.vertices.keys()) {
-                    const v = g.vertices.get(index);
-                    if (v.is_selected) {
-                        v.translate(shift, local_board.view);
-                        data_socket.push({ index: index, x: v.pos.x, y: v.pos.y });
-                    }
-                }
-
-                const data_socket2 = new Array();
-                for (const [index, link] of g.links.entries()) {
-                    const v = g.vertices.get(link.start_vertex)
-                    const w = g.vertices.get(link.end_vertex)
-                    if (v.is_selected && w.is_selected) {
-                        link.translate_cp(shift, local_board.view);
-                        data_socket2.push({ index: index, cp: link.cp })
-                    }
-                    else if (v.is_selected && !w.is_selected) {
-                        link.transform_control_point(v, w, local_board.view)
-                        data_socket2.push({ index: index, cp: link.cp })
-                    } else if (!v.is_selected && w.is_selected) {
-                        link.transform_control_point(w, v, local_board.view)
-                        data_socket2.push({ index: index, cp: link.cp })
-                    }
-                }
-                socket.emit("update_control_points", data_socket2);
-                socket.emit("update_positions", data_socket);
+                const selected_vertices = g.get_selected_vertices();
+                indices = Array.from(selected_vertices);
+                mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), selected_vertices, canvas);   
             }
             else {
-                const v = g.vertices.get(last_down_index)
-                const mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), new Set([last_down_index]), canvas);   
-                v.translate(mouse_canvas_coord.sub2(v.pos.old_canvas_pos), local_board.view);
-                //v.pos.canvas_pos = mouse_canvas_coord;
-                //v.pos.update_from_canvas_pos(local_board.view);
-
-                const data_socket = new Array();
-                for (let [index, link] of g.links.entries()) {
-                    if (link.start_vertex == last_down_index || link.end_vertex == last_down_index) {
-                        let w = g.vertices.get(link.start_vertex)
-                        if (link.start_vertex == last_down_index) {
-                            w = g.vertices.get(link.end_vertex)
-                        }
-                        link.transform_control_point(v, w, local_board.view)
-                        data_socket.push({ index: index, cp: link.cp })
-                    }
-                }
-                socket.emit("update_control_points", data_socket);
-                socket.emit("update_position", last_down_index, v.pos.x, v.pos.y);
+                mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), new Set([last_down_index]), canvas);   
+                indices.push(last_down_index);
             }
+
+            const canvas_shift = mouse_canvas_coord.sub2(v.pos.old_canvas_pos);
+            const shift = local_board.view.serverCoord2(canvas_shift);
+            if (previous_shift == null){
+                previous_shift = new ServerCoord(0,0);
+            }
+            //console.log("Send Request: translate_vertices", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
+            socket.emit("translate_vertices", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
+            previous_shift.copy_from(shift);
             return true;
             break;
 
@@ -145,7 +114,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_selection.mouseup = ((canvas, ctx, g, e) => {
-    
+    previous_shift = new ServerCoord(0,0);
     if (last_down === DOWN_TYPE.VERTEX) {
         if (has_moved === false) {
             if (g.vertices.get(last_down_index).is_selected) {

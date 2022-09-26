@@ -135,6 +135,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_vertex_positions', update_vertex_positions); // V MOVE
     socket.on('update_control_point', handle_update_control_point); // CP MOVE
     socket.on('update_control_points', handle_update_control_points); // CP MOVE
+    socket.on('update_control_points2', handle_update_control_points2);
+    socket.on('translate_vertices', handle_translate_vertices);
     socket.on('areas', handle_areas); // AREA
     socket.on('strokes', handle_strokes); // STROKES
     socket.on('update_strokes', handle_update_strokes);
@@ -225,6 +227,43 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    }
+
+    function handle_update_control_points2(cp_entries){
+        console.log("handle_update_control_points2: ", cp_entries);
+        for (const data of cp_entries) {
+            const link_index = data[0];
+            const cp = data[1];
+            if ( g.links.has(link_index)){
+                const link = g.links.get(link_index);
+                link.cp = new ServerCoord(cp.x, cp.y);
+                g.automatic_weight_position(link_index);
+            }
+        }
+        update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+    }
+
+    function handle_translate_vertices(indices, shiftx: number, shifty: number){
+        const shift = new ServerCoord(shiftx, shifty);
+        for( const index of indices){
+            if ( g.vertices.has(index)){
+                const vertex = g.vertices.get(index);
+                const previous_pos = vertex.pos.copy();
+                vertex.pos.server_translate(shift, local_board.view);
+                const new_pos = vertex.pos.copy();
+
+                for (const [link_index, link] of g.links.entries()) {
+                    if ( link.start_vertex ==index){
+                        const end_vertex_pos = g.vertices.get(link.end_vertex).pos;
+                        link.transform_cp(new_pos, previous_pos, end_vertex_pos, local_board.view);
+                    } else if (link.end_vertex == index ){
+                        const start_vertex_pos = g.vertices.get(link.start_vertex).pos;
+                        link.transform_cp(new_pos, previous_pos, start_vertex_pos, local_board.view );
+                    }
+                }
+            }
+        }
     }
 
     function handle_update_control_point(index: number, c: Coord) {

@@ -185,6 +185,12 @@ export class ServerCoord extends Coord {
         this.update_from_canvas_pos(view);
     }
 
+    server_translate(shift: Coord, view: View){
+        this.x += shift.x;
+        this.y += shift.y;
+        this.update_canvas_pos(view);
+    }
+
     update_canvas_pos(view : View){
         this.canvas_pos = view.canvasCoord(this);
         this.old_canvas_pos.copy_from(this.canvas_pos);

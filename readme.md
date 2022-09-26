@@ -178,7 +178,10 @@ npm run dev
 
 ## V1 GDRIM
 
-- [ ] control Z
+- control Z
+    - [X] ça marche
+    - [ ] finir les dernières actions
+
 - [ ] exporter Latex
 - [ ] exporter pdf
 - [ ] export graphviz ?
