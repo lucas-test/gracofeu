@@ -31,6 +31,11 @@ interactor_selection.mousedown = (( canvas, ctx, g, e) => {
                 }
             }
         }
+        const v = g.vertices.get(last_down_index)
+        let mouse_canvas_coord: CanvasCoord;
+        mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), new Set([last_down_index]), canvas);
+        const canvas_shift = mouse_canvas_coord.sub2(v.pos.old_canvas_pos);
+        previous_shift = local_board.view.serverCoord2(canvas_shift);
     } else if (last_down === DOWN_TYPE.LINK) {
         console.log("down link")
         // TODO : what to do ? 
