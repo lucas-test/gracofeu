@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddVertex, Modification, TranslateVertices, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddVertex, Modification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -88,6 +88,28 @@ export class Graph {
                 }
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.GEOMETRIC]);
+            case UpdateColors:
+                for(const color_modif of (<UpdateColors>modif).data){
+                    switch(color_modif.type){
+                        case "vertex":
+                            if( this.vertices.has(color_modif.index)){
+                                this.vertices.get(color_modif.index).color = color_modif.new_color;
+                            }
+                            break;
+                        case "link":
+                            if( this.links.has(color_modif.index)){
+                                this.links.get(color_modif.index).color = color_modif.new_color;
+                            }
+                            break;
+                        case "stroke":
+                            if( this.strokes.has(color_modif.index)){
+                                this.strokes.get(color_modif.index).color = color_modif.new_color;
+                            }
+                            break;
+                    }
+                    this.add_modification(modif);
+                    return new Set([SENSIBILITY.COLOR]);
+                }
         }
         console.log("try_implement_modififcation: no method found for ", modif.constructor);
         return new Set([]);
@@ -143,7 +165,29 @@ export class Graph {
                             }
                         }
                         this.modifications_undoed.push(last_modif);
-                        return new Set([SENSIBILITY.GEOMETRIC]);
+                    return new Set([SENSIBILITY.GEOMETRIC]);
+                    case UpdateColors:
+                        for(const color_modif of (<UpdateColors>last_modif).data){
+                            switch(color_modif.type){
+                                case "vertex":
+                                    if( this.vertices.has(color_modif.index)){
+                                        this.vertices.get(color_modif.index).color = color_modif.previous_color;
+                                    }
+                                    break;
+                                case "link":
+                                    if( this.links.has(color_modif.index)){
+                                        this.links.get(color_modif.index).color = color_modif.previous_color;
+                                    }
+                                    break;
+                                case "stroke":
+                                    if( this.strokes.has(color_modif.index)){
+                                        this.strokes.get(color_modif.index).color = color_modif.previous_color;
+                                    }
+                                    break;
+                            }
+                            this.modifications_undoed.push(last_modif);
+                            return new Set([SENSIBILITY.COLOR]);
+                        }
             }
         }else {
             return new Set([]);

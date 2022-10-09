@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddVertex, TranslateVertices, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddVertex, ColorModification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 import { param_weighted_distance_identification } from './temp';
 
 const port = process.env.PORT || 5000
@@ -211,8 +211,7 @@ io.sockets.on('connection', function (client) {
 
     // Vertices Positions
     client.on('translate_vertices', handle_translate_vertices);
-    // TODO remove these next handle
-    client.on('update_positions', handle_update_positions);
+    client.on('update_positions', handle_update_positions);  // TODO remove
 
     // CP
     // TODO change to translate
@@ -232,15 +231,16 @@ io.sockets.on('connection', function (client) {
 
     // Vertices & Links & Strokes attributes
     // TODO: merge them?
-    client.on('update_colors', handle_update_colors); // TODO modif
+    client.on('update_colors', handle_update_colors);
     client.on('update_weight', handle_update_weight);
 
     // Not Elementary Actions
     client.on('undo', handle_undo);
     client.on('redo', handle_redo);
-    client.on('get_json', handle_get_json);
     client.on('load_json', handle_load_json); // TODO modif
 
+    // No modification on the graph
+    client.on('get_json', handle_get_json);
 
     // ------------------------
     //
@@ -250,12 +250,14 @@ io.sockets.on('connection', function (client) {
         console.log("Receive Request: undo");
         const sensibilities = g.reverse_last_modification();
         emit_graph_to_room(sensibilities);
+        emit_strokes_to_room();
     }
 
     function handle_redo(){
         console.log("Receive Request: redo");
         const sensibilities = g.redo();
         emit_graph_to_room(sensibilities);
+        emit_strokes_to_room();
     }
 
     // AREAS 
@@ -373,28 +375,29 @@ io.sockets.on('connection', function (client) {
     // COLORS
     function handle_update_colors(data) {
         let is_stroke_modifying = false;
+        const modif_data = new Array();
         for (const element of data) {
             if (element.type == "vertex") {
                 if (g.vertices.has(element.index)) {
                     const vertex = g.vertices.get(element.index);
-                    vertex.color = element.color;
+                    modif_data.push(new ColorModification(element.type, element.index, element.color, vertex.color));
                 }
             }
             else if (element.type == "link") {
                 if (g.links.has(element.index)) {
                     const link = g.links.get(element.index);
-                    link.color = element.color;
+                    modif_data.push(new ColorModification(element.type, element.index, element.color, link.color));
                 }
             }
             else if (element.type == "stroke"){
                 if(g.strokes.has(element.index)){
                     is_stroke_modifying = true;
                     const stroke = g.strokes.get(element.index);
-                    stroke.color = element.color;
+                    modif_data.push(new ColorModification(element.type, element.index, element.color, stroke.color));
                 }
             }
         }
-        // TODO:  Sensibility for colors ? 
+        g.try_implement_modification(new UpdateColors(modif_data));
         emit_graph_to_room(new Set([SENSIBILITY.COLOR]));
         if (is_stroke_modifying){
             emit_strokes_to_room()

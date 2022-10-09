@@ -73,3 +73,25 @@ export class UpdateSeveralControlPoints implements Modification {
         this.previous_cps = previous_cps;
     }
 }
+
+export class ColorModification {
+    type: string;
+    index: number;
+    new_color: string;
+    previous_color: string;
+
+    constructor(type: string, index: number, new_color: string, previous_color: string){
+        this.type = type;
+        this.index = index;
+        this.new_color = new_color;
+        this.previous_color = previous_color;
+    }
+}
+
+export class UpdateColors implements Modification {
+    data: Array<ColorModification>;
+
+    constructor(data: Array<ColorModification>){
+        this.data = data;
+    }
+}

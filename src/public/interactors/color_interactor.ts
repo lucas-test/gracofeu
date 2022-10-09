@@ -139,19 +139,25 @@ color_interactor.onleave = () => {
 
 color_interactor.mousedown = (( canvas, ctx, g, e) => {
     if (last_down == DOWN_TYPE.VERTEX) {
-        const data_socket = new Array();
-        data_socket.push({ type: "vertex", index: last_down_index, color: color_selected });
-        socket.emit("update_colors", data_socket);
+        if ( g.vertices.has(last_down_index) && g.vertices.get(last_down_index).color != color_selected){
+            const data_socket = new Array();
+            data_socket.push({ type: "vertex", index: last_down_index, color: color_selected });
+            socket.emit("update_colors", data_socket);
+        }
     }
     else if (last_down == DOWN_TYPE.LINK){
-        const data_socket = new Array();
-        data_socket.push({ type: "link", index: last_down_index, color: color_selected });
-        socket.emit("update_colors", data_socket);
+        if ( g.links.has(last_down_index) && g.links.get(last_down_index).color != color_selected){
+            const data_socket = new Array();
+            data_socket.push({ type: "link", index: last_down_index, color: color_selected });
+            socket.emit("update_colors", data_socket);
+        }
     }
     else if (last_down == DOWN_TYPE.STROKE){
-        socket.emit("update_colors", 
-            [{ type: "stroke", index: last_down_index, color: color_selected }]
-        );
+        if ( g.strokes.has(last_down_index) && g.strokes.get(last_down_index).color != color_selected){
+            socket.emit("update_colors", 
+                [{ type: "stroke", index: last_down_index, color: color_selected }]
+            );
+        }
     }
 })
 
@@ -160,21 +166,27 @@ color_interactor.mousemove = ((canvas, ctx, g, e) => {
     if (last_down != null) {
         const elt = g.get_element_nearby(e, color_interactor.interactable_element_type);
         if (elt.type == DOWN_TYPE.VERTEX) {
-            const data_socket = new Array();
-            data_socket.push({ type: "vertex", index: elt.index, color: color_selected });
-            socket.emit("update_colors", data_socket);
+            if ( g.vertices.has(elt.index) && g.vertices.get(elt.index).color != color_selected){
+                const data_socket = new Array();
+                data_socket.push({ type: "vertex", index: elt.index, color: color_selected });
+                socket.emit("update_colors", data_socket);
+            }
             return true;
         }
         else if (elt.type == DOWN_TYPE.LINK) {
-            const data_socket = new Array();
-            data_socket.push({ type: "link", index: elt.index, color: color_selected });
-            socket.emit("update_colors", data_socket);
+            if ( g.links.has(elt.index) && g.links.get(elt.index).color != color_selected){
+                const data_socket = new Array();
+                data_socket.push({ type: "link", index: elt.index, color: color_selected });
+                socket.emit("update_colors", data_socket);
+            }
             return true;
         }
         else if (elt.type == DOWN_TYPE.STROKE){
-            socket.emit("update_colors", 
+            if ( g.strokes.has(elt.index) && g.strokes.get(elt.index).color != color_selected){
+                socket.emit("update_colors", 
                 [{ type: "stroke", index: elt.index, color: color_selected }]
-            );
+                );
+            }
         }
         return false;
     }
