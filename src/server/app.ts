@@ -5,8 +5,9 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddVertex, ColorModification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, ColorModification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 import { param_weighted_distance_identification } from './temp';
+import { Stroke } from './stroke';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -343,8 +344,18 @@ io.sockets.on('connection', function (client) {
 
 
     // STROKES
-    function handle_add_stroke(positions:any, color:string, width:number, top_left:any, bot_right:any){
-        g.add_stroke(positions, color, width, top_left, bot_right);
+    function handle_add_stroke(points:any, color:string, width:number, top_left_data:any, bot_right_data:any){
+        console.log("Receive request: add_stroke");
+        const index = g.get_next_available_index_strokes();
+        const positions = [];
+        points.forEach(e => {
+            positions.push(new Coord(e[1].x, e[1].y));
+        });
+        const top_left = new Coord(top_left_data.x, top_left_data.y);
+        const bot_right = new Coord(bot_right_data.x, bot_right_data.y);
+        const new_stroke = new Stroke(positions, color, width, top_left, bot_right);
+        const modif = new AddStroke(index, new_stroke);
+        g.try_implement_new_modification(modif)
         emit_strokes_to_room();
     }
 
@@ -397,7 +408,7 @@ io.sockets.on('connection', function (client) {
                 }
             }
         }
-        g.try_implement_modification(new UpdateColors(modif_data));
+        g.try_implement_new_modification(new UpdateColors(modif_data));
         emit_graph_to_room(new Set([SENSIBILITY.COLOR]));
         if (is_stroke_modifying){
             emit_strokes_to_room()
@@ -444,9 +455,7 @@ io.sockets.on('connection', function (client) {
         }
 
         const link_index = g.get_next_available_index_links();
-        const sensi = g.try_implement_modification( new AddLink(link_index,vindex, windex, orient) );
-        g.modifications_undoed.length = 0;
-
+        const sensi = g.try_implement_new_modification( new AddLink(link_index,vindex, windex, orient) );
         emit_graph_to_room(sensi);
         //param_weighted_distance_identification(g);
     }
@@ -454,8 +463,7 @@ io.sockets.on('connection', function (client) {
     function handle_update_weight(link_index: number, new_weight: string){
         if (g.links.has(link_index)){
             const previous_weight = g.links.get(link_index).weight;
-            g.try_implement_modification(new UpdateLinkWeight(link_index, new_weight, previous_weight));
-            g.modifications_undoed.length = 0;
+            g.try_implement_new_modification(new UpdateLinkWeight(link_index, new_weight, previous_weight));
             emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
         }
     }
@@ -507,15 +515,14 @@ io.sockets.on('connection', function (client) {
         for ( const index of raw_indices.values()){
             indices.add(index);
         }
-        g.try_implement_modification(new TranslateVertices(indices, shift));
+        g.try_implement_new_modification(new TranslateVertices(indices, shift));
         io.sockets.in(room_id).emit('translate_vertices', raw_indices, shiftx, shifty);
     }
 
 
     function handle_add_vertex(x: number, y: number) {
         let index = g.get_next_available_index();
-        const sensi = g.try_implement_modification( new AddVertex(index,x,y) );
-        g.modifications_undoed.length = 0;
+        const sensi = g.try_implement_new_modification( new AddVertex(index,x,y) );
         emit_graph_to_room(sensi);
         return index;
     }

@@ -187,7 +187,9 @@ npm run dev
     - [ ] REMOVE THIS update_control_point
     - [ ] CHANGE TO TRANSLATE update_control_points
     - [ ] add_area, area_move_side, area_move_corner, area_translate
-    - [ ] add_stroke, delete_stroke (should be done in delete_selected_elements), update_strokes
+    - [X] add_stroke
+    - [ ] delete_stroke (should be done in delete_selected_elements)
+    - [ ] update_strokes
     - [X] update_colors
     - [ ] load_json
 

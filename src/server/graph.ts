@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddVertex, Modification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, Modification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -110,9 +110,20 @@ export class Graph {
                     this.add_modification(modif);
                     return new Set([SENSIBILITY.COLOR]);
                 }
+            case AddStroke:
+                this.strokes.set((<AddStroke>modif).index, (<AddStroke>modif).stroke);
+                this.add_modification(modif);
+                return new Set([]);
+                
         }
         console.log("try_implement_modififcation: no method found for ", modif.constructor);
         return new Set([]);
+    }
+
+    try_implement_new_modification(modif: Modification) : Set<SENSIBILITY>{
+        const sensibilities = this.try_implement_modification(modif);
+        this.modifications_undoed.length = 0;
+        return sensibilities;
     }
 
     reverse_last_modification() : Set<SENSIBILITY>{
@@ -188,6 +199,10 @@ export class Graph {
                             this.modifications_undoed.push(last_modif);
                             return new Set([SENSIBILITY.COLOR]);
                         }
+                    case AddStroke:
+                        this.delete_stroke((<AddStroke>last_modif).index);
+                        this.modifications_undoed.push(last_modif);
+                        return new Set([]);
             }
         }else {
             return new Set([]);

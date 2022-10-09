@@ -1,5 +1,6 @@
 import { Coord } from "./coord";
 import { ORIENTATION } from "./link";
+import { Stroke } from "./stroke";
 
 
 
@@ -93,5 +94,14 @@ export class UpdateColors implements Modification {
 
     constructor(data: Array<ColorModification>){
         this.data = data;
+    }
+}
+
+export class AddStroke implements Modification {
+    index: number;
+    stroke: Stroke;
+    constructor(index: number, stroke: Stroke){
+        this.index = index;
+        this.stroke = stroke;
     }
 }
