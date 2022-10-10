@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateControlPoints, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
 
 const port = process.env.PORT || 5000
@@ -214,9 +214,8 @@ io.sockets.on('connection', function (client) {
     client.on('update_positions', handle_update_positions);  // TODO remove
 
     // CP
-    // TODO change to translate
-    client.on('update_control_point', handle_update_control_point); // TODO: remove this one
-    client.on('update_control_points', handle_update_control_points);
+    client.on('update_control_points', handle_update_control_points); // TODO remove
+    client.on('translate_control_points', handle_translate_control_points);
 
     // Area
     client.on('add_area', handle_add_area); // TODO modif
@@ -409,6 +408,17 @@ io.sockets.on('connection', function (client) {
 
 
     // LINKS
+    function handle_translate_control_points(raw_indices, shiftx: number, shifty: number){
+        console.log("handle_translate_control_points", raw_indices, shiftx, shifty);
+        const shift = new Coord(shiftx, shifty);
+        const indices = new Set<number>();
+        for ( const index of raw_indices.values()){
+            indices.add(index);
+        }
+        g.try_implement_new_modification(new TranslateControlPoints(indices, shift));
+        emit_graph_to_room(new Set());
+    }
+
     function handle_update_control_points(data) {
         const previous_cps = new Map();
         for (const element of data) {
@@ -423,14 +433,6 @@ io.sockets.on('connection', function (client) {
         client.in(room_id).emit('update_control_points', data);
     }
 
-    function handle_update_control_point(link_index: number, c: Coord) {
-        if (g.links.has(link_index)) {
-            const link = g.links.get(link_index);
-            link.cp.x = c.x;
-            link.cp.y = c.y;
-            io.sockets.in(room_id).emit('update_control_point', link_index, c);
-        }
-    }
 
     function handle_add_link(vindex: number, windex: number, orientation: string) {
         let orient = ORIENTATION.UNDIRECTED;

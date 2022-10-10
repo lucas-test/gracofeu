@@ -13,6 +13,7 @@ export var interactor_selection = new Interactor("selection", "s", "selection.sv
 let previous_shift: ServerCoord = null;
 
 interactor_selection.mousedown = (( canvas, ctx, g, e) => {
+    previous_shift = local_board.view.serverCoord2(new CanvasCoord(0,0));
     if (last_down == DOWN_TYPE.VERTEX) {
         if (g.vertices.get(last_down_index).is_selected) {
             for (const index of g.vertices.keys()) {
@@ -31,14 +32,8 @@ interactor_selection.mousedown = (( canvas, ctx, g, e) => {
                 }
             }
         }
-        const v = g.vertices.get(last_down_index)
-        let mouse_canvas_coord: CanvasCoord;
-        mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), new Set([last_down_index]), canvas);
-        const canvas_shift = mouse_canvas_coord.sub2(v.pos.old_canvas_pos);
-        previous_shift = local_board.view.serverCoord2(canvas_shift);
-    } else if (last_down === DOWN_TYPE.LINK) {
-        console.log("down link")
-        // TODO : what to do ? 
+    } else if (last_down === DOWN_TYPE.CONTROL_POINT) {
+        //
     }
     else if(last_down === DOWN_TYPE.STROKE) {
         // console.log("down stroke");
@@ -103,11 +98,17 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             break;
 
         case DOWN_TYPE.CONTROL_POINT:
-            var link = g.links.get(last_down_index);
-            link.cp = local_board.view.serverCoord2(e);
-            link.update_canvas_pos(local_board.view);
-            socket.emit("update_control_point", last_down_index, link.cp)
-            return true;
+            if ( g.links.has(last_down_index)){
+                let indices = [last_down_index];
+                const shift = local_board.view.serverCoord2(e.sub2(down_coord));
+                if (previous_shift == null){
+                    previous_shift = new ServerCoord(0,0);
+                }
+                socket.emit("translate_control_points", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
+                previous_shift.copy_from(shift);
+                return true;
+            }
+            return false;
         case DOWN_TYPE.STROKE:
             const stroke = g.strokes.get(last_down_index);
             stroke.translate(e.sub2(down_coord), local_board.view);

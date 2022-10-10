@@ -176,8 +176,9 @@
     - [ ] paste_graph
     - [ ] vertices_merge
     - [ ] REMOVE THIS update_positions
-    - [ ] REMOVE THIS update_control_point
-    - [ ] CHANGE TO TRANSLATE update_control_points
+    - [X] translate_control_points
+    - [ ] translate_control_points : just send cps not all graph
+    - [ ] update_control_points : remove
     - [ ] add_area, area_move_side, area_move_corner, area_translate
     - [X] add_stroke
     - [X] delete_stroke (should be done in delete_selected_elements)

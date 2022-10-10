@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateControlPoints, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -42,10 +42,16 @@ export class Graph {
         const length = this.modifications_heap.length;
         if ( length > 0){
             const last_modif = this.modifications_heap[length-1];
-             if ( last_modif.constructor == TranslateVertices && modif.constructor == TranslateVertices ) {
+            if ( last_modif.constructor == TranslateVertices && modif.constructor == TranslateVertices ) {
                 if( eqSet((<TranslateVertices>modif).indices,(<TranslateVertices>last_modif).indices ) ){
                     this.modifications_heap.pop();
                     (<TranslateVertices>modif).shift.translate( (<TranslateVertices>last_modif).shift);
+                }
+            }
+            if ( last_modif.constructor == TranslateControlPoints && modif.constructor == TranslateControlPoints ) {
+                if( eqSet((<TranslateControlPoints>modif).indices,(<TranslateControlPoints>last_modif).indices ) ){
+                    this.modifications_heap.pop();
+                    (<TranslateControlPoints>modif).shift.translate( (<TranslateControlPoints>last_modif).shift);
                 }
             }
         }
@@ -88,6 +94,15 @@ export class Graph {
                 }
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.GEOMETRIC]);
+            case TranslateControlPoints:
+                    for( const index of (<TranslateControlPoints>modif).indices){
+                        if ( this.links.has(index)){
+                            const link = this.links.get(index);
+                            link.cp.translate((<TranslateControlPoints>modif).shift);
+                        }
+                    }
+                    this.add_modification(modif);
+                    return new Set([SENSIBILITY.GEOMETRIC]);
             case UpdateColors:
                 for(const color_modif of (<UpdateColors>modif).data){
                     switch(color_modif.type){
@@ -192,6 +207,15 @@ export class Graph {
                         }
                         this.modifications_undoed.push(last_modif);
                     return new Set([SENSIBILITY.GEOMETRIC]);
+                case TranslateControlPoints:
+                        for( const index of (<TranslateControlPoints>last_modif).indices){
+                            if ( this.links.has(index)){
+                                const link = this.links.get(index);
+                                link.cp.rtranslate((<TranslateControlPoints>last_modif).shift);
+                            }
+                        }
+                        this.modifications_undoed.push(last_modif);
+                        return new Set([SENSIBILITY.GEOMETRIC]);
                     case UpdateColors:
                         for(const color_modif of (<UpdateColors>last_modif).data){
                             switch(color_modif.type){
@@ -233,7 +257,10 @@ export class Graph {
                         }
                         this.modifications_undoed.push(last_modif);
                         return new Set([]);
+                
             }
+                console.log("reverse_modification: no method found for ", last_modif.constructor);
+                return new Set([]);
         }else {
             return new Set([]);
         }
