@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddStroke, AddVertex, Modification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -114,6 +114,21 @@ export class Graph {
                 this.strokes.set((<AddStroke>modif).index, (<AddStroke>modif).stroke);
                 this.add_modification(modif);
                 return new Set([]);
+            case DeleteElements:
+                for ( const index of (<DeleteElements>modif).vertices.keys()){
+                    this.delete_vertex(index);
+                }
+                for ( const index of (<DeleteElements>modif).links.keys()){
+                    this.delete_link(index);
+                }
+                for ( const index of (<DeleteElements>modif).strokes.keys()){
+                    this.delete_stroke(index);
+                }
+                for ( const index of (<DeleteElements>modif).areas.keys()){
+                    this.delete_area(index);
+                }
+                this.add_modification(modif);
+                return new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC, SENSIBILITY.WEIGHT])
                 
         }
         console.log("try_implement_modififcation: no method found for ", modif.constructor);
@@ -201,6 +216,21 @@ export class Graph {
                         }
                     case AddStroke:
                         this.delete_stroke((<AddStroke>last_modif).index);
+                        this.modifications_undoed.push(last_modif);
+                        return new Set([]);
+                    case DeleteElements:
+                        for ( const [index, vertex] of (<DeleteElements>last_modif).vertices.entries()){
+                            this.vertices.set(index, vertex);
+                        }
+                        for ( const [index, link] of (<DeleteElements>last_modif).links.entries()){
+                            this.links.set(index, link);
+                        }
+                        for ( const [index, stroke] of (<DeleteElements>last_modif).strokes.entries()){
+                            this.strokes.set(index, stroke);
+                        }
+                        for ( const [index, area] of (<DeleteElements>last_modif).areas.entries()){
+                            this.areas.set(index, area);
+                        }
                         this.modifications_undoed.push(last_modif);
                         return new Set([]);
             }

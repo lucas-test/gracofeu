@@ -18,7 +18,9 @@ export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new S
 function erase_at(g: Graph, e: CanvasCoord) : boolean{
     for (const [index, s] of g.strokes.entries()) {
         if (s.is_nearby(e) !== false) {
-            socket.emit("delete_stroke", index);
+            const data_socket = new Array();
+            data_socket.push({ type: "stroke", index: index });
+            socket.emit("delete_selected_elements", data_socket);
             return true;
         }
     }

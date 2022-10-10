@@ -5,8 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddStroke, AddVertex, ColorModification, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
-import { param_weighted_distance_identification } from './temp';
+import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
 
 const port = process.env.PORT || 5000
@@ -206,7 +205,7 @@ io.sockets.on('connection', function (client) {
     // Elementary Actions
     client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
     client.on('add_link', handle_add_link);
-    client.on('delete_selected_elements', handle_delete_selected_elements); // TODO modif
+    client.on('delete_selected_elements', handle_delete_selected_elements);
     client.on('paste_graph', handle_paste_graph); // TODO modif
     client.on('vertices_merge', handle_vertices_merge); // TODO modif
 
@@ -226,8 +225,7 @@ io.sockets.on('connection', function (client) {
     client.on('area_translate', handle_area_translate); // TODO modif
 
     // Stroke
-    client.on('add_stroke', handle_add_stroke); // TODO modif
-    client.on('delete_stroke', handle_delete_stroke); // TODO: should be done in delete_selected_elements
+    client.on('add_stroke', handle_add_stroke);
     client.on('update_strokes', handle_update_strokes); // TODO modif
 
     // Vertices & Links & Strokes attributes
@@ -361,12 +359,6 @@ io.sockets.on('connection', function (client) {
 
 
     
-    function handle_delete_stroke(index:number) {
-        if(g.strokes.has(index)){
-            g.delete_stroke(index);
-        }
-        emit_strokes_to_room();
-    }
 
     function handle_update_strokes(data) {
         for (const element of data) {
@@ -562,43 +554,58 @@ io.sockets.on('connection', function (client) {
     }
 
     function handle_delete_selected_elements(data) {
-        let deleted_vertex = false;
-        let delete_link = false;
-        let delete_stroke = false; 
-        let delete_area = false;
+        const deleted_vertices = new Map();
+        const deleted_links = new Map();
+        const deleted_strokes = new Map();
+        const deleted_areas = new Map();
 
         for (const e of data) {
             if (e.type == "vertex") {
-                g.delete_vertex(e.index);
-                deleted_vertex = true;
+                if (g.vertices.has(e.index)){
+                    const vertex = g.vertices.get(e.index);
+                    deleted_vertices.set(e.index, vertex);
+                    g.links.forEach((link, link_index) => {
+                        if (link.end_vertex === e.index || link.start_vertex === e.index) {
+                            deleted_links.set(link_index, link);
+                        }
+                    })
+                }
             }
             else if (e.type == "link") {
-                g.delete_link(e.index);
-                delete_link = true;
+                if (g.links.has(e.index)){
+                    const link = g.links.get(e.index);
+                    deleted_links.set(e.index, link);
+                }
             }
             else if (e.type == "stroke") {
-                g.delete_stroke(e.index);
-                delete_stroke = true;
+                if (g.strokes.has(e.index)){
+                    const stroke = g.strokes.get(e.index);
+                    deleted_strokes.set(e.index, stroke);
+                }
             }
             else if (e.type == "area") {
-                g.delete_area(e.index);
-                delete_area = true;
+                if (g.areas.has(e.index)){
+                    const area = g.areas.get(e.index);
+                    deleted_areas.set(e.index, area);
+                }
             }
         }
 
-        if(deleted_vertex || delete_link){
-            emit_graph_to_room(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC])); 
+        const modif = new DeleteElements(deleted_vertices, deleted_links, deleted_strokes, deleted_areas);
+        const triggered_sensibilities = g.try_implement_new_modification(modif);
+
+        if(deleted_vertices.size > 0 || deleted_links.size > 0){
+            emit_graph_to_room(triggered_sensibilities); 
         }
         
-        if(delete_stroke){
+        if(deleted_strokes.size > 0){
             emit_strokes_to_room();
         }
 
-        if(delete_area){
+        if(deleted_areas.size > 0){
             emit_areas_to_room();
         }
     }
-   
 })
 
 

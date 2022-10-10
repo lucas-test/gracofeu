@@ -1,6 +1,8 @@
+import { Area } from "./area";
 import { Coord } from "./coord";
-import { ORIENTATION } from "./link";
+import { Link, ORIENTATION } from "./link";
 import { Stroke } from "./stroke";
+import { Vertex } from "./vertex";
 
 
 
@@ -103,5 +105,21 @@ export class AddStroke implements Modification {
     constructor(index: number, stroke: Stroke){
         this.index = index;
         this.stroke = stroke;
+    }
+}
+
+
+
+export class DeleteElements implements Modification {
+    vertices: Map<number, Vertex>;
+    links: Map<number, Link>;
+    strokes: Map<number, Stroke>;
+    areas: Map<number, Area>;
+
+    constructor(vertices, links, strokes, areas){
+        this.vertices = vertices;
+        this.links = links;
+        this.strokes = strokes;
+        this.areas = areas;
     }
 }
