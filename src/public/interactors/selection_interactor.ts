@@ -4,6 +4,7 @@ import { self_user, update_users_canvas_pos, users } from '../user';
 import { CanvasCoord, Coord, ServerCoord } from '../board/coord';
 import { down_coord, has_moved, key_states, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
+import { CanvasVect, ServerVect } from '../board/vect';
 
 
 // INTERACTOR SELECTION
@@ -185,10 +186,9 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                 }
             }
         } else {
-            const stroke = g.strokes.get(last_down_index);
-            const data_socket = new Array();
-            data_socket.push({index: last_down_index, stroke_data: stroke});
-            socket.emit("update_strokes", data_socket);
+            const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
+            const shift: ServerVect = local_board.view.server_vect(canvas_shift);
+            socket.emit("translate_strokes", [last_down_index], shift.x, shift.y);
         }
     }
     else if (last_down === DOWN_TYPE.EMPTY) {

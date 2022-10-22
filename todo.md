@@ -182,9 +182,11 @@
     - [ ] add_area, area_move_side, area_move_corner, area_translate
     - [X] add_stroke
     - [X] delete_stroke (should be done in delete_selected_elements)
-    - [ ] update_strokes
+    - [X] remove update_strokes
+    - [X] translate_strokes
     - [X] update_colors
     - [ ] load_json
+    - [ ] adapt CanvasVect and ServerVect to translation of CPs and vertices
 
 - [ ] exporter Latex
 - [ ] exporter pdf

@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateControlPoints, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
 
 const port = process.env.PORT || 5000
@@ -213,7 +213,7 @@ io.sockets.on('connection', function (client) {
     client.on('translate_vertices', handle_translate_vertices);
     client.on('update_positions', handle_update_positions);  // TODO remove
 
-    // CP
+    // Control Points
     client.on('update_control_points', handle_update_control_points); // TODO remove
     client.on('translate_control_points', handle_translate_control_points);
 
@@ -225,7 +225,7 @@ io.sockets.on('connection', function (client) {
 
     // Stroke
     client.on('add_stroke', handle_add_stroke);
-    client.on('update_strokes', handle_update_strokes); // TODO modif
+    client.on('translate_strokes', handle_translate_strokes);
 
     // Vertices & Links & Strokes attributes
     // TODO: merge them?
@@ -359,17 +359,16 @@ io.sockets.on('connection', function (client) {
 
     
 
-    function handle_update_strokes(data) {
-        for (const element of data) {
-            if (g.strokes.has(element.index)) {
-                const stroke = g.strokes.get(element.index);
-                for( let i = 0 ; i < stroke.positions.length ; i ++){
-                    stroke.positions[i] = new Coord(element.stroke_data.positions[i].x, element.stroke_data.positions[i].y);
-                }
-                element.stroke_data.color = element.stroke_data.color;
-            }
+
+    function handle_translate_strokes(raw_indices, shiftx: number, shifty: number) {
+        console.log("handle_translate_strokes", raw_indices, shiftx, shifty);
+        const shift = new Coord(shiftx, shifty);
+        const indices = new Set<number>();
+        for ( const index of raw_indices.values()){
+            indices.add(index);
         }
-        io.sockets.in(room_id).emit('update_strokes', data);
+        g.try_implement_new_modification(new TranslateStrokes(indices, shift));
+        emit_strokes_to_room();
     }
    
 

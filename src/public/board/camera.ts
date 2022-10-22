@@ -2,6 +2,7 @@ import { CanvasCoord, Coord, ServerCoord } from "./coord";
 import { Graph } from "./graph";
 import { update_users_canvas_pos } from "../user";
 import { ORIENTATION } from "./link";
+import { CanvasVect, ServerVect } from "./vect";
 
 export enum INDEX_TYPE {
     NONE,
@@ -139,6 +140,9 @@ export class View {
         this.camera.copy_from(this.camera.add(shift)); // camera = camera + shift
     }
 
+    server_vect(v: CanvasVect): ServerVect{
+        return new ServerVect( v.x/this.zoom, v.y/this.zoom);
+    }
 
 }
 

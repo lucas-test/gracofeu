@@ -144,8 +144,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     canvas.addEventListener('mouseup', function (e) {
         if (e.which == 1) { // left click
             const click_pos = new CanvasCoord(e.pageX, e.pageY);
-            down_coord = null;
             interactor_loaded.mouseup(canvas, ctx, g, click_pos);
+            down_coord = null;
             last_down = null;
             last_down_index = null;
             local_board.view.alignement_horizontal = false;

@@ -79,6 +79,16 @@ export class TranslateControlPoints implements Modification {
     }
 }
 
+export class TranslateStrokes implements Modification {
+    indices: Set<number>;
+    shift: Coord;
+
+    constructor(indices: Set<number>, shift: Coord){
+        this.indices = indices;
+        this.shift = shift;
+    }
+}
+
 export class UpdateSeveralControlPoints implements Modification {
     previous_cps: Map<number, Coord>;
 

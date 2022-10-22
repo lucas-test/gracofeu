@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateControlPoints, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -103,6 +103,15 @@ export class Graph {
                     }
                     this.add_modification(modif);
                     return new Set([SENSIBILITY.GEOMETRIC]);
+            case TranslateStrokes:
+                for( const index of (<TranslateControlPoints>modif).indices){
+                    if ( this.strokes.has(index)){
+                        const stroke = this.strokes.get(index);
+                        stroke.translate((<TranslateControlPoints>modif).shift);
+                    }
+                }
+                this.add_modification(modif);
+                return new Set([]);
             case UpdateColors:
                 for(const color_modif of (<UpdateColors>modif).data){
                     switch(color_modif.type){
@@ -144,7 +153,6 @@ export class Graph {
                 }
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC, SENSIBILITY.WEIGHT])
-                
         }
         console.log("try_implement_modififcation: no method found for ", modif.constructor);
         return new Set([]);
@@ -216,6 +224,15 @@ export class Graph {
                         }
                         this.modifications_undoed.push(last_modif);
                         return new Set([SENSIBILITY.GEOMETRIC]);
+                case TranslateStrokes:
+                    for( const index of (<TranslateControlPoints>last_modif).indices){
+                        if ( this.strokes.has(index)){
+                            const stroke = this.strokes.get(index);
+                            stroke.rtranslate((<TranslateControlPoints>last_modif).shift);
+                        }
+                    }
+                    this.modifications_undoed.push(last_modif);
+                    return new Set([]);
                     case UpdateColors:
                         for(const color_modif of (<UpdateColors>last_modif).data){
                             switch(color_modif.type){
