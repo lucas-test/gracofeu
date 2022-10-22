@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -74,24 +74,7 @@ export class Graph {
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.WEIGHT]);
             case TranslateVertices:
-                for( const index of (<TranslateVertices>modif).indices){
-                    if ( this.vertices.has(index)){
-                        const vertex = this.vertices.get(index);
-                        const previous_pos = vertex.pos.copy();
-                        vertex.pos.translate((<TranslateVertices>modif).shift);
-                        const new_pos = vertex.pos.copy();
-
-                        for (const [link_index, link] of this.links.entries()) {
-                            if ( link.start_vertex ==index){
-                                const end_vertex_pos = this.vertices.get(link.end_vertex).pos;
-                                link.transform_cp(new_pos, previous_pos, end_vertex_pos );
-                            } else if (link.end_vertex == index ){
-                                const start_vertex_pos = this.vertices.get(link.start_vertex).pos;
-                                link.transform_cp(new_pos, previous_pos, start_vertex_pos );
-                            }
-                        }
-                    }
-                }
+                this.translate_vertices((<TranslateVertices>modif).indices, (<TranslateVertices>modif).shift );
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.GEOMETRIC]);
             case TranslateControlPoints:
@@ -104,14 +87,18 @@ export class Graph {
                     this.add_modification(modif);
                     return new Set([SENSIBILITY.GEOMETRIC]);
             case TranslateStrokes:
-                for( const index of (<TranslateControlPoints>modif).indices){
+                for( const index of (<TranslateStrokes>modif).indices){
                     if ( this.strokes.has(index)){
                         const stroke = this.strokes.get(index);
-                        stroke.translate((<TranslateControlPoints>modif).shift);
+                        stroke.translate((<TranslateStrokes>modif).shift);
                     }
                 }
                 this.add_modification(modif);
                 return new Set([]);
+            case TranslateAreas:
+                this.translate_areas( (<TranslateAreas>modif).indices , (<TranslateAreas>modif).shift)
+                this.add_modification(modif);
+                return new Set([SENSIBILITY.GEOMETRIC]);
             case UpdateColors:
                 for(const color_modif of (<UpdateColors>modif).data){
                     switch(color_modif.type){
@@ -188,25 +175,12 @@ export class Graph {
                     this.modifications_undoed.push(last_modif);
                     return new Set([SENSIBILITY.GEOMETRIC]);
                 case TranslateVertices:
-                        for( const index of (<TranslateVertices>last_modif).indices){
-                            if ( this.vertices.has(index)){
-                                const vertex = this.vertices.get(index);
-                                const previous_pos = vertex.pos.copy();
-                                vertex.pos.rtranslate((<TranslateVertices>last_modif).shift);
-                                const new_pos = vertex.pos.copy();
-
-                                for (const [link_index, link] of this.links.entries()) {
-                                    if ( link.start_vertex ==index){
-                                        const end_vertex_pos = this.vertices.get(link.end_vertex).pos;
-                                        link.transform_cp(new_pos, previous_pos, end_vertex_pos );
-                                    } else if (link.end_vertex == index ){
-                                        const start_vertex_pos = this.vertices.get(link.start_vertex).pos;
-                                        link.transform_cp(new_pos, previous_pos, start_vertex_pos );
-                                    }
-                                }
-                            }
-                        }
-                        this.modifications_undoed.push(last_modif);
+                    this.translate_vertices((<TranslateVertices>last_modif).indices, (<TranslateVertices>last_modif).shift.opposite() );
+                    this.modifications_undoed.push(last_modif);
+                    return new Set([SENSIBILITY.GEOMETRIC]);
+                case TranslateAreas:
+                    this.translate_areas((<TranslateAreas>last_modif).indices, (<TranslateAreas>last_modif).shift.opposite() );
+                    this.modifications_undoed.push(last_modif);
                     return new Set([SENSIBILITY.GEOMETRIC]);
                 case TranslateControlPoints:
                         for( const index of (<TranslateControlPoints>last_modif).indices){
@@ -484,6 +458,41 @@ export class Graph {
         })
 
         this.delete_vertex(vertex_index_to_remove);
+    }
+
+    translate_areas(indices: Set<number>, shift: Coord){
+        const contained_vertices = new Set<number>();
+        for( const area_index of indices.values()){
+            const area = this.areas.get(area_index);
+            for (const [vertex_index, vertex] of this.vertices.entries()){
+                if (area.is_containing(vertex)){
+                    contained_vertices.add(vertex_index);
+                }
+            }
+            area.translate(shift);  
+        }
+        this.translate_vertices(contained_vertices, shift);
+    }
+
+    translate_vertices(indices: Set<number>, shift: Coord){
+        for( const index of indices){
+            if ( this.vertices.has(index)){
+                const vertex = this.vertices.get(index);
+                const previous_pos = vertex.pos.copy();
+                vertex.pos.translate(shift);
+                const new_pos = vertex.pos.copy();
+
+                for (const [link_index, link] of this.links.entries()) {
+                    if ( link.start_vertex ==index){
+                        const end_vertex_pos = this.vertices.get(link.end_vertex).pos;
+                        link.transform_cp(new_pos, previous_pos, end_vertex_pos );
+                    } else if (link.end_vertex == index ){
+                        const start_vertex_pos = this.vertices.get(link.start_vertex).pos;
+                        link.transform_cp(new_pos, previous_pos, start_vertex_pos );
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
 
 const port = process.env.PORT || 5000
@@ -220,7 +220,8 @@ io.sockets.on('connection', function (client) {
     client.on('add_area', handle_add_area); // TODO modif
     client.on('area_move_side', handle_move_side_area); // TODO modif
     client.on('area_move_corner', handle_move_corner_area); // TODO modif
-    client.on('area_translate', handle_area_translate); // TODO modif
+    client.on('area_translate', handle_area_translate); // TODO remove
+    client.on('translate_areas', handle_translate_areas);
 
     // Stroke
     client.on('add_stroke', handle_add_stroke);
@@ -335,6 +336,18 @@ io.sockets.on('connection', function (client) {
                 break;
         }
         //TODO : update only one area
+        emit_areas_to_room();
+    }
+
+    function handle_translate_areas(raw_indices, shiftx: number, shifty: number) {
+        console.log("Receive Request: translate_areas", raw_indices, shiftx, shifty);
+        const shift = new Coord(shiftx, shifty);
+        const indices = new Set<number>();
+        for ( const index of raw_indices.values()){
+            indices.add(index);
+        }
+        g.try_implement_new_modification(new TranslateAreas(indices, shift));
+        emit_graph_to_room(new Set());
         emit_areas_to_room();
     }
 

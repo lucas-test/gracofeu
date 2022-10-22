@@ -4,6 +4,7 @@ import { Area, AREA_CORNER, AREA_SIDE } from '../board/area';
 import { ServerCoord } from '../board/coord';
 import { down_coord, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
+import { CanvasVect, ServerVect } from '../board/vect';
 
 
 export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]), 'default')
@@ -163,17 +164,9 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
         is_moving_area = false;
     }
     else if ( last_down == DOWN_TYPE.AREA){
-        const moved_area = g.areas.get(last_down_index);
-        const data_socket_vertices = new Array();
-        g.vertices.forEach((vertex, index) => {
-            if (vertices_contained.has(index)) {
-                data_socket_vertices.push({ index: index, x: vertex.pos.x, y: vertex.pos.y });
-            }
-        })
-        socket.emit("area_translate", last_down_index, moved_area.corner_top_left, moved_area.corner_bottom_right);  
-        is_moving_area = false;
-        socket.emit("update_positions", data_socket_vertices);
-
+        const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
+        const shift: ServerVect = local_board.view.server_vect(canvas_shift);
+        socket.emit("translate_areas", [last_down_index], shift.x, shift.y);
     }
 })
 

@@ -89,6 +89,16 @@ export class TranslateStrokes implements Modification {
     }
 }
 
+export class TranslateAreas implements Modification {
+    indices: Set<number>;
+    shift: Coord;
+
+    constructor(indices: Set<number>, shift: Coord){
+        this.indices = indices;
+        this.shift = shift;
+    }
+}
+
 
 export class ColorModification {
     type: string;

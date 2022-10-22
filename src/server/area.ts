@@ -1,4 +1,5 @@
 import { Coord } from "./coord";
+import { Vertex } from "./vertex";
 
 export class Area{
     c1 : Coord;
@@ -14,23 +15,17 @@ export class Area{
         this.color = "#E60007";
     }
 
-    // get_subgraph(g:Graph){
-    //     const subgraph = new Graph(); 
+    translate(shift: Coord){
+        this.c1.translate(shift);
+        this.c2.translate(shift);
+    }
 
-    //      for (const [index, v] of g.vertices.entries()) {
-    //         if(v.is_in_rect(this.c1, this.c2)){
-    //             subgraph.vertices.set(index, v);
-    //         }
-    //     }
+    rtranslate(shift: Coord){
+        this.c1.rtranslate(shift);
+        this.c2.rtranslate(shift);
+    }
 
-    //     for (const [index, e] of g.links.entries()){
-    //         const u = g.vertices.get(e.start_vertex);
-    //         const v = g.vertices.get(e.end_vertex);
-
-    //         if((u.is_in_rect(this.c1, this.c2)) && (v.is_in_rect(this.c1, this.c2))){
-    //             subgraph.links.set(index, e);
-    //         }
-    //     }
-    //     return subgraph;
-    // }
+    is_containing(v: Vertex): Boolean{
+        return Math.min(this.c1.x, this.c2.x) <= v.pos.x && v.pos.x <= Math.max(this.c1.x, this.c2.x) &&  Math.min(this.c1.y, this.c2.y) <= v.pos.y && v.pos.y <= Math.max(this.c1.y, this.c2.y);
+    }
 }

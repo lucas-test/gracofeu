@@ -45,6 +45,10 @@ export class Coord {
         this.x -= shift.x;
         this.y -= shift.y;
     }
+
+    opposite(): Coord{
+        return new Coord(-this.x, -this.y);
+    }
 }
 
 export function middle(c1: Coord, c2: Coord) {
