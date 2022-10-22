@@ -1,4 +1,4 @@
-# Graccoon - GRAph COllaboration ONline
+# Gracoon - GRAph COllaboration ONline
 
 Installation and run:
 
@@ -10,3 +10,4 @@ npm run dev
 Use it at:
 
     https://graccoon.herokuapp.com/
+

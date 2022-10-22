@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
 
 const port = process.env.PORT || 5000
@@ -214,7 +214,6 @@ io.sockets.on('connection', function (client) {
     client.on('update_positions', handle_update_positions);  // TODO remove
 
     // Control Points
-    client.on('update_control_points', handle_update_control_points); // TODO remove
     client.on('translate_control_points', handle_translate_control_points);
 
     // Area
@@ -418,19 +417,7 @@ io.sockets.on('connection', function (client) {
         emit_graph_to_room(new Set());
     }
 
-    function handle_update_control_points(data) {
-        const previous_cps = new Map();
-        for (const element of data) {
-            if (g.links.has(element.index)) {
-                const link = g.links.get(element.index);
-                previous_cps.set(element.index, link.cp.copy());
-                link.cp.x = element.cp.x;
-                link.cp.y = element.cp.y;
-            }
-        }
-        g.add_modification(new UpdateSeveralControlPoints(previous_cps));
-        client.in(room_id).emit('update_control_points', data);
-    }
+
 
 
     function handle_add_link(vindex: number, windex: number, orientation: string) {

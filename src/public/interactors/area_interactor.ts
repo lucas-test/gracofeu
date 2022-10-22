@@ -170,16 +170,10 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
                 data_socket_vertices.push({ index: index, x: vertex.pos.x, y: vertex.pos.y });
             }
         })
-        const data_socket_links = new Array();
-        g.links.forEach((link, index) => {
-            if(vertices_contained.has(link.start_vertex) || vertices_contained.has(link.end_vertex)){
-                data_socket_links.push({index: index, cp: link.cp })
-            }
-        });
         socket.emit("area_translate", last_down_index, moved_area.corner_top_left, moved_area.corner_bottom_right);  
         is_moving_area = false;
-        socket.emit("update_control_points", data_socket_links);
         socket.emit("update_positions", data_socket_vertices);
+
     }
 })
 

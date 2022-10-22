@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralControlPoints, UpdateSeveralVertexPos } from './modifications';
+import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -184,13 +184,6 @@ export class Graph {
                     const previous_positions = (<UpdateSeveralVertexPos>last_modif).previous_positions;
                     for ( const [vertex_index, previous_pos] of previous_positions.entries()){
                         this.update_vertex_pos(vertex_index, previous_pos);
-                    }
-                    this.modifications_undoed.push(last_modif);
-                    return new Set([SENSIBILITY.GEOMETRIC]);
-                case UpdateSeveralControlPoints:
-                    const previous_cps = (<UpdateSeveralControlPoints>last_modif).previous_cps;
-                    for ( const [link_index, previous_cp] of previous_cps.entries()){
-                        this.update_control_point(link_index, previous_cp);
                     }
                     this.modifications_undoed.push(last_modif);
                     return new Set([SENSIBILITY.GEOMETRIC]);

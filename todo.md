@@ -178,7 +178,7 @@
     - [ ] REMOVE THIS update_positions
     - [X] translate_control_points
     - [ ] translate_control_points : just send cps not all graph
-    - [ ] update_control_points : remove
+    - [X] update_control_points : remove
     - [ ] add_area, area_move_side, area_move_corner, area_translate
     - [X] add_stroke
     - [X] delete_stroke (should be done in delete_selected_elements)

@@ -89,13 +89,6 @@ export class TranslateStrokes implements Modification {
     }
 }
 
-export class UpdateSeveralControlPoints implements Modification {
-    previous_cps: Map<number, Coord>;
-
-    constructor(previous_cps: Map<number, Coord>) {
-        this.previous_cps = previous_cps;
-    }
-}
 
 export class ColorModification {
     type: string;
