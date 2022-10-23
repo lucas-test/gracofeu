@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddArea, AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveSide, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
 import { Area } from './area';
 
@@ -272,33 +272,16 @@ io.sockets.on('connection', function (client) {
         emit_areas_to_room();
     }
 
-    function handle_move_side_area(index:number, x:number, y:number, side_number){
-        const area = g.areas.get(index);
-        console.log(g.areas.get(index));
-        switch(side_number){
-            case 1:
-                if(area.c1.y > area.c2.y){ area.c2.y = y; }
-                else{  area.c1.y = y; }
-                break;
-            case 2:
-                if(area.c1.x > area.c2.x){ area.c1.x = x; }
-                else{ area.c2.x = x; }
-                break;
-            case 3:
-                if(area.c1.y < area.c2.y){ area.c2.y = y; }
-                else{ area.c1.y = y; }
-                break;
-            case 4:
-                if(area.c1.x < area.c2.x){ area.c1.x = x; }
-                else{ area.c2.x = x; }
-                break;
-            default:
-                break;
-        }
-
-        g.areas.set(index, area);
-        //TODO : update only one area
-        emit_areas_to_room();
+    function handle_move_side_area(index:number, x:number, y:number, side_number: number){
+        console.log("Receive Request: move_side_area");
+        if ( g.areas.has(index)){
+            const area = g.areas.get(index);
+            const new_modif = AreaMoveSide.from_area(index, area, x,y, side_number);
+            g.try_implement_new_modification(new_modif);
+            emit_areas_to_room(); // OPT: update only one area
+        }else{
+            console.log("Error: area index does not exist", index);
+        }   
     }
 
 

@@ -180,7 +180,8 @@
     - [ ] translate_control_points : just send cps not all graph
     - [X] update_control_points : remove
     - [X] add_area
-    - [ ] area_move_side, area_move_corner
+    - [X] area_move_side
+    - [ ] area_move_corner
     - [X] translate_areas
     - [X] area_update not working
     - [X] remove area_translate

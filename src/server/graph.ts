@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddArea, AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveSide, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -129,6 +129,12 @@ export class Graph {
                 this.areas.set((<AddArea>modif).index, (<AddArea>modif).area);
                 this.add_modification(modif);
                 return new Set([]);
+            case AreaMoveSide:
+                const area = this.areas.get((<AreaMoveSide>modif).index);
+                area.c1 = (<AreaMoveSide>modif).new_c1;
+                area.c2 = (<AreaMoveSide>modif).new_c2;
+                this.add_modification(modif);
+                return new Set([]);
             case DeleteElements:
                 for ( const index of (<DeleteElements>modif).vertices.keys()){
                     this.delete_vertex(index);
@@ -232,6 +238,12 @@ export class Graph {
                         return new Set([]);
                     case AddArea:
                         this.delete_area((<AddArea>last_modif).index);
+                        this.modifications_undoed.push(last_modif);
+                        return new Set([]);
+                    case AreaMoveSide:
+                        const area = this.areas.get((<AreaMoveSide>last_modif).index);
+                        area.c1 = (<AreaMoveSide>last_modif).previous_c1;
+                        area.c2 = (<AreaMoveSide>last_modif).previous_c2;
                         this.modifications_undoed.push(last_modif);
                         return new Set([]);
                     case DeleteElements:
