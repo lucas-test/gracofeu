@@ -25,7 +25,7 @@ export class Link {
 
     // fixed_end is the coord of the fixed_end
     // new_pos and previous_pos are the positions of the end which has moved
-    transform_cp(new_pos: Coord, previous_pos: Coord, fixed_end: Coord ){
+    transform_cp(new_pos: Coord, previous_pos: Coord, fixed_end: Coord) {
         const w = fixed_end;
         const u = previous_pos.sub(w);
         const nv = new_pos.sub(w);

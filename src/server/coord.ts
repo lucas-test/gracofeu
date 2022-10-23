@@ -12,11 +12,11 @@ export class Coord {
         this.y = c.y;
     }
 
-    sub(c: Coord){
-        return new Coord(this.x-c.x, this.y-c.y);
+    sub(c: Coord) {
+        return new Coord(this.x - c.x, this.y - c.y);
     }
 
-    copy(){
+    copy() {
         return new Coord(this.x, this.y);
     }
 
@@ -36,17 +36,17 @@ export class Coord {
         return Math.sqrt(d2 / d1);
     }
 
-    translate(shift: Coord){
+    translate(shift: Coord) {
         this.x += shift.x;
         this.y += shift.y;
     }
 
-    rtranslate(shift: Coord){
+    rtranslate(shift: Coord) {
         this.x -= shift.x;
         this.y -= shift.y;
     }
 
-    opposite(): Coord{
+    opposite(): Coord {
         return new Coord(-this.x, -this.y);
     }
 }

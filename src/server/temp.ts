@@ -17,7 +17,7 @@ export function param_weighted_distance_identification(g: Graph): string {
 
     while (true) {
         console.log("k = ", k);
-  
+
         const heap = new Array<Link>();
         for (const link of g.links.values()) {
             heap.push(link);

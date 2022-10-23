@@ -57,7 +57,7 @@ io.sockets.on('connection', function (client) {
     console.log("connection from ", client.id);
     const user_data = new User(client.id, getRandomColor());
     users.set(client.id, user_data);
-    client.emit('myId', user_data.id, user_data.label, user_data.color,  Date.now());
+    client.emit('myId', user_data.id, user_data.label, user_data.color, Date.now());
 
 
     // ROOM CREATION
@@ -83,25 +83,25 @@ io.sockets.on('connection', function (client) {
         emit_graph_to_client(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
     }
 
-    function emit_graph_to_client(s:Set<SENSIBILITY>) {
-        client.emit('graph', [...g.vertices.entries()], [...g.links.entries()], [... s]);
+    function emit_graph_to_client(s: Set<SENSIBILITY>) {
+        client.emit('graph', [...g.vertices.entries()], [...g.links.entries()], [...s]);
     }
 
-    function emit_graph_to_room(s:Set<SENSIBILITY>) {
-        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.links.entries()], [... s]);
+    function emit_graph_to_room(s: Set<SENSIBILITY>) {
+        io.sockets.in(room_id).emit('graph', [...g.vertices.entries()], [...g.links.entries()], [...s]);
     }
 
-    function emit_strokes_to_room(){
+    function emit_strokes_to_room() {
         io.sockets.in(room_id).emit('strokes', [...g.strokes.entries()]);
     }
 
-    function emit_areas_to_room(){
+    function emit_areas_to_room() {
         io.sockets.in(room_id).emit('areas', [...g.areas.entries()])
     }
 
-    function emit_users_to_client(){
-        if(client.id in clientRooms){
-            const users_in_room =  get_other_clients_in_room(client.id,clientRooms);
+    function emit_users_to_client() {
+        if (client.id in clientRooms) {
+            const users_in_room = get_other_clients_in_room(client.id, clientRooms);
             client.emit('clients', [...users_in_room.entries()]);
             // TODO: Corriger ca: on envoie le nouvel user à tous les users de la room, mais on n'a pas ses coordonnées donc ce sont de fausses coordonnées.
             client.to(room_id).emit('update_user', client.id, user_data.label, user_data.color, -100, -100);
@@ -120,13 +120,13 @@ io.sockets.on('connection', function (client) {
     client.on('unfollow', remove_follower);
     client.on('my_view', send_view_to_followers);
 
-    function handle_update_self_user(label:string, color:string){
-        if(users.has(client.id)){
-            users.get(client.id).color=color;
-            users.get(client.id).label=label;
+    function handle_update_self_user(label: string, color: string) {
+        if (users.has(client.id)) {
+            users.get(client.id).color = color;
+            users.get(client.id).label = label;
             client.to(room_id).emit('update_other_self_user', client.id, label, color);
         }
-        else{
+        else {
             console.log("Error, client not found", client.id);
         }
     }
@@ -154,7 +154,7 @@ io.sockets.on('connection', function (client) {
     }
 
     function handle_disconnect() {
-        if(users.has(client.id)){
+        if (users.has(client.id)) {
             users.delete(client.id);
         }
         io.sockets.in(room_id).emit('remove_user', client.id);
@@ -164,30 +164,30 @@ io.sockets.on('connection', function (client) {
         client.to(room_id).emit('update_user', client.id, user_data.label, user_data.color, x, y);
     }
 
-    function add_follower(id:string){
+    function add_follower(id: string) {
         console.log("ADDING FOLLOWER...");
-        if(users.has(client.id) && users.has(id)){
+        if (users.has(client.id) && users.has(id)) {
             users.get(id).followers.push(client.id);
             io.to(id).emit("send_view");
-            
+
             console.log("ADDED!");
         }
     }
 
-    function remove_follower(id:string){
+    function remove_follower(id: string) {
         console.log("REMOVING FOLLOWER...");
-        if(users.has(client.id) && users.has(id)){
+        if (users.has(client.id) && users.has(id)) {
             const index = users.get(id).followers.indexOf(client.id);
-            if (index > -1) { 
+            if (index > -1) {
                 users.get(id).followers.splice(index, 1);
                 console.log("REMOVED!");
             }
         }
     }
 
-    function send_view_to_followers(x:number, y:number, zoom:number){
+    function send_view_to_followers(x: number, y: number, zoom: number) {
         // console.log("SEND VIEW TO FOLLOWERS:", x,y,zoom, client.id, users.get(client.id).followers);
-        for(const user_id of users.get(client.id).followers){
+        for (const user_id of users.get(client.id).followers) {
             io.to(user_id).emit("view_follower", x, y, zoom, client.id);
         }
     }
@@ -244,7 +244,7 @@ io.sockets.on('connection', function (client) {
     //
     // ------------------------
 
-    function handle_undo(){
+    function handle_undo() {
         console.log("Receive Request: undo");
         const sensibilities = g.reverse_last_modification();
         emit_graph_to_room(sensibilities);
@@ -252,7 +252,7 @@ io.sockets.on('connection', function (client) {
         emit_areas_to_room();
     }
 
-    function handle_redo(){
+    function handle_redo() {
         console.log("Receive Request: redo");
         const sensibilities = g.redo();
         emit_graph_to_room(sensibilities);
@@ -262,47 +262,47 @@ io.sockets.on('connection', function (client) {
 
     // AREAS 
 
-    function handle_add_area(c1x:number, c1y:number, c2x:number, c2y:number, label:string, color:string, callback: (created_area_index: number) => void){
+    function handle_add_area(c1x: number, c1y: number, c2x: number, c2y: number, label: string, color: string, callback: (created_area_index: number) => void) {
         console.log("Receive Request: add_area");
         const area_index = g.get_next_available_index_area();
-        const new_area = new Area(label+area_index, new Coord(c1x, c1y), new Coord(c2x, c2y), color);
+        const new_area = new Area(label + area_index, new Coord(c1x, c1y), new Coord(c2x, c2y), color);
         const modif = new AddArea(area_index, new_area);
         g.try_implement_new_modification(modif);
         callback(area_index);
         emit_areas_to_room();
     }
 
-    function handle_move_side_area(index:number, x:number, y:number, side_number: number){
+    function handle_move_side_area(index: number, x: number, y: number, side_number: number) {
         console.log("Receive Request: move_side_area");
-        if ( g.areas.has(index)){
+        if (g.areas.has(index)) {
             const area = g.areas.get(index);
-            const new_modif = AreaMoveSide.from_area(index, area, x,y, side_number);
+            const new_modif = AreaMoveSide.from_area(index, area, x, y, side_number);
             g.try_implement_new_modification(new_modif);
             emit_areas_to_room(); // OPT: update only one area
-        }else{
+        } else {
             console.log("Error: area index does not exist", index);
-        }   
+        }
     }
 
 
-    
-    function handle_move_corner_area(index:number, x:number, y:number, corner_number: number){
+
+    function handle_move_corner_area(index: number, x: number, y: number, corner_number: number) {
         console.log("Receive Request: move_corner_area");
-        if ( g.areas.has(index)){
+        if (g.areas.has(index)) {
             const area = g.areas.get(index);
             const new_modif = AreaMoveCorner.from_area(index, area, x, y, corner_number);
             g.try_implement_new_modification(new_modif);
             emit_areas_to_room(); // OPT: update only one area
-        }else{
+        } else {
             console.log("Error: area index does not exist", index);
-        }   
+        }
     }
 
     function handle_translate_areas(raw_indices, shiftx: number, shifty: number) {
         console.log("Receive Request: translate_areas", raw_indices, shiftx, shifty);
         const shift = new Coord(shiftx, shifty);
         const indices = new Set<number>();
-        for ( const index of raw_indices.values()){
+        for (const index of raw_indices.values()) {
             indices.add(index);
         }
         g.try_implement_new_modification(new TranslateAreas(indices, shift));
@@ -312,7 +312,7 @@ io.sockets.on('connection', function (client) {
 
 
     // STROKES
-    function handle_add_stroke(points:any, color:string, width:number, top_left_data:any, bot_right_data:any){
+    function handle_add_stroke(points: any, color: string, width: number, top_left_data: any, bot_right_data: any) {
         console.log("Receive request: add_stroke");
         const index = g.get_next_available_index_strokes();
         const positions = [];
@@ -328,20 +328,20 @@ io.sockets.on('connection', function (client) {
     }
 
 
-    
+
 
 
     function handle_translate_strokes(raw_indices, shiftx: number, shifty: number) {
         console.log("handle_translate_strokes", raw_indices, shiftx, shifty);
         const shift = new Coord(shiftx, shifty);
         const indices = new Set<number>();
-        for ( const index of raw_indices.values()){
+        for (const index of raw_indices.values()) {
             indices.add(index);
         }
         g.try_implement_new_modification(new TranslateStrokes(indices, shift));
         emit_strokes_to_room();
     }
-   
+
 
 
     // COLORS
@@ -361,8 +361,8 @@ io.sockets.on('connection', function (client) {
                     modif_data.push(new ColorModification(element.type, element.index, element.color, link.color));
                 }
             }
-            else if (element.type == "stroke"){
-                if(g.strokes.has(element.index)){
+            else if (element.type == "stroke") {
+                if (g.strokes.has(element.index)) {
                     is_stroke_modifying = true;
                     const stroke = g.strokes.get(element.index);
                     modif_data.push(new ColorModification(element.type, element.index, element.color, stroke.color));
@@ -371,18 +371,18 @@ io.sockets.on('connection', function (client) {
         }
         g.try_implement_new_modification(new UpdateColors(modif_data));
         emit_graph_to_room(new Set([SENSIBILITY.COLOR]));
-        if (is_stroke_modifying){
+        if (is_stroke_modifying) {
             emit_strokes_to_room()
         }
     }
 
 
     // LINKS
-    function handle_translate_control_points(raw_indices, shiftx: number, shifty: number){
+    function handle_translate_control_points(raw_indices, shiftx: number, shifty: number) {
         console.log("handle_translate_control_points", raw_indices, shiftx, shifty);
         const shift = new Coord(shiftx, shifty);
         const indices = new Set<number>();
-        for ( const index of raw_indices.values()){
+        for (const index of raw_indices.values()) {
             indices.add(index);
         }
         g.try_implement_new_modification(new TranslateControlPoints(indices, shift));
@@ -407,13 +407,13 @@ io.sockets.on('connection', function (client) {
         }
 
         const link_index = g.get_next_available_index_links();
-        const sensi = g.try_implement_new_modification( new AddLink(link_index,vindex, windex, orient) );
+        const sensi = g.try_implement_new_modification(new AddLink(link_index, vindex, windex, orient));
         emit_graph_to_room(sensi);
         //param_weighted_distance_identification(g);
     }
 
-    function handle_update_weight(link_index: number, new_weight: string){
-        if (g.links.has(link_index)){
+    function handle_update_weight(link_index: number, new_weight: string) {
+        if (g.links.has(link_index)) {
             const previous_weight = g.links.get(link_index).weight;
             g.try_implement_new_modification(new UpdateLinkWeight(link_index, new_weight, previous_weight));
             emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
@@ -451,7 +451,7 @@ io.sockets.on('connection', function (client) {
         const previous_positions = new Map();
         for (const e of data) {
             let vertex = g.vertices.get(e.index);
-            previous_positions.set(e.index, vertex.pos.copy()); 
+            previous_positions.set(e.index, vertex.pos.copy());
             vertex.pos.x = e.x;
             vertex.pos.y = e.y;
         }
@@ -459,12 +459,12 @@ io.sockets.on('connection', function (client) {
         io.sockets.in(room_id).emit('update_vertex_positions', data);
     }
 
-    function handle_translate_vertices(raw_indices, shiftx: number, shifty: number){
+    function handle_translate_vertices(raw_indices, shiftx: number, shifty: number) {
         //console.log("handle_translate_vertices")
         //console.log(raw_indices);
         const shift = new Coord(shiftx, shifty);
         const indices = new Set<number>();
-        for ( const index of raw_indices.values()){
+        for (const index of raw_indices.values()) {
             indices.add(index);
         }
         g.try_implement_new_modification(new TranslateVertices(indices, shift));
@@ -474,43 +474,43 @@ io.sockets.on('connection', function (client) {
 
     function handle_add_vertex(x: number, y: number) {
         let index = g.get_next_available_index();
-        const sensi = g.try_implement_new_modification( new AddVertex(index,x,y) );
+        const sensi = g.try_implement_new_modification(new AddVertex(index, x, y));
         emit_graph_to_room(sensi);
         return index;
     }
 
-    function handle_vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number){
+    function handle_vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number) {
         console.log("Receive Request: vertices_merge");
-        if ( g.vertices.has(vertex_index_fixed) && g.vertices.has(vertex_index_to_remove)){
+        if (g.vertices.has(vertex_index_fixed) && g.vertices.has(vertex_index_to_remove)) {
             const deleted_links = new Map<number, Link>();
             let number_added_links = 0;
-            for (  const [link_index, link] of g.links.entries()){
-                if ( link.start_vertex == vertex_index_to_remove || link.end_vertex == vertex_index_to_remove){
-                    deleted_links.set(link_index,  link);
-                    if ( (link.end_vertex == vertex_index_to_remove && g.check_link(link.start_vertex, vertex_index_fixed, link.orientation)) ||
-                    (link.start_vertex == vertex_index_to_remove && g.check_link(vertex_index_fixed, link.end_vertex, link.orientation))){
-                        number_added_links ++;
+            for (const [link_index, link] of g.links.entries()) {
+                if (link.start_vertex == vertex_index_to_remove || link.end_vertex == vertex_index_to_remove) {
+                    deleted_links.set(link_index, link);
+                    if ((link.end_vertex == vertex_index_to_remove && g.check_link(link.start_vertex, vertex_index_fixed, link.orientation)) ||
+                        (link.start_vertex == vertex_index_to_remove && g.check_link(vertex_index_fixed, link.end_vertex, link.orientation))) {
+                        number_added_links++;
                     }
                 }
             }
             const added_link_indices = g.get_next_n_available_link_indices(number_added_links);
             const vertex_to_remove = g.vertices.get(vertex_index_to_remove);
             const modif = new VerticesMerge(vertex_index_fixed, vertex_index_to_remove, vertex_to_remove, deleted_links, added_link_indices);
-            const sensi = g.try_implement_new_modification( modif );
+            const sensi = g.try_implement_new_modification(modif);
             emit_graph_to_room(sensi);
         }
     }
 
 
     // OTHERS 
-    function handle_paste_graph(vertices_entries, links_entries){
+    function handle_paste_graph(vertices_entries, links_entries) {
 
         const new_indices = new Map<number, number>();
         for (const data of vertices_entries) {
             let index = g.add_vertex(data[1].pos.x, data[1].pos.y);
             new_indices.set(data[0], index);
         }
-        
+
         for (const data of links_entries) {
             let orient = ORIENTATION.UNDIRECTED;
             switch (data[1].orientation) {
@@ -538,7 +538,7 @@ io.sockets.on('connection', function (client) {
 
         for (const e of data) {
             if (e.type == "vertex") {
-                if (g.vertices.has(e.index)){
+                if (g.vertices.has(e.index)) {
                     const vertex = g.vertices.get(e.index);
                     deleted_vertices.set(e.index, vertex);
                     g.links.forEach((link, link_index) => {
@@ -549,19 +549,19 @@ io.sockets.on('connection', function (client) {
                 }
             }
             else if (e.type == "link") {
-                if (g.links.has(e.index)){
+                if (g.links.has(e.index)) {
                     const link = g.links.get(e.index);
                     deleted_links.set(e.index, link);
                 }
             }
             else if (e.type == "stroke") {
-                if (g.strokes.has(e.index)){
+                if (g.strokes.has(e.index)) {
                     const stroke = g.strokes.get(e.index);
                     deleted_strokes.set(e.index, stroke);
                 }
             }
             else if (e.type == "area") {
-                if (g.areas.has(e.index)){
+                if (g.areas.has(e.index)) {
                     const area = g.areas.get(e.index);
                     deleted_areas.set(e.index, area);
                 }
@@ -571,15 +571,15 @@ io.sockets.on('connection', function (client) {
         const modif = new DeleteElements(deleted_vertices, deleted_links, deleted_strokes, deleted_areas);
         const triggered_sensibilities = g.try_implement_new_modification(modif);
 
-        if(deleted_vertices.size > 0 || deleted_links.size > 0){
-            emit_graph_to_room(triggered_sensibilities); 
+        if (deleted_vertices.size > 0 || deleted_links.size > 0) {
+            emit_graph_to_room(triggered_sensibilities);
         }
-        
-        if(deleted_strokes.size > 0){
+
+        if (deleted_strokes.size > 0) {
             emit_strokes_to_room();
         }
 
-        if(deleted_areas.size > 0){
+        if (deleted_areas.size > 0) {
             emit_areas_to_room();
         }
     }
@@ -588,11 +588,10 @@ io.sockets.on('connection', function (client) {
 
 
 
-function get_other_clients_in_room(client_id:string, clientRooms):Map<string, User>{
+function get_other_clients_in_room(client_id: string, clientRooms): Map<string, User> {
     const users_in_room = new Map<string, User>();
     for (const id_client in clientRooms) {
-        if(client_id != id_client && clientRooms[client_id] == clientRooms[id_client] && users.has(id_client))
-        {
+        if (client_id != id_client && clientRooms[client_id] == clientRooms[id_client] && users.has(id_client)) {
             users_in_room.set(id_client, users.get(id_client));
         }
     }
