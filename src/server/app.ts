@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveSide, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
 import { Area } from './area';
 
@@ -218,9 +218,9 @@ io.sockets.on('connection', function (client) {
     client.on('translate_control_points', handle_translate_control_points);
 
     // Area
-    client.on('add_area', handle_add_area); // TODO modif
-    client.on('area_move_side', handle_move_side_area); // TODO modif
-    client.on('area_move_corner', handle_move_corner_area); // TODO modif
+    client.on('add_area', handle_add_area);
+    client.on('area_move_side', handle_move_side_area);
+    client.on('area_move_corner', handle_move_corner_area);
     client.on('translate_areas', handle_translate_areas);
 
     // Stroke
@@ -286,38 +286,16 @@ io.sockets.on('connection', function (client) {
 
 
     
-    function handle_move_corner_area(index:number, x:number, y:number, corner_number){
-        const area = g.areas.get(index);
-        switch(corner_number){
-            case 1:
-                if(area.c1.x < area.c2.x){ area.c1.x = x; }
-                else{ area.c2.x = x; }
-                if(area.c1.y > area.c2.y){  area.c2.y = y; }
-                else{ area.c1.y = y; }
-                break;
-            case 2:
-                if(area.c1.x > area.c2.x){ area.c1.x = x; }
-                else{ area.c2.x = x; }
-                if(area.c1.y > area.c2.y){ area.c2.y = y; }
-                else{ area.c1.y = y; }
-                break;
-            case 3:
-                if(area.c1.x > area.c2.x){ area.c1.x = x; }
-                else{ area.c2.x = x; }
-                if(area.c1.y < area.c2.y){ area.c2.y = y; }
-                else{ area.c1.y = y; }
-                break;
-            case 4:
-                if(area.c1.x < area.c2.x){ area.c1.x = x; }
-                else{ area.c2.x = x; }
-                if(area.c1.y < area.c2.y){ area.c2.y = y; }
-                else{ area.c1.y = y; }
-                break;
-            default:
-                break;
-        }
-        //TODO : update only one area
-        emit_areas_to_room();
+    function handle_move_corner_area(index:number, x:number, y:number, corner_number: number){
+        console.log("Receive Request: move_corner_area");
+        if ( g.areas.has(index)){
+            const area = g.areas.get(index);
+            const new_modif = AreaMoveCorner.from_area(index, area, x, y, corner_number);
+            g.try_implement_new_modification(new_modif);
+            emit_areas_to_room(); // OPT: update only one area
+        }else{
+            console.log("Error: area index does not exist", index);
+        }   
     }
 
     function handle_translate_areas(raw_indices, shiftx: number, shifty: number) {

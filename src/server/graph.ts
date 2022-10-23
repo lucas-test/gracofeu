@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveSide, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -61,23 +61,27 @@ export class Graph {
 
     try_implement_modification(modif: Modification) : Set<SENSIBILITY>{
         switch (modif.constructor){
-            case AddVertex:
+            case AddVertex:{
                 this.set_vertex((<AddVertex>modif).index, (<AddVertex>modif).x, (<AddVertex>modif).y);
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.ELEMENT]);
-            case AddLink:
+            }
+            case AddLink:{
                 this.set_link((<AddLink>modif).index, (<AddLink>modif).start_index, (<AddLink>modif).end_index, (<AddLink>modif).orientation)
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.ELEMENT]);
-            case UpdateLinkWeight:
+            }
+            case UpdateLinkWeight:{
                 this.update_link_weight((<UpdateLinkWeight>modif).index, (<UpdateLinkWeight>modif).new_weight);
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.WEIGHT]);
-            case TranslateVertices:
+            }
+            case TranslateVertices:{
                 this.translate_vertices((<TranslateVertices>modif).indices, (<TranslateVertices>modif).shift );
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.GEOMETRIC]);
-            case TranslateControlPoints:
+            }
+            case TranslateControlPoints:{
                     for( const index of (<TranslateControlPoints>modif).indices){
                         if ( this.links.has(index)){
                             const link = this.links.get(index);
@@ -86,7 +90,8 @@ export class Graph {
                     }
                     this.add_modification(modif);
                     return new Set([SENSIBILITY.GEOMETRIC]);
-            case TranslateStrokes:
+                }
+            case TranslateStrokes:{
                 for( const index of (<TranslateStrokes>modif).indices){
                     if ( this.strokes.has(index)){
                         const stroke = this.strokes.get(index);
@@ -95,11 +100,13 @@ export class Graph {
                 }
                 this.add_modification(modif);
                 return new Set([]);
-            case TranslateAreas:
+            }
+            case TranslateAreas:{
                 this.translate_areas( (<TranslateAreas>modif).indices , (<TranslateAreas>modif).shift)
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.GEOMETRIC]);
-            case UpdateColors:
+            }
+            case UpdateColors:{
                 for(const color_modif of (<UpdateColors>modif).data){
                     switch(color_modif.type){
                         case "vertex":
@@ -118,24 +125,35 @@ export class Graph {
                             }
                             break;
                     }
-                    this.add_modification(modif);
-                    return new Set([SENSIBILITY.COLOR]);
                 }
-            case AddStroke:
+                this.add_modification(modif);
+                return new Set([SENSIBILITY.COLOR]);
+            }
+            case AddStroke:{
                 this.strokes.set((<AddStroke>modif).index, (<AddStroke>modif).stroke);
                 this.add_modification(modif);
                 return new Set([]);
-            case AddArea:
+            }
+            case AddArea:{
                 this.areas.set((<AddArea>modif).index, (<AddArea>modif).area);
                 this.add_modification(modif);
                 return new Set([]);
-            case AreaMoveSide:
+            }
+            case AreaMoveSide:{
                 const area = this.areas.get((<AreaMoveSide>modif).index);
                 area.c1 = (<AreaMoveSide>modif).new_c1;
                 area.c2 = (<AreaMoveSide>modif).new_c2;
                 this.add_modification(modif);
                 return new Set([]);
-            case DeleteElements:
+            }
+            case AreaMoveCorner:{
+                const area = this.areas.get((<AreaMoveCorner>modif).index);
+                area.c1 = (<AreaMoveCorner>modif).new_c1;
+                area.c2 = (<AreaMoveCorner>modif).new_c2;
+                this.add_modification(modif);
+                return new Set([]);
+            }
+            case DeleteElements:{
                 for ( const index of (<DeleteElements>modif).vertices.keys()){
                     this.delete_vertex(index);
                 }
@@ -150,6 +168,7 @@ export class Graph {
                 }
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC, SENSIBILITY.WEIGHT])
+            }
         }
         console.log("try_implement_modififcation: no method found for ", modif.constructor);
         return new Set([]);
@@ -246,6 +265,13 @@ export class Graph {
                         area.c2 = (<AreaMoveSide>last_modif).previous_c2;
                         this.modifications_undoed.push(last_modif);
                         return new Set([]);
+                    case AreaMoveCorner:{
+                        const area = this.areas.get((<AreaMoveCorner>last_modif).index);
+                        area.c1 = (<AreaMoveCorner>last_modif).previous_c1;
+                        area.c2 = (<AreaMoveCorner>last_modif).previous_c2;
+                        this.modifications_undoed.push(last_modif);
+                        return new Set([]);
+                    }
                     case DeleteElements:
                         for ( const [index, vertex] of (<DeleteElements>last_modif).vertices.entries()){
                             this.vertices.set(index, vertex);
