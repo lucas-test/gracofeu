@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -125,6 +125,10 @@ export class Graph {
                 this.strokes.set((<AddStroke>modif).index, (<AddStroke>modif).stroke);
                 this.add_modification(modif);
                 return new Set([]);
+            case AddArea:
+                this.areas.set((<AddArea>modif).index, (<AddArea>modif).area);
+                this.add_modification(modif);
+                return new Set([]);
             case DeleteElements:
                 for ( const index of (<DeleteElements>modif).vertices.keys()){
                     this.delete_vertex(index);
@@ -224,6 +228,10 @@ export class Graph {
                         }
                     case AddStroke:
                         this.delete_stroke((<AddStroke>last_modif).index);
+                        this.modifications_undoed.push(last_modif);
+                        return new Set([]);
+                    case AddArea:
+                        this.delete_area((<AddArea>last_modif).index);
                         this.modifications_undoed.push(last_modif);
                         return new Set([]);
                     case DeleteElements:
@@ -397,11 +405,6 @@ export class Graph {
     }
 
 
-    add_area(c1:Coord, c2:Coord, label:string, color:string){
-        let index = this.get_next_available_index_area();
-        this.areas.set(index, new Area(label+index, c1, c2, color));
-        return index;
-    }
 
     get_neighbors_list(i: number) {
         let neighbors = new Array<number>();

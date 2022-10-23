@@ -131,6 +131,15 @@ export class AddStroke implements Modification {
     }
 }
 
+export class AddArea implements Modification {
+    index: number;
+    area: Area;
+    constructor(index: number, area: Area){
+        this.index = index;
+        this.area = area;
+    }
+}
+
 
 
 export class DeleteElements implements Modification {

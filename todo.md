@@ -179,9 +179,10 @@
     - [X] translate_control_points
     - [ ] translate_control_points : just send cps not all graph
     - [X] update_control_points : remove
-    - [ ] add_area, area_move_side, area_move_corner
+    - [X] add_area
+    - [ ] area_move_side, area_move_corner
     - [X] translate_areas
-    - [ ] area_update not working
+    - [X] area_update not working
     - [X] remove area_translate
     - [X] add_stroke
     - [X] delete_stroke (should be done in delete_selected_elements)

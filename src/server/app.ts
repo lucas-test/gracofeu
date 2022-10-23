@@ -5,8 +5,9 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
 import { ORIENTATION } from './link';
-import { AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
 import { Stroke } from './stroke';
+import { Area } from './area';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -248,6 +249,7 @@ io.sockets.on('connection', function (client) {
         const sensibilities = g.reverse_last_modification();
         emit_graph_to_room(sensibilities);
         emit_strokes_to_room();
+        emit_areas_to_room();
     }
 
     function handle_redo(){
@@ -255,14 +257,19 @@ io.sockets.on('connection', function (client) {
         const sensibilities = g.redo();
         emit_graph_to_room(sensibilities);
         emit_strokes_to_room();
+        emit_areas_to_room();
     }
 
     // AREAS 
 
     function handle_add_area(c1x:number, c1y:number, c2x:number, c2y:number, label:string, color:string, callback: (created_area_index: number) => void){
-        const created_area_index = g.add_area(new Coord(c1x, c1y), new Coord(c2x, c2y), label, color);
+        console.log("Receive Request: add_area");
+        const area_index = g.get_next_available_index_area();
+        const new_area = new Area(label+area_index, new Coord(c1x, c1y), new Coord(c2x, c2y), color);
+        const modif = new AddArea(area_index, new_area);
+        g.try_implement_new_modification(modif);
+        callback(area_index);
         emit_areas_to_room();
-        callback(created_area_index);
     }
 
     function handle_move_side_area(index:number, x:number, y:number, side_number){
