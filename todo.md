@@ -174,10 +174,9 @@
     - [X] ça marche
     - [X] delete_selected_elements
     - [ ] paste_graph
-    - [ ] vertices_merge
+    - [X] vertices_merge
     - [ ] REMOVE THIS update_positions
     - [X] translate_control_points
-    - [ ] translate_control_points : just send cps not all graph
     - [X] update_control_points : remove
     - [X] add_area
     - [X] area_move_side
@@ -191,7 +190,11 @@
     - [X] translate_strokes
     - [X] update_colors
     - [ ] load_json
+
+- control Z Optimizations and refactorizations 
     - [ ] adapt CanvasVect and ServerVect to translation of CPs and vertices
+    - [ ] translate_control_points : just send cps not all graph
+    - [ ] get modifications out of graph, so that Modification has a method "implement" and "undo" on a graph
 
 - [ ] exporter Latex
 - [ ] exporter pdf

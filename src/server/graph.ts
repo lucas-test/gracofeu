@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -54,7 +54,24 @@ export class Graph {
                     (<TranslateControlPoints>modif).shift.translate( (<TranslateControlPoints>last_modif).shift);
                 }
             }
+
+            // if the last_modif was a translation of the removed vertex for the incoming modification
+            // then pop last_modif and patch the position of the removed vertex
+            console.log("hey")
+            if (modif.constructor == VerticesMerge && last_modif.constructor == TranslateVertices){
+                console.log("yo")
+                if (eqSet(new Set([(<VerticesMerge>modif).index_vertex_to_remove]), (<TranslateVertices>last_modif).indices)){
+                    console.log("cool")
+                    this.modifications_heap.pop();
+                    this.translate_vertices(new Set([(<VerticesMerge>modif).index_vertex_to_remove]), (<TranslateVertices>last_modif).shift.opposite());
+                    console.log((<TranslateVertices>last_modif).shift)
+                    //(<VerticesMerge>modif).vertex_to_remove.pos.translate( (<TranslateVertices>last_modif).shift.opposite())
+                }
+            }
         }
+
+        
+
         this.modifications_heap.push(modif);
         console.log(this.modifications_heap);
     }
@@ -169,6 +186,11 @@ export class Graph {
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC, SENSIBILITY.WEIGHT])
             }
+            case VerticesMerge:{
+                this.add_modification(modif);
+                this.vertices_merge((<VerticesMerge>modif).index_vertex_fixed, (<VerticesMerge>modif).index_vertex_to_remove);
+                return new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC, SENSIBILITY.WEIGHT])
+            }
         }
         console.log("try_implement_modififcation: no method found for ", modif.constructor);
         return new Set([]);
@@ -272,7 +294,7 @@ export class Graph {
                         this.modifications_undoed.push(last_modif);
                         return new Set([]);
                     }
-                    case DeleteElements:
+                    case DeleteElements:{
                         for ( const [index, vertex] of (<DeleteElements>last_modif).vertices.entries()){
                             this.vertices.set(index, vertex);
                         }
@@ -287,6 +309,20 @@ export class Graph {
                         }
                         this.modifications_undoed.push(last_modif);
                         return new Set([]);
+                    }
+                    case VerticesMerge:{
+                        this.vertices.set((<VerticesMerge>last_modif).index_vertex_to_remove, (<VerticesMerge>last_modif).vertex_to_remove );
+                        for ( const [link_index, link] of (<VerticesMerge>last_modif).deleted_links.entries()){
+                            this.links.set(link_index, link);
+                        }
+                        // 2. les cps remis après undo sont chelous
+                        for ( const link_index of (<VerticesMerge>last_modif).added_link_indices){
+                            this.links.delete(link_index);
+                        }
+                        
+                        this.modifications_undoed.push(last_modif);
+                        return new Set([]);
+                    }
                 
             }
                 console.log("reverse_modification: no method found for ", last_modif.constructor);
@@ -334,6 +370,18 @@ export class Graph {
             index += 1;
         }
         return index;
+    }
+
+    get_next_n_available_link_indices(n: number): Set<number> {
+        let index = 0;
+        const indices = new Set<number>();
+        while (indices.size < n) {
+            if ( this.links.has(index) == false){
+                indices.add(index);
+            }
+            index += 1;
+        }
+        return indices;
     }
 
     get_next_available_index_strokes(){

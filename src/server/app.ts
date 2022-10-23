@@ -4,8 +4,8 @@ import ENV from './.env.json';
 import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord } from './coord';
-import { ORIENTATION } from './link';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos } from './modifications';
+import { Link, ORIENTATION } from './link';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
 import { Stroke } from './stroke';
 import { Area } from './area';
 
@@ -208,7 +208,7 @@ io.sockets.on('connection', function (client) {
     client.on('add_link', handle_add_link);
     client.on('delete_selected_elements', handle_delete_selected_elements);
     client.on('paste_graph', handle_paste_graph); // TODO modif
-    client.on('vertices_merge', handle_vertices_merge); // TODO modif
+    client.on('vertices_merge', handle_vertices_merge);
 
     // Vertices Positions
     client.on('translate_vertices', handle_translate_vertices);
@@ -480,8 +480,25 @@ io.sockets.on('connection', function (client) {
     }
 
     function handle_vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number){
-        g.vertices_merge(vertex_index_fixed, vertex_index_to_remove);
-        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+        console.log("Receive Request: vertices_merge");
+        if ( g.vertices.has(vertex_index_fixed) && g.vertices.has(vertex_index_to_remove)){
+            const deleted_links = new Map<number, Link>();
+            let number_added_links = 0;
+            for (  const [link_index, link] of g.links.entries()){
+                if ( link.start_vertex == vertex_index_to_remove || link.end_vertex == vertex_index_to_remove){
+                    deleted_links.set(link_index,  link);
+                    if ( (link.end_vertex == vertex_index_to_remove && g.check_link(link.start_vertex, vertex_index_fixed, link.orientation)) ||
+                    (link.start_vertex == vertex_index_to_remove && g.check_link(vertex_index_fixed, link.end_vertex, link.orientation))){
+                        number_added_links ++;
+                    }
+                }
+            }
+            const added_link_indices = g.get_next_n_available_link_indices(number_added_links);
+            const vertex_to_remove = g.vertices.get(vertex_index_to_remove);
+            const modif = new VerticesMerge(vertex_index_fixed, vertex_index_to_remove, vertex_to_remove, deleted_links, added_link_indices);
+            const sensi = g.try_implement_new_modification( modif );
+            emit_graph_to_room(sensi);
+        }
     }
 
 
