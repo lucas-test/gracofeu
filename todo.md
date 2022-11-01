@@ -173,7 +173,7 @@
 - control Z
     - [X] ça marche
     - [X] delete_selected_elements
-    - [ ] paste_graph
+    - [X] paste_graph
     - [X] vertices_merge
     - [ ] REMOVE THIS update_positions
     - [X] translate_control_points

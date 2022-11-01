@@ -252,13 +252,23 @@ export class VerticesMerge implements Modification {
     index_vertex_to_remove: number;
     vertex_to_remove: Vertex;
     deleted_links: Map<number, Link>;
-    added_link_indices: Set<number>;
+    added_link_indices: Array<number>;
 
-    constructor(index_vertex_fixed: number, index_vertex_to_remove: number, vertex_to_remove: Vertex, deleted_links: Map<number, Link>, added_link_indices: Set<number>) {
+    constructor(index_vertex_fixed: number, index_vertex_to_remove: number, vertex_to_remove: Vertex, deleted_links: Map<number, Link>, added_link_indices: Array<number>) {
         this.index_vertex_fixed = index_vertex_fixed;
         this.index_vertex_to_remove = index_vertex_to_remove;
         this.vertex_to_remove = vertex_to_remove;
         this.deleted_links = deleted_links;
         this.added_link_indices = added_link_indices;
+    }
+}
+
+export class GraphPaste implements Modification {
+    added_vertices: Map<number, Vertex>;
+    added_links: Map<number, Link>;
+
+    constructor(added_vertices, added_links){
+        this.added_vertices = added_vertices;
+        this.added_links = added_links;
     }
 }

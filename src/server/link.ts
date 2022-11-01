@@ -15,12 +15,13 @@ export class Link {
     color: string;
     weight: string = "";
 
-    constructor(i: number, j: number, cp: Coord, orientation: ORIENTATION, color: string) {
+    constructor(i: number, j: number, cp: Coord, orientation: ORIENTATION, color: string, weight: string) {
         this.start_vertex = i;
         this.end_vertex = j;
         this.cp = cp;
         this.orientation = orientation;
         this.color = color;
+        this.weight = weight;
     }
 
     // fixed_end is the coord of the fixed_end

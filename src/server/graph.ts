@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, DeleteElements, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, DeleteElements, GraphPaste, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -57,11 +57,8 @@ export class Graph {
 
             // if the last_modif was a translation of the removed vertex for the incoming modification
             // then pop last_modif and patch the position of the removed vertex
-            console.log("hey")
             if (modif.constructor == VerticesMerge && last_modif.constructor == TranslateVertices) {
-                console.log("yo")
                 if (eqSet(new Set([(<VerticesMerge>modif).index_vertex_to_remove]), (<TranslateVertices>last_modif).indices)) {
-                    console.log("cool")
                     this.modifications_heap.pop();
                     this.translate_vertices(new Set([(<VerticesMerge>modif).index_vertex_to_remove]), (<TranslateVertices>last_modif).shift.opposite());
                     console.log((<TranslateVertices>last_modif).shift)
@@ -191,6 +188,16 @@ export class Graph {
                 this.vertices_merge((<VerticesMerge>modif).index_vertex_fixed, (<VerticesMerge>modif).index_vertex_to_remove);
                 return new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC, SENSIBILITY.WEIGHT])
             }
+            case GraphPaste: {
+                for ( const [vertex_index, vertex] of (<GraphPaste>modif).added_vertices.entries()){
+                    this.vertices.set(vertex_index, vertex);
+                }
+                for ( const [link_index, link] of (<GraphPaste>modif).added_links.entries()){
+                    this.links.set(link_index, link);
+                }
+                this.add_modification(modif);
+                return new Set([SENSIBILITY.ELEMENT]);
+            }
         }
         console.log("try_implement_modififcation: no method found for ", modif.constructor);
         return new Set([]);
@@ -316,12 +323,22 @@ export class Graph {
                         this.links.set(link_index, link);
                     }
                     // 2. les cps remis après undo sont chelous
-                    for (const link_index of (<VerticesMerge>last_modif).added_link_indices) {
+                    for (const link_index of (<VerticesMerge>last_modif).added_link_indices.values()) {
                         this.links.delete(link_index);
                     }
 
                     this.modifications_undoed.push(last_modif);
                     return new Set([]);
+                }
+                case GraphPaste: {
+                    for ( const vertex_index of (<GraphPaste>last_modif).added_vertices.keys()){
+                        this.vertices.delete(vertex_index);
+                    }
+                    for ( const link_index of (<GraphPaste>last_modif).added_links.keys()){
+                        this.links.delete(link_index);
+                    }
+                    this.modifications_undoed.push(last_modif);
+                    return new Set([SENSIBILITY.ELEMENT]);
                 }
 
             }
@@ -364,6 +381,18 @@ export class Graph {
         return index;
     }
 
+    get_next_n_available_vertex_indices(n: number): Array<number> {
+        let index = 0;
+        const indices = new Array<number>();
+        while (indices.length < n) {
+            if (this.vertices.has(index) == false) {
+                indices.push(index);
+            }
+            index += 1;
+        }
+        return indices;
+    }
+
     get_next_available_index_links() {
         let index = 0;
         while (this.links.has(index)) {
@@ -372,12 +401,12 @@ export class Graph {
         return index;
     }
 
-    get_next_n_available_link_indices(n: number): Set<number> {
+    get_next_n_available_link_indices(n: number): Array<number> {
         let index = 0;
-        const indices = new Set<number>();
-        while (indices.size < n) {
+        const indices = new Array<number>();
+        while (indices.length < n) {
             if (this.links.has(index) == false) {
-                indices.add(index);
+                indices.push(index);
             }
             index += 1;
         }
@@ -453,7 +482,7 @@ export class Graph {
         const index = this.get_next_available_index_links();
         const v1 = this.vertices.get(i);
         const v2 = this.vertices.get(j);
-        this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), orientation, "black"));
+        this.links.set(index, new Link(i, j, middle(v1.pos, v2.pos), orientation, "black", ""));
         return index;
     }
 
@@ -463,7 +492,7 @@ export class Graph {
         }
         const v1 = this.vertices.get(start_index);
         const v2 = this.vertices.get(end_index);
-        this.links.set(link_index, new Link(start_index, end_index, middle(v1.pos, v2.pos), orientation, "black"));
+        this.links.set(link_index, new Link(start_index, end_index, middle(v1.pos, v2.pos), orientation, "black", ""));
     }
 
 

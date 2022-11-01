@@ -3,11 +3,12 @@ import { Graph, SENSIBILITY } from './graph';
 import ENV from './.env.json';
 import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
-import { Coord } from './coord';
+import { Coord, middle } from './coord';
 import { Link, ORIENTATION } from './link';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
 import { Stroke } from './stroke';
 import { Area } from './area';
+import { create_popup } from '../public/popup';
 
 const port = process.env.PORT || 5000
 const app = express();
@@ -207,7 +208,7 @@ io.sockets.on('connection', function (client) {
     client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
     client.on('add_link', handle_add_link);
     client.on('delete_selected_elements', handle_delete_selected_elements);
-    client.on('paste_graph', handle_paste_graph); // TODO modif
+    client.on('paste_graph', handle_paste_graph);
     client.on('vertices_merge', handle_vertices_merge);
 
     // Vertices Positions
@@ -504,14 +505,24 @@ io.sockets.on('connection', function (client) {
 
     // OTHERS 
     function handle_paste_graph(vertices_entries, links_entries) {
+        console.log("Receive Request: paste graph");
 
-        const new_indices = new Map<number, number>();
+        const added_vertices = new Map<number, Vertex>();
+        const added_links = new Map<number, Link>();
+        const vertex_indices_transformation = new Map<number, number>();
+        const new_vertex_indices: Array<number> = g.get_next_n_available_vertex_indices(vertices_entries.length);
+        let i = 0;
         for (const data of vertices_entries) {
-            let index = g.add_vertex(data[1].pos.x, data[1].pos.y);
-            new_indices.set(data[0], index);
+            const vertex = new Vertex(data[1].pos.x, data[1].pos.y);
+            added_vertices.set(new_vertex_indices[i], vertex);
+            vertex_indices_transformation.set(data[0], new_vertex_indices[i]);
+            i++;
         }
 
+        const new_link_indices = g.get_next_n_available_link_indices(links_entries.length);
+        let j = 0;
         for (const data of links_entries) {
+            console.log(data)
             let orient = ORIENTATION.UNDIRECTED;
             switch (data[1].orientation) {
                 case "UNDIRECTED":
@@ -524,10 +535,18 @@ io.sockets.on('connection', function (client) {
                     orient = ORIENTATION.DIGON
                     break;
             }
-            g.add_link(new_indices.get(data[1].start_vertex), new_indices.get(data[1].end_vertex), orient);
+            const start_index = vertex_indices_transformation.get(data[1].start_vertex);
+            const end_index = vertex_indices_transformation.get(data[1].end_vertex);
+            const cp = new Coord(data[1].cp.x, data[1].cp.y);
+            const link = new Link(start_index, end_index, cp, orient, data[1].color, data[1].weight);
+
+            added_links.set(new_link_indices[j], link);
+            j++;
         }
 
-        emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]))
+        const modif = new GraphPaste(added_vertices, added_links);
+        const triggered_sensibilities = g.try_implement_new_modification(modif);
+        emit_graph_to_room(triggered_sensibilities)
     }
 
     function handle_delete_selected_elements(data) {

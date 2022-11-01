@@ -8,9 +8,9 @@ import { CanvasCoord, Coord, ServerCoord } from "./coord";
 import { LocalVertex } from "./vertex";
 
 export enum ORIENTATION {
-    UNDIRECTED,
-    DIRECTED,
-    DIGON
+    UNDIRECTED = "UNDIRECTED",
+    DIRECTED = "DIRECTED",
+    DIGON = "DIGON"
 }
 
 
@@ -29,13 +29,14 @@ export class Link {
     weight_div: HTMLDivElement = null; // set to null until a non empty weight is used
 
 
-    constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string) {
+    constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string, weight: string) {
         this.start_vertex = i;
         this.end_vertex = j;
         this.color = color;
         this.is_selected = false;
         this.cp = new ServerCoord(cp.x, cp.y);
         this.orientation = orientation;
+        this.weight = weight;
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {

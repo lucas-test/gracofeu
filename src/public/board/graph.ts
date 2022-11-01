@@ -64,7 +64,7 @@ export class Graph {
         const index = this.get_next_available_index_links();
         const v1 = this.vertices.get(i);
         const v2 = this.vertices.get(j);
-        const new_link = new Link(i, j, middle(v1.pos, v2.pos), ORIENTATION.UNDIRECTED, "black")
+        const new_link = new Link(i, j, middle(v1.pos, v2.pos), ORIENTATION.UNDIRECTED, "black", "")
         this.links.set(index, new_link);
         return index;
     }
@@ -340,7 +340,7 @@ export class Graph {
             const u = this.vertices.get(e.start_vertex);
             const v = this.vertices.get(e.end_vertex);
             if(u.is_selected && v.is_selected){
-                const new_link = new Link(e.start_vertex, e.end_vertex, e.cp, e.orientation, e.color)
+                const new_link = new Link(e.start_vertex, e.end_vertex, e.cp, e.orientation, e.color, e.weight)
                 subgraph.links.set(index, new_link);
             }
         }
