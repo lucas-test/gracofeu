@@ -213,7 +213,6 @@ io.sockets.on('connection', function (client) {
 
     // Vertices Positions
     client.on('translate_vertices', handle_translate_vertices);
-    client.on('update_positions', handle_update_positions);  // TODO remove
 
     // Control Points
     client.on('translate_control_points', handle_translate_control_points);
@@ -448,18 +447,6 @@ io.sockets.on('connection', function (client) {
 
 
     // VERTICES 
-    function handle_update_positions(data) {
-        const previous_positions = new Map();
-        for (const e of data) {
-            let vertex = g.vertices.get(e.index);
-            previous_positions.set(e.index, vertex.pos.copy());
-            vertex.pos.x = e.x;
-            vertex.pos.y = e.y;
-        }
-        g.add_modification(new UpdateSeveralVertexPos(previous_positions));
-        io.sockets.in(room_id).emit('update_vertex_positions', data);
-    }
-
     function handle_translate_vertices(raw_indices, shiftx: number, shifty: number) {
         //console.log("handle_translate_vertices")
         //console.log(raw_indices);
@@ -522,7 +509,6 @@ io.sockets.on('connection', function (client) {
         const new_link_indices = g.get_next_n_available_link_indices(links_entries.length);
         let j = 0;
         for (const data of links_entries) {
-            console.log(data)
             let orient = ORIENTATION.UNDIRECTED;
             switch (data[1].orientation) {
                 case "UNDIRECTED":

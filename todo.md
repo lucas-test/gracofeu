@@ -175,7 +175,7 @@
     - [X] delete_selected_elements
     - [X] paste_graph
     - [X] vertices_merge
-    - [ ] REMOVE THIS update_positions
+    - [X] REMOVE THIS update_positions
     - [X] translate_control_points
     - [X] update_control_points : remove
     - [X] add_area

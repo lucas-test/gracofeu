@@ -38,7 +38,7 @@ export class Graph {
     }
 
     add_modification(modif: Modification) {
-        console.log("add_mofication");
+        //console.log("add_mofication");
         const length = this.modifications_heap.length;
         if (length > 0) {
             const last_modif = this.modifications_heap[length - 1];
@@ -70,7 +70,7 @@ export class Graph {
 
 
         this.modifications_heap.push(modif);
-        console.log(this.modifications_heap);
+        //console.log(this.modifications_heap);
     }
 
     try_implement_modification(modif: Modification): Set<SENSIBILITY> {
@@ -350,7 +350,6 @@ export class Graph {
     }
 
     redo(): Set<SENSIBILITY> {
-        console.log(this.modifications_undoed);
         if (this.modifications_undoed.length > 0) {
             const modif = this.modifications_undoed.pop();
             return this.try_implement_modification(modif);
