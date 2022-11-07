@@ -42,7 +42,7 @@ export class Graph {
 
     add_vertex(x: number, y: number) {
         let index = this.get_next_available_index();
-        this.vertices.set(index, new LocalVertex( new ServerCoord(x, y)));
+        this.vertices.set(index, new LocalVertex( new ServerCoord(x, y), ""));
         return index;
     }
 
@@ -331,7 +331,7 @@ export class Graph {
         const subgraph = new Graph();
         for (const [index, v] of this.vertices.entries()) {
             if(v.is_selected){
-                const new_vertex = new LocalVertex(v.pos);
+                const new_vertex = new LocalVertex(v.pos, v.weight);
                 subgraph.vertices.set(index, new_vertex);
             }
         }
@@ -409,6 +409,15 @@ export class Graph {
         for ( const link_index of this.links.keys()){
             this.automatic_weight_position(link_index);
         }
+    }
+
+    clear_vertices(){
+        for( const vertex of this.vertices.values()){
+            if (vertex.weight_div != null){
+                vertex.weight_div.remove();
+            }
+        }
+        this.vertices.clear();
     }
 
     clear_links(){

@@ -260,9 +260,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         // pour les vertices_entries c'est parce que on peut pas envoyer des Map par socket ...
         // edges = new_graph.edges marche pas car bizarrement ça ne copie pas les méthodes ...
 
-        g.vertices.clear();
+        g.clear_vertices();
         for (const data of vertices_entries) {
-            const new_vertex = new LocalVertex(data[1].pos);
+            const new_vertex = new LocalVertex(data[1].pos, data[1].weight);
             new_vertex.color = data[1].color;
             g.vertices.set(data[0], new_vertex);
         }

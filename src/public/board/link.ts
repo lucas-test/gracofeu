@@ -1,4 +1,5 @@
 import katex from "katex";
+import { DOWN_TYPE } from "../interactors/interactor";
 import { interactor_loaded } from "../interactors/interactor_manager";
 import { display_weight_input, validate_weight } from "../interactors/text";
 import { local_board } from "../setup";
@@ -104,9 +105,9 @@ export class Link {
             const weight_value = parseInt(link.weight);
             if ( isNaN(weight_value) == false){
                 if (e.deltaY < 0) {
-                    socket.emit("update_weight", link_index, String(weight_value+1));
+                    socket.emit("update_weight", "LINK", link_index, String(weight_value+1));
                 }else {
-                    socket.emit("update_weight", link_index, String(weight_value-1));
+                    socket.emit("update_weight", "LINK", link_index, String(weight_value-1));
                 }
             }
         })
@@ -114,9 +115,8 @@ export class Link {
         this.weight_div.onclick = (e) => {
             if( interactor_loaded.name == "text"){
                 validate_weight();
-                display_weight_input(link_index, new CanvasCoord(this.weight_position.x, this.weight_position.y));
+                display_weight_input(link_index, new CanvasCoord(this.weight_position.x, this.weight_position.y),DOWN_TYPE.LINK);
             }
-            
         }
     }
 

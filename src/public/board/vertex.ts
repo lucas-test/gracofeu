@@ -1,6 +1,10 @@
+import katex from "katex";
 import { COLOR_INNER_VERTEX_DEFAULT } from "../draw";
+import { DOWN_TYPE } from "../interactors/interactor";
+import { interactor_loaded } from "../interactors/interactor_manager";
+import { display_weight_input, validate_weight } from "../interactors/text";
 import { View } from "./camera";
-import { CanvasCoord, ServerCoord } from "./coord";
+import { CanvasCoord, Coord, ServerCoord } from "./coord";
 
 export class ParameterValue {
     value: string;
@@ -14,18 +18,44 @@ export class LocalVertex {
     // server attributes:
     pos: ServerCoord;
     color: string;
+    weight: string;
 
     // local attributes:
     is_selected: boolean;
     index_string: string;
     parameter_values: Map<string,ParameterValue>;
+    weight_div: HTMLDivElement = null; // set to null until a non empty weight is used
 
-    constructor(pos: ServerCoord) {
+    constructor(pos: ServerCoord, weight: string) {
         this.pos = new ServerCoord(pos.x, pos.y);
+        this.weight = weight;
         this.is_selected = false;
         this.index_string = "";
         this.color = COLOR_INNER_VERTEX_DEFAULT;
         this.parameter_values = new Map();
+
+        if ( weight != "" ){
+            console.log("add_weight")
+            this.weight_div = document.createElement("div");
+            this.weight_div.classList.add("weight_link");
+            document.body.appendChild(this.weight_div);
+            this.weight_div.innerHTML = katex.renderToString(weight);
+
+            this.weight_div.style.top = String(this.pos.canvas_pos.y + 20 - this.weight_div.clientHeight/2);
+            this.weight_div.style.left = String(this.pos.canvas_pos.x- this.weight_div.clientWidth/2);
+        }
+    }
+
+    // TODO use this method when creating a vertex in graph
+    // TODO same with wheel
+    init_weight_interactors(this_index: number) {
+        // TODO check if null
+        this.weight_div.onclick = (e) => {
+            if( interactor_loaded.name == "text"){
+                validate_weight();
+                display_weight_input(this_index, new CanvasCoord(this.pos.canvas_pos.x , this.pos.canvas_pos.y+20),DOWN_TYPE.VERTEX);
+            }
+        }
     }
 
     update_param(param_id: string, value: string){

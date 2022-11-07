@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
 import { Coord, middle } from './coord';
 import { Link, ORIENTATION } from './link';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge } from './modifications';
 import { Stroke } from './stroke';
 import { Area } from './area';
 import { create_popup } from '../public/popup';
@@ -412,10 +412,15 @@ io.sockets.on('connection', function (client) {
         //param_weighted_distance_identification(g);
     }
 
-    function handle_update_weight(link_index: number, new_weight: string) {
-        if (g.links.has(link_index)) {
-            const previous_weight = g.links.get(link_index).weight;
-            g.try_implement_new_modification(new UpdateLinkWeight(link_index, new_weight, previous_weight));
+    function handle_update_weight(element_type: string, index: number, new_weight: string) {
+        if( element_type == "VERTEX" && g.vertices.has(index) ){
+            const previous_weight = g.vertices.get(index).weight;
+            g.try_implement_new_modification(new UpdateWeight(ELEMENT_TYPE.VERTEX, index, new_weight, previous_weight));
+            emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
+        }
+        if (element_type == "LINK" && g.links.has(index)) {
+            const previous_weight = g.links.get(index).weight;
+            g.try_implement_new_modification(new UpdateWeight(ELEMENT_TYPE.LINK, index, new_weight, previous_weight));
             emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
         }
     }
@@ -428,7 +433,7 @@ io.sockets.on('connection', function (client) {
 
         const data = JSON.parse(s);
         for (const vdata of data.vertices) {
-            const new_vertex = new Vertex(vdata[1]["pos"]["x"], vdata[1]["pos"]["y"]);
+            const new_vertex = new Vertex(vdata[1]["pos"]["x"], vdata[1]["pos"]["y"], "");
             g.vertices.set(vdata[0], new_vertex)
         }
         for (const link of data.links) {
@@ -500,7 +505,7 @@ io.sockets.on('connection', function (client) {
         const new_vertex_indices: Array<number> = g.get_next_n_available_vertex_indices(vertices_entries.length);
         let i = 0;
         for (const data of vertices_entries) {
-            const vertex = new Vertex(data[1].pos.x, data[1].pos.y);
+            const vertex = new Vertex(data[1].pos.x, data[1].pos.y, "");
             added_vertices.set(new_vertex_indices[i], vertex);
             vertex_indices_transformation.set(data[0], new_vertex_indices[i]);
             i++;

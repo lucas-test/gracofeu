@@ -5,7 +5,7 @@ import { Vertex } from './vertex';
 import { Coord, middle } from './coord';
 import { Stroke } from './stroke';
 import { Area } from './area';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, DeleteElements, GraphPaste, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateLinkWeight, UpdateSeveralVertexPos, VerticesMerge } from './modifications';
+import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, DeleteElements, ELEMENT_TYPE, GraphPaste, Modification, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge } from './modifications';
 
 
 export enum SENSIBILITY {
@@ -85,8 +85,8 @@ export class Graph {
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.ELEMENT]);
             }
-            case UpdateLinkWeight: {
-                this.update_link_weight((<UpdateLinkWeight>modif).index, (<UpdateLinkWeight>modif).new_weight);
+            case UpdateWeight: {
+                this.update_element_weight((<UpdateWeight>modif).element_type,(<UpdateWeight>modif).index , (<UpdateWeight>modif).new_weight);
                 this.add_modification(modif);
                 return new Set([SENSIBILITY.WEIGHT]);
             }
@@ -221,8 +221,8 @@ export class Graph {
                     this.delete_link((<AddLink>last_modif).index);
                     this.modifications_undoed.push(last_modif);
                     return new Set([SENSIBILITY.ELEMENT]);
-                case UpdateLinkWeight:
-                    this.update_link_weight((<UpdateLinkWeight>last_modif).index, (<UpdateLinkWeight>last_modif).previous_weight);
+                case UpdateWeight:
+                    this.update_element_weight((<UpdateWeight>last_modif).element_type,(<UpdateWeight>last_modif).index , (<UpdateWeight>last_modif).previous_weight);
                     this.modifications_undoed.push(last_modif);
                     return new Set([SENSIBILITY.WEIGHT]);
                 case UpdateSeveralVertexPos:
@@ -357,11 +357,14 @@ export class Graph {
         return new Set();
     }
 
-    update_link_weight(link_index: number, new_weight: string) {
-        if (this.links.has(link_index)) {
-            this.links.get(link_index).weight = new_weight;
+    update_element_weight(element_type: ELEMENT_TYPE, index: number, new_weight: string){
+        if ( element_type == ELEMENT_TYPE.LINK && this.links.has(index)){
+            this.links.get(index).weight = new_weight;
+        }else if ( element_type == ELEMENT_TYPE.VERTEX && this.vertices.has(index)){
+            this.vertices.get(index).weight = new_weight;
         }
     }
+
 
     update_vertex_pos(vertex_index: number, new_pos: Coord) {
         this.vertices.get(vertex_index).pos = new_pos;
@@ -442,12 +445,12 @@ export class Graph {
 
     add_vertex(x: number, y: number) {
         let index = this.get_next_available_index();
-        this.vertices.set(index, new Vertex(x, y));
+        this.vertices.set(index, new Vertex(x, y, ""));
         return index;
     }
 
     set_vertex(index: number, x: number, y: number) {
-        this.vertices.set(index, new Vertex(x, y));
+        this.vertices.set(index, new Vertex(x, y, ""));
     }
 
     check_link(i: number, j: number, orientation: ORIENTATION): boolean {

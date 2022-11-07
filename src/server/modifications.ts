@@ -5,7 +5,12 @@ import { Stroke } from "./stroke";
 import { Vertex } from "./vertex";
 
 
-
+export enum ELEMENT_TYPE {
+    VERTEX = "VERTEX",
+    LINK = "LINK",
+    STROKE = "STROKE",
+    AREA = "AREA"
+}
 
 
 export interface Modification { };
@@ -37,12 +42,14 @@ export class AddLink implements Modification {
     }
 }
 
-export class UpdateLinkWeight implements Modification {
+export class UpdateWeight implements Modification {
+    element_type: ELEMENT_TYPE;
     index: number;
     new_weight: string;
     previous_weight: string;
 
-    constructor(index: number, new_weight: string, previous_weight: string) {
+    constructor(element_type: ELEMENT_TYPE, index: number, new_weight: string, previous_weight: string) {
+        this.element_type = element_type;
         this.index = index;
         this.new_weight = new_weight;
         this.previous_weight = previous_weight;
