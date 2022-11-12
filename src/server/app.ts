@@ -1,14 +1,7 @@
 import express from 'express';
-import { Graph, SENSIBILITY } from './graph';
+import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge} from "gramoloss";
 import ENV from './.env.json';
-import { Vertex } from './vertex';
 import { getRandomColor, User, users } from './user';
-import { Coord, middle } from './coord';
-import { Link, ORIENTATION } from './link';
-import { AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge } from './modifications';
-import { Stroke } from './stroke';
-import { Area } from './area';
-import { create_popup } from '../public/popup';
 
 const port = process.env.PORT || 5000
 const app = express();
