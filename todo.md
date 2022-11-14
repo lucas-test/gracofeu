@@ -170,11 +170,13 @@
 
 ## V1 GDRIM
 
+- [ ] load/export json
+
 - control Z
     - [X] ça marche
     - [X] delete_selected_elements
     - [X] paste_graph
-    - [X] vertices_merge
+    - [ ] vertices_merge
     - [X] REMOVE THIS update_positions
     - [X] translate_control_points
     - [X] update_control_points : remove

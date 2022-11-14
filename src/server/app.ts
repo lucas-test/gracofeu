@@ -1,5 +1,5 @@
 import express from 'express';
-import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge} from "gramoloss";
+import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge, middle} from "gramoloss";
 import ENV from './.env.json';
 import { getRandomColor, User, users } from './user';
 
@@ -14,7 +14,7 @@ console.log('Server started at http://localhost:' + port);
 
 // gestion des rooms
 
-const room_graphs = new Map<string, Graph>();
+const room_graphs = new Map<string, Graph<Vertex,Link>>();
 const clientRooms = {};
 
 function makeid(length: number) {
@@ -31,14 +31,11 @@ function makeid(length: number) {
 
 const the_room = "theroom";
 const the_graph = new Graph();
-the_graph.add_vertex(300, 300);
-the_graph.add_vertex(200, 300);
-the_graph.add_vertex(200, 200);
-the_graph.add_vertex(300, 200);
-the_graph.add_link(0, 1, ORIENTATION.UNDIRECTED);
-the_graph.add_link(1, 2, ORIENTATION.UNDIRECTED);
-the_graph.add_link(2, 3, ORIENTATION.UNDIRECTED);
-the_graph.add_link(3, 0, ORIENTATION.UNDIRECTED);
+the_graph.add_vertex(new Vertex(100,300,""));
+the_graph.add_vertex(new Vertex(200,300,""));
+the_graph.add_vertex(new Vertex(200,400,""));
+the_graph.add_vertex(new Vertex(100,400,""));
+the_graph.add_link(new Link(0,1,new Coord(200,200), ORIENTATION.UNDIRECTED, "black", ""));
 room_graphs.set(the_room, the_graph);
 
 
@@ -62,7 +59,7 @@ io.sockets.on('connection', function (client) {
     client.emit('room_id', room_id); // useless ? TODO remove
     console.log("new room : ", room_id);
     let g = new Graph();
-    g.add_vertex(200, 100);
+    g.add_vertex(new Vertex(200,100,""));
     room_graphs.set(room_id, g);
     emit_graph_to_room(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
     emit_strokes_to_room();
@@ -394,13 +391,13 @@ io.sockets.on('connection', function (client) {
             case "directed":
                 orient = ORIENTATION.DIRECTED
                 break;
-            case "digon":
-                orient = ORIENTATION.DIGON
-                break;
         }
 
         const link_index = g.get_next_available_index_links();
-        const sensi = g.try_implement_new_modification(new AddLink(link_index, vindex, windex, orient));
+        const v = g.vertices.get(vindex);
+        const w = g.vertices.get(windex);
+        const link = new Link(vindex, windex, middle(v.pos, w.pos) , orient, "black", "");
+        const sensi = g.try_implement_new_modification(new AddLink(link_index, link));
         emit_graph_to_room(sensi);
         //param_weighted_distance_identification(g);
     }
@@ -430,7 +427,8 @@ io.sockets.on('connection', function (client) {
             g.vertices.set(vdata[0], new_vertex)
         }
         for (const link of data.links) {
-            g.add_link_with_cp(link[1].start_vertex, link[1].end_vertex, link[1].orientation, new Coord(link[1].cp.x, link[1].cp.y))
+            // TODO
+            //g.add_link_with_cp(link[1].start_vertex, link[1].end_vertex, link[1].orientation, new Coord(link[1].cp.x, link[1].cp.y))
         }
         emit_graph_to_room(new Set([SENSIBILITY.COLOR, SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC]));
     }
@@ -460,7 +458,7 @@ io.sockets.on('connection', function (client) {
 
     function handle_add_vertex(x: number, y: number) {
         let index = g.get_next_available_index();
-        const sensi = g.try_implement_new_modification(new AddVertex(index, x, y));
+        const sensi = g.try_implement_new_modification(new AddVertex(index, new Vertex(x,y,"")));
         emit_graph_to_room(sensi);
         return index;
     }
@@ -473,8 +471,8 @@ io.sockets.on('connection', function (client) {
             for (const [link_index, link] of g.links.entries()) {
                 if (link.start_vertex == vertex_index_to_remove || link.end_vertex == vertex_index_to_remove) {
                     deleted_links.set(link_index, link);
-                    if ((link.end_vertex == vertex_index_to_remove && g.check_link(link.start_vertex, vertex_index_fixed, link.orientation)) ||
-                        (link.start_vertex == vertex_index_to_remove && g.check_link(vertex_index_fixed, link.end_vertex, link.orientation))) {
+                    if ((link.end_vertex == vertex_index_to_remove && g.check_link(new Link(link.start_vertex, vertex_index_fixed,null, link.orientation, null, null))) ||
+                        (link.start_vertex == vertex_index_to_remove && g.check_link(new Link(vertex_index_fixed, link.end_vertex,null, link.orientation, null, null)))) {
                         number_added_links++;
                     }
                 }
@@ -514,9 +512,6 @@ io.sockets.on('connection', function (client) {
                     break;
                 case "DIRECTED":
                     orient = ORIENTATION.DIRECTED
-                    break;
-                case "DIGON":
-                    orient = ORIENTATION.DIGON
                     break;
             }
             const start_index = vertex_indices_transformation.get(data[1].start_vertex);
