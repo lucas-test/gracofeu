@@ -444,7 +444,7 @@ io.sockets.on('connection', function (client) {
 
     // VERTICES 
     function handle_translate_vertices(raw_indices, shiftx: number, shifty: number) {
-        //console.log("handle_translate_vertices")
+        //console.log("Receive Request: translate vertices")
         //console.log(raw_indices);
         const shift = new Coord(shiftx, shifty);
         const indices = new Set<number>();
@@ -466,20 +466,8 @@ io.sockets.on('connection', function (client) {
     function handle_vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number) {
         console.log("Receive Request: vertices_merge");
         if (g.vertices.has(vertex_index_fixed) && g.vertices.has(vertex_index_to_remove)) {
-            const deleted_links = new Map<number, Link>();
-            let number_added_links = 0;
-            for (const [link_index, link] of g.links.entries()) {
-                if (link.start_vertex == vertex_index_to_remove || link.end_vertex == vertex_index_to_remove) {
-                    deleted_links.set(link_index, link);
-                    if ((link.end_vertex == vertex_index_to_remove && g.check_link(new Link(link.start_vertex, vertex_index_fixed,null, link.orientation, null, null))) ||
-                        (link.start_vertex == vertex_index_to_remove && g.check_link(new Link(vertex_index_fixed, link.end_vertex,null, link.orientation, null, null)))) {
-                        number_added_links++;
-                    }
-                }
-            }
-            const added_link_indices = g.get_next_n_available_link_indices(number_added_links);
-            const vertex_to_remove = g.vertices.get(vertex_index_to_remove);
-            const modif = new VerticesMerge(vertex_index_fixed, vertex_index_to_remove, vertex_to_remove, deleted_links, added_link_indices);
+            g.reverse_last_modification(); // TODO its not necessarily the last which is a translate
+            const modif = g.create_vertices_merge_modif(vertex_index_fixed, vertex_index_to_remove);
             const sensi = g.try_implement_new_modification(modif);
             emit_graph_to_room(sensi);
         }
