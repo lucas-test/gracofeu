@@ -1,14 +1,14 @@
 import { View } from "./camera";
-import { Graph } from "./graph";
+import { ClientGraph } from "./graph";
 
 export class Board {
-    graph: Graph;
+    graph: ClientGraph;
     view: View;
     // strokes
     // areas
 
     constructor(){
-        this.graph = new Graph();
+        this.graph = new ClientGraph();
         this.view = new View();
     }
 

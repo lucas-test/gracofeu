@@ -1,19 +1,20 @@
 
-import { Link, ORIENTATION } from '../board/link';
-import { Graph } from '../board/graph';
+import { ClientGraph } from '../board/graph';
 import { Parametor, SENSIBILITY } from './parametor';
 import { is_segments_intersection, is_triangles_intersection } from '../utils';
+import { ORIENTATION } from 'gramoloss';
+import { ClientLink } from '../board/link';
 
 export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", "#vertices", "Print the number of vertices", true, false, [SENSIBILITY.ELEMENT], true);
 
-param_nb_vertices.compute = ((g: Graph) => {
+param_nb_vertices.compute = ((g: ClientGraph) => {
     return String(g.vertices.size)
 })
 
 
 export let param_nb_edges = new Parametor("Edges number", "edge_number", "#edges", "Print the number of edges", true, false, [SENSIBILITY.ELEMENT], true);
 
-param_nb_edges.compute = ((g: Graph) => {
+param_nb_edges.compute = ((g: ClientGraph) => {
     let counter = 0;
     for (var link of g.links.values()) {
         if (link.orientation == ORIENTATION.UNDIRECTED) {
@@ -27,7 +28,7 @@ param_nb_edges.compute = ((g: Graph) => {
 
 export let param_is_connected = new Parametor("Is connected?", "is_connected", "is connected?", "Is the graph/area connected?", false, true, [SENSIBILITY.ELEMENT], true);
 
-param_is_connected.compute = ((g: Graph) => {
+param_is_connected.compute = ((g: ClientGraph) => {
 
     if (g.vertices.size < 2) {
         return "true";
@@ -39,7 +40,7 @@ param_is_connected.compute = ((g: Graph) => {
         visited.set(index, false);
     }
 
-    DFS_recursive(g, indices[0], visited);
+    g.DFS_recursive( indices[0], visited);
 
     for (const is_visited of visited.values()) {
         if (!is_visited) {
@@ -53,7 +54,7 @@ param_is_connected.compute = ((g: Graph) => {
 
 export let param_number_connected_comp = new Parametor("Number connected component", "number_connected_comp", "#connected comp.", "Compute the number of connected component (undirected)", false, false, [SENSIBILITY.ELEMENT], true);
 
-param_number_connected_comp.compute = ((g: Graph) => {
+param_number_connected_comp.compute = ((g: ClientGraph) => {
 
     if (g.vertices.size < 1) {
         return "0";
@@ -83,7 +84,7 @@ param_number_connected_comp.compute = ((g: Graph) => {
             break;
         }
 
-        DFS_recursive(g, first_vertex_index, visited);
+        g.DFS_recursive( first_vertex_index, visited);
 
     }
     return String(cc);
@@ -92,7 +93,7 @@ param_number_connected_comp.compute = ((g: Graph) => {
 
 export let param_number_colors = new Parametor("Number vertex colors", "nb_vertex_colors", "#colors (vertices)", "Print the number of different colors used on the vertices", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR], true);
 
-param_number_colors.compute = ((g: Graph) => {
+param_number_colors.compute = ((g: ClientGraph) => {
     let colors_set = new Set<string>();
     for (const v of g.vertices.values()) {
         colors_set.add(v.color);
@@ -104,7 +105,7 @@ param_number_colors.compute = ((g: Graph) => {
 
 export let param_number_geo = new Parametor("Is currently planar?", "planar_current", "planar_current", "Return true iff currently planar", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC], true);
 
-param_number_geo.compute = ((g: Graph) => {
+param_number_geo.compute = ((g: ClientGraph) => {
 
     for (const link_index of g.links.keys()) {
         const link1 = g.links.get(link_index);
@@ -131,8 +132,8 @@ param_number_geo.compute = ((g: Graph) => {
 
 export let param_min_degree = new Parametor("Minimum degree", "min_degree", "min degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT], true);
 
-param_min_degree.compute = ((g: Graph, verbose) => {
-    const data = get_degrees_data(g);
+param_min_degree.compute = ((g: ClientGraph, verbose) => {
+    const data = g.get_degrees_data();
     if (verbose) {
         for (const vertex_index of data.min_vertices) {
             const vertex = g.vertices.get(vertex_index);
@@ -148,16 +149,16 @@ param_min_degree.compute = ((g: Graph, verbose) => {
 
 export let param_max_degree = new Parametor("Maximum degree", "max_degree", "max degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT], true);
 
-param_max_degree.compute = ((g: Graph) => {
-    const data = get_degrees_data(g);
+param_max_degree.compute = ((g: ClientGraph) => {
+    const data = g.get_degrees_data();
     return String(data.max_value);
 });
 
 export let param_average_degree = new Parametor("Average degree", "avg_degree", "avg. degree", "Print the average degree", true, false, [SENSIBILITY.ELEMENT], true);
 
-param_average_degree.compute = ((g: Graph) => {
+param_average_degree.compute = ((g: ClientGraph) => {
     // Remark : If no loop, we can simply use that sum(degree) = 2|E| so avg(degree) = 2|E|/|V|
-    const data = get_degrees_data(g);
+    const data = g.get_degrees_data();
     const avg = Math.round((data.avg + Number.EPSILON) * 100) / 100
 
     return String(avg);
@@ -166,7 +167,7 @@ param_average_degree.compute = ((g: Graph) => {
 
 export let param_has_proper_coloring = new Parametor("Proper vertex-coloring?", "has_proper_coloring", "proper vertex-coloring?", "Print if the current coloring of the vertices is proper or not", false, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR], true);
 
-param_has_proper_coloring.compute = ((g: Graph) => {
+param_has_proper_coloring.compute = ((g: ClientGraph) => {
 
     if (g.vertices.size == 0) {
         return "true";
@@ -206,8 +207,8 @@ param_has_proper_coloring.compute = ((g: Graph) => {
 
 export let param_diameter = new Parametor("Diameter", "diameter", "diameter", "Print the diameter of the graph", false, false, [SENSIBILITY.ELEMENT], true);
 
-param_diameter.compute = ((g: Graph) => {
-    const FW = Floyd_Warhall(g, false);
+param_diameter.compute = ((g: ClientGraph) => {
+    const FW = g.Floyd_Warhall(false);
     let diameter = 0;
 
     for (const v_index of g.vertices.keys()) {
@@ -228,8 +229,8 @@ param_diameter.compute = ((g: Graph) => {
 
 export let param_is_good_weight = new Parametor("Is good weight for our problem ?", "isgood", "isgood", "Paramètre trop stylé", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.WEIGHT], false);
 
-param_is_good_weight.compute = ((g: Graph) => {
-    const FW = Floyd_Warhall(g, true);
+param_is_good_weight.compute = ((g: ClientGraph) => {
+    const FW = g.Floyd_Warhall( true);
 
     for (const v_index of g.vertices.keys()) {
         for (const u_index of g.vertices.keys()) {
@@ -254,7 +255,7 @@ param_is_good_weight.compute = ((g: Graph) => {
 
 export const param_weighted_distance_identification = new Parametor("param_weighted_distance_identification", "wdi", "wdi", "Paramètre trop stylé", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.WEIGHT], false);
 
-param_weighted_distance_identification.compute = ((g: Graph) => {
+param_weighted_distance_identification.compute = ((g: ClientGraph) => {
     console.log("compute TIME");
     console.time('wdi')
     let k = 1;
@@ -266,7 +267,7 @@ param_weighted_distance_identification.compute = ((g: Graph) => {
     while (true) {
         console.log("k = ", k);
   
-        const heap = new Array<Link>();
+        const heap = new Array<ClientLink>();
         for (const link of g.links.values()) {
             heap.push(link);
             link.weight = String(1);
@@ -339,8 +340,8 @@ param_weighted_distance_identification.compute = ((g: Graph) => {
 })
 
 
-function test(g: Graph) {
-    const FW = Floyd_Warhall(g, true);
+function test(g: ClientGraph) {
+    const FW = this.Floyd_Warhall(g, true);
     for (const v_index of g.vertices.keys()) {
         for (const u_index of g.vertices.keys()) {
             if (u_index != v_index) {
@@ -357,7 +358,7 @@ function test(g: Graph) {
     return true;
 }
 
-function is_connected(g: Graph): boolean {
+function is_connected(g: ClientGraph): boolean {
     if (g.vertices.size < 2) {
         return true;
     }
@@ -368,7 +369,7 @@ function is_connected(g: Graph): boolean {
         visited.set(index, false);
     }
 
-    DFS_recursive(g, indices[0], visited);
+    g.DFS_recursive( indices[0], visited);
 
     for (const is_visited of visited.values()) {
         if (!is_visited) {
@@ -381,132 +382,3 @@ function is_connected(g: Graph): boolean {
 
 // --------------------
 
-
-function get_degrees_data(g: Graph) {
-    if (g.vertices.size == 0) {
-        return { min_value: 0, min_vertices: null, max_value: 0, max_vertices: null, avg: 0 };
-    }
-
-    const index_first = g.vertices.keys().next().value;
-    let min_indices = new Set([index_first]);
-    let min_degree = g.get_neighbors_list(index_first).length;
-    let max_indices = new Set([index_first]);
-    let max_degree = g.get_neighbors_list(index_first).length;
-    let average = 0.0;
-
-    for (const v_index of g.vertices.keys()) {
-        const neighbors = g.get_neighbors_list(v_index);
-        if (min_degree > neighbors.length) {
-            min_degree = neighbors.length;
-            min_indices = new Set([v_index]);
-        }
-        if (min_degree === neighbors.length) {
-            min_indices.add(v_index);
-        }
-
-        if (max_degree < neighbors.length) {
-            max_degree = neighbors.length;
-            max_indices = new Set([v_index]);
-        }
-        if (max_degree === neighbors.length) {
-            max_indices.add(v_index);
-        }
-
-        average += neighbors.length;
-    }
-
-    average = average / g.vertices.size;
-
-    return { min_value: min_degree, min_vertices: min_indices, max_value: max_degree, max_vertices: max_indices, avg: average };
-}
-
-
-function DFS_recursive(g: Graph, v_index: number, visited: Map<number, boolean>) {
-    visited.set(v_index, true);
-    const neighbors = g.get_neighbors_list(v_index);
-
-    for (const u_index of neighbors) {
-        if (visited.has(u_index) && !visited.get(u_index)) {
-            DFS_recursive(g, u_index, visited);
-        }
-    }
-}
-
-function DFS_iterative(g: Graph, v_index: number) {
-    const visited = new Map();
-    for (const index of g.vertices.keys()) {
-        visited.set(index, false);
-    }
-    console.log(visited);
-
-    const S = Array();
-    S.push(v_index);
-
-    while (S.length !== 0) {
-        const u_index = S.pop();
-        if (!visited.get(u_index)) {
-            visited.set(u_index, true);
-            const neighbors = g.get_neighbors_list(u_index);
-            for (const n_index of neighbors) {
-                S.push(n_index);
-            }
-        }
-    }
-
-    return visited;
-}
-
-
-
-function Floyd_Warhall(g: Graph, weighted: boolean) {
-    const dist = new Map<number, Map<number, number>>();
-    const next = new Map<number, Map<number, number>>();
-
-    for (const v_index of g.vertices.keys()) {
-        dist.set(v_index, new Map<number, number>());
-        next.set(v_index, new Map<number, number>());
-
-        for (const u_index of g.vertices.keys()) {
-            if (v_index === u_index) {
-                dist.get(v_index).set(v_index, 0);
-                next.get(v_index).set(v_index, v_index);
-            }
-            else {
-                dist.get(v_index).set(u_index, Infinity);
-                next.get(v_index).set(u_index, Infinity);
-            }
-        }
-    }
-
-    for (const e_index of g.links.keys()) {
-        const e = g.links.get(e_index);
-        // TODO: Oriented Case
-        let weight = 1;
-        if (weighted) {
-            weight = parseFloat(e.weight);
-        }
-        dist.get(e.start_vertex).set(e.end_vertex, weight);
-        dist.get(e.end_vertex).set(e.start_vertex, weight);
-
-        next.get(e.start_vertex).set(e.end_vertex, e.start_vertex);
-        next.get(e.end_vertex).set(e.start_vertex, e.end_vertex);
-    }
-
-    for (const k_index of g.vertices.keys()) {
-        for (const i_index of g.vertices.keys()) {
-            for (const j_index of g.vertices.keys()) {
-                const direct = dist.get(i_index).get(j_index);
-                const shortcut_part_1 = dist.get(i_index).get(k_index);
-                const shortcut_part_2 = dist.get(k_index).get(j_index);
-
-                if (direct > shortcut_part_1 + shortcut_part_2) {
-                    dist.get(i_index).set(j_index, shortcut_part_1 + shortcut_part_2);
-                    next.get(i_index).set(j_index, next.get(i_index).get(k_index));
-                }
-            }
-        }
-    }
-
-    return { distances: dist, next: next };
-
-}

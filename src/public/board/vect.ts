@@ -1,4 +1,4 @@
-import { CanvasCoord } from "./coord";
+import { CanvasCoord } from "./vertex";
 
 export class CanvasVect {
     x: number; // integer
@@ -14,12 +14,3 @@ export class CanvasVect {
     }
 }
 
-export class ServerVect {
-    x: number;
-    y: number;
-
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-}

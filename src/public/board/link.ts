@@ -1,3 +1,4 @@
+import { Coord, Link, ORIENTATION } from "gramoloss";
 import katex from "katex";
 import { DOWN_TYPE } from "../interactors/interactor";
 import { interactor_loaded } from "../interactors/interactor_manager";
@@ -5,64 +6,42 @@ import { display_weight_input, validate_weight } from "../interactors/text";
 import { local_board } from "../setup";
 import { socket } from "../socket";
 import { View } from "./camera";
-import { CanvasCoord, Coord, ServerCoord } from "./coord";
-import { LocalVertex } from "./vertex";
-
-export enum ORIENTATION {
-    UNDIRECTED = "UNDIRECTED",
-    DIRECTED = "DIRECTED",
-    DIGON = "DIGON"
-}
+import { CanvasVect } from "./vect";
+import { CanvasCoord, ClientVertex } from "./vertex";
 
 
-export class Link {
-    // Server properties
-    start_vertex: number;
-    end_vertex: number;
-    cp: ServerCoord;
-    orientation: ORIENTATION;
-    color: string;
-    weight: string = "";
 
-    // Client properties
+export class ClientLink extends Link {
+    cp_canvas_pos: CanvasCoord;
     is_selected: boolean;
     weight_position: Coord = new Coord(0,0);
     weight_div: HTMLDivElement = null; // set to null until a non empty weight is used
 
 
-    constructor(i: number, j: number, cp: ServerCoord, orientation: ORIENTATION, color: string, weight: string) {
-        this.start_vertex = i;
-        this.end_vertex = j;
-        this.color = color;
+    constructor(i: number, j: number, cp: Coord, orientation: ORIENTATION, color: string, weight: string, view: View) {
+        super(i,j,cp,orientation,color,weight);
+        this.cp_canvas_pos = view.create_canvas_coord(cp);
         this.is_selected = false;
-        this.cp = new ServerCoord(cp.x, cp.y);
-        this.orientation = orientation;
-        this.weight = weight;
+        this.weight_div = null;
+        this.weight_position = new Coord(0,0);
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
         //V1: is in rect if one of its extremities is in the rectangle
         //TODO: be more clever and select also when there is an intersection between the edge and the rectangle
-
         return local_board.graph.vertices.get(this.start_vertex).is_in_rect(c1, c2) || local_board.graph.vertices.get(this.end_vertex).is_in_rect(c1, c2);
     }
 
-    transform_cp(new_pos: Coord, previous_pos: Coord, fixed_end: Coord , view: View){
-        const w = fixed_end;
-        const u = previous_pos.sub(w);
-        const nv = new_pos.sub(w);
-        const theta = nv.getTheta(u);
-        const rho = u.getRho(nv);
-        const cp = this.cp.copy();
-        this.cp.x = w.x + rho * (Math.cos(theta) * (cp.x - w.x) - Math.sin(theta) * (cp.y - w.y))
-        this.cp.y = w.y + rho * (Math.sin(theta) * (cp.x - w.x) + Math.cos(theta) * (cp.y - w.y))
-        this.update_canvas_pos(view);
+    update_after_view_modification(view: View){
+        this.cp_canvas_pos = view.create_canvas_coord(this.cp);
     }
 
-    transform_control_point(moved_vertex: LocalVertex, fixed_vertex: LocalVertex, view: View) {
-        const w = fixed_vertex.pos.canvas_pos;
-        const u = moved_vertex.pos.old_canvas_pos.sub2(w);
-        const nv = moved_vertex.pos.canvas_pos.sub2(w);
+
+    /*
+    transform_control_point(moved_vertex: ClientVertex, fixed_vertex: ClientVertex, view: View) {
+        const w = fixed_vertex.canvas_pos;
+        const u = moved_vertex.old_canvas_pos.sub2(w);
+        const nv = moved_vertex.canvas_pos.sub2(w);
         const theta = nv.getTheta(u)
         const rho = u.getRho(nv)
         const old_cp = this.cp.old_canvas_pos;
@@ -70,22 +49,16 @@ export class Link {
         this.cp.canvas_pos.y = w.y + rho * (Math.sin(theta) * (old_cp.x - w.x) + Math.cos(theta) * (old_cp.y - w.y))
         this.cp.update_from_canvas_pos(view);
     }
+    */
 
-    save_pos() {
-        this.cp.save_canvas_pos();
-        //this.old_cp.x = this.cp.x;
-        //this.old_cp.y = this.cp.y;
+
+    translate_cp_by_canvas_vect(shift: CanvasVect, view: View){
+            this.cp_canvas_pos.translate_by_canvas_vect(shift);
+            this.cp.x += shift.x/view.zoom; 
+            this.cp.y += shift.y/view.zoom;
     }
 
-    update_canvas_pos(view: View){
-        this.cp.update_canvas_pos(view);
-    }
-
-    translate_cp(shift: CanvasCoord, view: View){
-        this.cp.translate(shift, view);
-    }
-
-    tikzify_link(start: LocalVertex, start_index: number, end: LocalVertex, end_index: number) {
+    tikzify_link(start: ClientVertex, start_index: number, end: ClientVertex, end_index: number) {
         // TODO: ORIENTED CASE
         let labelCode = "";
         // if (showLabels)

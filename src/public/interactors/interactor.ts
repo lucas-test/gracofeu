@@ -1,5 +1,5 @@
-import { CanvasCoord, ServerCoord } from "../board/coord";
-import { Graph } from "../board/graph";
+import { ClientGraph } from "../board/graph";
+import { CanvasCoord } from "../board/vertex";
 
 
 
@@ -23,10 +23,10 @@ export class Interactor {
     img_src: string;
     interactable_element_type: Set<DOWN_TYPE>;
     cursor_style: string;
-    mousedown: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
-    mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => boolean;
-    mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, e: CanvasCoord) => void;
-    trigger: (mouse_pos: CanvasCoord, g: Graph) => void;
+    mousedown: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, e: CanvasCoord) => void;
+    mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, e: CanvasCoord) => boolean;
+    mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, e: CanvasCoord) => void;
+    trigger: (mouse_pos: CanvasCoord, g: ClientGraph) => void;
     onleave: () => void;
     draw: (ctx: CanvasRenderingContext2D) => void;
 

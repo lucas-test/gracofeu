@@ -1,5 +1,7 @@
-import { CanvasCoord } from "../board/coord";
-import { Graph } from "../board/graph";
+import { Graph } from "gramoloss";
+import { ClientGraph } from "../board/graph";
+import { ClientLink } from "../board/link";
+import { CanvasCoord, ClientVertex } from "../board/vertex";
 import { local_board } from "../setup";
 import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
@@ -25,12 +27,12 @@ interactor_text.mousedown = ((canvas, ctx, g, e) => {
 
     if (last_down == DOWN_TYPE.LINK || last_down == DOWN_TYPE.LINK_WEIGHT) {
         const link = g.links.get(last_down_index);
-        display_weight_input(last_down_index, link.cp.canvas_pos, DOWN_TYPE.LINK);
+        display_weight_input(last_down_index, link.cp_canvas_pos, DOWN_TYPE.LINK);
     }
     if (last_down == DOWN_TYPE.VERTEX || last_down == DOWN_TYPE.VERTEX_WEIGHT) {
         if ( g.vertices.has(last_down_index)){
             const vertex = g.vertices.get(last_down_index);
-            display_weight_input(last_down_index, vertex.pos.canvas_pos, DOWN_TYPE.VERTEX);
+            display_weight_input(last_down_index, vertex.canvas_pos, DOWN_TYPE.VERTEX);
         }
     }
 })
@@ -47,7 +49,7 @@ interactor_text.onleave = () => {
     turn_off_weight_input();
 }
 
-interactor_text.trigger = (mouse_pos, g: Graph) => {
+interactor_text.trigger = (mouse_pos, g: ClientGraph) => {
     
 }
 

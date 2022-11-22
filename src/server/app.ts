@@ -14,7 +14,7 @@ console.log('Server started at http://localhost:' + port);
 
 // gestion des rooms
 
-const room_graphs = new Map<string, Graph<Vertex,Link>>();
+const room_graphs = new Map<string, Graph<Vertex,Link, Stroke, Area>>();
 const clientRooms = {};
 
 function makeid(length: number) {
@@ -309,9 +309,7 @@ io.sockets.on('connection', function (client) {
         points.forEach(e => {
             positions.push(new Coord(e[1].x, e[1].y));
         });
-        const top_left = new Coord(top_left_data.x, top_left_data.y);
-        const bot_right = new Coord(bot_right_data.x, bot_right_data.y);
-        const new_stroke = new Stroke(positions, color, width, top_left, bot_right);
+        const new_stroke = new Stroke(positions, color, width);
         const modif = new AddStroke(index, new_stroke);
         g.try_implement_new_modification(modif)
         emit_strokes_to_room();

@@ -1,5 +1,5 @@
-import { Area } from "../board/area";
-import { Graph } from "../board/graph";
+import { ClientArea } from "../board/area";
+import { ClientGraph } from "../board/graph";
 
 export enum SENSIBILITY {
     GEOMETRIC = "GEOMETRIC", // Move of vertex/link
@@ -29,7 +29,7 @@ export function get_sensibilities(s:Array<string>) : Set<SENSIBILITY>{
 export class Parametor {
     name: string;
     id:string;
-    compute: (g: Graph, verbose: boolean) => string;
+    compute: (g: ClientGraph, verbose: boolean) => string;
     is_live:boolean;
     is_boolean:boolean;
     sensibility:Set<SENSIBILITY>;
@@ -56,8 +56,8 @@ export class Parametor {
         return intersection.size > 0;
     }
 
-    get_parametor_html_id(a:Area){
-        return this.id + "_area_" +( a==null?"null":a.id);
+    get_parametor_html_id(area_id: number){
+        return this.id + "_area_" + area_id;
     }
 }
 

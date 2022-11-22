@@ -1,4 +1,6 @@
-import { CanvasCoord, ServerCoord } from "./board/coord";
+import { Coord } from "gramoloss";
+import { View } from "./board/camera";
+import { CanvasCoord } from "./board/vertex";
 import { COLOR_BACKGROUND} from "./draw";
 import { Multicolor } from "./multicolor";
 import { local_board } from "./setup";
@@ -9,17 +11,17 @@ export class User {
     id: string;
     label: string;
     multicolor: Multicolor;
-    pos: ServerCoord;
+    pos: Coord;
     canvas_pos: CanvasCoord;
 
-    constructor(id: string, label: string, color: string, pos?: ServerCoord) {
+    constructor(id: string, label: string, color: string, view: View, pos?: Coord) {
         this.id = id;
         this.label = label;
         this.multicolor = new Multicolor(color);
         
         if (typeof pos !== 'undefined') {
             this.pos = pos;
-            this.canvas_pos = local_board.view.canvasCoord(this.pos);
+            this.canvas_pos = view.create_canvas_coord(this.pos);
         }
         else{
             this.pos = null;
@@ -27,10 +29,10 @@ export class User {
         }
     }
 
-    set_pos(x: number, y: number) {
+    set_pos(x: number, y: number, view: View) {
         this.pos.x = x;
         this.pos.y = y;
-        this.canvas_pos = local_board.view.canvasCoord(this.pos);
+        this.canvas_pos = view.create_canvas_coord(this.pos);
     }
 
     set_color(color:string){
@@ -80,9 +82,9 @@ export function update_user_list_div() {
 }
 
 
-export function update_users_canvas_pos() {
+export function update_users_canvas_pos(view: View) {
     for (const user of users.values()){
-        user.canvas_pos = local_board.view.canvasCoord(user.pos);
+        user.canvas_pos = view.create_canvas_coord(user.pos);
     }
 }
 

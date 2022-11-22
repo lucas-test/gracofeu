@@ -1,8 +1,9 @@
 import {Interactor,DOWN_TYPE} from './interactor'
 import {socket} from '../socket';
-import {ORIENTATION} from '../board/link';
-import {Stroke} from '../board/stroke';
 import { local_board } from '../setup';
+import { ClientGraph } from '../board/graph';
+import { CanvasCoord } from '../board/vertex';
+import { ClientStroke } from '../board/stroke';
 
 
 // INTERACTOR STROKE
@@ -16,9 +17,9 @@ const sample_period = 3; // number of frames between two points, skipping the ot
 
 export var interactor_stroke = new Interactor("pen", "p", "stroke.svg", new Set([DOWN_TYPE.VERTEX]), 'default');
 
-interactor_stroke.mousedown = ((  canvas, ctx, g, e) => {
-    const server_pos = local_board.view.serverCoord2(e);
-    last_stroke = new Stroke([server_pos], "black", 2);
+interactor_stroke.mousedown = ((  canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+    const server_pos = local_board.view.create_server_coord(e);
+    last_stroke = new ClientStroke([server_pos], "black", 2, local_board.view);
 
     // TO CHANGE
     let index = 0;
@@ -33,8 +34,7 @@ interactor_stroke.mousemove = ((canvas, ctx, g, e) => {
     if(last_stroke !== null){
         gap_refresh++ ;
         if(gap_refresh % sample_period === 0){
-            const server_pos = local_board.view.serverCoord2(e);
-            g.strokes.get(index_last_stroke).push(server_pos);
+            g.strokes.get(index_last_stroke).push(e, local_board.view);
             return true;
         }
     }
@@ -42,9 +42,8 @@ interactor_stroke.mousemove = ((canvas, ctx, g, e) => {
 
 })
 
-interactor_stroke.mouseup = ((canvas, ctx, g, e) => {
-    const server_pos = local_board.view.serverCoord2(e);
-    g.strokes.get(index_last_stroke).push(server_pos);
+interactor_stroke.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+    g.strokes.get(index_last_stroke).push(e, local_board.view);
 
     const s = g.strokes.get(index_last_stroke);
 

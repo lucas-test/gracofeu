@@ -1,12 +1,11 @@
-import { Area } from "./area";
+import { ClientArea } from "./area";
 import { center_canvas_on_rectangle } from "./camera";
-import { CanvasCoord } from "./coord";
 import { COLOR_BACKGROUND, draw } from "../draw";
 import { Parametor } from "../parametors/parametor";
 import { params_available, params_loaded, remove_loaded_param, update_parametor } from "../parametors/parametor_manager";
 import { socket } from "../socket";
 import { Board } from "./board";
-import { LocalVertex } from "./vertex";
+import { CanvasCoord, ClientVertex } from "./vertex";
 import { local_board } from "../setup";
 import { params_available_turn_on_div } from "../parametors/div_parametor";
 
@@ -21,7 +20,7 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
         for(const a of g.areas.values()){
             const span_area = get_title_span_for_area(a);
             span_area.addEventListener("click", (e)=>{
-                center_canvas_on_rectangle(view, view.canvasCoord(a.corner_top_left), view.canvasCoord(a.corner_bottom_right), canvas, g); // .canvas_pos est pas encore implémenté
+                center_canvas_on_rectangle(view, a.canvas_corner_top_left, a.canvas_corner_bottom_right, canvas, g);
                 requestAnimationFrame(function () { 
                     draw(canvas, ctx, g) 
                 });
@@ -33,10 +32,9 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 }
 
 
-export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLElement{
+export function init_parametor_div(param:Parametor, area_id: number, board: Board):HTMLElement{
     const g = board.graph;
-    const html_id =  param.get_parametor_html_id(a);
-    const area_id = (a==null?null:a.id);
+    const html_id =  param.get_parametor_html_id(area_id);
     const param_to_load = {parametor:param, html_id:html_id, area_id : area_id};
     
     let div_parametor = document.getElementById("param_" + html_id);
@@ -193,14 +191,14 @@ export function init_parametor_div(param:Parametor, a:Area, board: Board):HTMLEl
 }
 
 
-export function get_title_span_for_area(a:Area):HTMLSpanElement{
+export function get_title_span_for_area(a:ClientArea):HTMLSpanElement{
     const span_area = document.createElement('span');
     span_area.classList.add("span_area_name_parametor");
 
     if(a!== null){
         span_area.textContent = a.label;
-        span_area.style.background = a.multicolor.color;
-        span_area.style.color = a.multicolor.contrast;
+        span_area.style.background = a.color;
+        // TODO span_area.style.color = a.multicolor.contrast;
         // span_area.style.borderColor = a.multicolor.contrast;
     }
     else{
@@ -212,46 +210,46 @@ export function get_title_span_for_area(a:Area):HTMLSpanElement{
     return span_area;
 }
 
-export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
+export function init_list_parametors_for_area(board: Board, area_id: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
     const g = board.graph;
+    const a = g.areas.get(area_id);
     const view = board.view;
-    const a_id = (a==null?"null":a.id);
-    let area_DOM = document.getElementById("area_"+ a_id);
+    let area_DOM = document.getElementById("area_"+ area_id);
 
     if(area_DOM === null)
     {   
         area_DOM = document.createElement("div");
-        area_DOM.id = "area_"+ a_id;
+        area_DOM.id = "area_"+ area_id;
         area_DOM.classList.add("subgraph_parametors");
 
-        let title_area_container = document.getElementById("title_container_area_"+a_id);
+        let title_area_container = document.getElementById("title_container_area_"+area_id);
         if(title_area_container === null){
             title_area_container = document.createElement("div");
             title_area_container.classList.add("title_area_container");
-            title_area_container.id = "title_container_area_"+a_id;
+            title_area_container.id = "title_container_area_"+area_id;
 
             const load_new_parametors_button = document.createElement("img");
             load_new_parametors_button.classList.add("load_new_parametor_button");
             load_new_parametors_button.src = "img/parametor/plus.svg";
             load_new_parametors_button.title = "Load a new parameter";
-            load_new_parametors_button.id = "load_parametor_area_"+a_id;
+            load_new_parametors_button.id = "load_parametor_area_"+area_id;
             load_new_parametors_button.onclick = ((e) => {
                 params_available_turn_on_div();
                 // todo choose parameter for this area
             });
             title_area_container.appendChild(load_new_parametors_button);
             
-            let titleDOM = document.getElementById("title_area_"+ a_id);
+            let titleDOM = document.getElementById("title_area_"+ area_id);
             if(titleDOM === null){
                 titleDOM = get_title_span_for_area(a);
-                titleDOM.id = "title_area_"+ a_id;
+                titleDOM.id = "title_area_"+ area_id;
                 title_area_container.appendChild(titleDOM);
     
                 if(a!== null){
                     // Center on the area on click
                     titleDOM.addEventListener("click",  (e)=>{
-                        const area = local_board.graph.areas.get(a.id); // It seems we have to reget the area since the corners may have change
-                        center_canvas_on_rectangle(view, view.canvasCoord(area.corner_top_left), view.canvasCoord(area.corner_bottom_right), canvas, g); // .canvas_pos est pas encore implémenté
+                        const area = local_board.graph.areas.get(area_id); // It seems we have to reget the area since the corners may have change
+                        center_canvas_on_rectangle(view, area.canvas_corner_top_left, area.canvas_corner_bottom_right, canvas, g);
                         requestAnimationFrame(function () { 
                             draw(canvas, ctx, g) 
                         });
@@ -264,17 +262,17 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
                         let bot_right_corner = new CanvasCoord(canvas.width/2, canvas.height/2);
     
                         if(g.vertices.size > 1){
-                            const v : LocalVertex = g.vertices.values().next().value;
-                            let xMin = v.pos.canvas_pos.x;
-                            let yMin = v.pos.canvas_pos.y;
-                            let xMax = v.pos.canvas_pos.x;
-                            let yMax = v.pos.canvas_pos.y;
+                            const v : ClientVertex = g.vertices.values().next().value;
+                            let xMin = v.canvas_pos.x;
+                            let yMin = v.canvas_pos.y;
+                            let xMax = v.canvas_pos.x;
+                            let yMax = v.canvas_pos.y;
     
                             for(const u of g.vertices.values()){
-                                xMin = Math.min(xMin, u.pos.canvas_pos.x);
-                                yMin = Math.min(yMin, u.pos.canvas_pos.y);
-                                xMax = Math.max(xMax, u.pos.canvas_pos.x);
-                                yMax = Math.max(yMax, u.pos.canvas_pos.y);
+                                xMin = Math.min(xMin, u.canvas_pos.x);
+                                yMin = Math.min(yMin, u.canvas_pos.y);
+                                xMax = Math.max(xMax, u.canvas_pos.x);
+                                yMax = Math.max(yMax, u.canvas_pos.y);
                             }
     
                             top_left_corner = new CanvasCoord(xMin, yMin);
@@ -302,10 +300,10 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
             expand_list_button.classList.add("expand_button", "expanded", "hidden");
             expand_list_button.src = "img/parametor/list.svg";
             expand_list_button.title = "Expand/collapse the parameter list";
-            expand_list_button.id = "expand_list_area_"+a_id;
+            expand_list_button.id = "expand_list_area_"+area_id;
             expand_list_button.addEventListener("click", ()=>{
                 expand_list_button.classList.toggle("expanded");
-                const param_container = document.getElementById("param_list_container_area_"+a_id);
+                const param_container = document.getElementById("param_list_container_area_"+area_id);
                 if(param_container){
                     // if(param_container.style.display == 'none'){
                     //     param_container.style.display = "flex";
@@ -325,10 +323,10 @@ export function init_list_parametors_for_area(board: Board, a:Area, canvas: HTML
         
         const param_containerDOM = document.createElement("div");
         param_containerDOM.classList.add("param_list_container");
-        param_containerDOM.id = "param_list_container_area_"+a_id;
+        param_containerDOM.id = "param_list_container_area_"+area_id;
         param_containerDOM.style.display="none";
         for(const param of params_available){
-            const div_parametor = init_parametor_div(param, a, board);
+            const div_parametor = init_parametor_div(param, area_id, board);
             if(div_parametor !== null){
                 param_containerDOM.appendChild(div_parametor);
             }

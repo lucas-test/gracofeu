@@ -1,8 +1,8 @@
 import { draw } from '../draw';
 import { param_average_degree, param_diameter, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo, param_weighted_distance_identification } from './some_parametors';
 import { Parametor, SENSIBILITY } from './parametor';
-import { Graph } from '../board/graph';
-import { Area } from '../board/area';
+import { ClientGraph } from '../board/graph';
+import { ClientArea } from '../board/area';
 import { get_title_span_for_area } from '../board/area_div';
 import { create_popup } from '../popup';
 
@@ -34,9 +34,8 @@ export function setup_parametors_available() {
 
 
 
-export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, a: Area) {
-    const html_id =  param.id + "_area_" +( a==null?"null":a.id);
-    const area_id = (a==null?null:a.id);
+export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, area_id: number) {
+    const html_id =  param.id + "_area_" + area_id;
     const param_to_load = {parametor:param, html_id:html_id, area_id : area_id};
 
     let div_parametor = document.getElementById("param_" + html_id);
@@ -114,7 +113,7 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
 
 
 
-export function update_params_loaded(g:Graph, sensibilities:Set<SENSIBILITY>, force_compute?:boolean) {
+export function update_params_loaded(g:ClientGraph, sensibilities:Set<SENSIBILITY>, force_compute?:boolean) {
     if(force_compute === undefined){
         force_compute = false;
     }
@@ -137,7 +136,7 @@ function invalid_parametor(param){
 }
 
 
-export function update_parametor(g:Graph, param){
+export function update_parametor(g:ClientGraph, param){
     const result_span = document.getElementById("span_result_" + param.html_id);
     if(param.area_id === null){
         var result = param.parametor.compute(g, true);

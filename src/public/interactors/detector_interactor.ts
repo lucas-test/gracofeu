@@ -1,6 +1,8 @@
-import { Coord } from '../board/coord';
-import { Link } from '../board/link';
-import { LocalVertex } from '../board/vertex';
+import { Coord } from 'gramoloss';
+import { ClientGraph } from '../board/graph';
+import { ClientLink } from '../board/link';
+import { CanvasCoord, ClientVertex } from '../board/vertex';
+import { local_board } from '../setup';
 import { Interactor, DOWN_TYPE } from './interactor'
 
 // INTERACTOR DETECTOR
@@ -20,18 +22,18 @@ function set_element_infobox(pos: Coord) {
     infobox.style.left = String(pos.x+10);
 }
 
-function set_vertex_infobox(index: number, vertex: LocalVertex, pos: Coord){
+function set_vertex_infobox(index: number, vertex: ClientVertex, pos: Coord){
     set_element_infobox(pos);
     infobox.innerHTML = 
     "Vertex index: " + index + "<br>" +
     "x: " + vertex.pos.x + "<br>" +
     "y: " + vertex.pos.y + "<br>"+
     "color: " + vertex.color + "<br>" +
-    "canvas_x: " + Math.floor(vertex.pos.canvas_pos.x) + "<br>" +
-    "canvas_y: " + Math.floor(vertex.pos.canvas_pos.y);
+    "canvas_x: " + Math.floor(vertex.canvas_pos.x) + "<br>" +
+    "canvas_y: " + Math.floor(vertex.canvas_pos.y);
 }
 
-function set_link_infobox(link: Link, pos: Coord){
+function set_link_infobox(link: ClientLink, pos: Coord){
     set_element_infobox(pos);
     infobox.innerHTML = JSON.stringify(link, null, "&nbsp&nbsp&nbsp").replace(/\n/g, "<br />");;
 }
@@ -44,9 +46,9 @@ function turn_off_infobox() {
 
 interactor_detector.mousedown = ((canvas, ctx, g, e) => { });
 
-interactor_detector.mousemove = ((canvas, ctx, g, e) => {
+interactor_detector.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     g.clear_all_selections();
-    const element = g.get_element_nearby(e, interactor_detector.interactable_element_type);
+    const element = g.get_element_nearby(e, interactor_detector.interactable_element_type, local_board.view);
     switch (element.type) {
         case DOWN_TYPE.VERTEX:
             const vertex = g.vertices.get(element.index);

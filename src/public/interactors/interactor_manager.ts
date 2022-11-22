@@ -3,7 +3,6 @@ import { interactor_selection } from './selection_interactor';
 import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
 import { socket } from '../socket';
-import { Graph } from '../board/graph';
 import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';
@@ -11,13 +10,15 @@ import { interactor_eraser } from './eraser_interactor';
 import { interactor_area } from './area_interactor';
 import { actions_available, select_action } from '../actions';
 import { self_user, update_users_canvas_pos } from '../user';
-import { CanvasCoord } from '../board/coord';
 import { local_board } from '../setup';
 import { interactor_detector } from './detector_interactor';
 import ENV from '../.env.json';
 import { regenerate_graph } from '../generators/dom';
 import { interactor_text } from './text';
 import { clear_clipboard, clipboard_comes_from_generator, graph_clipboard, mouse_position_at_generation, paste_generated_graph, set_clipboard } from '../clipboard';
+import { CanvasCoord } from '../board/vertex';
+import { ClientGraph } from '../board/graph';
+import { CanvasVect } from '../board/vect';
 
 // INTERACTOR MANAGER
 
@@ -37,7 +38,7 @@ key_states.set("Control", false);
 key_states.set("Shift", false);
 
 
-export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph, pos: CanvasCoord) {
+export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, pos: CanvasCoord) {
     if (interactor_loaded != null && interactor_loaded != interactor) {
         interactor_loaded.onleave();
     }
@@ -50,7 +51,7 @@ export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElem
 }
 
 
-export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
 
 
     window.addEventListener('keydown', function (e) {
@@ -85,7 +86,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 return;
             }
             if ( key_states.get("Control") && e.key.toLowerCase() == "c" ){
-                const subgraph = g.get_induced_subgraph_from_selection();
+                const subgraph = g.get_induced_subgraph_from_selection(local_board.view);
                 if ( subgraph.vertices.size > 0){
                     set_clipboard(subgraph, mouse_pos.copy(), false, canvas);
                 }
@@ -129,8 +130,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         } else {
             local_board.view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1.1);
         }
-        g.update_canvas_pos();
-        update_users_canvas_pos();
+        g.update_canvas_pos(local_board.view);
+        update_users_canvas_pos(local_board.view);
 
 
         if (local_board.view.following !== null) {
@@ -160,7 +161,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         mouse_pos.y = e.pageY;
         has_moved = true;
         if (graph_clipboard != null) {
-            graph_clipboard.translate(click_pos.sub2(mouse_position_at_generation));
+            graph_clipboard.translate_by_canvas_vect( CanvasVect.from_canvas_coords(mouse_position_at_generation, click_pos), local_board.view);
             draw(canvas, ctx, g);
         } else {
             if (interactor_loaded.mousemove(canvas, ctx, g, click_pos)) {
@@ -170,7 +171,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             }
         }
 
-        const mouse_server_coord = local_board.view.serverCoord(e);
+        const mouse_server_coord = local_board.view.create_server_coord(click_pos);
         socket.emit("moving_cursor", mouse_server_coord.x, mouse_server_coord.y);
     })
 
@@ -183,14 +184,14 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 paste_generated_graph();
                 if( key_states.get("Control") ){
                     if (clipboard_comes_from_generator){
-                        regenerate_graph(e, canvas);
+                        regenerate_graph(e, canvas, local_board.view);
                     }                    
                 }else {
                     clear_clipboard(canvas);
                 }
                 draw(canvas, ctx, g);
             } else {
-                const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
+                const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type, local_board.view);
                 console.log(element);
                 last_down = element.type;
                 last_down_index = element.index;
@@ -207,7 +208,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         has_moved = false;
         const click_pos = new CanvasCoord(et.touches[0].clientX, et.touches[0].clientY);
 
-        const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
+        const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type, local_board.view);
         console.log(element);
         last_down = element.type;
         last_down_index = element.index;
@@ -226,7 +227,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 draw(canvas, ctx, g)
             });
         }
-        const mouse_server_coord = local_board.view.serverCoord2(mouse_pos);
+        const mouse_server_coord = local_board.view.create_server_coord(mouse_pos);
         socket.emit("moving_cursor", mouse_server_coord.x, mouse_server_coord.y);
     });
 
@@ -278,7 +279,7 @@ function select_interactor_div(interactor: Interactor) {
 }
 
 
-export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
     let interactors_div = document.getElementById("interaction_mode_selector");
     for (let interactor of interactors_available) {
         let newDiv = document.createElement("div");

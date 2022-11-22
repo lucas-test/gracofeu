@@ -1,8 +1,8 @@
-import { Graph } from '../board/graph';
+import { ClientGraph } from '../board/graph';
 import { Parametor } from './parametor';
 import { load_param, params_available, params_loaded } from './parametor_manager';
 
-export function update_params_available_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function update_params_available_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
     const div = document.getElementById("params_available_content");
 
     const search_input = document.createElement("input");
@@ -43,7 +43,7 @@ function handle_search_onkeyup() {
     }
 }
 
-export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph){
+export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph){
 
     // We first clear every options 
     const elements = document.getElementsByClassName("subgraph_option");
@@ -92,13 +92,13 @@ export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRend
             });
 
             // Div for each area
-            for(const a of g.areas.values()){
+            for(const [area_index, a] of g.areas.entries()){
                 let aDiv = document.createElement("div");
                 aDiv.classList.add("subgraph_option");
                 aDiv.textContent = a.label;
                 newDiv.appendChild(aDiv);
                 aDiv.addEventListener('click', function () { 
-                    load_param(param, canvas, ctx, g, a); 
+                    load_param(param, canvas, ctx, g, area_index); 
                     params_available_turn_off_div();
                 });
             }
@@ -118,7 +118,7 @@ export function params_available_turn_on_div() {
 }
 
 
-function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx:CanvasRenderingContext2D, g:Graph){
+function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx:CanvasRenderingContext2D, g:ClientGraph){
     // console.log("CLICKY CLICKY", param);
 
 

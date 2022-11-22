@@ -1,4 +1,4 @@
-import { Coord } from "./board/coord";
+import { Coord } from "gramoloss";
 
 export function clamp(val: number, min:number, max:number):number{
     if(val < min){

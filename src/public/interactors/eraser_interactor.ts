@@ -3,8 +3,9 @@ import { socket } from '../socket';
 import { mouse_pos } from './interactor_manager';
 import { draw_circle } from '../draw_basics';
 import { VERTEX_RADIUS } from '../draw';
-import { CanvasCoord } from '../board/coord';
-import { Graph } from '../board/graph';
+import { ClientGraph } from '../board/graph';
+import { CanvasCoord } from '../board/vertex';
+import { local_board } from '../setup';
 
 
 // INTERACTOR ERASER
@@ -15,9 +16,9 @@ const erase_distance = 8;
 export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new Set([DOWN_TYPE.STROKE]), 'url("../img/cursors/eraser.svg"), auto')
 
 // return true if somethin has been erased
-function erase_at(g: Graph, e: CanvasCoord) : boolean{
+function erase_at(g: ClientGraph, e: CanvasCoord) : boolean{
     for (const [index, s] of g.strokes.entries()) {
-        if (s.is_nearby(e) !== false) {
+        if (s.is_nearby(e, local_board.view) !== false) {
             const data_socket = new Array();
             data_socket.push({ type: "stroke", index: index });
             socket.emit("delete_selected_elements", data_socket);
@@ -33,7 +34,7 @@ function erase_at(g: Graph, e: CanvasCoord) : boolean{
         }
     }
     for (const index of g.links.keys()) {
-        if (g.is_click_over_link(index, e)) {
+        if (g.is_click_over_link(index, e, local_board.view)) {
             const data_socket = new Array();
             data_socket.push({ type: "link", index: index });
             socket.emit("delete_selected_elements", data_socket);
@@ -51,12 +52,12 @@ function erase_at(g: Graph, e: CanvasCoord) : boolean{
     return false;
 }
 
-interactor_eraser.mousedown = ((canvas, ctx, g, e) => {
+interactor_eraser.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     erase_at(g,e);
     is_erasing = true;
 })
 
-interactor_eraser.mousemove = ((canvas, ctx, g, e) => {
+interactor_eraser.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (is_erasing) {
         erase_at(g, e);
     }

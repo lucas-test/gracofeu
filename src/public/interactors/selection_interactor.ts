@@ -1,35 +1,37 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { self_user, update_users_canvas_pos, users } from '../user';
-import { CanvasCoord, Coord, ServerCoord } from '../board/coord';
 import { down_coord, has_moved, key_states, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
-import { CanvasVect, ServerVect } from '../board/vect';
+import { CanvasVect } from '../board/vect';
+import { CanvasCoord } from '../board/vertex';
+import { ClientGraph } from '../board/graph';
+import { Coord } from 'gramoloss';
 
 
 // INTERACTOR SELECTION
 
 export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE]), 'default')
 
-let previous_shift: ServerCoord = null;
+let previous_shift: CanvasVect = null;
 
 interactor_selection.mousedown = (( canvas, ctx, g, e) => {
-    previous_shift = local_board.view.serverCoord2(new CanvasCoord(0,0));
+    previous_shift = local_board.view.create_server_coord(new CanvasCoord(0,0));
     if (last_down == DOWN_TYPE.VERTEX) {
         if (g.vertices.get(last_down_index).is_selected) {
             for (const index of g.vertices.keys()) {
                 const vertex = g.vertices.get(index);
-                vertex.save_pos();
+                // TODO vertex.save_pos();
             }
             for (var link of g.links.values()) {
-                link.save_pos();
+                // link.save_pos();
             }
         }
         else {
-            g.vertices.get(last_down_index).save_pos();
+            //g.vertices.get(last_down_index).save_pos();
             for (var link of g.links.values()) {
                 if (link.start_vertex == last_down_index || link.end_vertex == last_down_index) {
-                    link.save_pos();
+                    //link.save_pos();
                 }
             }
         }
@@ -52,7 +54,7 @@ interactor_selection.mousedown = (( canvas, ctx, g, e) => {
     }
 })
 
-interactor_selection.mousemove = ((canvas, ctx, g, e) => {
+interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     // console.log("mousemove");
     switch (last_down) {
         case DOWN_TYPE.VERTEX:
@@ -63,21 +65,24 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             if (g.vertices.get(last_down_index).is_selected) {
                 const selected_vertices = g.get_selected_vertices();
                 indices = Array.from(selected_vertices);
-                mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), selected_vertices, canvas);   
+                // mouse_canvas_coord = g.align_position(v.old_canvas_pos.add2(e.sub2(down_coord)), selected_vertices, canvas, local_board.view);   
+                mouse_canvas_coord = g.align_position(v.canvas_pos.addc(e.subc(down_coord)), selected_vertices, canvas, local_board.view);
             }
             else {
-                mouse_canvas_coord = g.align_position(v.pos.old_canvas_pos.add2(e.sub2(down_coord)), new Set([last_down_index]), canvas);   
+                //mouse_canvas_coord = g.align_position(v.old_canvas_pos.add2(e.subc(down_coord)), new Set([last_down_index]), canvas, local_board.view);   
+                mouse_canvas_coord = g.align_position(v.canvas_pos.addc(e.subc(down_coord)), new Set([last_down_index]), canvas, local_board.view);   
+
                 indices.push(last_down_index);
             }
 
-            const canvas_shift = mouse_canvas_coord.sub2(v.pos.old_canvas_pos);
-            const shift = local_board.view.serverCoord2(canvas_shift);
+            const canvas_shift = mouse_canvas_coord.addc(v.canvas_pos); // old_canvas_pos TODO
+            const shift = local_board.view.create_server_coord(canvas_shift);
             if (previous_shift == null){
-                previous_shift = new ServerCoord(0,0);
+                previous_shift = new Coord(0,0);
             }
             //console.log("Send Request: translate_vertices", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
             socket.emit("translate_vertices", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
-            previous_shift.copy_from(shift);
+            previous_shift = shift.copy();
             return true;
             break;
 
@@ -85,9 +90,9 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
             if (local_board.view.is_rectangular_selecting) {
                 local_board.view.selection_corner_2 = e; // peut etre faut copier
             } else {
-                local_board.view.translate_camera_from_old(e.sub(down_coord));
-                g.update_canvas_pos();
-                update_users_canvas_pos();
+                // TODO local_board.view.translate_camera_from_old(e.sub(down_coord));
+                g.update_canvas_pos(local_board.view);
+                update_users_canvas_pos(local_board.view);
  
                 
                 if(local_board.view.following !== null){
@@ -101,18 +106,18 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
         case DOWN_TYPE.CONTROL_POINT:
             if ( g.links.has(last_down_index)){
                 let indices = [last_down_index];
-                const shift = local_board.view.serverCoord2(e.sub2(down_coord));
+                const shift = local_board.view.create_server_coord(e.subc(down_coord));
                 if (previous_shift == null){
-                    previous_shift = new ServerCoord(0,0);
+                    previous_shift = new Coord(0,0);
                 }
                 socket.emit("translate_control_points", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
-                previous_shift.copy_from(shift);
+                previous_shift = shift.copy();
                 return true;
             }
             return false;
         case DOWN_TYPE.STROKE:
             const stroke = g.strokes.get(last_down_index);
-            stroke.translate(e.sub2(down_coord), local_board.view);
+            stroke.translate_by_canvas_vect(CanvasVect.from_canvas_coords(down_coord, e), local_board.view);
             return true;
     }
 
@@ -121,7 +126,7 @@ interactor_selection.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_selection.mouseup = ((canvas, ctx, g, e) => {
-    previous_shift = new ServerCoord(0,0);
+    previous_shift = new Coord(0,0);
     if (last_down === DOWN_TYPE.VERTEX) {
         if (has_moved === false) {
             if (g.vertices.get(last_down_index).is_selected) {
@@ -142,7 +147,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
         else {
             const vertex_moved = g.vertices.get(last_down_index);
             for( const [index,v] of g.vertices.entries()){
-                if( index != last_down_index && vertex_moved.is_nearby(v.pos.canvas_pos, 100)){
+                if( index != last_down_index && vertex_moved.is_nearby(v.canvas_pos, 100)){
                     socket.emit("vertices_merge", index, last_down_index);
                     break;
                 }
@@ -187,7 +192,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
             }
         } else {
             const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
-            const shift: ServerVect = local_board.view.server_vect(canvas_shift);
+            const shift = local_board.view.server_vect(canvas_shift);
             socket.emit("translate_strokes", [last_down_index], shift.x, shift.y);
         }
     }

@@ -1,8 +1,10 @@
-import { CanvasCoord, Coord, ServerCoord } from "./coord";
-import { Graph } from "./graph";
+import { Coord, Graph, ORIENTATION, Vect } from "gramoloss";
 import { update_users_canvas_pos } from "../user";
-import { ORIENTATION } from "./link";
-import { CanvasVect, ServerVect } from "./vect";
+import { ClientGraph } from "./graph";
+import { ClientLink } from "./link";
+import { ClientStroke } from "./stroke";
+import { CanvasVect } from "./vect";
+import { CanvasCoord, ClientVertex } from "./vertex";
 
 export enum INDEX_TYPE {
     NONE,
@@ -86,36 +88,6 @@ export class View {
         return this.grid_show;
     }
 
-    // transform serverCoord to canvasCoord
-    canvasCoord(pos: ServerCoord): CanvasCoord {
-        return new CanvasCoord(pos.x * this.zoom + this.camera.x, pos.y * this.zoom + this.camera.y);
-    }
-
-    canvasCoord2(x: number, y: number): CanvasCoord {
-        return new CanvasCoord(x * this.zoom + this.camera.x, y * this.zoom + this.camera.y);
-    }
-
-    canvasCoordFromMouse(e: MouseEvent): CanvasCoord {
-        return new CanvasCoord(e.pageX, e.pageY);
-    }
-
-    canvasCoordX(x: number) {
-        return x * this.zoom + this.camera.x;
-    }
-
-    canvasCoordY(y: number) {
-        return y * this.zoom + this.camera.y;
-    }
-
-    // transform canvasCoord to serverCoord
-    serverCoord(e: MouseEvent): ServerCoord {
-        const ce = new CanvasCoord(e.pageX, e.pageY);
-        return this.serverCoord2(ce);
-    }
-
-    serverCoord2(pos: CanvasCoord): ServerCoord {
-        return new ServerCoord((pos.x - this.camera.x) / this.zoom, (pos.y - this.camera.y) / this.zoom);
-    }
 
     // zoom factor is multiply by r
     apply_zoom_to_center(center: CanvasCoord, r: number) {
@@ -132,23 +104,44 @@ export class View {
         }
     }
 
-    translate_camera_from_old(shift: Coord){
-        this.camera.copy_from(this.old_camera.add(shift)); // camera = old_camera + shift
-    }
-
     translate_camera(shift: Coord){
-        this.camera.copy_from(this.camera.add(shift)); // camera = camera + shift
+        this.camera.translate(shift); // camera = camera + shift
     }
 
-    server_vect(v: CanvasVect): ServerVect{
-        return new ServerVect( v.x/this.zoom, v.y/this.zoom);
+    server_vect(v: CanvasVect): Vect{
+        return new Vect( v.x/this.zoom, v.y/this.zoom);
+    }
+
+    create_canvas_vect(v: Vect): CanvasVect {
+        return new CanvasVect(v.x*this.zoom, v.y*this.zoom)
+    }
+
+    create_server_coord(c: CanvasCoord){
+        return new Coord( (c.x - this.camera.x)/ this.zoom, (c.y - this.camera.y)/ this.zoom);
+    }
+
+    create_server_coord_from_subtranslated(c: CanvasCoord, shift: CanvasVect): Coord{
+        const c2 = new CanvasCoord(c.x - shift.x, c.y - shift.y);
+        return this.create_server_coord(c2);
+    }
+
+    create_canvas_coord(c: Coord){
+        return new CanvasCoord(c.x*this.zoom + this.camera.x, c.y*this.zoom+this.camera.y);
+    }
+
+    canvasCoordX(c: Coord): number{
+        return c.x*this.zoom + this.camera.x;
+    }
+
+    canvasCoordY(c: Coord): number{
+        return c.y*this.zoom + this.camera.y;
     }
 
 }
 
 
 
-export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, g:Graph){
+export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, g:ClientGraph){
     const w = bot_right.x - top_left.x;
     const h = bot_right.y - top_left.y;
     const shift_x = (canvas.width - w)/2 - top_left.x;
@@ -157,8 +150,8 @@ export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot
     view.translate_camera(new Coord(shift_x, shift_y));
 
     if ( w <= 0 || h <= 0 ){
-        g.update_canvas_pos();
-        update_users_canvas_pos();
+        g.update_canvas_pos(view);
+        update_users_canvas_pos(view);
         return;
     }
 
@@ -167,7 +160,7 @@ export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot
 
     const center = new CanvasCoord(canvas.width/2, canvas.height/2);
     view.apply_zoom_to_center(center, Math.min(ratio_h, ratio_w)*0.8);
-    g.update_canvas_pos();
-    update_users_canvas_pos();
+    g.update_canvas_pos(view);
+    update_users_canvas_pos(view);
 }
 

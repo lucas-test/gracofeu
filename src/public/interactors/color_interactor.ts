@@ -1,9 +1,11 @@
 
-import { CanvasCoord } from '../board/coord';
 import { socket } from '../socket';
 import { Interactor, DOWN_TYPE } from './interactor'
 import { key_states, last_down, last_down_index } from './interactor_manager';
 import BASIC_COLORS from '../basic_colors.json';
+import { CanvasCoord } from '../board/vertex';
+import { ClientGraph } from '../board/graph';
+import { local_board } from '../setup';
 
 export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]), 'url("../img/cursors/color.svg"), auto');
 
@@ -137,7 +139,7 @@ color_interactor.onleave = () => {
 }
 
 
-color_interactor.mousedown = (( canvas, ctx, g, e) => {
+color_interactor.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down == DOWN_TYPE.VERTEX) {
         if ( g.vertices.has(last_down_index) && g.vertices.get(last_down_index).color != color_selected){
             const data_socket = new Array();
@@ -162,9 +164,9 @@ color_interactor.mousedown = (( canvas, ctx, g, e) => {
 })
 
 
-color_interactor.mousemove = ((canvas, ctx, g, e) => {
+color_interactor.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down != null) {
-        const elt = g.get_element_nearby(e, color_interactor.interactable_element_type);
+        const elt = g.get_element_nearby(e, color_interactor.interactable_element_type, local_board.view);
         if (elt.type == DOWN_TYPE.VERTEX) {
             if ( g.vertices.has(elt.index) && g.vertices.get(elt.index).color != color_selected){
                 const data_socket = new Array();

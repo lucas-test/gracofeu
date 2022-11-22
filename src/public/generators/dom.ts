@@ -1,4 +1,5 @@
-import { CanvasCoord } from "../board/coord";
+import { View } from "../board/camera";
+import { CanvasCoord } from "../board/vertex";
 import { set_clipboard } from "../clipboard";
 import { create_popup } from "../popup";
 import { GraphGenerator } from "./generator";
@@ -9,7 +10,7 @@ let last_generator: GraphGenerator = null;
 
 
 
-export function setup_generators_div(canvas: HTMLCanvasElement) {
+export function setup_generators_div(canvas: HTMLCanvasElement, view: View) {
     const main_div = create_popup("generators_div", "Generators");
     const popup_content = document.getElementById("generators_div_content");
     popup_content.style.display = "flex";
@@ -37,7 +38,7 @@ export function setup_generators_div(canvas: HTMLCanvasElement) {
         text.classList.add("generator_item");
         text.innerHTML = gen.name;
         text.onclick = () => {
-            activate_generator_div(canvas, gen);
+            activate_generator_div(canvas, gen, view);
         }
         generators_list.appendChild(text)
     }
@@ -51,7 +52,7 @@ export function turn_on_generators_div() {
     document.getElementById("generators_div").style.display = "block";
 }
 
-function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator) {
+function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator, view: View) {
     const div = document.getElementById("generator_configuration");
     div.innerHTML = ""; // TODO clear better ??
 
@@ -76,7 +77,7 @@ function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator) 
                 return;
             }
         }
-        set_clipboard(gen.generate(new CanvasCoord(e.pageX, e.pageY)), new CanvasCoord(e.pageX, e.pageY) , true, canvas);
+        set_clipboard(gen.generate(new CanvasCoord(e.pageX, e.pageY), view), new CanvasCoord(e.pageX, e.pageY) , true, canvas);
         last_generator = gen;
         turn_off_generators_div();
     }
@@ -86,9 +87,9 @@ function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator) 
 
 
 
-export function regenerate_graph(e: MouseEvent, canvas: HTMLCanvasElement){
+export function regenerate_graph(e: MouseEvent, canvas: HTMLCanvasElement, view: View){
     if ( last_generator !== null){
-        set_clipboard(last_generator.generate(new CanvasCoord(e.pageX, e.pageY)), new CanvasCoord(e.pageX, e.pageY), true, canvas);
+        set_clipboard(last_generator.generate(new CanvasCoord(e.pageX, e.pageY), view), new CanvasCoord(e.pageX, e.pageY), true, canvas);
     }
 }
 

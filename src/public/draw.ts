@@ -10,20 +10,20 @@ export let COLOR_INNER_VERTEX_DEFAULT = "#000000";
 
 import { INDEX_TYPE } from './board/camera';
 import { User, users } from './user';
-import { Graph } from './board/graph';
-import { Stroke } from './board/stroke';
-import { Area } from './board/area';
+import { ClientGraph } from './board/graph';
+import { ClientStroke } from './board/stroke';
+import { ClientArea } from './board/area';
 import { interactor_loaded } from './interactors/interactor_manager';
 import { DOWN_TYPE } from './interactors/interactor';
 import { clamp } from './utils';
 import { Multicolor } from './multicolor';
 import { interactor_area } from './interactors/area_interactor';
-import { CanvasCoord } from './board/coord';
 import { local_board } from './setup';
-import { ORIENTATION } from './board/link';
 import { drawRoundRect, draw_circle, draw_head, draw_line, real_color } from './draw_basics';
 import { real_color2 } from './basic_colors';
 import { graph_clipboard } from './clipboard';
+import { ORIENTATION } from 'gramoloss';
+import { CanvasCoord } from './board/vertex';
 
 export function toggle_dark_mode(enable:boolean){
     const action_DOM = document.getElementById("actions");
@@ -72,7 +72,7 @@ export function toggle_dark_mode(enable:boolean){
 
 
 
-export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function resizeCanvas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     // view.window_height = window.innerHeight;
@@ -95,7 +95,7 @@ export function draw_background(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 }
 
 
-export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext2D) {
+export function draw_vertex(index: number, g: ClientGraph, ctx: CanvasRenderingContext2D) {
     const vertex = g.vertices.get(index);
     let vertex_radius = VERTEX_RADIUS;
     if (local_board.view.index_type != INDEX_TYPE.NONE) {
@@ -103,7 +103,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     }
 
     if (vertex.is_selected) {
-        draw_circle(vertex.pos.canvas_pos, SELECTION_COLOR, vertex_radius+3, 1, ctx);
+        draw_circle(vertex.canvas_pos, SELECTION_COLOR, vertex_radius+3, 1, ctx);
     } else {
         /* DISABLED for new draw of vertices
         draw_circle(vertex.pos.canvas_pos, COLOR_BORDER_VERTEX, vertex_radius, 1, ctx);
@@ -111,14 +111,14 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
     }
     
     const color = real_color(vertex.color, local_board.view.dark_mode);
-    draw_circle(vertex.pos.canvas_pos, color, vertex_radius - 2, 1, ctx);
+    draw_circle(vertex.canvas_pos, color, vertex_radius - 2, 1, ctx);
 
     // DRAW INDEX 
     if (local_board.view.index_type != INDEX_TYPE.NONE) {
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
         ctx.fillStyle = COLOR_INDEX;
-        const pos = vertex.pos.canvas_pos
+        const pos = vertex.canvas_pos
         ctx.fillText(vertex.index_string, pos.x - measure.width / 2, pos.y + 5);
     }
 
@@ -127,7 +127,7 @@ export function draw_vertex(index: number, g: Graph, ctx: CanvasRenderingContext
         ctx.font = "17px Arial";
         const measure = ctx.measureText(pv.value);
         ctx.fillStyle = "white"
-        const pos = vertex.pos.canvas_pos
+        const pos = vertex.canvas_pos
         ctx.fillText(pv.value, pos.x - measure.width / 2, pos.y + 25);
     }
 }
@@ -306,21 +306,21 @@ function draw_following(ctx: CanvasRenderingContext2D){
 
 
 // DRAW VERTICES
-function draw_vertices(ctx: CanvasRenderingContext2D, g: Graph) {
+function draw_vertices(ctx: CanvasRenderingContext2D, g: ClientGraph) {
     for (const index of g.vertices.keys()) {
         draw_vertex(index, g, ctx);
     }
 }
 
 // DRAW LINKS
-function draw_links(ctx: CanvasRenderingContext2D, g: Graph) {
+function draw_links(ctx: CanvasRenderingContext2D, g: ClientGraph) {
     for (let link of g.links.values()) {
         let u = g.vertices.get(link.start_vertex);
         let v = g.vertices.get(link.end_vertex);
 
-        const posu = u.pos.canvas_pos; 
-        const posv = v.pos.canvas_pos; 
-        const poscp = link.cp.canvas_pos;
+        const posu = u.canvas_pos; 
+        const posv = v.canvas_pos; 
+        const poscp = link.cp_canvas_pos;
 
         if (link.is_selected) {
             ctx.strokeStyle = SELECTION_COLOR; 
@@ -372,11 +372,11 @@ function draw_alignements(ctx: CanvasRenderingContext2D) {
 }
 
 // DRAW STROKES
-function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
+function draw_stroke(ctx: CanvasRenderingContext2D, s:ClientStroke){
     if(s.positions.length > 0){ 
         if(s.is_selected){
-            const tlcanvas = s.top_left.canvas_pos;
-            const brcanvas = s.bot_right.canvas_pos;
+            const tlcanvas = s.canvas_corner_top_left;
+            const brcanvas = s.canvas_corner_bottom_right;
             ctx.beginPath();
             ctx.strokeStyle = SELECTION_COLOR;
             ctx.lineWidth = 1;
@@ -385,24 +385,24 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
             ctx.stroke();
 
             
-            let position_canvas = s.positions[0].canvas_pos;
+            let position_canvas = s.canvas_positions[0];
             ctx.beginPath();
             ctx.lineWidth = s.width + 4;
             ctx.moveTo(position_canvas.x, position_canvas.y);
             for(let i = 1; i<s.positions.length; i++){
-                position_canvas = s.positions[i].canvas_pos;
+                position_canvas = s.canvas_positions[i];
                 ctx.lineTo(position_canvas.x, position_canvas.y);
             }
             ctx.stroke();
         }
 
-        let position_canvas = s.positions[0].canvas_pos;
+        let position_canvas = s.canvas_positions[0];
         ctx.beginPath();
         ctx.strokeStyle = real_color2(s.color, local_board.view.dark_mode);
         ctx.lineWidth = s.width;
         ctx.moveTo(position_canvas.x, position_canvas.y);
         for(let i = 1; i<s.positions.length; i++){
-            position_canvas = s.positions[i].canvas_pos;
+            position_canvas = s.canvas_positions[i];
             ctx.lineTo(position_canvas.x, position_canvas.y);
         }
         ctx.stroke();
@@ -410,7 +410,7 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:Stroke){
 }
 
 
-function draw_strokes(ctx: CanvasRenderingContext2D, g:Graph){
+function draw_strokes(ctx: CanvasRenderingContext2D, g:ClientGraph){
     g.strokes.forEach(s => {
         draw_stroke(ctx, s);
     });
@@ -418,61 +418,61 @@ function draw_strokes(ctx: CanvasRenderingContext2D, g:Graph){
 
 
 // DRAW AREA
-function draw_area(ctx: CanvasRenderingContext2D, a:Area){
+function draw_area(ctx: CanvasRenderingContext2D, a:ClientArea){
 
 
     ctx.beginPath();
-    ctx.strokeStyle = a.multicolor.color;
+    ctx.strokeStyle = a.color;
     ctx.lineWidth = 2;
-    const c1canvas = a.corner_top_left.canvas_pos;
-    const c2canvas = a.corner_bottom_right.canvas_pos;
+    const c1canvas = a.canvas_corner_top_left;
+    const c2canvas = a.canvas_corner_bottom_right;
     ctx.rect(c1canvas.x , c1canvas.y, c2canvas.x - c1canvas.x, c2canvas.y - c1canvas.y);
     ctx.stroke();
 
     ctx.globalAlpha = 0.07;
-    ctx.fillStyle = a.multicolor.color;
+    ctx.fillStyle = a.color;
     ctx.fill();
     ctx.globalAlpha = 1;
 
     ctx.beginPath();
     ctx.font = "400 24px Arial";
     const measure = ctx.measureText(a.label);
-    ctx.fillStyle = a.multicolor.color;
-    const text_canvas_pos = local_board.view.canvasCoord(a.bot_left_corner());
+    ctx.fillStyle = a.color;
+    const text_canvas_pos = a.canvas_corner_bottom_left;
     ctx.rect(text_canvas_pos.x, text_canvas_pos.y - 29, measure.width + 10, 29);
     ctx.fill();
 
     
     ctx.beginPath();
-    ctx.fillStyle = a.multicolor.contrast;
+    ctx.fillStyle = a.color; // TODO multicolor.contrast
     ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 5);
     ctx.fill();
 
 
 
     if(interactor_loaded && interactor_loaded === interactor_area){
-        const top_left = a.corner_top_left.canvas_pos;
-        const top_right = local_board.view.canvasCoord(a.top_right_corner());
-        const bot_right = a.corner_bottom_right.canvas_pos;
+        const top_left = a.canvas_corner_top_left;
+        const top_right = a.canvas_corner_top_right;
+        const bot_right = a.canvas_corner_bottom_right;
 
         const corner_side = 18;
 
         ctx.beginPath();
-        ctx.strokeStyle = a.multicolor.color;
-        ctx.fillStyle = a.multicolor.color;
+        ctx.strokeStyle = a.color;
+        ctx.fillStyle = a.color;
         ctx.lineWidth = 2;
         ctx.rect(top_left.x, top_left.y, corner_side, corner_side);
         ctx.stroke();
         // ctx.fill();
 
         ctx.beginPath();
-        ctx.strokeStyle = a.multicolor.color;
+        ctx.strokeStyle = a.color;
         ctx.lineWidth = 2;
         ctx.rect(top_right.x-corner_side, top_right.y, corner_side, corner_side);
         ctx.stroke();
 
         ctx.beginPath();
-        ctx.strokeStyle = a.multicolor.color;
+        ctx.strokeStyle = a.color;
         ctx.lineWidth = 2;
         ctx.rect(bot_right.x-corner_side, bot_right.y-corner_side, corner_side, corner_side);
         ctx.stroke();
@@ -480,7 +480,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:Area){
 }
 
 
-function draw_areas(ctx:CanvasRenderingContext2D, g:Graph)
+function draw_areas(ctx:CanvasRenderingContext2D, g:ClientGraph)
 {
     g.areas.forEach(a => {
         draw_area(ctx, a);
@@ -501,7 +501,7 @@ function draw_graph_generated(ctx: CanvasRenderingContext2D){
     }
 }
 
-export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: Graph) {
+export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
     draw_background(canvas, ctx);
     draw_areas(ctx, g);
     draw_alignements(ctx);

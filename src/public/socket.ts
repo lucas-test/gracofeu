@@ -1,19 +1,19 @@
 import { io } from "socket.io-client";
 import { draw, draw_vertex } from "./draw";
 import { Self, self_user, update_self_user_div, update_users_canvas_pos, update_user_list_div, User, users } from "./user";
-import { Stroke } from "./board/stroke";
+import { ClientStroke } from "./board/stroke";
 import { update_params_loaded } from "./parametors/parametor_manager";
-import { Area } from "./board/area";
+import { ClientArea } from "./board/area";
 import { update_options_graphs } from "./parametors/div_parametor";
-import { CanvasCoord, Coord, ServerCoord } from "./board/coord";
 import { init_list_parametors_for_area, make_list_areas } from "./board/area_div";
 import { get_sensibilities, SENSIBILITY } from "./parametors/parametor";
 import { local_board } from "./setup";
 import { Board } from "./board/board";
-import { LocalVertex } from "./board/vertex";
-import { Link, ORIENTATION } from "./board/link";
+import { ClientVertex } from "./board/vertex";
 import { interactor_loaded } from "./interactors/interactor_manager";
 import { display_weight_input, validate_weight } from "./interactors/text";
+import { Coord, ORIENTATION, Vect } from "gramoloss";
+import { ClientLink } from "./board/link";
 export const socket = io()
 
 
@@ -50,8 +50,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             // console.log("Following......")
             local_board.view.camera = new Coord(x, y);
             local_board.view.zoom = zoom;
-            g.update_canvas_pos();
-            update_users_canvas_pos();
+            g.update_canvas_pos(local_board.view);
+            update_users_canvas_pos(local_board.view);
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
         else{
@@ -72,7 +72,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             users.get(id).label = label;
         }
         else {
-            users.set(id, new User(id, label, color));
+            users.set(id, new User(id, label, color, local_board.view));
         }
         update_user_list_div();
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -94,10 +94,10 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function update_user(id: string, label: string, color: string, x: number, y: number) {
         if (users.has(id)) {
-            users.get(id).set_pos(x,y);
+            users.get(id).set_pos(x,y,local_board.view);
         }
         else {
-            users.set(id, new User(id, label, color, new ServerCoord(x, y)));
+            users.set(id, new User(id, label, color, local_board.view,  new Coord(x, y)));
             update_user_list_div();
             // console.log("NEW USER !! ");
         }
@@ -119,7 +119,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         users.clear();
         for (const data of users_entries) {
             //TODO: Corriger ca: on est obligé de mettre de fausses coordonnées aux autres users à l'init car le serveur ne les stocke pas 
-            const new_user = new User(data[0], data[1].label, data[1].color, new ServerCoord(-100, -100));
+            const new_user = new User(data[0], data[1].label, data[1].color, local_board.view, new Coord(-100, -100));
             users.set(data[0], new_user);
         }
         // console.log(users);
@@ -148,9 +148,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         for(const s of data){
             const positions = [];
             s[1].positions.forEach(e => {
-                positions.push(new ServerCoord(e.x, e.y));
+                positions.push(new Coord(e.x, e.y));
             });
-            const new_stroke = new Stroke(positions, s[1].color, s[1].width);
+            const new_stroke = new ClientStroke(positions, s[1].color, s[1].width, local_board.view);
             g.strokes.set(s[0], new_stroke);
         }
         // update_params_loaded(g,false);
@@ -170,9 +170,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.areas.clear();
         for(const s of data){
-            const new_area = new Area(s[0], s[1].label, s[1].c1, s[1].c2, s[1].color);
+            const new_area = new ClientArea( s[1].label, s[1].c1, s[1].c2, s[1].color, local_board.view);
             g.areas.set(s[0], new_area);
-            init_list_parametors_for_area(board, new_area, canvas, ctx);
+            init_list_parametors_for_area(board, s[0], canvas, ctx);
         }
 
         let new_area_ids = new Set<number>();
@@ -200,7 +200,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         for (const e of data) {
             if (g.links.has(e.index)) {
                 const link = g.links.get(e.index);
-                link.cp = new ServerCoord(e.cp.x, e.cp.y);
+                link.cp = new Coord(e.cp.x, e.cp.y);
+                link.cp_canvas_pos = local_board.view.create_canvas_coord(link.cp);
                 g.automatic_weight_position(e.index);
             }
         }
@@ -215,7 +216,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const cp = data[1];
             if ( g.links.has(link_index)){
                 const link = g.links.get(link_index);
-                link.cp = new ServerCoord(cp.x, cp.y);
+               link.cp = new Coord(cp.x, cp.y);
+                link.cp_canvas_pos = local_board.view.create_canvas_coord(link.cp);
                 g.automatic_weight_position(link_index);
             }
         }
@@ -224,21 +226,23 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     }
 
     function handle_translate_vertices(indices, shiftx: number, shifty: number){
-        const shift = new ServerCoord(shiftx, shifty);
+        const shift = new Vect(shiftx, shifty);
         for( const index of indices){
             if ( g.vertices.has(index)){
                 const vertex = g.vertices.get(index);
                 const previous_pos = vertex.pos.copy();
-                vertex.pos.server_translate(shift, local_board.view);
+                vertex.translate_by_server_vect(shift, local_board.view);
                 const new_pos = vertex.pos.copy();
 
                 for (const [link_index, link] of g.links.entries()) {
                     if ( link.start_vertex ==index){
                         const end_vertex_pos = g.vertices.get(link.end_vertex).pos;
-                        link.transform_cp(new_pos, previous_pos, end_vertex_pos, local_board.view);
+                        link.transform_cp(new_pos, previous_pos, end_vertex_pos);
+                        link.cp_canvas_pos = local_board.view.create_canvas_coord(link.cp);
                     } else if (link.end_vertex == index ){
                         const start_vertex_pos = g.vertices.get(link.start_vertex).pos;
-                        link.transform_cp(new_pos, previous_pos, start_vertex_pos, local_board.view );
+                        link.transform_cp(new_pos, previous_pos, start_vertex_pos );
+                        link.cp_canvas_pos = local_board.view.create_canvas_coord(link.cp);
                     }
                 }
             }
@@ -247,7 +251,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function handle_update_control_point(index: number, c: Coord) {
         const link = g.links.get(index);
-        link.cp = new ServerCoord(c.x, c.y);
+        link.cp = new Coord(c.x, c.y);
+        link.cp_canvas_pos = local_board.view.create_canvas_coord(link.cp);
         g.automatic_weight_position(index);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]),false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -262,7 +267,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.clear_vertices();
         for (const data of vertices_entries) {
-            const new_vertex = new LocalVertex(data[1].pos, data[1].weight);
+            const new_vertex = new ClientVertex(data[1].pos.x, data[1].pos.y, data[1].weight, local_board.view);
             new_vertex.color = data[1].color;
             g.vertices.set(data[0], new_vertex);
         }
@@ -277,17 +282,14 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 case "DIRECTED":
                     orient = ORIENTATION.DIRECTED
                     break;
-                case "DIGON":
-                    orient = ORIENTATION.DIGON
-                    break;
             }
-            const new_link = new Link(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color, data[1].weight);
+            const new_link = new ClientLink(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color, data[1].weight, local_board.view);
             new_link.update_weight(data[1].weight, data[0]);
             g.links.set(data[0], new_link);
             g.automatic_weight_position(data[0]);            
         }
 
-        g.compute_vertices_index_string();
+        g.compute_vertices_index_string(local_board.view);
 
         init_list_parametors_for_area(board, null, canvas, ctx);
 
@@ -305,7 +307,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         const v = g.vertices.get(index);
         v.pos.x = x;
         v.pos.y = y;
-        v.pos.update_canvas_pos_without_saving(local_board.view);
+        // v.pos.update_canvas_pos_without_saving(local_board.view);
+        v.canvas_pos = local_board.view.create_canvas_coord(v.pos);
         g.automatic_link_weight_position_from_vertex(index);
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
@@ -318,7 +321,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const v = g.vertices.get(e.index);
             v.pos.x = e.x;
             v.pos.y = e.y;
-            v.pos.update_canvas_pos_without_saving(local_board.view);
+            // v.pos.update_canvas_pos_without_saving(local_board.view);
+            v.canvas_pos = local_board.view.create_canvas_coord(v.pos);
             g.automatic_link_weight_position_from_vertex(e.index);
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);

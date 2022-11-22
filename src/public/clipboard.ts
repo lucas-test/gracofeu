@@ -1,13 +1,13 @@
-import { CanvasCoord } from "./board/coord";
-import { Graph } from "./board/graph";
+import { ClientGraph } from "./board/graph";
+import { CanvasCoord } from "./board/vertex";
 import { socket } from "./socket";
 
-export let graph_clipboard: Graph = null;
+export let graph_clipboard: ClientGraph = null;
 export let mouse_position_at_generation: CanvasCoord = null;
 export let clipboard_comes_from_generator = false;
 
 
-export function set_clipboard(graph: Graph, pos_at_click: CanvasCoord, is_coming_from_clipboard: boolean, canvas: HTMLCanvasElement){
+export function set_clipboard(graph: ClientGraph, pos_at_click: CanvasCoord, is_coming_from_clipboard: boolean, canvas: HTMLCanvasElement){
     graph_clipboard = graph;
     mouse_position_at_generation = pos_at_click;
     clipboard_comes_from_generator = is_coming_from_clipboard;

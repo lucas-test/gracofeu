@@ -1,8 +1,8 @@
 import { INDEX_TYPE } from "./board/camera";
-import { CanvasCoord } from "./board/coord";
 import { VERTEX_RADIUS } from "./draw";
 import { local_board } from "./setup";
 import BASIC_COLORS from "./basic_colors.json";
+import { CanvasCoord } from "./board/vertex";
 
 const ARC_ARROW_LENGTH = 12
 

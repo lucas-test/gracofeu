@@ -1,10 +1,12 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
-import { Area, AREA_CORNER, AREA_SIDE } from '../board/area';
-import { ServerCoord } from '../board/coord';
+import { ClientArea, AREA_CORNER, AREA_SIDE } from '../board/area';
 import { down_coord, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
-import { CanvasVect, ServerVect } from '../board/vect';
+import { CanvasVect } from '../board/vect';
+import { ClientGraph } from '../board/graph';
+import { CanvasCoord } from '../board/vertex';
+import { Coord } from 'gramoloss';
 
 
 export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]), 'default')
@@ -12,17 +14,17 @@ export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DO
 let is_creating_area : boolean;
 let last_created_area_index: number = null;
 let is_moving_area : boolean;
-let first_corner : ServerCoord;
+let first_corner : Coord;
 
 let side_number: AREA_SIDE;
 let corner_number: AREA_CORNER;
 let vertices_contained = new Set<number>();
 
 
-interactor_area.mousedown = (( canvas, ctx, g, e) => {
+interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
-        first_corner = local_board.view.serverCoord2(e);
+        first_corner = local_board.view.create_server_coord(e);
         socket.emit("add_area", first_corner.x, first_corner.y, first_corner.x, first_corner.y, "G", "", 
         (response: number) => { last_created_area_index = response });
     } else if (last_down === DOWN_TYPE.AREA_CORNER){
@@ -36,16 +38,16 @@ interactor_area.mousedown = (( canvas, ctx, g, e) => {
     } else if ( last_down == DOWN_TYPE.AREA){
         is_moving_area = true;
         const area = g.areas.get(last_down_index);
-        area.save_canvas_pos();
+        //area.save_canvas_pos();
         vertices_contained = g.vertices_contained_by_area(area);
         g.vertices.forEach((vertex, vertex_index)=> {
             if( vertices_contained.has(vertex_index)){
-                vertex.save_pos();
+                //vertex.save_pos();
             }
         })
         for (var link of g.links.values()) {
             if(vertices_contained.has(link.start_vertex) || vertices_contained.has(link.end_vertex)){
-                link.save_pos();
+                //link.save_pos();
             }
         }
     }
@@ -69,7 +71,7 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
         {
             moving_area.resize_corner_area(e, corner_number, local_board.view);
         } else if ( last_down == DOWN_TYPE.AREA){
-            g.translate_area(e.sub2(down_coord), last_down_index, vertices_contained);
+            g.translate_area(CanvasVect.from_canvas_coords(down_coord, e), last_down_index, vertices_contained, local_board.view);
         }
         return true;
     }
@@ -146,8 +148,8 @@ interactor_area.mousemove = ((canvas, ctx, g, e) => {
    
 })
 
-interactor_area.mouseup = ((canvas, ctx, g, e) => {
-    const esc  = local_board.view.serverCoord2(e);
+interactor_area.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+    const esc  = local_board.view.create_server_coord(e);
     if (last_down === DOWN_TYPE.EMPTY) {
         socket.emit("area_move_corner", last_created_area_index, esc.x, esc.y, AREA_CORNER.TOP_RIGHT);
         is_creating_area = false;
@@ -165,7 +167,7 @@ interactor_area.mouseup = ((canvas, ctx, g, e) => {
     }
     else if ( last_down == DOWN_TYPE.AREA){
         const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
-        const shift: ServerVect = local_board.view.server_vect(canvas_shift);
+        const shift = local_board.view.server_vect(canvas_shift);
         socket.emit("translate_areas", [last_down_index], shift.x, shift.y);
     }
 })
