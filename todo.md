@@ -101,22 +101,7 @@
     - [X] doc
     - [ ] doc gestion latex
     - [ ] verbose
-    - parametres classiques : (https://en.wikipedia.org/wiki/List_of_graphs_by_edges_and_vertices)
-        - [X] distance (diametre)
-        - [X] degré (min, max, moyen)
-        - [X] is_connected
-        - [X] number connected components
-        - [ ] is_currently_planar
-        - [ ] is_planar 
-        - [ ] is_bipartite
-        - [X] is_coloring_propre
-        - [ ] radius
-        - [ ] girth
-        - [ ] chromatic number
-        - [ ] chromatic index
-    - parametres moins importants :
-        - [ ] séquence degrés
-        - [ ] is_sparse 
+    - [ ] import à partir d'une fonction de gramoloss
 
 
 
@@ -142,14 +127,8 @@
     - [X] unifier le style pour la croix qui ferme le div, j'ai une utilisé une classe "close_button"
     - [X] liste avec possibilité de faire une recherche
     - [ ] prévisualisation du rendu ??
-    - autres générateurs :
-        - [ ] unit disk graph
-        - [ ] delaunay graph
-        - [ ] random independent placés au hasard
-        - [ ] tournament
-        - [ ] arbres
-        - [ ] Petersen
     - [X] en faire plusieurs à la suite avec Ctrl
+    - [ ] import à partir de Gramoloss
 
 - text interactor
     - [X] link weight
@@ -176,7 +155,7 @@
     - [X] ça marche
     - [X] delete_selected_elements
     - [X] paste_graph
-    - [ ] vertices_merge
+    - [X] vertices_merge
     - [X] REMOVE THIS update_positions
     - [X] translate_control_points
     - [X] update_control_points : remove
@@ -194,7 +173,7 @@
     - [ ] load_json
 
 - control Z Optimizations and refactorizations 
-    - [ ] adapt CanvasVect and ServerVect to translation of CPs and vertices
+    - [X] adapt CanvasVect and ServerVect to translation of CPs and vertices
     - [ ] translate_control_points : just send cps not all graph
     - [ ] get modifications out of graph, so that Modification has a method "implement" and "undo" on a graph
 

@@ -57,14 +57,12 @@ export class ClientStroke extends Stroke{
 
     translate_by_canvas_vect(shift: CanvasVect, view: View){
         const server_shift = view.server_vect(shift);
-        this.bot_right.translate(server_shift);
-        this.top_left.translate(server_shift);
-        for ( const position of this.positions){
-            position.translate(server_shift);
-        }
+        this.translate(server_shift);
 
         for (const pos of this.canvas_positions){
             pos.translate_by_canvas_vect(shift);
         }
+        this.canvas_corner_top_left.translate_by_canvas_vect(shift);
+        this.canvas_corner_bottom_right.translate_by_canvas_vect(shift);
     }
 }

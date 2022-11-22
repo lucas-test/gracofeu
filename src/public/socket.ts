@@ -146,7 +146,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         // console.log(data);
         g.strokes.clear();
         for(const s of data){
-            const positions = [];
+            const positions = new Array<Coord>();
             s[1].positions.forEach(e => {
                 positions.push(new Coord(e.x, e.y));
             });
@@ -170,7 +170,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.areas.clear();
         for(const s of data){
-            const new_area = new ClientArea( s[1].label, s[1].c1, s[1].c2, s[1].color, local_board.view);
+            const c1 = new Coord(s[1].c1.x, s[1].c1.y);
+            const c2 = new Coord(s[1].c2.x, s[1].c2.y);
+            const new_area = new ClientArea( s[1].label, c1, c2, s[1].color, local_board.view);
             g.areas.set(s[0], new_area);
             init_list_parametors_for_area(board, s[0], canvas, ctx);
         }
@@ -226,6 +228,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     }
 
     function handle_translate_vertices(indices, shiftx: number, shifty: number){
+        //console.log("Receive: update_translate_vertices");
         const shift = new Vect(shiftx, shifty);
         for( const index of indices){
             if ( g.vertices.has(index)){
@@ -247,6 +250,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 }
             }
         }
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 
     function handle_update_control_point(index: number, c: Coord) {
@@ -283,7 +287,8 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     orient = ORIENTATION.DIRECTED
                     break;
             }
-            const new_link = new ClientLink(data[1].start_vertex, data[1].end_vertex, data[1].cp, orient, data[1].color, data[1].weight, local_board.view);
+            const cp = new Coord(data[1].cp.x, data[1].cp.y);
+            const new_link = new ClientLink(data[1].start_vertex, data[1].end_vertex, cp, orient, data[1].color, data[1].weight, local_board.view);
             new_link.update_weight(data[1].weight, data[0]);
             g.links.set(data[0], new_link);
             g.automatic_weight_position(data[0]);            
@@ -304,6 +309,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
     function update_vertex_position(index: number, x: number, y: number) {
+        //console.log("Receive: update_vertex_position");
         const v = g.vertices.get(index);
         v.pos.x = x;
         v.pos.y = y;
@@ -317,6 +323,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
     function update_vertex_positions(data) {
+        console.log("Receive: update_vertex_positions");
         for (const e of data) {
             const v = g.vertices.get(e.index);
             v.pos.x = e.x;

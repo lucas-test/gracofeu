@@ -79,9 +79,7 @@ export class View {
         // this.window_height = window.innerHeight;
     }
 
-    save_camera(){
-        this.old_camera.copy_from(this.camera);
-    }
+   
 
     toggle_grid() {
         this.grid_show = !this.grid_show;
@@ -104,8 +102,9 @@ export class View {
         }
     }
 
-    translate_camera(shift: Coord){
-        this.camera.translate(shift); // camera = camera + shift
+    translate_camera(shift: CanvasVect){
+        this.camera.x += shift.x;
+        this.camera.y += shift.y;
     }
 
     server_vect(v: CanvasVect): Vect{
@@ -147,7 +146,7 @@ export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot
     const shift_x = (canvas.width - w)/2 - top_left.x;
     const shift_y = (canvas.height - h)/2 - top_left.y;
 
-    view.translate_camera(new Coord(shift_x, shift_y));
+    view.translate_camera(new Vect(shift_x, shift_y));
 
     if ( w <= 0 || h <= 0 ){
         g.update_canvas_pos(view);
