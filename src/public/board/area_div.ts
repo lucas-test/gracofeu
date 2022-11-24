@@ -9,6 +9,8 @@ import { CanvasCoord, ClientVertex } from "./vertex";
 import { local_board } from "../setup";
 import { params_available_turn_on_div } from "../parametors/div_parametor";
 
+type WholeGraphArea = {};
+
 
 
 export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, board: Board){

@@ -444,7 +444,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:ClientArea){
 
     
     ctx.beginPath();
-    ctx.fillStyle = a.color; // TODO multicolor.contrast
+    ctx.fillStyle = "white"; // TODO multicolor.contrast
     ctx.fillText(a.label, text_canvas_pos.x + 5, text_canvas_pos.y - 5);
     ctx.fill();
 

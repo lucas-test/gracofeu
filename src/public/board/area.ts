@@ -163,6 +163,10 @@ export class ClientArea extends Area{
         this.canvas_corner_top_left.y = Math.min(c1.y, c2.y);
         this.canvas_corner_bottom_right.x = Math.max(c1.x, c2.x);
         this.canvas_corner_bottom_right.y = Math.max(c1.y, c2.y);
+        this.canvas_corner_bottom_left.x = Math.min(c1.x, c2.x);
+        this.canvas_corner_bottom_left.y = Math.max(c1.y, c2.y);
+        this.canvas_corner_top_right.x = Math.max(c1.x, c2.x);
+        this.canvas_corner_top_right.y = Math.min(c1.y, c2.y);
         this.c1 = view.create_server_coord(this.canvas_corner_top_left);
         this.c2 = view.create_server_coord(this.canvas_corner_bottom_right);
     }
@@ -171,48 +175,32 @@ export class ClientArea extends Area{
 
 
 
-    resize_side_area(pos:CanvasCoord, side_number:AREA_SIDE, view: View){
-        switch(side_number){
-            case AREA_SIDE.TOP:
-                this.canvas_corner_top_left.y = pos.y;
-                break;
-            case AREA_SIDE.RIGHT:
-                this.canvas_corner_bottom_right.x = pos.x;
-                break;
-            case AREA_SIDE.BOT:
-                this.canvas_corner_bottom_right.y = pos.y;
-                break;
-            case AREA_SIDE.LEFT:
-                this.canvas_corner_top_left.x = pos.x;
-                break;
-            default:
-                break;
+    resize_side_area(pos: CanvasCoord, opposite_coord: number, side_number:AREA_SIDE, view: View){
+        if (side_number == AREA_SIDE.TOP || side_number == AREA_SIDE.BOT){
+            this.canvas_corner_top_right.y = Math.min(pos.y, opposite_coord);
+            this.canvas_corner_top_left.y = Math.min(pos.y, opposite_coord);
+            this.canvas_corner_bottom_right.y = Math.max(pos.y, opposite_coord);
+            this.canvas_corner_bottom_left.y = Math.max(pos.y, opposite_coord);
         }
-        this.recompute_corners(view);
+        if (side_number == AREA_SIDE.LEFT || side_number == AREA_SIDE.RIGHT){
+            this.canvas_corner_top_right.x = Math.max(pos.x, opposite_coord);
+            this.canvas_corner_top_left.x = Math.min(pos.x, opposite_coord);
+            this.canvas_corner_bottom_right.x = Math.max(pos.x, opposite_coord);
+            this.canvas_corner_bottom_left.x = Math.min(pos.x, opposite_coord);
+        }
     }
 
 
 
-    resize_corner_area(pos:CanvasCoord, corner_number:AREA_CORNER, view: View){
-        switch(corner_number){
-            case AREA_CORNER.TOP_LEFT:
-                this.canvas_corner_top_left.copy_from(pos);
-                break;
-            case AREA_CORNER.TOP_RIGHT:
-                this.canvas_corner_top_left.y = pos.y;
-                this.canvas_corner_bottom_right.x = pos.x;
-                break;
-            case AREA_CORNER.BOT_RIGHT:
-                this.canvas_corner_bottom_right.copy_from(pos);
-                break;
-            case AREA_CORNER.BOT_LEFT:
-                this.canvas_corner_bottom_right.y = pos.y;
-                this.canvas_corner_top_left.x = pos.x;
-                break;
-            default:
-                break;
-        }
-        this.recompute_corners(view);
+    resize_corner_area(c1:CanvasCoord, c2:CanvasCoord, view: View){
+        this.canvas_corner_top_right.x = Math.max(c1.x, c2.x);
+        this.canvas_corner_top_right.y = Math.min(c1.y, c2.y);
+        this.canvas_corner_top_left.x = Math.min(c1.x, c2.x);
+        this.canvas_corner_top_left.y = Math.min(c1.y, c2.y);
+        this.canvas_corner_bottom_right.x = Math.max(c1.x, c2.x);
+        this.canvas_corner_bottom_right.y = Math.max(c1.y, c2.y);
+        this.canvas_corner_bottom_left.x = Math.min(c1.x, c2.x);
+        this.canvas_corner_bottom_left.y = Math.max(c1.y, c2.y);
     }
 
     translate_by_canvas_vect(shift: CanvasVect, view: View){

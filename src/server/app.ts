@@ -1,5 +1,5 @@
 import express from 'express';
-import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge, middle} from "gramoloss";
+import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge, middle, Vect} from "gramoloss";
 import ENV from './.env.json';
 import { getRandomColor, User, users } from './user';
 
@@ -290,7 +290,7 @@ io.sockets.on('connection', function (client) {
 
     function handle_translate_areas(raw_indices, shiftx: number, shifty: number) {
         console.log("Receive Request: translate_areas", raw_indices, shiftx, shifty);
-        const shift = new Coord(shiftx, shifty);
+        const shift = new Vect(shiftx, shifty);
         const indices = new Set<number>();
         for (const index of raw_indices.values()) {
             indices.add(index);
@@ -321,7 +321,7 @@ io.sockets.on('connection', function (client) {
 
     function handle_translate_strokes(raw_indices, shiftx: number, shifty: number) {
         console.log("handle_translate_strokes", raw_indices, shiftx, shifty);
-        const shift = new Coord(shiftx, shifty);
+        const shift = new Vect(shiftx, shifty);
         const indices = new Set<number>();
         for (const index of raw_indices.values()) {
             indices.add(index);
@@ -368,7 +368,7 @@ io.sockets.on('connection', function (client) {
     // LINKS
     function handle_translate_control_points(raw_indices, shiftx: number, shifty: number) {
         console.log("handle_translate_control_points", raw_indices, shiftx, shifty);
-        const shift = new Coord(shiftx, shifty);
+        const shift = new Vect(shiftx, shifty);
         const indices = new Set<number>();
         for (const index of raw_indices.values()) {
             indices.add(index);
@@ -444,7 +444,7 @@ io.sockets.on('connection', function (client) {
     function handle_translate_vertices(raw_indices, shiftx: number, shifty: number) {
         //console.log("Receive Request: translate vertices")
         //console.log(raw_indices);
-        const shift = new Coord(shiftx, shifty);
+        const shift = new Vect(shiftx, shifty);
         const indices = new Set<number>();
         for (const index of raw_indices.values()) {
             indices.add(index);

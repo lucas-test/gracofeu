@@ -26,7 +26,7 @@ param_nb_edges.compute = ((g: ClientGraph) => {
 
 
 
-export let param_is_connected = new Parametor("Is connected?", "is_connected", "is connected?", "Is the graph/area connected?", false, true, [SENSIBILITY.ELEMENT], true);
+export let param_is_connected = new Parametor("Is connected?", "is_connected", "is connected?", "Is the graph/area connected?", true, true, [SENSIBILITY.ELEMENT], true);
 
 param_is_connected.compute = ((g: ClientGraph) => {
 
@@ -52,7 +52,7 @@ param_is_connected.compute = ((g: ClientGraph) => {
 
 
 
-export let param_number_connected_comp = new Parametor("Number connected component", "number_connected_comp", "#connected comp.", "Compute the number of connected component (undirected)", false, false, [SENSIBILITY.ELEMENT], true);
+export let param_number_connected_comp = new Parametor("Number connected component", "number_connected_comp", "#connected comp.", "Compute the number of connected component (undirected)", true, false, [SENSIBILITY.ELEMENT], true);
 
 param_number_connected_comp.compute = ((g: ClientGraph) => {
 
@@ -165,7 +165,7 @@ param_average_degree.compute = ((g: ClientGraph) => {
 });
 
 
-export let param_has_proper_coloring = new Parametor("Proper vertex-coloring?", "has_proper_coloring", "proper vertex-coloring?", "Print if the current coloring of the vertices is proper or not", false, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR], true);
+export let param_has_proper_coloring = new Parametor("Proper vertex-coloring?", "has_proper_coloring", "proper vertex-coloring?", "Print if the current coloring of the vertices is proper or not", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.COLOR], true);
 
 param_has_proper_coloring.compute = ((g: ClientGraph) => {
 
@@ -205,7 +205,7 @@ param_has_proper_coloring.compute = ((g: ClientGraph) => {
 
 
 
-export let param_diameter = new Parametor("Diameter", "diameter", "diameter", "Print the diameter of the graph", false, false, [SENSIBILITY.ELEMENT], true);
+export let param_diameter = new Parametor("Diameter", "diameter", "diameter", "Print the diameter of the graph", true, false, [SENSIBILITY.ELEMENT], true);
 
 param_diameter.compute = ((g: ClientGraph) => {
     const FW = g.Floyd_Warhall(false);
@@ -253,7 +253,7 @@ param_is_good_weight.compute = ((g: ClientGraph) => {
 
 // -----------------
 
-export const param_weighted_distance_identification = new Parametor("param_weighted_distance_identification", "wdi", "wdi", "Paramètre trop stylé", true, false, [SENSIBILITY.ELEMENT, SENSIBILITY.WEIGHT], false);
+export const param_weighted_distance_identification = new Parametor("Weighted distance identification number", "wdin", "wdin", "Weighted distance identification number", false, false, [SENSIBILITY.ELEMENT, SENSIBILITY.WEIGHT], false);
 
 param_weighted_distance_identification.compute = ((g: ClientGraph) => {
     console.log("compute TIME");

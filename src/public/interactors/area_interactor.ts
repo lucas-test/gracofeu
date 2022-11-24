@@ -19,6 +19,9 @@ let first_corner : Coord;
 let side_number: AREA_SIDE;
 let corner_number: AREA_CORNER;
 let vertices_contained = new Set<number>();
+let previous_canvas_shift = new CanvasVect(0,0);
+let opposite_corner = new CanvasCoord(0,0);
+let opposite_coord = 0;
 
 
 interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
@@ -27,51 +30,85 @@ interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
         first_corner = local_board.view.create_server_coord(e);
         socket.emit("add_area", first_corner.x, first_corner.y, first_corner.x, first_corner.y, "G", "", 
         (response: number) => { last_created_area_index = response });
+        opposite_corner = e.copy();
     } else if (last_down === DOWN_TYPE.AREA_CORNER){
         const area = g.areas.get(last_down_index);
         corner_number = area.is_nearby_corner(e);
+        switch(corner_number) {
+            case AREA_CORNER.TOP_RIGHT: {
+                opposite_corner = area.canvas_corner_bottom_left.copy();
+                break;
+            }
+            case AREA_CORNER.BOT_LEFT: {
+                opposite_corner = area.canvas_corner_top_right.copy();
+                break;
+            }
+            case AREA_CORNER.BOT_RIGHT: {
+                opposite_corner = area.canvas_corner_top_left.copy();
+                break;
+            }
+            case AREA_CORNER.TOP_LEFT: {
+                opposite_corner = area.canvas_corner_bottom_right.copy();
+                break;
+            }
+        }
         is_moving_area = true;
     } else  if (last_down === DOWN_TYPE.AREA_SIDE){
         const area = g.areas.get(last_down_index);
         side_number = area.is_nearby_side(e);
-        is_moving_area = true;
-    } else if ( last_down == DOWN_TYPE.AREA){
-        is_moving_area = true;
-        const area = g.areas.get(last_down_index);
-        //area.save_canvas_pos();
-        vertices_contained = g.vertices_contained_by_area(area);
-        g.vertices.forEach((vertex, vertex_index)=> {
-            if( vertices_contained.has(vertex_index)){
-                //vertex.save_pos();
+        switch(side_number){
+            case AREA_SIDE.BOT:{
+                opposite_coord = area.canvas_corner_top_left.y;
+                break;
             }
-        })
-        for (var link of g.links.values()) {
-            if(vertices_contained.has(link.start_vertex) || vertices_contained.has(link.end_vertex)){
-                //link.save_pos();
+            case AREA_SIDE.TOP:{
+                opposite_coord = area.canvas_corner_bottom_left.y;
+                break;
+            }
+            case AREA_SIDE.LEFT:{
+                opposite_coord = area.canvas_corner_bottom_right.x;
+                break;
+            }
+            case AREA_SIDE.RIGHT:{
+                opposite_coord = area.canvas_corner_bottom_left.x;
+                break;
             }
         }
+        is_moving_area = true;
+    } else if ( last_down == DOWN_TYPE.AREA){
+        const area = g.areas.get(last_down_index);
+        previous_canvas_shift = new CanvasVect(0,0);
+        vertices_contained = new Set();
+        for (const [vertex_index, vertex] of g.vertices.entries()){
+            if ( area.is_containing(vertex)){
+                vertices_contained.add(vertex_index);
+            }
+        }
+        is_moving_area = true;
     }
 })
 
-interactor_area.mousemove = ((canvas, ctx, g, e) => {
+interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
 
     if(is_creating_area){
         if( last_created_area_index != null && g.areas.has(last_created_area_index)){
             const last_created_area = g.areas.get(last_created_area_index);
-            last_created_area.resize_corner_area(e, AREA_CORNER.TOP_RIGHT, local_board.view);
+            last_created_area.resize_corner_area(e, opposite_corner, local_board.view);
+            return true;
         }
-        return true;
     }
     else if(is_moving_area){
         const moving_area = g.areas.get(last_down_index);
         if(side_number != null){
-            moving_area.resize_side_area(e, side_number, local_board.view)
+            moving_area.resize_side_area(e, opposite_coord, side_number, local_board.view)
         }
         else if(corner_number != null)
         {
-            moving_area.resize_corner_area(e, corner_number, local_board.view);
+            moving_area.resize_corner_area(e, opposite_corner, local_board.view);
         } else if ( last_down == DOWN_TYPE.AREA){
-            g.translate_area(CanvasVect.from_canvas_coords(down_coord, e), last_down_index, vertices_contained, local_board.view);
+            const shift = CanvasVect.from_canvas_coords(down_coord,e);
+            g.translate_area(shift.sub(previous_canvas_shift), last_down_index, vertices_contained, local_board.view);
+            previous_canvas_shift.set_from(shift);
         }
         return true;
     }
@@ -169,6 +206,7 @@ interactor_area.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
         const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
         const shift = local_board.view.server_vect(canvas_shift);
         socket.emit("translate_areas", [last_down_index], shift.x, shift.y);
+        is_moving_area = false;
     }
 })
 
