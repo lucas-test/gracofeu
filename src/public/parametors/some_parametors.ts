@@ -5,6 +5,18 @@ import { is_segments_intersection, is_triangles_intersection } from '../utils';
 import { ORIENTATION } from 'gramoloss';
 import { ClientLink } from '../board/link';
 
+export let param_has_cycle = new Parametor("Has cycle?", "has_cycle", "?has_cycle", "Check if the graph has an undirected cycle", true, true, [SENSIBILITY.ELEMENT], false);
+
+param_has_cycle.compute = ((g: ClientGraph) => {
+    return String(g.has_cycle());
+})
+
+export let param_has_directed_cycle = new Parametor("Has directed cycle?", "has_directed_cycle", "?has_directed_cycle", "Check if the graph has a directed cycle", true, true, [SENSIBILITY.ELEMENT], false);
+
+param_has_directed_cycle.compute = ((g: ClientGraph) => {
+    return String(g.has_directed_cycle());
+})
+
 export let param_nb_vertices = new Parametor("Vertices number", "vertex_number", "#vertices", "Print the number of vertices", true, false, [SENSIBILITY.ELEMENT], true);
 
 param_nb_vertices.compute = ((g: ClientGraph) => {

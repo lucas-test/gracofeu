@@ -1,5 +1,5 @@
 import { draw } from '../draw';
-import { param_average_degree, param_diameter, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo, param_weighted_distance_identification } from './some_parametors';
+import { param_average_degree, param_diameter, param_has_cycle, param_has_directed_cycle, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo, param_weighted_distance_identification } from './some_parametors';
 import { Parametor, SENSIBILITY } from './parametor';
 import { ClientGraph } from '../board/graph';
 import { ClientArea } from '../board/area';
@@ -15,6 +15,8 @@ export let params_available = []
 export function setup_parametors_available() {
     params_available.push(param_nb_edges,
         param_nb_vertices,
+        param_has_cycle,
+        param_has_directed_cycle,
         param_is_connected,
         param_number_connected_comp,
         param_number_colors,
