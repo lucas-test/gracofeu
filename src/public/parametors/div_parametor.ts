@@ -87,7 +87,7 @@ export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRend
             gDiv.textContent = "Everything";
             newDiv.appendChild(gDiv);
             gDiv.addEventListener('click', function () {   
-                load_param(param, canvas, ctx, g, null); 
+                load_param(param, canvas, ctx, g, -1); 
                 params_available_turn_off_div();
             });
 
@@ -124,7 +124,7 @@ function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx
 
     // if there is no area, click on the parametor just computes it on the full graph
     if(g.areas.size == 0){
-        load_param(param, canvas, ctx, g, null);
+        load_param(param, canvas, ctx, g, -1);
         params_available_turn_off_div(); 
     }
     else{

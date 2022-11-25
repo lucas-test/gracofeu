@@ -296,7 +296,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
         g.compute_vertices_index_string(local_board.view);
 
-        // TODO init_list_parametors_for_area(board, null, canvas, ctx);
+        init_list_parametors_for_area(board, -1, canvas, ctx);
 
         const sensi = get_sensibilities(sensibilities);
         update_params_loaded(g, sensi, false);

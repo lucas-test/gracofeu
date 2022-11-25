@@ -140,7 +140,7 @@ function invalid_parametor(param){
 
 export function update_parametor(g:ClientGraph, param){
     const result_span = document.getElementById("span_result_" + param.html_id);
-    if(param.area_id === null){
+    if(param.area_id == -1){
         var result = param.parametor.compute(g, true);
         update_result_span(result, param.parametor, result_span);
     }

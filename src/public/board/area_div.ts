@@ -8,6 +8,7 @@ import { Board } from "./board";
 import { CanvasCoord, ClientVertex } from "./vertex";
 import { local_board } from "../setup";
 import { params_available_turn_on_div } from "../parametors/div_parametor";
+import { ClientGraph } from "./graph";
 
 type WholeGraphArea = {};
 
@@ -19,8 +20,8 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     const list_area_DOM = document.getElementById("area_list_container");
     if(list_area_DOM){
         list_area_DOM.innerHTML = "";
-        for(const a of g.areas.values()){
-            const span_area = get_title_span_for_area(a);
+        for(const [area_index, a] of g.areas.entries()){
+            const span_area = get_title_span_for_area(g, area_index);
             span_area.addEventListener("click", (e)=>{
                 center_canvas_on_rectangle(view, a.canvas_corner_top_left, a.canvas_corner_bottom_right, canvas, g);
                 requestAnimationFrame(function () { 
@@ -193,11 +194,12 @@ export function init_parametor_div(param:Parametor, area_id: number, board: Boar
 }
 
 
-export function get_title_span_for_area(a:ClientArea):HTMLSpanElement{
+export function get_title_span_for_area(g: ClientGraph, area_id: number):HTMLSpanElement{
     const span_area = document.createElement('span');
     span_area.classList.add("span_area_name_parametor");
 
-    if(a!== null){
+    if(area_id >= 0){
+        const a = g.areas.get(area_id);
         span_area.textContent = a.label;
         span_area.style.background = a.color;
         // TODO span_area.style.color = a.multicolor.contrast;
@@ -214,7 +216,6 @@ export function get_title_span_for_area(a:ClientArea):HTMLSpanElement{
 
 export function init_list_parametors_for_area(board: Board, area_id: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
     const g = board.graph;
-    const a = g.areas.get(area_id);
     const view = board.view;
     let area_DOM = document.getElementById("area_"+ area_id);
 
@@ -243,11 +244,11 @@ export function init_list_parametors_for_area(board: Board, area_id: number, can
             
             let titleDOM = document.getElementById("title_area_"+ area_id);
             if(titleDOM === null){
-                titleDOM = get_title_span_for_area(a);
+                titleDOM = get_title_span_for_area(g, area_id);
                 titleDOM.id = "title_area_"+ area_id;
                 title_area_container.appendChild(titleDOM);
     
-                if(a!== null){
+                if(area_id >= 0){
                     // Center on the area on click
                     titleDOM.addEventListener("click",  (e)=>{
                         const area = local_board.graph.areas.get(area_id); // It seems we have to reget the area since the corners may have change

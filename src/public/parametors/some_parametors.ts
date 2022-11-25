@@ -353,7 +353,7 @@ param_weighted_distance_identification.compute = ((g: ClientGraph) => {
 
 
 function test(g: ClientGraph) {
-    const FW = this.Floyd_Warhall(g, true);
+    const FW = g.Floyd_Warhall(true);
     for (const v_index of g.vertices.keys()) {
         for (const u_index of g.vertices.keys()) {
             if (u_index != v_index) {
