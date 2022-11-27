@@ -2,7 +2,7 @@
 import { ClientGraph } from '../board/graph';
 import { Parametor, SENSIBILITY } from './parametor';
 import { is_segments_intersection, is_triangles_intersection } from '../utils';
-import { ORIENTATION } from 'gramoloss';
+import { Graph, ORIENTATION } from 'gramoloss';
 import { ClientLink } from '../board/link';
 
 export let param_has_cycle = new Parametor("Has cycle?", "has_cycle", "?has_cycle", "Check if the graph has an undirected cycle", true, true, [SENSIBILITY.ELEMENT], false);
@@ -41,25 +41,7 @@ param_nb_edges.compute = ((g: ClientGraph) => {
 export let param_is_connected = new Parametor("Is connected?", "is_connected", "is connected?", "Is the graph/area connected?", true, true, [SENSIBILITY.ELEMENT], true);
 
 param_is_connected.compute = ((g: ClientGraph) => {
-
-    if (g.vertices.size < 2) {
-        return "true";
-    }
-
-    const indices = Array.from(g.vertices.keys());
-    const visited = new Map();
-    for (const index of g.vertices.keys()) {
-        visited.set(index, false);
-    }
-
-    g.DFS_recursive( indices[0], visited);
-
-    for (const is_visited of visited.values()) {
-        if (!is_visited) {
-            return "false";
-        }
-    }
-    return "true";
+    return String(g.is_connected());
 });
 
 
@@ -272,7 +254,7 @@ param_weighted_distance_identification.compute = ((g: ClientGraph) => {
     console.time('wdi')
     let k = 1;
 
-    if (is_connected(g) == false) {
+    if (g.is_connected() == false) {
         return "NC";
     }
 
@@ -286,8 +268,6 @@ param_weighted_distance_identification.compute = ((g: ClientGraph) => {
         }
 
         while (true) {
-
-
             if (test(g)) {
                 const debug = new Array();
                 for (const link of g.links.values()) {
@@ -312,47 +292,205 @@ param_weighted_distance_identification.compute = ((g: ClientGraph) => {
             } else {
                 heap[b].weight = String(parseInt(heap[b].weight) + 1);
             }
-
-
-
-
-
-
-            // 1 2 k k
-            /*
-            const rheap = new Array<Link>();
-            let found = false;
-            while (heap.length > 0){
-                const last_link = heap.pop();
-                const weight = parseInt(last_link.weight);
-                if (weight == k){
-                    last_link.weight = String(1);
-                    rheap.push(last_link);
-                }else {
-                    last_link.weight = String(weight+1);
-                    while (rheap.length > 0){
-                        const rlink = rheap.pop();
-                        heap.push(rlink);
-                    } 
-                    found = true;
-                    break;
-                }
-            }
-            if (found == false){
-                k++;
-                if (k > 3){
-                    return "";
-                }
-                break;
-            }*/
-
         }
     }
-
 })
 
 
-function test(g: ClientGraph) {
+export const param_wdin2 = new Parametor("Weighted distance identification number (for trees)", "wdin2", "wdin2", "Weighted distance identification number", false, false, [SENSIBILITY.ELEMENT, SENSIBILITY.WEIGHT], false);
+
+param_wdin2.compute = ((g: ClientGraph) => {
+    console.time("wdin2")
+
+    if (g.is_connected() == false) {
+        return "NC";
+    }
+
+    let k = g.max_degree();
+    while (true) {
+        console.log("try k = ", k);
+        if ( wdin2_search(g, k)){
+            const debug = new Array();
+            for (const [link_index, link] of g.links.entries()) {
+                debug.push(link.weight);
+                link.update_weight(link.weight, link_index);
+            }
+            console.log("solution: ", debug);
+            console.timeEnd("wdin2");
+            return String(k);
+        }
+        k ++;
+    }
+})
+
+function wdin2_order(g: ClientGraph, ordered_links: Array<number>, association: Array<number>){
+    const no = ordered_links.length;
+    const i = g.links.size;
+    if ( i == 0 ){
+        return;
+    }
+    if ( i == 1){
+        for ( const link_index of g.links.keys()){
+            association.push(ordered_links.length);
+            ordered_links.push(link_index);
+        }
+        return;
+    }
+    const bridge_index = g.max_cut_edge();
+    const bridge = g.links.get(bridge_index);
+    g.links.delete(bridge_index);
+    const g1 = g.get_connected_component_of(bridge.start_vertex) as ClientGraph;
+    const g2 = g.get_connected_component_of(bridge.end_vertex) as ClientGraph;
+    wdin2_order(g1, ordered_links, association);
+    wdin2_order(g2, ordered_links, association);
+    g.links.set(bridge_index, bridge);
+    association.push(no);
+    ordered_links.push(bridge_index);
+    
+}
+
+// g is supposed connected
+function wdin2_search(g: ClientGraph, k: number): boolean{
+    const m = g.links.size;
+    const ordered_links = new Array<number>();
+    const association = new Array<number>();
+    wdin2_order(g,ordered_links, association);
+
+    const olinks = new Array();
+    for ( let i = 0 ; i < ordered_links.length ; i ++){
+        olinks.push( g.links.get(ordered_links[i]));
+        olinks[i].weight = String(1);
+    }
+
+    const subgraph = new Array();
+    const constraints = new Array<Array<Array<[number,boolean]>>>();
+    for (let i = 0 ; i < m ; i ++){
+        const newg = new ClientGraph();
+        for ( let j = association[i]; j <= i ; j ++){
+            const link = g.links.get(ordered_links[j]);
+            const start_vertex = g.vertices.get(link.start_vertex);
+            newg.vertices.set(link.start_vertex, start_vertex);
+            const end_vertex = g.vertices.get(link.end_vertex);
+            newg.vertices.set(link.end_vertex, end_vertex);
+            newg.links.set(ordered_links[j], link);
+        } 
+        subgraph.push(newg);
+        constraints.push(make_constraints(newg, ordered_links[i]));
+    }
+
+
+
+    let i_init = 0;
+    while (true){
+        let is_ok = true;
+        for ( let i = i_init; i < m ; i ++){
+            if ( test2(subgraph[i], constraints[i]) == false){ 
+            //if ( test(subgraph[i]) == false){ 
+                // compute next weight on [ass[i],i] links
+                let b = i;
+                while (b >= 0 && olinks[b].weight == String(k)) {
+                    olinks[b].weight = String(1);
+                    b -= 1;
+                }
+                if (b == -1) {
+                    return false;
+                } else {
+                    i_init = association[b];
+                    olinks[b].weight = String(parseInt(olinks[b].weight) + 1);
+                }
+                
+                for (let j = i+1 ; j < m ; j ++){
+                    olinks[j].weight = String(1);
+                }
+                is_ok = false;
+                break;
+            }
+        }
+        if (is_ok){
+            return true;
+        }
+    }
+}
+
+function test2(g: ClientGraph, constraints: Array<Array<[number,boolean]>>): boolean{
+    for (const constraint of constraints){
+        let sum = 0;
+        for (const [link_index, b] of constraint){
+            const weight = parseInt(g.links.get(link_index).weight);
+            if ( b ){
+                sum += weight;
+            } else {
+                sum -= weight;
+            }
+        }
+        if (sum == 0){
+            return false;
+        }
+    }
+    return true;
+}
+
+// only for trees
+function make_constraints(g: ClientGraph, bridge_index: number): Array<Array<[number,boolean]>>{
+    const paths = new Map<number, Map<number,Array<number>>>();
+    for ( const v_index of g.vertices.keys()){
+        const paths_from_v = new Map<number,Array<number>>();
+        const visited = new Set();
+        const stack = new Array();
+        stack.push(v_index);
+        visited.add(v_index);
+        paths_from_v.set(v_index, new Array<number>());
+        while (stack.length > 0){
+            const u_index = stack.pop();
+            for ( const [link_index, link] of g.links.entries() ){
+                if (link.orientation == ORIENTATION.UNDIRECTED){
+                    if ( (link.start_vertex == u_index && visited.has(link.end_vertex) == false) || (link.end_vertex == u_index && visited.has(link.start_vertex) == false) ){
+                        let n_index = link.end_vertex;
+                        if ( link.end_vertex == u_index) { n_index = link.start_vertex} 
+                        stack.push(n_index);
+                        visited.add(n_index);
+                        const new_path = new Array<number>();
+                        for ( const lindex of paths_from_v.get(u_index)){
+                            new_path.push(lindex);
+                        }
+                        new_path.push(link_index);
+                        paths_from_v.set(n_index, new_path);
+                    }
+                } 
+            }
+        }
+        paths.set(v_index, paths_from_v);
+    }
+
+    const constraints = new Array<Array<[number,boolean]>>();
+    for (const v_index of g.vertices.keys()) {
+        for (const u_index of g.vertices.keys()) {
+            if (u_index != v_index) {
+                for (const w_index of g.vertices.keys()) {
+                    if (w_index != u_index && w_index != v_index) {
+                        if ( paths.get(v_index).get(u_index).indexOf(bridge_index) >= 0 || paths.get(v_index).get(w_index).indexOf(bridge_index) >= 0) {
+                            const constraint = new Array<[number,boolean]>();
+                            const path1 = paths.get(v_index).get(u_index);
+                            const path2 = paths.get(v_index).get(w_index);
+                            for ( const link_index of path1){
+                                constraint.push([link_index, true]);
+                            }
+                            for (const link_index of path2){
+                                constraint.push([link_index, false]);
+                            }
+                            constraints.push(constraint);
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
+    return constraints;
+}
+
+
+function test(g: ClientGraph): boolean {
     const FW = g.Floyd_Warhall(true);
     for (const v_index of g.vertices.keys()) {
         for (const u_index of g.vertices.keys()) {
@@ -370,26 +508,7 @@ function test(g: ClientGraph) {
     return true;
 }
 
-function is_connected(g: ClientGraph): boolean {
-    if (g.vertices.size < 2) {
-        return true;
-    }
 
-    const indices = Array.from(g.vertices.keys());
-    const visited = new Map();
-    for (const index of g.vertices.keys()) {
-        visited.set(index, false);
-    }
-
-    g.DFS_recursive( indices[0], visited);
-
-    for (const is_visited of visited.values()) {
-        if (!is_visited) {
-            return false;
-        }
-    }
-    return true;
-}
 
 
 // --------------------

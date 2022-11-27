@@ -134,12 +134,16 @@ export class ClientVertex extends Vertex {
         this.parameter_values = new Map();
 
         if ( weight != "" ){
-            console.log("add_weight")
             this.weight_div = document.createElement("div");
             this.weight_div.classList.add("weight_link");
             document.body.appendChild(this.weight_div);
             this.weight_div.innerHTML = katex.renderToString(weight);
+            this.auto_weight_div_pos();
+        }
+    }
 
+    auto_weight_div_pos(){
+        if ( this.weight != ""){
             this.weight_div.style.top = String(this.canvas_pos.y + 20 - this.weight_div.clientHeight/2);
             this.weight_div.style.left = String(this.canvas_pos.x- this.weight_div.clientWidth/2);
         }
@@ -163,6 +167,7 @@ export class ClientVertex extends Vertex {
 
     update_after_view_modification(view: View){
         this.canvas_pos = view.create_canvas_coord(this.pos);
+        this.auto_weight_div_pos();
     }
 
 
@@ -174,6 +179,7 @@ export class ClientVertex extends Vertex {
         this.canvas_pos.translate_by_canvas_vect(shift);
         this.pos.x += shift.x/view.zoom;
         this.pos.y += shift.y/view.zoom;
+        this.auto_weight_div_pos();
     }
 
     translate_by_server_vect(shift: Vect, view: View){
@@ -181,6 +187,7 @@ export class ClientVertex extends Vertex {
         this.canvas_pos.translate_by_canvas_vect(canvas_shift);
         this.pos.x += shift.x;
         this.pos.y += shift.y;
+        this.auto_weight_div_pos();
     }
 
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {

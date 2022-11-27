@@ -249,6 +249,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     }
                 }
             }
+            g.automatic_link_weight_position_from_vertex(index);
         }
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
@@ -293,6 +294,15 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             g.links.set(data[0], new_link);
             g.automatic_weight_position(data[0]);            
         }
+
+        /*
+        // Console.log the graph in list of abstract links
+        let s = "";
+        for (const data of links_entries){
+            s += "[" + data[1].start_vertex + ","  + data[1].end_vertex + "],"
+        }
+        console.log("[" + s + "]");
+        */
 
         g.compute_vertices_index_string(local_board.view);
 

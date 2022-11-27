@@ -3,7 +3,6 @@ export let COLOR_BACKGROUND = "#1e1e1e";
 const GRID_COLOR = '#777777';
 export const VERTEX_RADIUS = 8;
 const COLOR_ALIGNEMENT_LINE = "#555555";
-export let COLOR_INDEX = "#ffffff";
 export let COLOR_BORDER_VERTEX = "#ffffff";
 export let COLOR_INNER_VERTEX_DEFAULT = "#000000";
 
@@ -117,7 +116,11 @@ export function draw_vertex(index: number, g: ClientGraph, ctx: CanvasRenderingC
     if (local_board.view.index_type != INDEX_TYPE.NONE) {
         ctx.font = "17px Arial";
         const measure = ctx.measureText(vertex.index_string);
-        ctx.fillStyle = COLOR_INDEX;
+        if ( local_board.view.dark_mode){
+            ctx.fillStyle = "black";
+        } else {
+            ctx.fillStyle = "white";
+        }
         const pos = vertex.canvas_pos
         ctx.fillText(vertex.index_string, pos.x - measure.width / 2, pos.y + 5);
     }
