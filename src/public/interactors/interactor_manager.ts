@@ -32,6 +32,7 @@ export let last_down_index: number = null;
 export let has_moved: boolean = false;
 export let mouse_pos = new CanvasCoord(0, 0);
 export let key_states = new Map<string, boolean>();
+let previous_canvas_shift = new CanvasVect(0,0);
 
 // key states
 key_states.set("Control", false);
@@ -161,7 +162,9 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         mouse_pos.y = e.pageY;
         has_moved = true;
         if (graph_clipboard != null) {
-            graph_clipboard.translate_by_canvas_vect( CanvasVect.from_canvas_coords(mouse_position_at_generation, click_pos), local_board.view);
+            const shift = CanvasVect.from_canvas_coords(mouse_position_at_generation,click_pos);
+            graph_clipboard.translate_by_canvas_vect( shift.sub(previous_canvas_shift), local_board.view);
+            previous_canvas_shift.set_from(shift);
             draw(canvas, ctx, g);
         } else {
             if (interactor_loaded.mousemove(canvas, ctx, g, click_pos)) {
@@ -176,6 +179,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     })
 
     canvas.addEventListener('mousedown', function (e) {
+        previous_canvas_shift = new CanvasVect(0,0);
         if (e.which == 1) { // Left click 
             down_coord = new CanvasCoord(e.pageX, e.pageY);
             has_moved = false;
