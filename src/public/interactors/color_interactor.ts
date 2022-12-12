@@ -166,7 +166,7 @@ color_interactor.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => 
 
 color_interactor.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down != null) {
-        const elt = g.get_element_nearby(e, color_interactor.interactable_element_type, local_board.view);
+        const elt = local_board.get_element_nearby(e, color_interactor.interactable_element_type);
         if (elt.type == DOWN_TYPE.VERTEX) {
             if ( g.vertices.has(elt.index) && g.vertices.get(elt.index).color != color_selected){
                 const data_socket = new Array();

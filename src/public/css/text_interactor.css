@@ -8,3 +8,15 @@
     position: fixed;
     color: white;
 }
+
+.text_zone{
+    position: fixed;
+    color: white;
+}
+
+#text_zone_input{
+    position: fixed;
+    z-index: 1;
+    color: white;
+    background-color: black;
+}

@@ -144,8 +144,8 @@ export class ClientVertex extends Vertex {
 
     auto_weight_div_pos(){
         if ( this.weight != ""){
-            this.weight_div.style.top = String(this.canvas_pos.y + 20 - this.weight_div.clientHeight/2);
-            this.weight_div.style.left = String(this.canvas_pos.x- this.weight_div.clientWidth/2);
+            this.weight_div.style.top = String(this.canvas_pos.y + 20 - this.weight_div.clientHeight/2) + "px";
+            this.weight_div.style.left = String(this.canvas_pos.x- this.weight_div.clientWidth/2) + "px";
         }
     }
 

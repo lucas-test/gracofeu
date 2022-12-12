@@ -131,6 +131,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         } else {
             local_board.view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1.1);
         }
+        local_board.update_after_camera_change();
         g.update_canvas_pos(local_board.view);
         update_users_canvas_pos(local_board.view);
 
@@ -195,7 +196,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 }
                 draw(canvas, ctx, g);
             } else {
-                const element = g.get_element_nearby(down_coord, interactor_loaded.interactable_element_type, local_board.view);
+                const element = local_board.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
                 console.log(element);
                 last_down = element.type;
                 last_down_index = element.index;
@@ -212,7 +213,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         has_moved = false;
         const click_pos = new CanvasCoord(et.touches[0].clientX, et.touches[0].clientY);
 
-        const element = g.get_element_nearby(click_pos, interactor_loaded.interactable_element_type, local_board.view);
+        const element = local_board.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
         console.log(element);
         last_down = element.type;
         last_down_index = element.index;

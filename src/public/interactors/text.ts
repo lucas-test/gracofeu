@@ -7,7 +7,7 @@ import { socket } from "../socket";
 import { DOWN_TYPE, Interactor } from "./interactor";
 import { last_down, last_down_index } from "./interactor_manager";
 
-export var interactor_text = new Interactor("text", "t", "text.svg", new Set([DOWN_TYPE.LINK, DOWN_TYPE.LINK_WEIGHT, DOWN_TYPE.VERTEX, DOWN_TYPE.VERTEX_WEIGHT]), 'default')
+export var interactor_text = new Interactor("text", "t", "text.svg", new Set([DOWN_TYPE.LINK, DOWN_TYPE.LINK_WEIGHT, DOWN_TYPE.VERTEX, DOWN_TYPE.VERTEX_WEIGHT, DOWN_TYPE.TEXT_ZONE]), 'default')
 
 // --------------
 
@@ -20,9 +20,14 @@ input.id = "weight_input";
 input.type = "text";
 document.body.appendChild(input);
 
+const text_zone_input = document.createElement("textarea");
+text_zone_input.id = "text_zone_input";
+text_zone_input.style.display = "none";
+document.body.appendChild(text_zone_input);
+
 // --------------
 
-interactor_text.mousedown = ((canvas, ctx, g, e) => {
+interactor_text.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     validate_weight();
 
     if (last_down == DOWN_TYPE.LINK || last_down == DOWN_TYPE.LINK_WEIGHT) {
@@ -34,6 +39,19 @@ interactor_text.mousedown = ((canvas, ctx, g, e) => {
             const vertex = g.vertices.get(last_down_index);
             display_weight_input(last_down_index, vertex.canvas_pos, DOWN_TYPE.VERTEX);
         }
+    }
+    if ( last_down == DOWN_TYPE.EMPTY){
+        if (text_zone_input.style.display == "none"){
+            const new_index = local_board.create_text_zone(e);
+            local_board.display_text_zone_input(new_index);
+        }else {
+            text_zone_input.value = "";
+            text_zone_input.style.display = "none";
+            text_zone_input.blur();
+        }
+    }
+    if ( last_down == DOWN_TYPE.TEXT_ZONE){
+        local_board.display_text_zone_input(last_down_index);
     }
 })
 

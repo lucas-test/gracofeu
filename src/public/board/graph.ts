@@ -53,53 +53,7 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
         this.deselect_all_strokes();
     }
 
-    get_element_nearby(pos: CanvasCoord, interactable_element_type: Set<DOWN_TYPE>, view: View) {
-        if (interactable_element_type.has(DOWN_TYPE.VERTEX)) {
-            for (const [index, v] of this.vertices.entries()) {
-                if (v.is_nearby(pos, 150)) {
-                    return { type: DOWN_TYPE.VERTEX, index: index };
-                }
-            }
-        }
-       
-        for (const [index, link] of this.links.entries()) {
-            if (interactable_element_type.has(DOWN_TYPE.CONTROL_POINT) && link.cp_canvas_pos.is_nearby(pos, 150)) {
-                return { type: DOWN_TYPE.CONTROL_POINT, index: index };
-            }
-            if (interactable_element_type.has(DOWN_TYPE.LINK) && this.is_click_over_link(index, pos, view)) {
-                return { type: DOWN_TYPE.LINK, index: index };
-            }
-            if( interactable_element_type.has(DOWN_TYPE.LINK_WEIGHT) && pos.dist2(link.weight_position) <= 100){
-                return { type: DOWN_TYPE.LINK_WEIGHT, index: index};
-            }
-        }
-
-        for(const [index,a] of this.areas.entries()){
-            if(interactable_element_type.has(DOWN_TYPE.AREA) && a.is_nearby(pos)){
-                return{ type: DOWN_TYPE.AREA, index: index };
-            }
-            const corner_index = a.is_nearby_corner(pos);
-            console.log("CORNER INDEX", corner_index, corner_index!=0);
-            if(interactable_element_type.has(DOWN_TYPE.AREA_CORNER) && corner_index != AREA_CORNER.NONE){
-                return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index };
-            }
-
-            const side_index = a.is_nearby_side(pos, 5);
-            if(interactable_element_type.has(DOWN_TYPE.AREA_SIDE) && side_index != AREA_SIDE.NONE){
-                 return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index };
-             }
-        }
-
-        if (interactable_element_type.has(DOWN_TYPE.STROKE)) {
-            for(const [index,s] of this.strokes.entries()){
-                if(typeof s.is_nearby(pos, view) == "number"){     
-                    return { type: DOWN_TYPE.STROKE, index: index };
-                }
-            }
-        }
-
-        return { type: DOWN_TYPE.EMPTY, index: null };
-    }
+    
 
     get_vertex_index_nearby(pos: CanvasCoord) {
         for (let index of this.vertices.keys()) {
@@ -303,8 +257,8 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
             const posv = v.canvas_pos; 
             const pos = link.cp_canvas_pos;
             link.weight_position = pos.add(posu.sub(posv).normalize().rotate_quarter().scale(14));
-            link.weight_div.style.top = String(link.weight_position.y - link.weight_div.clientHeight/2);
-            link.weight_div.style.left = String(link.weight_position.x- link.weight_div.clientWidth/2);
+            link.weight_div.style.top = String(link.weight_position.y - link.weight_div.clientHeight/2) + "px";
+            link.weight_div.style.left = String(link.weight_position.x- link.weight_div.clientWidth/2) + "px";
         }
     }
 

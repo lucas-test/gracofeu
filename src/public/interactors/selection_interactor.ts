@@ -67,6 +67,7 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
                 const shift = CanvasVect.from_canvas_coords(down_coord,e);
                 local_board.view.translate_camera(shift.sub(previous_canvas_shift));
                 previous_canvas_shift.set_from(shift);
+                local_board.update_after_camera_change();
                 g.update_canvas_pos(local_board.view);
                 update_users_canvas_pos(local_board.view);
  

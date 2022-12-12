@@ -48,7 +48,7 @@ interactor_detector.mousedown = ((canvas, ctx, g, e) => { });
 
 interactor_detector.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     g.clear_all_selections();
-    const element = g.get_element_nearby(e, interactor_detector.interactable_element_type, local_board.view);
+    const element = local_board.get_element_nearby(e, interactor_detector.interactable_element_type);
     switch (element.type) {
         case DOWN_TYPE.VERTEX:
             const vertex = g.vertices.get(element.index);
