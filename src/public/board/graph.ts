@@ -274,7 +274,7 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
         for ( const link_index of this.links.keys()){
             this.automatic_weight_position(link_index);
         }
-    }
+    } 
 
     clear_vertices(){
         for( const vertex of this.vertices.values()){
