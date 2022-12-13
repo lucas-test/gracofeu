@@ -4,9 +4,7 @@ Online collaborative graph editor with integrated computation of classical param
 
 ## Use it
 
-<https://graccoon.herokuapp.com/>
-
-
+<http://gracoon.com>
 
 ## Functionalities
 
@@ -25,6 +23,7 @@ Online collaborative graph editor with integrated computation of classical param
 
 ```
 npm install
+cp src/server/.env.example.json src/server/.env.json
 npm run dev
 ```
 
