@@ -37,8 +37,8 @@ export function bezierValue(t: number, p0: number, p1: number, p2: number) {
     return (1.0 - t) * (1.0 - t) * p0 + 2.0 * (1.0 - t) * t * p1 + t * t * p2;
 }
 
-// Solve
-// t u + t'v = c
+// Solve equation t u + t'v = c where u, v and c are 2d vectors
+// return false if there is no solution
 function solve_linear_equation_2d( u: Coord, v: Coord, c: Coord){
     const det = u.x * v.y - u.y * v.x;
     if (det == 0){
