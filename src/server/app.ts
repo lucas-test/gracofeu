@@ -1,5 +1,5 @@
-import express from 'express';
-import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge, middle, Vect} from "gramoloss";
+import express, { text } from 'express';
+import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge, middle, Vect, TextZone, Board} from "gramoloss";
 import ENV from './.env.json';
 import { getRandomColor, User, users } from './user';
 
@@ -14,6 +14,7 @@ console.log('Server started at http://localhost:' + port);
 
 // gestion des rooms
 
+const room_boards = new Map<string, Board<Vertex, Link, Stroke, Area, TextZone>>();
 const room_graphs = new Map<string, Graph<Vertex,Link, Stroke, Area>>();
 const clientRooms = {};
 
@@ -66,6 +67,11 @@ io.sockets.on('connection', function (client) {
     emit_areas_to_room();
     emit_users_to_client();
 
+    let board = new Board();
+    room_boards.set(room_id, board);
+
+
+
     if (ENV.mode == "dev") {
         room_id = the_room;
         client.join(room_id);
@@ -76,6 +82,14 @@ io.sockets.on('connection', function (client) {
 
     function emit_graph_to_client(s: Set<SENSIBILITY>) {
         client.emit('graph', [...g.vertices.entries()], [...g.links.entries()], [...s]);
+    }
+
+    function emit_reset_board(){
+        client.emit("reset_board", [...board.text_zones.entries()]);
+    }
+
+    function broadcast(name: string, data: any, s: Set<SENSIBILITY>){
+        io.sockets.in(room_id).emit(name, data , [...s]);
     }
 
     function emit_graph_to_room(s: Set<SENSIBILITY>) {
@@ -132,10 +146,12 @@ io.sockets.on('connection', function (client) {
             clientRooms[client.id] = new_room_id;
             room_id = new_room_id;
             g = room_graphs.get(room_id);
+            board = room_boards.get(room_id);
             emit_graph_to_client(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
             emit_strokes_to_room();
             emit_areas_to_room();
             emit_users_to_client();
+            emit_reset_board();
             console.log(clientRooms);
         }
         else {
@@ -222,6 +238,13 @@ io.sockets.on('connection', function (client) {
     client.on('update_colors', handle_update_colors);
     client.on('update_weight', handle_update_weight);
 
+    // TextZones
+    client.on("create_text_zone", handle_create_text_zone); // TODO undo
+    client.on("update_text_text_zone", handle_update_text_text_zone); // TODO undo
+    client.on("translate_text_zone", handle_translate_text_zone); // TODO undo
+    client.on("update_width_text_zone", handle_update_width_text_zone); // TODO undo
+    client.on("delete_text_zone", handle_delete_text_zone);
+
     // Not Elementary Actions
     client.on('undo', handle_undo);
     client.on('redo', handle_redo);
@@ -233,6 +256,50 @@ io.sockets.on('connection', function (client) {
     // ------------------------
     //
     // ------------------------
+
+    function handle_create_text_zone(raw_pos){
+        const new_index = board.get_next_available_index_text_zone();
+        const pos = new Coord(raw_pos.x, raw_pos.y);
+        const new_text_zone = new TextZone(pos, 200, "new text zone");
+        board.text_zones.set(new_index, new_text_zone);
+        // TODO
+        // const modif = new AddArea(area_index, new_area);
+        // g.try_implement_new_modification(modif);
+        broadcast("update_text_zone", {index: new_index, text_zone: new_text_zone}, new Set());
+    }
+
+    function handle_translate_text_zone(index: number, raw_shift){
+        if (board.text_zones.has(index)){
+            const text_zone = board.text_zones.get(index);
+            const shift = new Vect(raw_shift.x, raw_shift.y);
+            text_zone.pos.translate(shift);
+            broadcast("update_text_zone", {index: index, text_zone: text_zone}, new Set());
+        }
+    }
+
+    function handle_update_text_text_zone(index: number, text: string){
+        if (board.text_zones.has(index)){
+            const text_zone = board.text_zones.get(index);
+            text_zone.text = text;
+            broadcast("update_text_zone", {index: index, text_zone: text_zone}, new Set());
+        }
+    }
+
+    function handle_update_width_text_zone(index: number, width: number){
+        if (board.text_zones.has(index)){
+            const text_zone = board.text_zones.get(index);
+            text_zone.width = width;
+            broadcast("update_text_zone", {index: index, text_zone: text_zone}, new Set());
+        }
+    }
+
+    function handle_delete_text_zone(index: number){
+        console.log("handle_delete_text_zone", index);
+        if (board.text_zones.has(index)){
+            board.text_zones.delete(index);
+            broadcast("delete_text_zone", index, new Set());
+        }
+    }
 
     function handle_undo() {
         console.log("Receive Request: undo");

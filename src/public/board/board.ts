@@ -1,5 +1,6 @@
 import { DOWN_TYPE } from "../interactors/interactor";
 import { interactor_loaded, key_states } from "../interactors/interactor_manager";
+import { socket } from "../socket";
 import { AREA_CORNER, AREA_SIDE } from "./area";
 import { View } from "./camera";
 import { ClientGraph } from "./graph";
@@ -10,7 +11,7 @@ import { CanvasCoord } from "./vertex";
 export class Board {
     graph: ClientGraph;
     view: View;
-    private text_zones: Map<number,ClientTextZone>;
+    text_zones: Map<number,ClientTextZone>;
     // strokes
     // areas
 
@@ -18,6 +19,13 @@ export class Board {
         this.graph = new ClientGraph();
         this.view = new View();
         this.text_zones = new Map();
+    }
+
+    clear() {
+        for( const text_zone of this.text_zones.values()){
+            text_zone.div.remove();
+        }
+        this.text_zones.clear();
     }
 
     update_after_camera_change(){
@@ -33,7 +41,7 @@ export class Board {
             index += 1;
         }
         const pos = this.view.create_server_coord(canvas_pos);
-        const text_zone = new ClientTextZone(pos, 200, "salut", this.view);
+        const text_zone = new ClientTextZone(pos, 200, "salut", this.view, index);
         this.text_zones.set(index, text_zone);
         text_zone.div.onclick = (e) => {
             if( interactor_loaded.name == "text"){
@@ -50,20 +58,25 @@ export class Board {
         if (this.text_zones.has(index)){
             const text_zone = this.text_zones.get(index);
             const text_zone_input = document.getElementById("text_zone_input") as HTMLTextAreaElement;
-            text_zone_input.style.width = String(text_zone.width);
-            text_zone_input.style.height = String(text_zone.div.clientHeight);
+            text_zone_input.style.width = String(text_zone.width) + "px";
+            text_zone_input.style.height = String(text_zone.div.clientHeight) + "px";
             text_zone_input.value = text_zone.text.replace(/<br\s*\/?>/mg, "\n");
             text_zone_input.style.display = "block";
             text_zone_input.style.top = String(text_zone.canvas_pos.y) + "px";
             text_zone_input.style.left = String(text_zone.canvas_pos.x) + "px";
             window.setTimeout(() => text_zone_input.focus(), 0); // without timeout does not focus
             text_zone_input.onkeyup = (e) => {
+                if (e.key == " "){
+                    socket.emit("update_text_text_zone", index, text_zone_input.value);
+                } 
                 if (e.key == "Enter" && key_states.get("Control")) {
-                    text_zone.update_text(text_zone_input.value);
+                    // text_zone.update_text(text_zone_input.value);
+                    socket.emit("update_text_text_zone", index, text_zone_input.value);
                     text_zone_input.value = "";
                     text_zone_input.style.display = "none";
                     text_zone_input.blur();
                 }else {
+                    text_zone_input.style.height = "1px";
                     text_zone_input.style.height = String(text_zone_input.scrollHeight) + "px";
                 }
             }

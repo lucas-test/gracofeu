@@ -42,8 +42,10 @@ interactor_text.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     }
     if ( last_down == DOWN_TYPE.EMPTY){
         if (text_zone_input.style.display == "none"){
-            const new_index = local_board.create_text_zone(e);
-            local_board.display_text_zone_input(new_index);
+            const coord = local_board.view.create_server_coord(e);
+            socket.emit("create_text_zone", coord);
+            // const new_index = local_board.create_text_zone(e);
+            // local_board.display_text_zone_input(new_index);
         }else {
             text_zone_input.value = "";
             text_zone_input.style.display = "none";
@@ -77,8 +79,8 @@ export function display_weight_input(index: number, pos: CanvasCoord, element_ty
     current_index = index;
     current_element_type = element_type;
     input.style.display = "block";
-    input.style.top = String(pos.y);
-    input.style.left = String(pos.x - 20);
+    input.style.top = String(pos.y) + "px";
+    input.style.left = String(pos.x - 20) + "px";
     window.setTimeout(() => input.focus(), 0); // without timeout does not focus
     input.onkeyup = (e) => {
         if (e.key == "Enter") {
@@ -88,12 +90,14 @@ export function display_weight_input(index: number, pos: CanvasCoord, element_ty
 }
 
 function turn_off_weight_input() {
+    console.log("turn off weight input");
     input.value = "";
     input.style.display = "none";
     input.blur();
 }
 
 export function validate_weight() {
+    console.log("validate_weight");
     if (current_index != null ) {
         if ( current_element_type == DOWN_TYPE.VERTEX && local_board.graph.vertices.has(current_index)){
             socket.emit("update_weight", "VERTEX", current_index, input.value);

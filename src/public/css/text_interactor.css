@@ -12,11 +12,38 @@
 .text_zone{
     position: fixed;
     color: white;
+    min-width:100px;
+    display: flex;
 }
+
+.text_zone_content{
+    width: 100%;
+    padding: 5px;
+    user-select: none;
+}
+
+.text_zone_content:hover{
+    background-color: rgba(189, 189, 189, 0.11);
+    cursor:grab;
+}
+
+.text_zone_sidebar{
+    width: 15px;
+}
+
+.text_zone_sidebar:hover{
+    background-color: rgba(189, 189, 189, 0.11);
+    cursor:ew-resize;
+}
+
+
 
 #text_zone_input{
     position: fixed;
     z-index: 1;
     color: white;
-    background-color: black;
+    background-color: rgb(55, 55, 55);
+    resize: none;
+    border: 0px;
+    padding: 5px;
 }

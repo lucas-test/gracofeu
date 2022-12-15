@@ -301,8 +301,8 @@ export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRend
         newDiv.onmouseenter = function () {
             var offsets = newDiv.getBoundingClientRect();
             div_recap.style.display = "block"
-            div_recap.style.left = "70" // String(e.clientX + 30)
-            div_recap.style.top = String(offsets.top) //String(e.clientY - 16)
+            div_recap.style.left = "70px"; // String(e.clientX + 30)
+            div_recap.style.top = String(offsets.top) + "px"; //String(e.clientY - 16)
         }
 
         newDiv.onmouseleave = function () {

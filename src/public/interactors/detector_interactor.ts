@@ -18,8 +18,8 @@ let is_infobox_displayed = false;
 function set_element_infobox(pos: Coord) {
     is_infobox_displayed = true;
     infobox.style.display = "block";
-    infobox.style.top = String(pos.y+5);
-    infobox.style.left = String(pos.x+10);
+    infobox.style.top = String(pos.y+5) + "px";
+    infobox.style.left = String(pos.x+10) + "px";
 }
 
 function set_vertex_infobox(index: number, vertex: ClientVertex, pos: Coord){

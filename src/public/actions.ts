@@ -269,8 +269,8 @@ function add_recap_div(action: Action, newDiv: HTMLDivElement, top: number){
      newDiv.onmouseenter = function () {
          var offsets = newDiv.getBoundingClientRect();
          div_recap.style.display = "block";
-         div_recap.style.left = String(offsets.left); 
-         div_recap.style.top = String(top);
+         div_recap.style.left = String(offsets.left) + "px"; 
+         div_recap.style.top = String(top) + "px";
      }
 
      newDiv.onmouseleave = function () {

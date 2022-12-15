@@ -14,6 +14,7 @@ import { interactor_loaded } from "./interactors/interactor_manager";
 import { display_weight_input, validate_weight } from "./interactors/text";
 import { Coord, ORIENTATION, Vect } from "gramoloss";
 import { ClientLink } from "./board/link";
+import { ClientTextZone } from "./board/text_zone";
 export const socket = io()
 
 
@@ -139,6 +140,63 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('translate_vertices', handle_translate_vertices);
     socket.on('areas', handle_areas); // AREA
     socket.on('strokes', handle_strokes); // STROKES
+    socket.on("update_text_zone", handle_update_text_zone);
+    socket.on("reset_board", handle_reset_board);
+    socket.on("delete_text_zone", handle_delete_text_zone);
+
+    function handle_reset_board(text_zones_entries){
+        // console.log("handle reset board");
+        local_board.clear();
+        for (const data of text_zones_entries) {
+            const pos = new Coord(data[1].pos.x, data[1].pos.y);
+            const width = data[1].width as number;
+            const text = data[1].text as string;
+            const text_zone = new ClientTextZone(pos, width, text, local_board.view, data[0] )
+            board.text_zones.set(data[0], text_zone);
+        }
+
+        requestAnimationFrame(function () { 
+            draw(canvas, ctx, g) 
+        });
+    }
+
+    function handle_update_text_zone(data, sensibilites: Set<SENSIBILITY>){
+        // console.log("handle_update_text_zone");
+        const index = data.index as number;
+        if ( local_board.text_zones.has(index)){
+            const text_zone = local_board.text_zones.get(index);
+            const text = data.text_zone.text as string;
+            const width = data.text_zone.width as number;
+            text_zone.width = width;
+            text_zone.div.style.width = String(width) + "px";
+            text_zone.update_text(text);
+            text_zone.pos = new Coord(data.text_zone.pos.x, data.text_zone.pos.y);
+            text_zone.canvas_pos = local_board.view.create_canvas_coord(text_zone.pos);
+            text_zone.reset_div_pos();
+            // window.getSelection().removeAllRanges();
+        }else {
+            const pos = new Coord(data.text_zone.pos.x, data.text_zone.pos.y);
+            const width = data.text_zone.width as number;
+            const text = data.text_zone.text as string;
+            const new_text_zone = new ClientTextZone(pos, width, text , local_board.view, index);
+            local_board.text_zones.set(index, new_text_zone);
+        }
+        requestAnimationFrame(function () { 
+            draw(canvas, ctx, g) 
+        });
+    }
+
+    function handle_delete_text_zone(index: number){
+        // console.log("handle_delete_text_zone", index)
+        if (local_board.text_zones.has(index)){
+            const text_zone = local_board.text_zones.get(index);
+            text_zone.div.remove();
+            local_board.text_zones.delete(index);
+        }
+        requestAnimationFrame(function () { 
+            draw(canvas, ctx, g) 
+        });
+    }
     
 
 
