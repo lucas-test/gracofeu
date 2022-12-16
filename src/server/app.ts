@@ -2,6 +2,7 @@ import express, { text } from 'express';
 import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge, middle, Vect, TextZone, Board} from "gramoloss";
 import ENV from './.env.json';
 import { getRandomColor, User, users } from './user';
+import { makeid } from './utils';
 
 const port = ENV.port;
 const app = express();
@@ -17,16 +18,6 @@ console.log('Server started at http://localhost:' + port);
 const room_boards = new Map<string, Board<Vertex, Link, Stroke, Area, TextZone>>();
 const room_graphs = new Map<string, Graph<Vertex,Link, Stroke, Area>>();
 const clientRooms = {};
-
-function makeid(length: number) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-}
 
 
 
@@ -50,7 +41,6 @@ io.sockets.on('connection', function (client) {
     const user_data = new User(client.id, getRandomColor());
     users.set(client.id, user_data);
     client.emit('myId', user_data.id, user_data.label, user_data.color, Date.now());
-
 
     // ROOM CREATION
 
