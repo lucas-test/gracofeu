@@ -66,7 +66,7 @@ export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRend
 
 
         if(g.areas.size == 0){
-            console.log("NO AREA", div);
+            // console.log("NO AREA", div);
         }
         else{ // If we have areas, we add a list of the subgraphs
 

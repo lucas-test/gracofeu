@@ -67,11 +67,13 @@ export class Board {
             window.setTimeout(() => text_zone_input.focus(), 0); // without timeout does not focus
             text_zone_input.onkeyup = (e) => {
                 if (e.key == " "){
-                    socket.emit("update_text_text_zone", index, text_zone_input.value);
+                    // socket.emit("update_text_text_zone", index, text_zone_input.value);
+                    socket.emit("update_element", "TextZone", index, "text", text_zone_input.value);
                 } 
                 if (e.key == "Enter" && key_states.get("Control")) {
                     // text_zone.update_text(text_zone_input.value);
-                    socket.emit("update_text_text_zone", index, text_zone_input.value);
+                    // socket.emit("update_text_text_zone", index, text_zone_input.value);
+                    socket.emit("update_element", "TextZone", index, "text", text_zone_input.value);
                     text_zone_input.value = "";
                     text_zone_input.style.display = "none";
                     text_zone_input.blur();

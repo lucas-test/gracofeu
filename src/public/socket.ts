@@ -137,12 +137,180 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_control_point', handle_update_control_point); // CP MOVE
     socket.on('update_control_points', handle_update_control_points); // CP MOVE
     socket.on('update_control_points2', handle_update_control_points2);
-    socket.on('translate_vertices', handle_translate_vertices);
     socket.on('areas', handle_areas); // AREA
     socket.on('strokes', handle_strokes); // STROKES
-    socket.on("update_text_zone", handle_update_text_zone);
+    socket.on("update_text_zone", handle_update_text_zone); // used for translate
     socket.on("reset_board", handle_reset_board);
-    socket.on("delete_text_zone", handle_delete_text_zone);
+
+    // META
+    socket.on("update_element", handle_update_element);
+    socket.on("add_element", handle_add_element);
+    socket.on("delete_element", handle_delete_element);
+    socket.on("delete_elements", handle_delete_elements);
+    socket.on("translate_elements", handle_translate_elements);
+
+    function handle_translate_elements(data, sensibilities){
+        const shift = new Vect(data.shift.x, data.shift.y);
+        const cshift = local_board.view.create_canvas_vect(shift);
+        for (const [kind, index] of data.indices){
+            if ( kind == "TextZone"){
+                const text_zone = local_board.text_zones.get(index);
+                text_zone.translate(cshift, local_board.view);
+            } else if ( kind == "Stroke"){
+                const stroke = local_board.graph.strokes.get(index);
+                stroke.translate_by_canvas_vect(cshift, local_board.view);
+            } else if ( kind == "Area"){
+                const area = local_board.graph.areas.get(index);
+                const vertices_contained = g.vertices_contained_by_area(area);
+                g.translate_area(cshift, index,vertices_contained , local_board.view);
+                g.set_automatic_weight_positions();
+            } else if (kind == "Vertex"){
+                g.translate_vertex_by_canvas_vect(index, cshift, local_board.view);
+                g.automatic_link_weight_position_from_vertex(index);
+            } else if (kind == "ControlPoint"){
+                const link = g.links.get(index);
+                link.cp.translate(shift);
+                link.cp_canvas_pos.translate_by_canvas_vect(cshift);
+                g.automatic_weight_position(index);
+            }
+        }
+
+        requestAnimationFrame(function () {draw(canvas, ctx, g) });
+    }
+
+    function handle_add_element( data, sensibilities){
+        console.log("handle_add_element", data.kind, data.index, data.element);
+
+        if (data.kind == "Stroke"){
+            const positions = new Array<Coord>();
+            data.element.positions.forEach(e => {
+                positions.push(new Coord(e.x, e.y));
+            });
+            const new_stroke = new ClientStroke(positions, data.element.color, data.element.width, local_board.view);
+            local_board.graph.strokes.set(data.index, new_stroke);
+        } else if (data.kind == "TextZone"){
+            const pos = new Coord(data.element.pos.x, data.element.pos.y);
+            const width = data.element.width as number;
+            const text = data.element.text as string;
+            const new_text_zone = new ClientTextZone(pos, width, text , local_board.view, data.index);
+            local_board.text_zones.set(data.index, new_text_zone);
+        } else if (data.kind == "Area"){
+            const c1 = new Coord(data.element.c1.x, data.element.c1.y);
+            const c2 = new Coord(data.element.c2.x,data.element.c2.y);
+            const new_area = new ClientArea( data.element.label, c1, c2, data.element.color, local_board.view);
+            local_board.graph.areas.set(data.index, new_area);
+            init_list_parametors_for_area(board, data.index, canvas, ctx);
+        } else if (data.kind == "Vertex"){
+            const x = data.element.pos.x as number;
+            const y = data.element.pos.y as number;
+            const weight = data.element.weight as string;
+            const new_vertex = new ClientVertex(x, y, weight, local_board.view );
+            local_board.graph.vertices.set(data.index, new_vertex);
+        } else if (data.kind == "Link"){
+            const start_index = data.element.start_vertex as number;
+            const end_index = data.element.end_vertex as number;
+            const cp = new Coord(data.element.cp.x, data.element.cp.y);
+            let orient = ORIENTATION.UNDIRECTED;
+            if (data.element.orientation == "DIRECTED"){
+                orient = ORIENTATION.DIRECTED;
+            }
+            const color = data.element.color as string;
+            const weight = data.element.weight as string;
+            const new_link = new ClientLink(start_index, end_index, cp, orient, color, weight, local_board.view);
+            local_board.graph.links.set(data.index, new_link);
+        }
+        
+        requestAnimationFrame(function () {draw(canvas, ctx, g) });
+    }
+
+    function handle_delete_element(data, sensibilities){
+        console.log("handle_delete_element", data.kind, data.index);
+        if (data.kind == "Stroke"){
+            local_board.graph.strokes.delete(data.index);
+        } else if (data.kind == "TextZone"){
+            const text_zone = local_board.text_zones.get(data.index);
+            text_zone.div.remove();
+            local_board.text_zones.delete(data.index);
+        } else if (data.kind == "Area"){
+            local_board.graph.areas.delete(data.index);
+        } else if (data.kind == "Vertex"){
+            const vertex = local_board.graph.vertices.get(data.index);
+            if (vertex.weight_div != null){
+                vertex.weight_div.remove();
+            }
+            local_board.graph.delete_vertex(data.index);
+        } else if (data.kind == "Link"){
+            local_board.graph.links.delete(data.index);
+        }
+        requestAnimationFrame(function () {draw(canvas, ctx, g) });
+    }
+
+    function handle_delete_elements(data, sensibilities){
+        console.log("handle_delete_elements", data);
+        for ( const element of data){
+            if (element[0] == "Stroke"){
+                local_board.graph.strokes.delete(element[1]);
+            } else if (element[0] == "TextZone"){
+                const text_zone = local_board.text_zones.get(element[1]);
+                text_zone.div.remove();
+                local_board.text_zones.delete(element[1]);
+            } else if (element[0] == "Area"){
+                local_board.graph.areas.delete(element[1]);
+            } else if (element[0] == "Vertex"){
+                const vertex = local_board.graph.vertices.get(element[1]);
+                if (vertex.weight_div != null){
+                    vertex.weight_div.remove();
+                }
+                local_board.graph.delete_vertex(element[1]);
+            } else if (element[0] == "Link"){
+                local_board.graph.links.delete(element[1]);
+            }
+        }
+        requestAnimationFrame(function () {draw(canvas, ctx, g) });
+    }
+
+
+
+    function handle_update_element(data){
+        console.log("handle_update_element", data);
+        if (data.kind == "TextZone"){
+            const text_zone = local_board.text_zones.get(data.index);
+            if (data.param == "width"){
+                const width = data.value as number;
+                text_zone.width = width;
+                text_zone.div.style.width = String(width) + "px";
+            }
+            if (data.param == "text"){
+                const text = data.value as string;
+                text_zone.update_text(text);
+            }
+        } else if (data.kind == "Vertex"){
+            const vertex = local_board.graph.vertices.get(data.index);
+            if(data.param == "color"){
+                const color = data.value as string;
+                vertex.color = color;
+            }
+        }else if (data.kind == "Link"){
+            const link = local_board.graph.links.get(data.index);
+            if(data.param == "color"){
+                const color = data.value as string;
+                link.color = color;
+            } else if (data.param == "weight"){
+                const weight = data.value as string;
+                link.update_weight(weight, data.index);
+                local_board.graph.automatic_weight_position(data.index);
+            }
+        }else if (data.kind == "Stroke"){
+            const stroke = local_board.graph.strokes.get(data.index);
+            if(data.param == "color"){
+                const color = data.value as string;
+                stroke.color = color;
+            }
+        } else {
+            console.log("Kind not supported :", data.kind);
+        }
+        requestAnimationFrame(function () {draw(canvas, ctx, g) });
+    }
 
     function handle_reset_board(text_zones_entries){
         // console.log("handle reset board");
@@ -152,7 +320,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             const width = data[1].width as number;
             const text = data[1].text as string;
             const text_zone = new ClientTextZone(pos, width, text, local_board.view, data[0] )
-            board.text_zones.set(data[0], text_zone);
+            local_board.text_zones.set(data[0], text_zone);
         }
 
         requestAnimationFrame(function () { 
@@ -186,17 +354,6 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         });
     }
 
-    function handle_delete_text_zone(index: number){
-        // console.log("handle_delete_text_zone", index)
-        if (local_board.text_zones.has(index)){
-            const text_zone = local_board.text_zones.get(index);
-            text_zone.div.remove();
-            local_board.text_zones.delete(index);
-        }
-        requestAnimationFrame(function () { 
-            draw(canvas, ctx, g) 
-        });
-    }
     
 
 
@@ -282,33 +439,6 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             }
         }
         update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
-        requestAnimationFrame(function () { draw(canvas, ctx, g) });
-    }
-
-    function handle_translate_vertices(indices, shiftx: number, shifty: number){
-        //console.log("Receive: update_translate_vertices");
-        const shift = new Vect(shiftx, shifty);
-        for( const index of indices){
-            if ( g.vertices.has(index)){
-                const vertex = g.vertices.get(index);
-                const previous_pos = vertex.pos.copy();
-                vertex.translate_by_server_vect(shift, local_board.view);
-                const new_pos = vertex.pos.copy();
-
-                for (const [link_index, link] of g.links.entries()) {
-                    if ( link.start_vertex ==index){
-                        const end_vertex_pos = g.vertices.get(link.end_vertex).pos;
-                        link.transform_cp(new_pos, previous_pos, end_vertex_pos);
-                        link.cp_canvas_pos = local_board.view.create_canvas_coord(link.cp);
-                    } else if (link.end_vertex == index ){
-                        const start_vertex_pos = g.vertices.get(link.start_vertex).pos;
-                        link.transform_cp(new_pos, previous_pos, start_vertex_pos );
-                        link.cp_canvas_pos = local_board.view.create_canvas_coord(link.cp);
-                    }
-                }
-            }
-            g.automatic_link_weight_position_from_vertex(index);
-        }
         requestAnimationFrame(function () { draw(canvas, ctx, g) });
     }
 

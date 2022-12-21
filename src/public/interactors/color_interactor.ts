@@ -142,23 +142,25 @@ color_interactor.onleave = () => {
 color_interactor.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down == DOWN_TYPE.VERTEX) {
         if ( g.vertices.has(last_down_index) && g.vertices.get(last_down_index).color != color_selected){
-            const data_socket = new Array();
-            data_socket.push({ type: "vertex", index: last_down_index, color: color_selected });
-            socket.emit("update_colors", data_socket);
+            // const data_socket = new Array();
+            // data_socket.push({ type: "vertex", index: last_down_index, color: color_selected });
+            socket.emit("update_element", "Vertex",last_down_index, "color", color_selected);
         }
     }
     else if (last_down == DOWN_TYPE.LINK){
         if ( g.links.has(last_down_index) && g.links.get(last_down_index).color != color_selected){
-            const data_socket = new Array();
-            data_socket.push({ type: "link", index: last_down_index, color: color_selected });
-            socket.emit("update_colors", data_socket);
+            // const data_socket = new Array();
+            // data_socket.push({ type: "link", index: last_down_index, color: color_selected });
+            // socket.emit("update_colors", data_socket);
+            socket.emit("update_element", "Link",last_down_index, "color", color_selected);
         }
     }
     else if (last_down == DOWN_TYPE.STROKE){
         if ( g.strokes.has(last_down_index) && g.strokes.get(last_down_index).color != color_selected){
-            socket.emit("update_colors", 
-                [{ type: "stroke", index: last_down_index, color: color_selected }]
-            );
+            // socket.emit("update_colors", 
+            //     [{ type: "stroke", index: last_down_index, color: color_selected }]
+            // );
+            socket.emit("update_element", "Stroke",last_down_index, "color", color_selected);
         }
     }
 })
@@ -169,25 +171,29 @@ color_interactor.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
         const elt = local_board.get_element_nearby(e, color_interactor.interactable_element_type);
         if (elt.type == DOWN_TYPE.VERTEX) {
             if ( g.vertices.has(elt.index) && g.vertices.get(elt.index).color != color_selected){
-                const data_socket = new Array();
-                data_socket.push({ type: "vertex", index: elt.index, color: color_selected });
-                socket.emit("update_colors", data_socket);
+                // const data_socket = new Array();
+                // data_socket.push({ type: "vertex", index: elt.index, color: color_selected });
+                // socket.emit("update_colors", data_socket);
+                socket.emit("update_element", "Vertex", elt.index, "color", color_selected);
+
             }
             return true;
         }
         else if (elt.type == DOWN_TYPE.LINK) {
             if ( g.links.has(elt.index) && g.links.get(elt.index).color != color_selected){
-                const data_socket = new Array();
-                data_socket.push({ type: "link", index: elt.index, color: color_selected });
-                socket.emit("update_colors", data_socket);
+                // const data_socket = new Array();
+                // data_socket.push({ type: "link", index: elt.index, color: color_selected });
+                // socket.emit("update_colors", data_socket);
+                socket.emit("update_element", "Link", elt.index, "color", color_selected);
             }
             return true;
         }
         else if (elt.type == DOWN_TYPE.STROKE){
             if ( g.strokes.has(elt.index) && g.strokes.get(elt.index).color != color_selected){
-                socket.emit("update_colors", 
-                [{ type: "stroke", index: elt.index, color: color_selected }]
-                );
+                // socket.emit("update_colors", 
+                // [{ type: "stroke", index: elt.index, color: color_selected }]
+                // );
+                socket.emit("update_element", "Stroke",elt.index, "color", color_selected);
             }
         }
         return false;

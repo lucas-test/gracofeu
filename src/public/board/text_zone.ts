@@ -45,11 +45,10 @@ export class ClientTextZone extends TextZone {
                     text_zone.width += new_mouse_pos.x - text_zone.last_mouse_pos.x;
                     text_zone.last_mouse_pos = new_mouse_pos;
                     text_zone.div.style.width = String(text_zone.width) + "px";
-                    
                 }
                 window.addEventListener("mousemove", move_div);
                 function stop_event(){
-                    socket.emit("update_width_text_zone", index, text_zone.width);
+                    socket.emit("update_element", "TextZone", index, "width", text_zone.width);
                     window.removeEventListener("mouseup", stop_event);
                     window.removeEventListener("mousemove", move_div);
                 }
@@ -64,7 +63,8 @@ export class ClientTextZone extends TextZone {
                         const new_mouse_pos = new CanvasCoord(e.pageX, e.pageY);
                         const cshift = CanvasVect.from_canvas_coords(text_zone.last_mouse_pos, new_mouse_pos);
                         const shift = local_board.view.server_vect(cshift);
-                        socket.emit("translate_text_zone", index, shift );
+                        // socket.emit("translate_text_zone", index, shift );
+                        socket.emit("translate_elements", [["TextZone", index]], shift)
                         text_zone.last_mouse_pos = new_mouse_pos;
                     }
                     window.addEventListener("mousemove", move_div);
@@ -89,6 +89,7 @@ export class ClientTextZone extends TextZone {
     translate(shift: CanvasVect, view: View) {
         this.canvas_pos.translate_by_canvas_vect(shift);
         this.pos = view.create_server_coord(this.canvas_pos);
+        this.reset_div_pos();
     }
 
 

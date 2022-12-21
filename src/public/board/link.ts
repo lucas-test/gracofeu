@@ -78,9 +78,9 @@ export class ClientLink extends Link {
             const weight_value = parseInt(link.weight);
             if ( isNaN(weight_value) == false){
                 if (e.deltaY < 0) {
-                    socket.emit("update_weight", "LINK", link_index, String(weight_value+1));
+                    socket.emit("update_element", "Link", link_index, "weight", String(weight_value+1));
                 }else {
-                    socket.emit("update_weight", "LINK", link_index, String(weight_value-1));
+                    socket.emit("update_update", "Link", link_index, "weight", String(weight_value-1));
                 }
             }
         })

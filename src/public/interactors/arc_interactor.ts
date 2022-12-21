@@ -21,7 +21,7 @@ interactor_arc.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
         local_board.view.link_creating_start = pos;
         local_board.view.link_creating_type = ORIENTATION.DIRECTED;
         const server_pos = local_board.view.create_server_coord(pos);
-        socket.emit("add_vertex", server_pos.x, server_pos.y, (response) => { index_last_created_vertex = response });
+        socket.emit("add_element",  "Vertex", {pos: server_pos}, (response) => { index_last_created_vertex = response });
     }
     if (last_down === DOWN_TYPE.VERTEX) {
         let vertex = g.vertices.get(last_down_index);
@@ -40,28 +40,39 @@ interactor_arc.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down == DOWN_TYPE.VERTEX) {
         let index = g.get_vertex_index_nearby(e);
         if (index !== null && last_down_index != index) { // there is a vertex nearby and it is not the previous one
-            socket.emit("add_link", last_down_index, index, "directed");
+            // socket.emit("add_link", last_down_index, index, "directed");
+            socket.emit("add_element", "Link", {start_index: last_down_index, end_index: index, orientation: "directed"}, (response: number) => {});
         } else {
 
             if (last_down_index !== index) { // We check if we are not creating a vertex on another one
                 let save_last_down_index = last_down_index; // see note below
-                socket.emit("add_vertex", local_board.view.create_server_coord(e).x, local_board.view.create_server_coord(e).y, (response) => {
-                    socket.emit("add_link", save_last_down_index, response, "directed");
-                    // we cant do socket.emit("add_edge", interactor_edge.last_down_index, response);
-                    // because before the callback, interactor_edge.last_down_index will changed (and set to null)
+                const mouse_canvas_coord = g.align_position(e, new Set(), canvas, local_board.view);
+                const server_pos = local_board.view.create_server_coord(mouse_canvas_coord);
+                // socket.emit("add_vertex", local_board.view.create_server_coord(e).x, local_board.view.create_server_coord(e).y, (response) => {
+                //     socket.emit("add_link", save_last_down_index, response, "directed");
+                //     // we cant do socket.emit("add_edge", interactor_edge.last_down_index, response);
+                //     // because before the callback, interactor_edge.last_down_index will changed (and set to null)
+                // });
+                socket.emit("add_element", "Vertex", {pos: server_pos}, (response) => { 
+                    socket.emit("add_element", "Link", {start_index: save_last_down_index, end_index: response, orientation: "directed"}, () => {} )
                 });
             }
         }
     } else if (last_down === DOWN_TYPE.EMPTY) {
         let index = g.get_vertex_index_nearby(g.align_position(e, new Set(), canvas, local_board.view));
         if (index !== null && index != index_last_created_vertex) {
-            socket.emit("add_link", index_last_created_vertex, index, "directed");
+            // socket.emit("add_link", index_last_created_vertex, index, "directed");
+            socket.emit("add_element", "Link", {start_index: index_last_created_vertex, end_index: index, orientation: "directed"}, (response: number) => {});
         } else {
             if (index_last_created_vertex !== index) { // We check if we are not creating another vertex where we created the one with the mousedown 
-                socket.emit("add_vertex", local_board.view.create_server_coord(e).x, local_board.view.create_server_coord(e).y, (response) => {
-                    socket.emit("add_link", index_last_created_vertex, response, "directed");
+                const aligned_mouse_pos = g.align_position(e, new Set(), canvas, local_board.view);
+                const server_pos = local_board.view.create_server_coord(aligned_mouse_pos);
+                // socket.emit("add_vertex", local_board.view.create_server_coord(e).x, local_board.view.create_server_coord(e).y, (response) => {
+                //     socket.emit("add_link", index_last_created_vertex, response, "directed");
+                // });
+                socket.emit("add_element", "Vertex", {pos: server_pos}, (response) => { 
+                    socket.emit("add_element", "Link", {start_index: index_last_created_vertex, end_index: response, orientation: "directed"}, () => {} )
                 });
-
             }
         }
     }

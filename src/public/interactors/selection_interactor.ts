@@ -38,11 +38,13 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
     switch (last_down) {
         case DOWN_TYPE.VERTEX:
             const v = g.vertices.get(last_down_index)
-            let indices = new Array();
+            let indices = new Array<[string,number]>();
             
             if (g.vertices.get(last_down_index).is_selected) {
                 const selected_vertices = g.get_selected_vertices();
-                indices = Array.from(selected_vertices);
+                for( const index of selected_vertices){
+                    indices.push(["Vertex", index]);
+                }
                 e.translate_by_canvas_vect(vertex_center_shift);
                 e = g.align_position(e, selected_vertices, canvas, local_board.view);
                 e.translate_by_canvas_vect(vertex_center_shift.opposite());
@@ -51,11 +53,12 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
                 e.translate_by_canvas_vect(vertex_center_shift);
                 e = g.align_position(e, new Set([last_down_index]), canvas, local_board.view);
                 e.translate_by_canvas_vect(vertex_center_shift.opposite());
-                indices.push(last_down_index);
+                indices.push(["Vertex",last_down_index]);
             }
             
             const shift = local_board.view.server_vect(CanvasVect.from_canvas_coords(down_coord,e));
-            socket.emit("translate_vertices", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
+            // socket.emit("translate_vertices", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
+            socket.emit("translate_elements", indices, shift.sub(previous_shift) )
             previous_shift.set_from(shift);
             return true;
             break;
@@ -84,7 +87,8 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
             if ( g.links.has(last_down_index)){
                 let indices = [last_down_index];
                 const shift = local_board.view.server_vect(CanvasVect.from_canvas_coords(down_coord,e));
-                socket.emit("translate_control_points", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
+                // socket.emit("translate_control_points", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
+                socket.emit("translate_elements", [["ControlPoint", last_down_index]], shift.sub(previous_shift));
                 previous_shift.set_from(shift);
                 return true;
             }
@@ -172,7 +176,9 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
         } else {
             const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
             const shift = local_board.view.server_vect(canvas_shift);
-            socket.emit("translate_strokes", [last_down_index], shift.x, shift.y);
+            // socket.emit("translate_strokes", [last_down_index], shift.x, shift.y);
+            g.strokes.get(last_down_index).translate_by_canvas_vect(canvas_shift.opposite(), local_board.view);
+            socket.emit("translate_elements", [["Stroke", last_down_index]], shift);
         }
     }
     else if (last_down === DOWN_TYPE.EMPTY) {

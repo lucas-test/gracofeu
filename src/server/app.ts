@@ -1,8 +1,8 @@
 import express, { text } from 'express';
-import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AddArea, AddLink, AddStroke, AddVertex, AreaMoveCorner, AreaMoveSide, ColorModification, DeleteElements, ELEMENT_TYPE, GraphPaste, TranslateAreas, TranslateControlPoints, TranslateStrokes, TranslateVertices, UpdateColors, UpdateSeveralVertexPos, UpdateWeight, VerticesMerge, middle, Vect, TextZone, Board} from "gramoloss";
+import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AreaMoveCorner, AreaMoveSide, DeleteElements, ELEMENT_TYPE, GraphPaste, VerticesMerge, middle, Vect, TextZone, Board, HistBoard, UpdateElement, AddElement, TranslateElements} from "gramoloss";
 import ENV from './.env.json';
 import { getRandomColor, User, users } from './user';
-import { makeid } from './utils';
+import { eq_indices, makeid } from './utils';
 
 const port = ENV.port;
 const app = express();
@@ -15,7 +15,7 @@ console.log('Server started at http://localhost:' + port);
 
 // gestion des rooms
 
-const room_boards = new Map<string, Board<Vertex, Link, Stroke, Area, TextZone>>();
+const room_boards = new Map<string, HistBoard<Vertex, Link, Stroke, Area, TextZone>>();
 const room_graphs = new Map<string, Graph<Vertex,Link, Stroke, Area>>();
 const clientRooms = {};
 
@@ -23,10 +23,10 @@ const clientRooms = {};
 
 const the_room = "theroom";
 const the_graph = new Graph();
-the_graph.add_vertex(new Vertex(100,300,""));
-the_graph.add_vertex(new Vertex(200,300,""));
-the_graph.add_vertex(new Vertex(200,400,""));
-the_graph.add_vertex(new Vertex(100,400,""));
+the_graph.set_vertex(0,new Vertex(100,300,""));
+the_graph.set_vertex(1, new Vertex(200,300,""));
+the_graph.set_vertex(2, new Vertex(200,400,""));
+the_graph.set_vertex(3, new Vertex(100,400,""));
 the_graph.add_link(new Link(0,1,new Coord(200,200), ORIENTATION.UNDIRECTED, "black", ""));
 room_graphs.set(the_room, the_graph);
 
@@ -50,14 +50,15 @@ io.sockets.on('connection', function (client) {
     client.emit('room_id', room_id); // useless ? TODO remove
     console.log("new room : ", room_id);
     let g = new Graph();
-    g.add_vertex(new Vertex(200,100,""));
+    g.set_vertex(0, new Vertex(200,100,""));
     room_graphs.set(room_id, g);
     emit_graph_to_room(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
     emit_strokes_to_room();
     emit_areas_to_room();
     emit_users_to_client();
 
-    let board = new Board();
+    let board = new HistBoard();
+    board.graph = g;
     room_boards.set(room_id, board);
 
 
@@ -137,6 +138,7 @@ io.sockets.on('connection', function (client) {
             room_id = new_room_id;
             g = room_graphs.get(room_id);
             board = room_boards.get(room_id);
+            board.graph = g;
             emit_graph_to_client(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
             emit_strokes_to_room();
             emit_areas_to_room();
@@ -201,44 +203,26 @@ io.sockets.on('connection', function (client) {
     // TODO just send the modif
 
     // Elementary Actions
-    client.on('add_vertex', (x: number, y: number, callback) => { callback(handle_add_vertex(x, y)) });
-    client.on('add_link', handle_add_link);
-    client.on('delete_selected_elements', handle_delete_selected_elements);
+    // client.on('delete_selected_elements', handle_delete_selected_elements);
     client.on('paste_graph', handle_paste_graph);
     client.on('vertices_merge', handle_vertices_merge);
-
-    // Vertices Positions
-    client.on('translate_vertices', handle_translate_vertices);
-
-    // Control Points
-    client.on('translate_control_points', handle_translate_control_points);
-
     // Area
-    client.on('add_area', handle_add_area);
     client.on('area_move_side', handle_move_side_area);
     client.on('area_move_corner', handle_move_corner_area);
-    client.on('translate_areas', handle_translate_areas);
-
-    // Stroke
-    client.on('add_stroke', handle_add_stroke);
-    client.on('translate_strokes', handle_translate_strokes);
-
-    // Vertices & Links & Strokes attributes
-    // TODO: merge them?
-    client.on('update_colors', handle_update_colors);
-    client.on('update_weight', handle_update_weight);
-
     // TextZones
-    client.on("create_text_zone", handle_create_text_zone); // TODO undo
-    client.on("update_text_text_zone", handle_update_text_text_zone); // TODO undo
-    client.on("translate_text_zone", handle_translate_text_zone); // TODO undo
-    client.on("update_width_text_zone", handle_update_width_text_zone); // TODO undo
-    client.on("delete_text_zone", handle_delete_text_zone);
+    client.on("delete_text_zone", handle_delete_text_zone); // TODO undoable
+    // Meta
+    client.on("update_element", handle_update_element);
+    client.on("add_element", handle_add_element);
+    client.on("translate_elements", handle_translate_elements);
+    client.on("delete_elements", handle_delete_elements);
+    // translate_elements // ne regarde pas écraser la dernière modif // TODO
+    // delete_elements // TODO
 
     // Not Elementary Actions
     client.on('undo', handle_undo);
     client.on('redo', handle_redo);
-    client.on('load_json', handle_load_json); // TODO modif
+    client.on('load_json', handle_load_json); // TODO undoable
 
     // No modification on the graph
     client.on('get_json', handle_get_json);
@@ -247,39 +231,116 @@ io.sockets.on('connection', function (client) {
     //
     // ------------------------
 
-    function handle_create_text_zone(raw_pos){
-        const new_index = board.get_next_available_index_text_zone();
-        const pos = new Coord(raw_pos.x, raw_pos.y);
-        const new_text_zone = new TextZone(pos, 200, "new text zone");
-        board.text_zones.set(new_index, new_text_zone);
-        // TODO
-        // const modif = new AddArea(area_index, new_area);
-        // g.try_implement_new_modification(modif);
-        broadcast("update_text_zone", {index: new_index, text_zone: new_text_zone}, new Set());
-    }
+ 
 
-    function handle_translate_text_zone(index: number, raw_shift){
-        if (board.text_zones.has(index)){
-            const text_zone = board.text_zones.get(index);
-            const shift = new Vect(raw_shift.x, raw_shift.y);
-            text_zone.pos.translate(shift);
-            broadcast("update_text_zone", {index: index, text_zone: text_zone}, new Set());
+    function handle_add_element(kind: string, data, callback: (created_index: number) => void){
+        console.log("handle_add_element", kind, data);
+        let new_index: number;
+        let new_element;
+
+        if ( kind == "Stroke"){
+            new_index = board.get_next_available_index_strokes();
+            const positions = [];
+            data.points.forEach(e => {
+                positions.push(new Coord(e[1].x, e[1].y));
+            });
+            new_element = new Stroke(positions, data.color, data.width);
+        } else if (kind == "Area"){
+            new_index = board.get_next_available_index_area();
+            const c1 = new Coord(data.c1.x, data.c1.y);
+            const c2 = new Coord(data.c2.x, data.c2.y);
+            new_element = new Area(data.label + new_index, c1 , c2 , data.color);
+        } 
+        else if (kind == "TextZone"){
+            new_index = board.get_next_available_index_text_zone();
+            const pos = new Coord(data.pos.x, data.pos.y);
+            new_element = new TextZone(pos, 200, "new text zone");
+        }else if (kind == "Vertex"){
+            new_index = board.graph.get_next_available_index_vertex();
+            const pos = new Coord(data.pos.x, data.pos.y);
+            new_element = new Vertex(pos.x, pos.y, "");
+        } else if (kind == "Link"){
+            new_index = board.graph.get_next_available_index_links();
+            let orient = ORIENTATION.UNDIRECTED;
+            switch (data.orientation) {
+                case "undirected":
+                    orient = ORIENTATION.UNDIRECTED
+                    break;
+                case "directed":
+                    orient = ORIENTATION.DIRECTED
+                    break;
+            }
+            const start_vertex = board.graph.vertices.get(data.start_index);
+            const end_vertex = board.graph.vertices.get(data.end_index);
+            new_element = new Link(data.start_index, data.end_index, middle(start_vertex.pos, end_vertex.pos) , orient, "black", "");
+        }else {
+            console.log("kind is not supported: ", kind);
+            return
+        }
+
+        const modif = new AddElement(kind, new_index, new_element);
+        const r = board.try_push_new_modification(modif);
+        if (typeof r === "string"){
+            console.log(r);
+        }else {
+            callback(new_index);
+            broadcast("add_element", {kind: kind, index: new_index, element: new_element}, new Set());
         }
     }
 
-    function handle_update_text_text_zone(index: number, text: string){
-        if (board.text_zones.has(index)){
-            const text_zone = board.text_zones.get(index);
-            text_zone.text = text;
-            broadcast("update_text_zone", {index: index, text_zone: text_zone}, new Set());
+
+    function handle_translate_elements(indices: Array<[string ,number]>, raw_shift){
+        // console.log("handle_translate_elements", indices);
+        let shift = new Vect(raw_shift.x, raw_shift.y);
+        console.log(shift);
+
+        if ( board.modifications_stack.length > 0 ){
+            const last_modif = board.modifications_stack[board.modifications_stack.length-1];
+            if (last_modif.constructor  == TranslateElements ){
+                const last_modif2 = last_modif as TranslateElements<Vertex,Link,Stroke,Area,TextZone>;
+                if (eq_indices(last_modif2.indices, indices )){
+                    shift.translate(last_modif2.shift);
+                    last_modif2.deimplement(board);
+                    board.modifications_stack.pop();
+                }
+            }
+        }
+        const modif = new TranslateElements(indices, shift);
+
+        const r = board.try_push_new_modification(modif);
+        if (typeof r === "string"){
+            console.log(r);
+        }else {
+            broadcast("translate_elements", {indices: indices, shift: raw_shift}, new Set());
         }
     }
 
-    function handle_update_width_text_zone(index: number, width: number){
-        if (board.text_zones.has(index)){
-            const text_zone = board.text_zones.get(index);
-            text_zone.width = width;
-            broadcast("update_text_zone", {index: index, text_zone: text_zone}, new Set());
+    function handle_delete_elements(indices: Array<[string ,number]>){
+        console.log("handle_delete_elements", indices);
+        const modif = DeleteElements.from_indices(board, indices);
+        if (typeof modif === "string"){
+            console.log(modif);
+        } else {
+            const r = board.try_push_new_modification(modif);
+            if (typeof r === "string"){
+                console.log(r);
+            }else {
+                broadcast("delete_elements", indices, new Set());
+            }
+        }
+    }
+
+   
+
+    function handle_update_element(kind: string, index: number, param: string, new_value){
+        console.log("handle_update_element", kind, index, param, new_value);
+        const old_value = board.get_value(kind, index, param);
+        const modif = new UpdateElement(index, kind, param, new_value, old_value )
+        const r = board.try_push_new_modification(modif);
+        if (typeof r === "string"){
+            console.log(r);
+        }else {
+            broadcast("update_element",  {index: modif.index, kind: modif.kind, param: modif.param, value: modif.new_value}, new Set());
         }
     }
 
@@ -293,32 +354,82 @@ io.sockets.on('connection', function (client) {
 
     function handle_undo() {
         console.log("Receive Request: undo");
-        const sensibilities = g.reverse_last_modification();
-        emit_graph_to_room(sensibilities);
-        emit_strokes_to_room();
-        emit_areas_to_room();
+        const r = board.cancel_last_modification();
+        if (typeof r === "string"){
+            console.log(r);
+        }else {
+            switch(r.constructor){
+                case TranslateElements: {
+                    const modif = r as TranslateElements<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("translate_elements",  {indices: modif.indices, shift: modif.shift.opposite()}, new Set());
+                    break;
+                }
+                case UpdateElement: {
+                    const modif = r as UpdateElement<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("update_element",  {index: modif.index, kind: modif.kind, param: modif.param, value: modif.old_value}, new Set());
+                    break;
+                }
+                case AddElement: {
+                    const modif = r as AddElement<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("delete_element",  {kind: modif.kind, index: modif.index}, new Set());
+                    break;
+                }
+                case GraphPaste: {
+                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+                }
+                case DeleteElements: {
+                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+                }
+            }
+        }
+
+        // TODO to put in board
+        // const sensibilities = g.reverse_last_modification();
+        // emit_graph_to_room(sensibilities);
+        // emit_strokes_to_room();
+        // emit_areas_to_room();
     }
 
     function handle_redo() {
         console.log("Receive Request: redo");
-        const sensibilities = g.redo();
-        emit_graph_to_room(sensibilities);
-        emit_strokes_to_room();
-        emit_areas_to_room();
+
+        const r = board.redo();
+        if (typeof r === "string"){
+            console.log(r);
+        }else {
+            switch(r.constructor){
+                case TranslateElements: {
+                    const modif = r as TranslateElements<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("translate_elements",  {indices: modif.indices, shift: modif.shift}, new Set());
+                    break;
+                }
+                case UpdateElement: {
+                    const modif = r as UpdateElement<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("update_element",  {index: modif.index, kind: modif.kind, param: modif.param, value: modif.new_value}, new Set());
+                    break;
+                }
+                case AddElement: {
+                    const modif = r as AddElement<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("add_element",  {kind: modif.kind, index: modif.index, element: modif.element}, new Set());
+                    break;
+                }
+                case GraphPaste: {
+                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT])); // OPT
+                }
+                case DeleteElements: {
+                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT])); // OPT
+                }
+            }
+        }
+
+        // TODO to put in board
+        // const sensibilities = g.redo();
+        // emit_graph_to_room(sensibilities);
+        // emit_strokes_to_room();
+        // emit_areas_to_room();
     }
 
     // AREAS 
-
-    function handle_add_area(c1x: number, c1y: number, c2x: number, c2y: number, label: string, color: string, callback: (created_area_index: number) => void) {
-        console.log("Receive Request: add_area");
-        const area_index = g.get_next_available_index_area();
-        const new_area = new Area(label + area_index, new Coord(c1x, c1y), new Coord(c2x, c2y), color);
-        const modif = new AddArea(area_index, new_area);
-        g.try_implement_new_modification(modif);
-        callback(area_index);
-        emit_areas_to_room();
-    }
-
     function handle_move_side_area(index: number, x: number, y: number, side_number: number) {
         console.log("Receive Request: move_side_area");
         if (g.areas.has(index)) {
@@ -345,131 +456,7 @@ io.sockets.on('connection', function (client) {
         }
     }
 
-    function handle_translate_areas(raw_indices, shiftx: number, shifty: number) {
-        console.log("Receive Request: translate_areas", raw_indices, shiftx, shifty);
-        const shift = new Vect(shiftx, shifty);
-        const indices = new Set<number>();
-        for (const index of raw_indices.values()) {
-            indices.add(index);
-        }
-        g.try_implement_new_modification(new TranslateAreas(indices, shift));
-        emit_graph_to_room(new Set());
-        emit_areas_to_room();
-    }
-
-
-    // STROKES
-    function handle_add_stroke(points: any, color: string, width: number, top_left_data: any, bot_right_data: any) {
-        console.log("Receive request: add_stroke");
-        const index = g.get_next_available_index_strokes();
-        const positions = [];
-        points.forEach(e => {
-            positions.push(new Coord(e[1].x, e[1].y));
-        });
-        const new_stroke = new Stroke(positions, color, width);
-        const modif = new AddStroke(index, new_stroke);
-        g.try_implement_new_modification(modif)
-        emit_strokes_to_room();
-    }
-
-
-
-
-
-    function handle_translate_strokes(raw_indices, shiftx: number, shifty: number) {
-        console.log("handle_translate_strokes", raw_indices, shiftx, shifty);
-        const shift = new Vect(shiftx, shifty);
-        const indices = new Set<number>();
-        for (const index of raw_indices.values()) {
-            indices.add(index);
-        }
-        g.try_implement_new_modification(new TranslateStrokes(indices, shift));
-        emit_strokes_to_room();
-    }
-
-
-
-    // COLORS
-    function handle_update_colors(data) {
-        let is_stroke_modifying = false;
-        const modif_data = new Array();
-        for (const element of data) {
-            if (element.type == "vertex") {
-                if (g.vertices.has(element.index)) {
-                    const vertex = g.vertices.get(element.index);
-                    modif_data.push(new ColorModification(element.type, element.index, element.color, vertex.color));
-                }
-            }
-            else if (element.type == "link") {
-                if (g.links.has(element.index)) {
-                    const link = g.links.get(element.index);
-                    modif_data.push(new ColorModification(element.type, element.index, element.color, link.color));
-                }
-            }
-            else if (element.type == "stroke") {
-                if (g.strokes.has(element.index)) {
-                    is_stroke_modifying = true;
-                    const stroke = g.strokes.get(element.index);
-                    modif_data.push(new ColorModification(element.type, element.index, element.color, stroke.color));
-                }
-            }
-        }
-        g.try_implement_new_modification(new UpdateColors(modif_data));
-        emit_graph_to_room(new Set([SENSIBILITY.COLOR]));
-        if (is_stroke_modifying) {
-            emit_strokes_to_room()
-        }
-    }
-
-
-    // LINKS
-    function handle_translate_control_points(raw_indices, shiftx: number, shifty: number) {
-        console.log("handle_translate_control_points", raw_indices, shiftx, shifty);
-        const shift = new Vect(shiftx, shifty);
-        const indices = new Set<number>();
-        for (const index of raw_indices.values()) {
-            indices.add(index);
-        }
-        g.try_implement_new_modification(new TranslateControlPoints(indices, shift));
-        emit_graph_to_room(new Set());
-    }
-
-
-
-
-    function handle_add_link(vindex: number, windex: number, orientation: string) {
-        let orient = ORIENTATION.UNDIRECTED;
-        switch (orientation) {
-            case "undirected":
-                orient = ORIENTATION.UNDIRECTED
-                break;
-            case "directed":
-                orient = ORIENTATION.DIRECTED
-                break;
-        }
-
-        const link_index = g.get_next_available_index_links();
-        const v = g.vertices.get(vindex);
-        const w = g.vertices.get(windex);
-        const link = new Link(vindex, windex, middle(v.pos, w.pos) , orient, "black", "");
-        const sensi = g.try_implement_new_modification(new AddLink(link_index, link));
-        emit_graph_to_room(sensi);
-        //param_weighted_distance_identification(g);
-    }
-
-    function handle_update_weight(element_type: string, index: number, new_weight: string) {
-        if( element_type == "VERTEX" && g.vertices.has(index) ){
-            const previous_weight = g.vertices.get(index).weight;
-            g.try_implement_new_modification(new UpdateWeight(ELEMENT_TYPE.VERTEX, index, new_weight, previous_weight));
-            emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
-        }
-        if (element_type == "LINK" && g.links.has(index)) {
-            const previous_weight = g.links.get(index).weight;
-            g.try_implement_new_modification(new UpdateWeight(ELEMENT_TYPE.LINK, index, new_weight, previous_weight));
-            emit_graph_to_room(new Set([SENSIBILITY.WEIGHT]));
-        }
-    }
-
+    
 
 
     // JSON
@@ -497,26 +484,9 @@ io.sockets.on('connection', function (client) {
     }
 
 
-    // VERTICES 
-    function handle_translate_vertices(raw_indices, shiftx: number, shifty: number) {
-        //console.log("Receive Request: translate vertices")
-        //console.log(raw_indices);
-        const shift = new Vect(shiftx, shifty);
-        const indices = new Set<number>();
-        for (const index of raw_indices.values()) {
-            indices.add(index);
-        }
-        g.try_implement_new_modification(new TranslateVertices(indices, shift));
-        io.sockets.in(room_id).emit('translate_vertices', raw_indices, shiftx, shifty);
-    }
+  
 
 
-    function handle_add_vertex(x: number, y: number) {
-        let index = g.get_next_available_index();
-        const sensi = g.try_implement_new_modification(new AddVertex(index, new Vertex(x,y,"")));
-        emit_graph_to_room(sensi);
-        return index;
-    }
 
     function handle_vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number) {
         console.log("Receive Request: vertices_merge");
@@ -567,63 +537,70 @@ io.sockets.on('connection', function (client) {
         }
 
         const modif = new GraphPaste(added_vertices, added_links);
-        const triggered_sensibilities = g.try_implement_new_modification(modif);
-        emit_graph_to_room(triggered_sensibilities)
-    }
-
-    function handle_delete_selected_elements(data) {
-        const deleted_vertices = new Map();
-        const deleted_links = new Map();
-        const deleted_strokes = new Map();
-        const deleted_areas = new Map();
-
-        for (const e of data) {
-            if (e.type == "vertex") {
-                if (g.vertices.has(e.index)) {
-                    const vertex = g.vertices.get(e.index);
-                    deleted_vertices.set(e.index, vertex);
-                    g.links.forEach((link, link_index) => {
-                        if (link.end_vertex === e.index || link.start_vertex === e.index) {
-                            deleted_links.set(link_index, link);
-                        }
-                    })
-                }
-            }
-            else if (e.type == "link") {
-                if (g.links.has(e.index)) {
-                    const link = g.links.get(e.index);
-                    deleted_links.set(e.index, link);
-                }
-            }
-            else if (e.type == "stroke") {
-                if (g.strokes.has(e.index)) {
-                    const stroke = g.strokes.get(e.index);
-                    deleted_strokes.set(e.index, stroke);
-                }
-            }
-            else if (e.type == "area") {
-                if (g.areas.has(e.index)) {
-                    const area = g.areas.get(e.index);
-                    deleted_areas.set(e.index, area);
-                }
-            }
-        }
-
-        const modif = new DeleteElements(deleted_vertices, deleted_links, deleted_strokes, deleted_areas);
-        const triggered_sensibilities = g.try_implement_new_modification(modif);
-
-        if (deleted_vertices.size > 0 || deleted_links.size > 0) {
-            emit_graph_to_room(triggered_sensibilities);
-        }
-
-        if (deleted_strokes.size > 0) {
-            emit_strokes_to_room();
-        }
-
-        if (deleted_areas.size > 0) {
-            emit_areas_to_room();
+        const r = board.try_push_new_modification(modif);
+        if (typeof r === "string"){
+            console.log(r);
+        }else {
+            // for (const [index, vertex] of modif.added_vertices.entries()){
+            //     broadcast("add_element", {kind: "Vertex", index: index, element: vertex}, new Set());
+            // }
+            emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
         }
     }
+
+    // function handle_delete_selected_elements(data) {
+    //     const deleted_vertices = new Map();
+    //     const deleted_links = new Map();
+    //     const deleted_strokes = new Map();
+    //     const deleted_areas = new Map();
+
+    //     for (const e of data) {
+    //         if (e.type == "vertex") {
+    //             if (g.vertices.has(e.index)) {
+    //                 const vertex = g.vertices.get(e.index);
+    //                 deleted_vertices.set(e.index, vertex);
+    //                 g.links.forEach((link, link_index) => {
+    //                     if (link.end_vertex === e.index || link.start_vertex === e.index) {
+    //                         deleted_links.set(link_index, link);
+    //                     }
+    //                 })
+    //             }
+    //         }
+    //         else if (e.type == "link") {
+    //             if (g.links.has(e.index)) {
+    //                 const link = g.links.get(e.index);
+    //                 deleted_links.set(e.index, link);
+    //             }
+    //         }
+    //         else if (e.type == "stroke") {
+    //             if (g.strokes.has(e.index)) {
+    //                 const stroke = g.strokes.get(e.index);
+    //                 deleted_strokes.set(e.index, stroke);
+    //             }
+    //         }
+    //         else if (e.type == "area") {
+    //             if (g.areas.has(e.index)) {
+    //                 const area = g.areas.get(e.index);
+    //                 deleted_areas.set(e.index, area);
+    //             }
+    //         }
+    //     }
+
+    //     const modif = new DeleteElements(deleted_vertices, deleted_links, deleted_strokes, deleted_areas);
+    //     const triggered_sensibilities = g.try_implement_new_modification(modif);
+
+    //     if (deleted_vertices.size > 0 || deleted_links.size > 0) {
+    //         emit_graph_to_room(triggered_sensibilities);
+    //     }
+
+    //     if (deleted_strokes.size > 0) {
+    //         emit_strokes_to_room();
+    //     }
+
+    //     if (deleted_areas.size > 0) {
+    //         emit_areas_to_room();
+    //     }
+    // }
 })
 
 

@@ -28,8 +28,9 @@ interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
         first_corner = local_board.view.create_server_coord(e);
-        socket.emit("add_area", first_corner.x, first_corner.y, first_corner.x, first_corner.y, "G", "", 
-        (response: number) => { last_created_area_index = response });
+        // socket.emit("add_area", first_corner.x, first_corner.y, first_corner.x, first_corner.y, "G", "", 
+        // (response: number) => { last_created_area_index = response });
+        socket.emit("add_element", "Area", {c1: first_corner, c2: first_corner, label: "G", color:"" }, (response: number) => { console.log("hey", response); last_created_area_index = response })
         opposite_corner = e.copy();
     } else if (last_down === DOWN_TYPE.AREA_CORNER){
         const area = g.areas.get(last_down_index);
@@ -205,7 +206,9 @@ interactor_area.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     else if ( last_down == DOWN_TYPE.AREA){
         const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
         const shift = local_board.view.server_vect(canvas_shift);
-        socket.emit("translate_areas", [last_down_index], shift.x, shift.y);
+        // socket.emit("translate_areas", [last_down_index], shift.x, shift.y);
+        g.translate_area(canvas_shift.opposite(), last_down_index, vertices_contained, local_board.view);
+        socket.emit("translate_elements",[["Area", last_down_index]], shift);
         is_moving_area = false;
     }
 })

@@ -306,6 +306,27 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
         const link = new ClientLink(index1, index2, cp, ORIENTATION.UNDIRECTED, "black", "", view);
         this.add_link(link);
     }
+
+    translate_vertex_by_canvas_vect(index: number, cshift: CanvasVect, view: View){
+        if (this.vertices.has(index)) {
+            const vertex = this.vertices.get(index);
+            const previous_pos = vertex.pos.copy();
+            vertex.translate_by_canvas_vect(cshift, view);
+            const new_pos = vertex.pos.copy();
+
+            for (const [link_index, link] of this.links.entries()) {
+                if (link.start_vertex == index) {
+                    const end_vertex_pos = this.vertices.get(link.end_vertex).pos;
+                    link.transform_cp(new_pos, previous_pos, end_vertex_pos);
+                    link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                } else if (link.end_vertex == index) {
+                    const start_vertex_pos = this.vertices.get(link.start_vertex).pos;
+                    link.transform_cp(new_pos, previous_pos, start_vertex_pos);
+                    link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                }
+            }
+        }
+    }
 }
 
 

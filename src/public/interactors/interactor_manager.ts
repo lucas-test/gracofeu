@@ -69,21 +69,21 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
                     if (v.is_selected) {
-                        data_socket.push({ type: "vertex", index: index });
+                        data_socket.push(["Vertex", index]);
                     }
                 }
                 g.links.forEach((link, index) => {
                     if (link.is_selected) {
-                        data_socket.push({ type: "link", index: index });
+                        data_socket.push([ "Link", index]);
                     }
                 })
                 g.strokes.forEach((s, index) => {
                     if (s.is_selected) {
-                        data_socket.push({ type: "stroke", index: index });
+                        data_socket.push(["Stroke", index]);
                     }
                 })
 
-                socket.emit("delete_selected_elements", data_socket);
+                socket.emit("delete_elements", data_socket);
                 return;
             }
             if ( key_states.get("Control") && e.key.toLowerCase() == "c" ){
