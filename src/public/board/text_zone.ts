@@ -74,7 +74,7 @@ export class ClientTextZone extends TextZone {
                     }
                     window.addEventListener("mouseup", stop_event);
                 } else if (interactor_loaded.name == "eraser"){
-                    socket.emit("delete_text_zone", index);
+                    socket.emit("delete_elements", [["TextZone", index]]);
                 }
             }
 

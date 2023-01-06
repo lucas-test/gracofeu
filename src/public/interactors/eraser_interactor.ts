@@ -19,33 +19,25 @@ export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new S
 function erase_at(g: ClientGraph, e: CanvasCoord) : boolean{
     for (const [index, s] of g.strokes.entries()) {
         if (s.is_nearby(e, local_board.view) !== false) {
-            const data_socket = new Array();
-            data_socket.push({ type: "stroke", index: index });
-            socket.emit("delete_selected_elements", data_socket);
+            socket.emit("delete_elements", [["Stroke", index]]);
             return true;
         }
     }
     for (const [index, vertex] of g.vertices.entries()) {
         if (vertex.is_nearby(e, Math.pow(erase_distance + VERTEX_RADIUS, 2))) {
-            const data_socket = new Array();
-            data_socket.push({ type: "vertex", index: index });
-            socket.emit("delete_selected_elements", data_socket);
+            socket.emit("delete_elements", [["Vertex", index]]);
             return true;
         }
     }
     for (const index of g.links.keys()) {
         if (g.is_click_over_link(index, e, local_board.view)) {
-            const data_socket = new Array();
-            data_socket.push({ type: "link", index: index });
-            socket.emit("delete_selected_elements", data_socket);
+            socket.emit("delete_elements", [["Link", index]]);
             return true;
         }
     }
     for(const [index,area] of g.areas.entries()){
         if( area.is_nearby(e)){
-            const data_socket = new Array();
-            data_socket.push({ type: "area", index: index });
-            socket.emit("delete_selected_elements", data_socket);
+            socket.emit("delete_elements", [["Area", index]]);
             return true;
         }
     }

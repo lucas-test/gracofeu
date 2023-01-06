@@ -196,34 +196,22 @@ io.sockets.on('connection', function (client) {
     // GRAPH API
     // ------------------------
 
-    // A handle function starts by treating the data
-    // forms a Modification
-    // calls g.try_implement(modif)
-    // send_the_graph 
-    // TODO just send the modif
-
     // Elementary Actions
-    // client.on('delete_selected_elements', handle_delete_selected_elements);
     client.on('paste_graph', handle_paste_graph);
     client.on('vertices_merge', handle_vertices_merge);
     // Area
     client.on('area_move_side', handle_move_side_area);
     client.on('area_move_corner', handle_move_corner_area);
-    // TextZones
-    client.on("delete_text_zone", handle_delete_text_zone); // TODO undoable
     // Meta
     client.on("update_element", handle_update_element);
     client.on("add_element", handle_add_element);
     client.on("translate_elements", handle_translate_elements);
     client.on("delete_elements", handle_delete_elements);
     // translate_elements // ne regarde pas écraser la dernière modif // TODO
-    // delete_elements // TODO
-
     // Not Elementary Actions
     client.on('undo', handle_undo);
     client.on('redo', handle_redo);
     client.on('load_json', handle_load_json); // TODO undoable
-
     // No modification on the graph
     client.on('get_json', handle_get_json);
 
@@ -234,7 +222,7 @@ io.sockets.on('connection', function (client) {
  
 
     function handle_add_element(kind: string, data, callback: (created_index: number) => void){
-        console.log("handle_add_element", kind, data);
+        // console.log("handle_add_element", kind, data);
         let new_index: number;
         let new_element;
 
@@ -284,7 +272,7 @@ io.sockets.on('connection', function (client) {
             console.log(r);
         }else {
             callback(new_index);
-            broadcast("add_element", {kind: kind, index: new_index, element: new_element}, new Set());
+            broadcast("add_elements", [{kind: kind, index: new_index, element: new_element}], new Set());
         }
     }
 
@@ -292,7 +280,7 @@ io.sockets.on('connection', function (client) {
     function handle_translate_elements(indices: Array<[string ,number]>, raw_shift){
         // console.log("handle_translate_elements", indices);
         let shift = new Vect(raw_shift.x, raw_shift.y);
-        console.log(shift);
+        // console.log(shift);
 
         if ( board.modifications_stack.length > 0 ){
             const last_modif = board.modifications_stack[board.modifications_stack.length-1];
@@ -333,7 +321,7 @@ io.sockets.on('connection', function (client) {
    
 
     function handle_update_element(kind: string, index: number, param: string, new_value){
-        console.log("handle_update_element", kind, index, param, new_value);
+        // console.log("handle_update_element", kind, index, param, new_value);
         const old_value = board.get_value(kind, index, param);
         const modif = new UpdateElement(index, kind, param, new_value, old_value )
         const r = board.try_push_new_modification(modif);
@@ -341,14 +329,6 @@ io.sockets.on('connection', function (client) {
             console.log(r);
         }else {
             broadcast("update_element",  {index: modif.index, kind: modif.kind, param: modif.param, value: modif.new_value}, new Set());
-        }
-    }
-
-    function handle_delete_text_zone(index: number){
-        console.log("handle_delete_text_zone", index);
-        if (board.text_zones.has(index)){
-            board.text_zones.delete(index);
-            broadcast("delete_text_zone", index, new Set());
         }
     }
 
@@ -371,14 +351,57 @@ io.sockets.on('connection', function (client) {
                 }
                 case AddElement: {
                     const modif = r as AddElement<Vertex, Link, Stroke, Area, TextZone>;
-                    broadcast("delete_element",  {kind: modif.kind, index: modif.index}, new Set());
+                    broadcast("delete_elements",  [[ modif.kind, modif.index]], new Set());
                     break;
                 }
                 case GraphPaste: {
-                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+                    const modif = r as GraphPaste<Vertex, Link, Stroke, Area, TextZone>;
+                    const indices = new Array();
+                    for (const [index, vertex] of modif.added_vertices){
+                        indices.push(["Vertex", index]);
+                    }
+                    for (const [index, link] of modif.added_links){
+                        indices.push(["Link", index]);
+                    }
+                    broadcast("delete_elements", indices, new Set());
+                    break;
                 }
                 case DeleteElements: {
-                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+                    const modif = r as DeleteElements<Vertex, Link, Stroke, Area, TextZone>;
+                    const removed = new Array();
+                    for (const [index, vertex] of modif.vertices.entries()){
+                        removed.push({kind: "Vertex", index: index, element: vertex});
+                    }
+                    for (const [index, link] of modif.links.entries()){
+                        removed.push({kind: "Link", index: index, element: link});
+                    }
+                    for (const [index, area] of modif.areas.entries()){
+                        removed.push({kind: "Area", index: index, element: area});
+                    }
+                    for (const [index, stroke] of modif.strokes.entries()){
+                        removed.push({kind: "Stroke", index: index, element: stroke});
+                    }
+                    for (const [index, text_zone] of modif.text_zones.entries()){
+                        removed.push({kind: "TextZone", index: index, element: text_zone});
+                    }
+                    broadcast("add_elements", removed, new Set() );
+                    break;
+                }
+                case AreaMoveCorner: {
+                    const modif = r as AreaMoveCorner<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.previous_c1}, new Set());
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.previous_c2}, new Set());
+                    break;
+                }
+                case AreaMoveSide: {
+                    const modif = r as AreaMoveSide<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.previous_c1}, new Set());
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.previous_c2}, new Set());
+                    break;
+                }
+                case VerticesMerge: {
+                    emit_graph_to_room(new Set());
+                    break;
                 }
             }
         }
@@ -410,14 +433,57 @@ io.sockets.on('connection', function (client) {
                 }
                 case AddElement: {
                     const modif = r as AddElement<Vertex, Link, Stroke, Area, TextZone>;
-                    broadcast("add_element",  {kind: modif.kind, index: modif.index, element: modif.element}, new Set());
+                    broadcast("add_elements",  [{kind: modif.kind, index: modif.index, element: modif.element}], new Set());
                     break;
                 }
                 case GraphPaste: {
-                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT])); // OPT
+                    const modif = r as GraphPaste<Vertex, Link, Stroke, Area, TextZone>;
+                    const elements = new Array();
+                    for (const [index, vertex] of modif.added_vertices){
+                        elements.push({kind: "Vertex", index: index, element: vertex});
+                    }
+                    for (const [index, link] of modif.added_links){
+                        elements.push({kind: "Link", index: index, element: link});
+                    }
+                    broadcast("add_elements", elements, new Set());
+                    break;
                 }
                 case DeleteElements: {
-                    emit_graph_to_room(new Set([SENSIBILITY.ELEMENT])); // OPT
+                    const modif = r as DeleteElements<Vertex, Link, Stroke, Area, TextZone>;
+                    const indices = new Array();
+                    for (const index of modif.vertices.keys()){
+                        indices.push(["Vertex", index]);
+                    }
+                    for (const index of modif.links.keys()){
+                        indices.push(["Link", index]);
+                    }
+                    for (const index of modif.strokes.keys()){
+                        indices.push(["Stroke", index]);
+                    }
+                    for (const index of modif.areas.keys()){
+                        indices.push(["Area", index]);
+                    }
+                    for (const index of modif.text_zones.keys()){
+                        indices.push(["TextZone", index]);
+                    }
+                    broadcast("delete_elements", indices, new Set());
+                    break;
+                }
+                case AreaMoveCorner: {
+                    const modif = r as AreaMoveCorner<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.new_c1}, new Set());
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.new_c2}, new Set());
+                    break;
+                }
+                case AreaMoveSide: {
+                    const modif = r as AreaMoveSide<Vertex, Link, Stroke, Area, TextZone>;
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.new_c1}, new Set());
+                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.new_c2}, new Set());
+                    break;
+                }
+                case VerticesMerge: {
+                    emit_graph_to_room(new Set());
+                    break;
                 }
             }
         }
@@ -435,8 +501,13 @@ io.sockets.on('connection', function (client) {
         if (g.areas.has(index)) {
             const area = g.areas.get(index);
             const new_modif = AreaMoveSide.from_area(index, area, x, y, side_number);
-            g.try_implement_new_modification(new_modif);
-            emit_areas_to_room(); // OPT: update only one area
+            const r = board.try_push_new_modification(new_modif);
+            if (typeof r === "string"){
+                console.log(r);
+            }else {
+                broadcast("update_element",  {index: index, kind: "Area", param: "c1", value: new_modif.new_c1}, new Set());
+                broadcast("update_element",  {index: index, kind: "Area", param: "c2", value: new_modif.new_c2}, new Set());
+            }
         } else {
             console.log("Error: area index does not exist", index);
         }
@@ -445,12 +516,17 @@ io.sockets.on('connection', function (client) {
 
 
     function handle_move_corner_area(index: number, x: number, y: number, corner_number: number) {
-        console.log("Receive Request: move_corner_area");
+        console.log("handle_move_corner_area");
         if (g.areas.has(index)) {
             const area = g.areas.get(index);
             const new_modif = AreaMoveCorner.from_area(index, area, x, y, corner_number);
-            g.try_implement_new_modification(new_modif);
-            emit_areas_to_room(); // OPT: update only one area
+            const r = board.try_push_new_modification(new_modif);
+            if (typeof r === "string"){
+                console.log(r);
+            }else {
+                broadcast("update_element",  {index: index, kind: "Area", param: "c1", value: new_modif.new_c1}, new Set());
+                broadcast("update_element",  {index: index, kind: "Area", param: "c2", value: new_modif.new_c2}, new Set());
+            }
         } else {
             console.log("Error: area index does not exist", index);
         }
@@ -491,10 +567,14 @@ io.sockets.on('connection', function (client) {
     function handle_vertices_merge(vertex_index_fixed: number, vertex_index_to_remove: number) {
         console.log("Receive Request: vertices_merge");
         if (g.vertices.has(vertex_index_fixed) && g.vertices.has(vertex_index_to_remove)) {
-            g.reverse_last_modification(); // TODO its not necessarily the last which is a translate
-            const modif = g.create_vertices_merge_modif(vertex_index_fixed, vertex_index_to_remove);
-            const sensi = g.try_implement_new_modification(modif);
-            emit_graph_to_room(sensi);
+            board.cancel_last_modification(); // TODO its not necessarily the last which is a translate
+            const modif = VerticesMerge.from_graph(g, vertex_index_fixed, vertex_index_to_remove);
+            const r = board.try_push_new_modification(modif);
+            if (typeof r === "string"){
+                console.log(r);
+            }else {
+                emit_graph_to_room(r);
+            }
         }
     }
 
@@ -541,10 +621,15 @@ io.sockets.on('connection', function (client) {
         if (typeof r === "string"){
             console.log(r);
         }else {
-            // for (const [index, vertex] of modif.added_vertices.entries()){
-            //     broadcast("add_element", {kind: "Vertex", index: index, element: vertex}, new Set());
-            // }
-            emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
+            const elements = new Array();
+            for (const [index, vertex] of modif.added_vertices){
+                elements.push({kind: "Vertex", index: index, element: vertex});
+            }
+            for (const [index, link] of modif.added_links){
+                elements.push({kind: "Link", index: index, element: link});
+            }
+            broadcast("add_elements", elements, new Set());
+            // emit_graph_to_room(new Set([SENSIBILITY.ELEMENT]));
         }
     }
 

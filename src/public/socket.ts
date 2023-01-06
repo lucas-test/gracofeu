@@ -139,13 +139,11 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on('update_control_points2', handle_update_control_points2);
     socket.on('areas', handle_areas); // AREA
     socket.on('strokes', handle_strokes); // STROKES
-    socket.on("update_text_zone", handle_update_text_zone); // used for translate
     socket.on("reset_board", handle_reset_board);
 
     // META
     socket.on("update_element", handle_update_element);
-    socket.on("add_element", handle_add_element);
-    socket.on("delete_element", handle_delete_element);
+    socket.on("add_elements", handle_add_elements);
     socket.on("delete_elements", handle_delete_elements);
     socket.on("translate_elements", handle_translate_elements);
 
@@ -178,70 +176,49 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         requestAnimationFrame(function () {draw(canvas, ctx, g) });
     }
 
-    function handle_add_element( data, sensibilities){
-        console.log("handle_add_element", data.kind, data.index, data.element);
-
-        if (data.kind == "Stroke"){
-            const positions = new Array<Coord>();
-            data.element.positions.forEach(e => {
-                positions.push(new Coord(e.x, e.y));
-            });
-            const new_stroke = new ClientStroke(positions, data.element.color, data.element.width, local_board.view);
-            local_board.graph.strokes.set(data.index, new_stroke);
-        } else if (data.kind == "TextZone"){
-            const pos = new Coord(data.element.pos.x, data.element.pos.y);
-            const width = data.element.width as number;
-            const text = data.element.text as string;
-            const new_text_zone = new ClientTextZone(pos, width, text , local_board.view, data.index);
-            local_board.text_zones.set(data.index, new_text_zone);
-        } else if (data.kind == "Area"){
-            const c1 = new Coord(data.element.c1.x, data.element.c1.y);
-            const c2 = new Coord(data.element.c2.x,data.element.c2.y);
-            const new_area = new ClientArea( data.element.label, c1, c2, data.element.color, local_board.view);
-            local_board.graph.areas.set(data.index, new_area);
-            init_list_parametors_for_area(board, data.index, canvas, ctx);
-        } else if (data.kind == "Vertex"){
-            const x = data.element.pos.x as number;
-            const y = data.element.pos.y as number;
-            const weight = data.element.weight as string;
-            const new_vertex = new ClientVertex(x, y, weight, local_board.view );
-            local_board.graph.vertices.set(data.index, new_vertex);
-        } else if (data.kind == "Link"){
-            const start_index = data.element.start_vertex as number;
-            const end_index = data.element.end_vertex as number;
-            const cp = new Coord(data.element.cp.x, data.element.cp.y);
-            let orient = ORIENTATION.UNDIRECTED;
-            if (data.element.orientation == "DIRECTED"){
-                orient = ORIENTATION.DIRECTED;
+    function handle_add_elements( datas, sensibilities){
+        console.log("handle_add_elements", datas);
+        for(const data of datas){
+            if (data.kind == "Stroke"){
+                const positions = new Array<Coord>();
+                data.element.positions.forEach(e => {
+                    positions.push(new Coord(e.x, e.y));
+                });
+                const new_stroke = new ClientStroke(positions, data.element.color, data.element.width, local_board.view);
+                local_board.graph.strokes.set(data.index, new_stroke);
+            } else if (data.kind == "TextZone"){
+                const pos = new Coord(data.element.pos.x, data.element.pos.y);
+                const width = data.element.width as number;
+                const text = data.element.text as string;
+                const new_text_zone = new ClientTextZone(pos, width, text , local_board.view, data.index);
+                local_board.text_zones.set(data.index, new_text_zone);
+            } else if (data.kind == "Area"){
+                const c1 = new Coord(data.element.c1.x, data.element.c1.y);
+                const c2 = new Coord(data.element.c2.x,data.element.c2.y);
+                const new_area = new ClientArea( data.element.label, c1, c2, data.element.color, local_board.view);
+                local_board.graph.areas.set(data.index, new_area);
+                init_list_parametors_for_area(board, data.index, canvas, ctx);
+            } else if (data.kind == "Vertex"){
+                const x = data.element.pos.x as number;
+                const y = data.element.pos.y as number;
+                const weight = data.element.weight as string;
+                const new_vertex = new ClientVertex(x, y, weight, local_board.view );
+                local_board.graph.vertices.set(data.index, new_vertex);
+            } else if (data.kind == "Link"){
+                const start_index = data.element.start_vertex as number;
+                const end_index = data.element.end_vertex as number;
+                const cp = new Coord(data.element.cp.x, data.element.cp.y);
+                let orient = ORIENTATION.UNDIRECTED;
+                if (data.element.orientation == "DIRECTED"){
+                    orient = ORIENTATION.DIRECTED;
+                }
+                const color = data.element.color as string;
+                const weight = data.element.weight as string;
+                const new_link = new ClientLink(start_index, end_index, cp, orient, color, weight, local_board.view);
+                local_board.graph.links.set(data.index, new_link);
             }
-            const color = data.element.color as string;
-            const weight = data.element.weight as string;
-            const new_link = new ClientLink(start_index, end_index, cp, orient, color, weight, local_board.view);
-            local_board.graph.links.set(data.index, new_link);
         }
         
-        requestAnimationFrame(function () {draw(canvas, ctx, g) });
-    }
-
-    function handle_delete_element(data, sensibilities){
-        console.log("handle_delete_element", data.kind, data.index);
-        if (data.kind == "Stroke"){
-            local_board.graph.strokes.delete(data.index);
-        } else if (data.kind == "TextZone"){
-            const text_zone = local_board.text_zones.get(data.index);
-            text_zone.div.remove();
-            local_board.text_zones.delete(data.index);
-        } else if (data.kind == "Area"){
-            local_board.graph.areas.delete(data.index);
-        } else if (data.kind == "Vertex"){
-            const vertex = local_board.graph.vertices.get(data.index);
-            if (vertex.weight_div != null){
-                vertex.weight_div.remove();
-            }
-            local_board.graph.delete_vertex(data.index);
-        } else if (data.kind == "Link"){
-            local_board.graph.links.delete(data.index);
-        }
         requestAnimationFrame(function () {draw(canvas, ctx, g) });
     }
 
@@ -263,7 +240,13 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 }
                 local_board.graph.delete_vertex(element[1]);
             } else if (element[0] == "Link"){
-                local_board.graph.links.delete(element[1]);
+                if ( local_board.graph.links.has(element[1])){
+                    const link = local_board.graph.links.get(element[1]);
+                    if ( link.weight_div != null){
+                        link.weight_div.remove();
+                    }
+                    local_board.graph.links.delete(element[1]);
+                }
             }
         }
         requestAnimationFrame(function () {draw(canvas, ctx, g) });
@@ -306,6 +289,17 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 const color = data.value as string;
                 stroke.color = color;
             }
+        } else if (data.kind == "Area"){
+            const area = local_board.graph.areas.get(data.index);
+            if(data.param == "c1"){
+                const new_c1 = new Coord(data.value.x , data.value.y);
+                area.c1 = new_c1;
+                area.update_canvas_pos(local_board.view);
+            } else if(data.param == "c2"){
+                const new_c2 = new Coord(data.value.x , data.value.y);
+                area.c2 = new_c2;
+                area.update_canvas_pos(local_board.view);
+            }
         } else {
             console.log("Kind not supported :", data.kind);
         }
@@ -328,33 +322,6 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         });
     }
 
-    function handle_update_text_zone(data, sensibilites: Set<SENSIBILITY>){
-        // console.log("handle_update_text_zone");
-        const index = data.index as number;
-        if ( local_board.text_zones.has(index)){
-            const text_zone = local_board.text_zones.get(index);
-            const text = data.text_zone.text as string;
-            const width = data.text_zone.width as number;
-            text_zone.width = width;
-            text_zone.div.style.width = String(width) + "px";
-            text_zone.update_text(text);
-            text_zone.pos = new Coord(data.text_zone.pos.x, data.text_zone.pos.y);
-            text_zone.canvas_pos = local_board.view.create_canvas_coord(text_zone.pos);
-            text_zone.reset_div_pos();
-            // window.getSelection().removeAllRanges();
-        }else {
-            const pos = new Coord(data.text_zone.pos.x, data.text_zone.pos.y);
-            const width = data.text_zone.width as number;
-            const text = data.text_zone.text as string;
-            const new_text_zone = new ClientTextZone(pos, width, text , local_board.view, index);
-            local_board.text_zones.set(index, new_text_zone);
-        }
-        requestAnimationFrame(function () { 
-            draw(canvas, ctx, g) 
-        });
-    }
-
-    
 
 
     function handle_strokes(data){

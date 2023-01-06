@@ -1,5 +1,16 @@
 # todo
 
+plan d'Actions
+- tout ce qui a dans modifications de gramoloss -> dans histboard
+- vertices merge
+- area move
+- mettre tout dans gracofeu pour simplifier les broadcast
+
+
+add_elements in App ?
+update_elements in App ? yes for color applyed to several elements
+
+
 ## V0.1
 
 - [X] trouver un truc pour pouvoir mettre les .html .css et dans public et que ça soit copié dans dist/ avec npm start (avec parcel)
