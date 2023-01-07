@@ -19,12 +19,14 @@ import { clear_clipboard, clipboard_comes_from_generator, graph_clipboard, mouse
 import { CanvasCoord } from '../board/vertex';
 import { ClientGraph } from '../board/graph';
 import { CanvasVect } from '../board/vect';
+import { DegreeWidthRep } from 'gramoloss';
+import { ClientDegreeWidthRep } from '../board/representations/degree_width_rep';
 
 // INTERACTOR MANAGER
 
 
 
-
+export let down_meta_element: any = "";
 export let interactor_loaded: Interactor = null;
 export let down_coord: CanvasCoord = null;
 export let last_down: DOWN_TYPE = null;
@@ -64,6 +66,12 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         }
 
         if (document.activeElement.nodeName == "BODY") { // otherwise focus is on a text
+            if (e.key == "d"){
+                console.log("add dw representation");
+                const dw_rep = new ClientDegreeWidthRep(local_board.graph, local_board.view);
+                local_board.representations.set(0, dw_rep);
+            }
+            
             if (e.key == "Delete") {
                 const data_socket = new Array();
                 for (const index of g.vertices.keys()) {
@@ -200,6 +208,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 console.log(element);
                 last_down = element.type;
                 last_down_index = element.index;
+                down_meta_element = element;
                 interactor_loaded.mousedown(canvas, ctx, g, down_coord)
                 if (element.type != DOWN_TYPE.EMPTY) {
                     requestAnimationFrame(function () { draw(canvas, ctx, g) });

@@ -49,6 +49,36 @@ import { GraphGenerator } from "./generator";
     return graph;
  }
 
+
+ // ----------------------------
+
+ let random_tournament = new GraphGenerator("random_tournament", [new Integer("n", 3)])
+
+ random_tournament.generate = (pos: CanvasCoord, view: View) => {
+    const graph = new ClientGraph();
+    const n = random_tournament.attributes[0].value;
+    const r = 50;
+    const center = view.create_canvas_coord(pos);
+    const cx = center.x; 
+    const cy = center.y;
+    for ( let i = 0 ; i < n ; i ++){
+        const v = new ClientVertex(cx +  r*Math.cos( (2*Math.PI*i) /n), cy + r*Math.sin( (2*Math.PI*i) /n), "", view);
+        graph.add_vertex(v);
+        for ( let j = 0 ; j < i ; j ++ ){
+            const vj = graph.vertices.get(j);
+            const cp = middle(v.pos, vj.pos);
+            if ( Math.random() < 0.5 ){
+                const link = new ClientLink(j,i, cp, ORIENTATION.DIRECTED, "black", "", view);
+                graph.add_link(link);
+            }else {
+                const link = new ClientLink(i,j, cp, ORIENTATION.DIRECTED, "black", "", view);
+                graph.add_link(link);
+            }
+        }
+    }
+    return graph;
+ }
+
  // ----------------------------
 
  let random_GNP = new GraphGenerator("gnp", [new Integer("n", 3), new Percentage("p")]);
@@ -178,4 +208,5 @@ generators_available.push(random_GNP);
 generators_available.push(random_star);
 generators_available.push(complete_bipartite);
 generators_available.push(grid);
+generators_available.push(random_tournament);
 

@@ -516,5 +516,7 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_interactor(ctx);
     draw_graph_generated(ctx);
     // draw_following(ctx);
+
+    local_board.draw(ctx);
 }
 

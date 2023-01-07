@@ -4,18 +4,18 @@ import { COLOR_BACKGROUND, draw } from "../draw";
 import { Parametor } from "../parametors/parametor";
 import { params_available, params_loaded, remove_loaded_param, update_parametor } from "../parametors/parametor_manager";
 import { socket } from "../socket";
-import { Board } from "./board";
 import { CanvasCoord, ClientVertex } from "./vertex";
 import { local_board } from "../setup";
 import { params_available_turn_on_div } from "../parametors/div_parametor";
 import { ClientGraph } from "./graph";
+import { ClientBoard } from "./board";
 
 type WholeGraphArea = {};
 
 
 
-export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, board: Board){
-    const g = board.graph;
+export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, board: ClientBoard){
+    const g = board.graph as ClientGraph;
     const view = board.view;
     const list_area_DOM = document.getElementById("area_list_container");
     if(list_area_DOM){
@@ -35,7 +35,7 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
 }
 
 
-export function init_parametor_div(param:Parametor, area_id: number, board: Board):HTMLElement{
+export function init_parametor_div(param:Parametor, area_id: number, board: ClientBoard):HTMLElement{
     const g = board.graph;
     const html_id =  param.get_parametor_html_id(area_id);
     const param_to_load = {parametor:param, html_id:html_id, area_id : area_id};
@@ -214,7 +214,7 @@ export function get_title_span_for_area(g: ClientGraph, area_id: number):HTMLSpa
     return span_area;
 }
 
-export function init_list_parametors_for_area(board: Board, area_id: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
+export function init_list_parametors_for_area(board: ClientBoard, area_id: number, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D){
     const g = board.graph;
     const view = board.view;
     let area_DOM = document.getElementById("area_"+ area_id);

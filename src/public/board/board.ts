@@ -1,24 +1,32 @@
+import { Board } from "gramoloss";
 import { DOWN_TYPE } from "../interactors/interactor";
 import { interactor_loaded, key_states } from "../interactors/interactor_manager";
 import { socket } from "../socket";
-import { AREA_CORNER, AREA_SIDE } from "./area";
+import { AREA_CORNER, AREA_SIDE, ClientArea } from "./area";
 import { View } from "./camera";
 import { ClientGraph } from "./graph";
+import { ClientLink } from "./link";
+import { ClientRepresentation } from "./representations/client_representation";
+import { ClientStroke } from "./stroke";
 import { ClientTextZone } from "./text_zone";
-import { CanvasVect } from "./vect";
-import { CanvasCoord } from "./vertex";
+import { CanvasCoord, ClientVertex } from "./vertex";
 
-export class Board {
-    graph: ClientGraph;
+
+
+export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, ClientArea, ClientTextZone, ClientRepresentation> {
     view: View;
-    text_zones: Map<number,ClientTextZone>;
-    // strokes
-    // areas
+    graph: ClientGraph;
 
     constructor(){
+        super();
         this.graph = new ClientGraph();
         this.view = new View();
-        this.text_zones = new Map();
+    }
+
+    draw(ctx: CanvasRenderingContext2D) {
+        for (const rep of this.representations.values()){
+            rep.draw(ctx, this.view);
+        }
     }
 
     clear() {
@@ -31,6 +39,9 @@ export class Board {
     update_after_camera_change(){
         for ( const text_zone of this.text_zones.values()){
             text_zone.update_after_camera_change( this.view);
+        }
+        for (const rep of this.representations.values()){
+            rep.update_after_camera_change(this.view);
         }
     }
 
@@ -89,6 +100,15 @@ export class Board {
 
     get_element_nearby(pos: CanvasCoord, interactable_element_type: Set<DOWN_TYPE>) {
         const canvas_pos = this.view.create_canvas_coord(pos);
+
+        if (interactable_element_type.has(DOWN_TYPE.REPRESENTATION_ELEMENT)){
+            for (const [index, rep] of this.representations.entries()){
+                const r = rep.click_over(pos, this.view);
+                if (typeof r != "string"){
+                    return { type: DOWN_TYPE.REPRESENTATION_ELEMENT, index: index, element_index: r};
+                }
+            }
+        }
 
         if (interactable_element_type.has(DOWN_TYPE.VERTEX)) {
             for (const [index, v] of this.graph.vertices.entries()) {

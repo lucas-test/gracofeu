@@ -1,7 +1,7 @@
 import { Interactor, DOWN_TYPE } from './interactor'
 import { socket } from '../socket';
 import { self_user, update_users_canvas_pos, users } from '../user';
-import { down_coord, has_moved, key_states, last_down, last_down_index } from './interactor_manager';
+import { down_coord, down_meta_element, has_moved, key_states, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
 import { CanvasVect } from '../board/vect';
 import { CanvasCoord } from '../board/vertex';
@@ -11,7 +11,7 @@ import { Coord, Vect } from 'gramoloss';
 
 // INTERACTOR SELECTION
 
-export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE]), 'default')
+export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT]), 'default')
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
@@ -87,7 +87,6 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
             if ( g.links.has(last_down_index)){
                 let indices = [last_down_index];
                 const shift = local_board.view.server_vect(CanvasVect.from_canvas_coords(down_coord,e));
-                // socket.emit("translate_control_points", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
                 socket.emit("translate_elements", [["ControlPoint", last_down_index]], shift.sub(previous_shift));
                 previous_shift.set_from(shift);
                 return true;
@@ -103,6 +102,16 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
                 return true;
             }
         }
+        case DOWN_TYPE.REPRESENTATION_ELEMENT:{
+            if ( local_board.representations.has(last_down_index)){
+                const rep = local_board.representations.get(last_down_index);
+                const shift = CanvasVect.from_canvas_coords(down_coord,e);
+                rep.translate_element_by_canvas_vect(down_meta_element.element_index, shift.sub(previous_canvas_shift), local_board.view);
+                previous_canvas_shift.set_from(shift);
+                return true;
+            }
+        }
+
     }
 
 
@@ -191,6 +200,11 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
             g.clear_all_selections();
         }
 
+    } else if (last_down == DOWN_TYPE.REPRESENTATION_ELEMENT){
+        if ( local_board.representations.has(last_down_index)){
+            const rep = local_board.representations.get(last_down_index);
+            rep.onmouseup(local_board.view);
+        }
     }
 })
 

@@ -1,14 +1,5 @@
 # todo
 
-plan d'Actions
-- tout ce qui a dans modifications de gramoloss -> dans histboard
-- vertices merge
-- area move
-- mettre tout dans gracofeu pour simplifier les broadcast
-
-
-add_elements in App ?
-update_elements in App ? yes for color applyed to several elements
 
 
 ## V0.1
@@ -182,6 +173,25 @@ update_elements in App ? yes for color applyed to several elements
     - [X] translate_strokes
     - [X] update_colors
     - [ ] load_json
+
+    - mettre tout dans gracofeu pour simplifier les broadcast
+
+- server API
+    - [ ] put all modifications from gramoloss to gracofeu (le but c'est de simplifier les sensibilities qui sont fausses)
+    - [ ] add_elements
+    - [ ] update_elements (used for coloring several elements)
+    - [ ] broadcast enum type
+
+- dw representation
+    - [ ] le recadagre d'une représentation devrait être la même que pour area et une forme rectangulaire
+    - [ ] créer des tournois facilement à partir des backarcs
+    - [ ] mise à jour de la repré
+    - [ ] repré en fonction d'une area
+    - [ ] delete repré
+    - [ ] dw: afficher les stats du current: cutwidth, nb backarc
+    - [ ] une autre repré : planaire y en a plein
+    - [ ] param: dw, is_sparse, glouton, fas
+    - [ ] collabiser les représ
 
 - control Z Optimizations and refactorizations 
     - [X] adapt CanvasVect and ServerVect to translation of CPs and vertices

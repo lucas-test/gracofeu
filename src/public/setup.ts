@@ -5,11 +5,11 @@ import { setup_interactions, select_interactor, setup_interactors_div } from "./
 import { params_available_turn_off_div, params_available_turn_on_div, update_params_available_div } from "./parametors/div_parametor";
 import { setup_parametors_available } from "./parametors/parametor_manager";
 import { setup_socket, socket } from "./socket";
-import { Board } from "./board/board";
 import { setup_generators_div } from "./generators/dom";
+import { ClientBoard } from "./board/board";
 
 
-export const local_board = new Board();
+export const local_board = new ClientBoard();
 
 
 function setup() {

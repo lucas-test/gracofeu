@@ -8,18 +8,17 @@ import { update_options_graphs } from "./parametors/div_parametor";
 import { init_list_parametors_for_area, make_list_areas } from "./board/area_div";
 import { get_sensibilities, SENSIBILITY } from "./parametors/parametor";
 import { local_board } from "./setup";
-import { Board } from "./board/board";
 import { ClientVertex } from "./board/vertex";
-import { interactor_loaded } from "./interactors/interactor_manager";
-import { display_weight_input, validate_weight } from "./interactors/text";
-import { Coord, ORIENTATION, Vect } from "gramoloss";
+import {  Coord, ORIENTATION, Vect } from "gramoloss";
 import { ClientLink } from "./board/link";
 import { ClientTextZone } from "./board/text_zone";
+import { ClientBoard } from "./board/board";
+import { ClientGraph } from "./board/graph";
 export const socket = io()
 
 
-export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, board: Board) {
-    const g = board.graph;
+export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, board: ClientBoard) {
+    const g = board.graph as ClientGraph;
     
     // USERS
     socket.on('myId', handle_my_id);
