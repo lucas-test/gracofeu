@@ -7,6 +7,7 @@ import { setup_parametors_available } from "./parametors/parametor_manager";
 import { setup_socket, socket } from "./socket";
 import { setup_generators_div } from "./generators/dom";
 import { ClientBoard } from "./board/board";
+import { setup_modifyers_div } from "./modifyers/dom";
 
 
 export const local_board = new ClientBoard();
@@ -41,6 +42,7 @@ function setup() {
 
     setup_actions_div(canvas, ctx, local_board.graph);
     setup_generators_div(canvas, local_board.view);
+    setup_modifyers_div(canvas, local_board.view);
 
     setup_parametors_available();
     update_params_available_div(canvas, ctx, local_board.graph);

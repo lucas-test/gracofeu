@@ -32,7 +32,13 @@ interactor_text.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
 
     if (last_down == DOWN_TYPE.LINK || last_down == DOWN_TYPE.LINK_WEIGHT) {
         const link = g.links.get(last_down_index);
-        display_weight_input(last_down_index, link.cp_canvas_pos, DOWN_TYPE.LINK);
+        let posu = g.vertices.get(link.start_vertex).canvas_pos;
+        let posv = g.vertices.get(link.end_vertex).canvas_pos;
+        let pos = posu.middle(posv);
+        if ( typeof link.cp_canvas_pos != "string"){
+            pos = link.cp_canvas_pos;
+        } 
+        display_weight_input(last_down_index, pos, DOWN_TYPE.LINK);
     }
     if (last_down == DOWN_TYPE.VERTEX || last_down == DOWN_TYPE.VERTEX_WEIGHT) {
         if ( g.vertices.has(last_down_index)){

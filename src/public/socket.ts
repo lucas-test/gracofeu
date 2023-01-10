@@ -166,8 +166,10 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 g.automatic_link_weight_position_from_vertex(index);
             } else if (kind == "ControlPoint"){
                 const link = g.links.get(index);
-                link.cp.translate(shift);
-                link.cp_canvas_pos.translate_by_canvas_vect(cshift);
+                if ( typeof link.cp != "string" && typeof link.cp_canvas_pos != "string"){
+                    link.cp.translate(shift);
+                    link.cp_canvas_pos.translate_by_canvas_vect(cshift);
+                }
                 g.automatic_weight_position(index);
             }
         }

@@ -119,7 +119,7 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
         }
        
         for (const [index, link] of this.graph.links.entries()) {
-            if (interactable_element_type.has(DOWN_TYPE.CONTROL_POINT) && link.cp_canvas_pos.is_nearby(pos, 150)) {
+            if (interactable_element_type.has(DOWN_TYPE.CONTROL_POINT) && typeof link.cp_canvas_pos != "string" && link.cp_canvas_pos.is_nearby(pos, 150)) {
                 return { type: DOWN_TYPE.CONTROL_POINT, index: index };
             }
             if (interactable_element_type.has(DOWN_TYPE.LINK) && this.graph.is_click_over_link(index, pos, this.view)) {

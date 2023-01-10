@@ -134,8 +134,8 @@
 
 - text interactor
     - [X] link weight
-    - [ ] vertex weight
-    - [ ] text zone
+    - [X] vertex weight
+    - [X] text zone
     - [ ] manually positioning
     - [X] automatically positioning
     - [X] improve performance by saving the generated image
@@ -184,7 +184,7 @@
 
 - dw representation
     - [ ] le recadagre d'une représentation devrait être la même que pour area et une forme rectangulaire
-    - [ ] créer des tournois facilement à partir des backarcs
+    - [X] créer des tournois facilement à partir des backarcs
     - [ ] mise à jour de la repré
     - [ ] repré en fonction d'une area
     - [ ] delete repré
@@ -210,8 +210,8 @@
 
 
 - modifyer
-    - [ ] structure
-    - [ ] attributs
+    - [X] structure
+    - [X] attributs
     - classiques :
         - [ ] random_graph(n,p) et directed
         - [ ] random_tournament(n)

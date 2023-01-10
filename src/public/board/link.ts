@@ -12,15 +12,19 @@ import { CanvasCoord, ClientVertex } from "./vertex";
 
 
 export class ClientLink extends Link {
-    cp_canvas_pos: CanvasCoord;
+    cp_canvas_pos: CanvasCoord | string;
     is_selected: boolean;
     weight_position: Coord = new Coord(0,0);
     weight_div: HTMLDivElement = null; // set to null until a non empty weight is used
 
 
-    constructor(i: number, j: number, cp: Coord, orientation: ORIENTATION, color: string, weight: string, view: View) {
+    constructor(i: number, j: number, cp: Coord | string, orientation: ORIENTATION, color: string, weight: string, view: View) {
         super(i,j,cp,orientation,color,weight);
-        this.cp_canvas_pos = view.create_canvas_coord(cp);
+        if (typeof cp == "string"){
+            this.cp_canvas_pos = "";
+        } else {
+            this.cp_canvas_pos = view.create_canvas_coord(cp);
+        }
         this.is_selected = false;
         this.weight_div = null;
         this.weight_position = new Coord(0,0);
@@ -33,7 +37,10 @@ export class ClientLink extends Link {
     }
 
     update_after_view_modification(view: View){
-        this.cp_canvas_pos = view.create_canvas_coord(this.cp);
+        if ( typeof this.cp != "string"){
+            this.cp_canvas_pos = view.create_canvas_coord(this.cp);
+        }
+
     }
 
 
@@ -53,9 +60,11 @@ export class ClientLink extends Link {
 
 
     translate_cp_by_canvas_vect(shift: CanvasVect, view: View){
-            this.cp_canvas_pos.translate_by_canvas_vect(shift);
-            this.cp.x += shift.x/view.zoom; 
-            this.cp.y += shift.y/view.zoom;
+            if ( typeof this.cp != "string" && typeof this.cp_canvas_pos != "string"){
+                this.cp_canvas_pos.translate_by_canvas_vect(shift);
+                this.cp.x += shift.x/view.zoom; 
+                this.cp.y += shift.y/view.zoom;
+            }
     }
 
     tikzify_link(start: ClientVertex, start_index: number, end: ClientVertex, end_index: number) {
@@ -63,9 +72,12 @@ export class ClientLink extends Link {
         let labelCode = "";
         // if (showLabels)
         // labelCode = "node[midway, shift={(" + this.label.getExactLabelOffsetX() / 100 + "," + -this.label.getExactLabelOffsetY() / 100 + ")}, scale = \\scaleE] {" + this.label.text + "}";
-
-        return `\\draw[line width = \\scaleE, color = black] (${start.get_tikz_coordinate(start_index)}) .. controls (${Math.round(this.cp.x)/100}, ${Math.round(this.cp.y)/100}) .. (${end.get_tikz_coordinate(end_index)}) ${labelCode};`;
-
+        if (typeof this.cp != "string" ){
+            return `\\draw[line width = \\scaleE, color = black] (${start.get_tikz_coordinate(start_index)}) .. controls (${Math.round(this.cp.x)/100}, ${Math.round(this.cp.y)/100}) .. (${end.get_tikz_coordinate(end_index)}) ${labelCode};`;
+        } else {
+            return ``; // TODO
+        }
+        
     }
 
     init_weight_div(link_index: number){

@@ -6,6 +6,7 @@ import { TikZ_create_file_data } from "./tikz";
 import { local_board } from "./setup";
 import BASIC_COLORS from "./basic_colors.json";
 import { turn_on_generators_div } from "./generators/dom";
+import { turn_on_modifyers_div } from "./modifyers/dom";
 
 export class Action {
     name: string;
@@ -30,6 +31,13 @@ let generator_action = new Action("generator", "Show graph generators", "generat
 generator_action.trigger = () => {
     turn_on_generators_div();
 }
+
+// ----
+let modifyer_action = new Action("modifyer", "Show graph modifyers", "generator.svg", "");
+modifyer_action.trigger = () => {
+    turn_on_modifyers_div();
+}
+
 
 let dark_mode_action = new Action("dark_mode", "Toggle dark mode", "dark_mode.svg", "");
 
@@ -193,7 +201,7 @@ grid_action.trigger = () => {
 
 
 export let actions_available = new Array<Action>();
-actions_available.push(generator_action, grid_action, align_action, index_action, dark_mode_action, share_action, save_file_action, load_file_action)
+actions_available.push(generator_action, modifyer_action, grid_action, align_action, index_action, dark_mode_action, share_action, save_file_action, load_file_action)
 
 export function select_action(action: Action, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph){
     document.getElementById(action.name + "_subactions").style.display = "block";

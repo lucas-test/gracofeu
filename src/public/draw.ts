@@ -331,9 +331,12 @@ function draw_links(ctx: CanvasRenderingContext2D, g: ClientGraph) {
             ctx.moveTo(posu.x, posu.y);
             ctx.lineWidth = 7;
             // TODO: check if bended before using quadraticCurve
-            // ctx.lineTo(posv.x, posv.y);
-            ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
-            //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
+            if ( typeof poscp == "string"){
+                ctx.lineTo(posv.x, posv.y);
+            }else {
+                ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
+                //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
+            }
             ctx.stroke();
        }
 
@@ -342,19 +345,29 @@ function draw_links(ctx: CanvasRenderingContext2D, g: ClientGraph) {
         ctx.strokeStyle = real_color(link.color, local_board.view.dark_mode);
         ctx.lineWidth = 3;
         // TODO: check if bended before using quadraticCurve
-        // ctx.lineTo(posv.x, posv.y);
-        ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
-        //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
+        if ( typeof poscp == "string"){
+            ctx.lineTo(posv.x, posv.y);
+        }else {
+            ctx.quadraticCurveTo(poscp.x, poscp.y, posv.x, posv.y);
+            //ctx.bezierCurveTo(poscp.x, poscp.y, poscp.x, poscp.y, posv.x, posv.y);
+        }
         ctx.stroke();
 
         
-
-        if ( interactor_loaded.interactable_element_type.has(DOWN_TYPE.CONTROL_POINT)){
-            draw_circle(poscp, "grey", 4, 1, ctx);
+       if (typeof poscp != "string"){
+            if ( interactor_loaded.interactable_element_type.has(DOWN_TYPE.CONTROL_POINT)){
+                draw_circle(poscp, "grey", 4, 1, ctx);
+            }
         }
         if (link.orientation == ORIENTATION.DIRECTED) {
-            draw_head(ctx, poscp, posv);
+            let cp = posu.middle(posv);
+            if (typeof poscp != "string"){
+                cp = poscp
+            }
+            draw_head(ctx, cp, posv);
         }
+       
+
 
         // draw weight is automatic as it is a div
     }

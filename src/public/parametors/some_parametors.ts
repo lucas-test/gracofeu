@@ -105,12 +105,18 @@ param_number_geo.compute = ((g: ClientGraph) => {
         const link1 = g.links.get(link_index);
         const v1 = g.vertices.get(link1.start_vertex);
         const w1 = g.vertices.get(link1.end_vertex);
-        const z1 = link1.cp;
+        let z1 = v1.pos.middle(w1.pos);
+        if (typeof link1.cp != "string"){
+            z1 = link1.cp;
+        }
         for (const link_index2 of g.links.keys()) {
             const link2 = g.links.get(link_index2);
             const v2 = g.vertices.get(link2.start_vertex);
             const w2 = g.vertices.get(link2.end_vertex);
-            const z2 = link2.cp;
+            let z2 = v2.pos.middle(w2.pos);
+            if (typeof link2.cp != "string"){
+                z2 = link2.cp;
+            }
             if (link_index2 != link_index &&
                 //is_segments_intersection(v1.pos, w1.pos, v2.pos, w2.pos)
                 is_triangles_intersection(v1.pos, w1.pos, z1, v2.pos, w2.pos, z2)

@@ -90,7 +90,14 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
         const linkcp_canvas = link.cp_canvas_pos;
         const v_canvas_pos = v.canvas_pos;
         const w_canvas_pos = w.canvas_pos
-        return e.is_nearby_beziers_1cp(v_canvas_pos, linkcp_canvas, w_canvas_pos);
+        if (typeof linkcp_canvas != "string"){
+            return e.is_nearby_beziers_1cp(v_canvas_pos, linkcp_canvas, w_canvas_pos);
+        }
+        else {
+            // OPT dont need beziers as it is a straight line
+            const middle = v_canvas_pos.middle(w_canvas_pos);
+            return e.is_nearby_beziers_1cp(v_canvas_pos, middle, w_canvas_pos);
+        }
     }
 
     compute_vertices_index_string(view: View) {
@@ -223,23 +230,25 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
                 }
             })
             for( const link of this.links.values()){
-                const v1 = this.vertices.get(link.start_vertex);
-                const v2 = this.vertices.get(link.end_vertex);
-                if(vertices_contained.has(link.start_vertex) && vertices_contained.has(link.end_vertex)){
-                    link.translate_cp_by_canvas_vect(shift, view);
-                }
-                else if(vertices_contained.has(link.start_vertex)){ // and thus not v2
-                    const new_pos = v1.pos;
-                    const previous_pos = view.create_server_coord_from_subtranslated(v1.canvas_pos, shift);
-                    const fixed_pos = v2.pos;
-                    link.transform_cp(new_pos, previous_pos, fixed_pos);
-                    link.cp_canvas_pos = view.create_canvas_coord(link.cp);
-                }else if(vertices_contained.has(link.end_vertex)) { // and thus not v1
-                    const new_pos = v2.pos;
-                    const previous_pos = view.create_server_coord_from_subtranslated(v2.canvas_pos, shift);
-                    const fixed_pos = v1.pos;
-                    link.transform_cp(new_pos, previous_pos, fixed_pos);
-                    link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                if ( typeof link.cp != "string"){
+                    const v1 = this.vertices.get(link.start_vertex);
+                    const v2 = this.vertices.get(link.end_vertex);
+                    if(vertices_contained.has(link.start_vertex) && vertices_contained.has(link.end_vertex)){
+                        link.translate_cp_by_canvas_vect(shift, view);
+                    }
+                    else if(vertices_contained.has(link.start_vertex)){ // and thus not v2
+                        const new_pos = v1.pos;
+                        const previous_pos = view.create_server_coord_from_subtranslated(v1.canvas_pos, shift);
+                        const fixed_pos = v2.pos;
+                        link.transform_cp(new_pos, previous_pos, fixed_pos);
+                        link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                    }else if(vertices_contained.has(link.end_vertex)) { // and thus not v1
+                        const new_pos = v2.pos;
+                        const previous_pos = view.create_server_coord_from_subtranslated(v2.canvas_pos, shift);
+                        const fixed_pos = v1.pos;
+                        link.transform_cp(new_pos, previous_pos, fixed_pos);
+                        link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                    }
                 }
             }
             area.translate_by_canvas_vect(shift, view);
@@ -255,8 +264,11 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
     
             const posu = u.canvas_pos; 
             const posv = v.canvas_pos; 
-            const pos = link.cp_canvas_pos;
-            link.weight_position = pos.add(posu.sub(posv).normalize().rotate_quarter().scale(14));
+            let middle = posu.middle(posv);
+            if (typeof link.cp_canvas_pos != "string"){
+                middle = link.cp_canvas_pos;
+            }
+            link.weight_position = middle.add(posu.sub(posv).normalize().rotate_quarter().scale(14));
             link.weight_div.style.top = String(link.weight_position.y - link.weight_div.clientHeight/2) + "px";
             link.weight_div.style.left = String(link.weight_position.x- link.weight_div.clientWidth/2) + "px";
         }
@@ -315,14 +327,16 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
             const new_pos = vertex.pos.copy();
 
             for (const [link_index, link] of this.links.entries()) {
-                if (link.start_vertex == index) {
-                    const end_vertex_pos = this.vertices.get(link.end_vertex).pos;
-                    link.transform_cp(new_pos, previous_pos, end_vertex_pos);
-                    link.cp_canvas_pos = view.create_canvas_coord(link.cp);
-                } else if (link.end_vertex == index) {
-                    const start_vertex_pos = this.vertices.get(link.start_vertex).pos;
-                    link.transform_cp(new_pos, previous_pos, start_vertex_pos);
-                    link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                if ( typeof link.cp != "string"){
+                    if (link.start_vertex == index) {
+                        const end_vertex_pos = this.vertices.get(link.end_vertex).pos;
+                        link.transform_cp(new_pos, previous_pos, end_vertex_pos);
+                        link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                    } else if (link.end_vertex == index) {
+                        const start_vertex_pos = this.vertices.get(link.start_vertex).pos;
+                        link.transform_cp(new_pos, previous_pos, start_vertex_pos);
+                        link.cp_canvas_pos = view.create_canvas_coord(link.cp);
+                    }
                 }
             }
         }
