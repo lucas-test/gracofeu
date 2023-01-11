@@ -7,6 +7,7 @@ import { View } from "./camera";
 import { ClientGraph } from "./graph";
 import { ClientLink } from "./link";
 import { ClientRepresentation } from "./representations/client_representation";
+import { is_click_over, resize_type_nearby } from "./resizable";
 import { ClientStroke } from "./stroke";
 import { ClientTextZone } from "./text_zone";
 import { CanvasCoord, ClientVertex } from "./vertex";
@@ -103,9 +104,21 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
 
         if (interactable_element_type.has(DOWN_TYPE.REPRESENTATION_ELEMENT)){
             for (const [index, rep] of this.representations.entries()){
+                const resize_type = resize_type_nearby(rep, pos, 10);
+                if (typeof resize_type != "number"){
+                    return {type: DOWN_TYPE.RESIZE, element_type: "REPRESENTATION", element: rep, index: index,  resize_type: resize_type};
+                }
                 const r = rep.click_over(pos, this.view);
                 if (typeof r != "string"){
-                    return { type: DOWN_TYPE.REPRESENTATION_ELEMENT, index: index, element_index: r};
+                    return { type: DOWN_TYPE.REPRESENTATION_ELEMENT, element_type: "REPRESENTATION",  element: rep, index: index, element_index: r};
+                }
+            }
+        }
+
+        if (interactable_element_type.has(DOWN_TYPE.REPRESENTATION)){
+            for (const [index, rep] of this.representations.entries()){
+                if ( is_click_over(rep, pos)){
+                    return { type: DOWN_TYPE.REPRESENTATION,  element: rep, index: index};
                 }
             }
         }

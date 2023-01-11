@@ -129,6 +129,13 @@ export class ClientDegreeWidthRep extends DegreeWidthRep {
         this.x.set(index, this.x.get(index) + shift.x);
     }
 
+    translate_by_canvas_vect(cshift: CanvasVect, view: View){
+        const shift = view.server_vect(cshift);
+        for (const [index, x] of this.x.entries()){
+            this.x.set(index, this.x.get(index) + shift.x)
+        }
+    }
+
     onmouseup(view: View){
         this.distribute();
     }

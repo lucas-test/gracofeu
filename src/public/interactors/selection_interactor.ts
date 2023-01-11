@@ -1,4 +1,4 @@
-import { Interactor, DOWN_TYPE } from './interactor'
+import { Interactor, DOWN_TYPE, RESIZE_TYPE } from './interactor'
 import { socket } from '../socket';
 import { self_user, update_users_canvas_pos, users } from '../user';
 import { down_coord, down_meta_element, has_moved, key_states, last_down, last_down_index } from './interactor_manager';
@@ -6,16 +6,19 @@ import { local_board } from '../setup';
 import { CanvasVect } from '../board/vect';
 import { CanvasCoord } from '../board/vertex';
 import { ClientGraph } from '../board/graph';
-import { Coord, Vect } from 'gramoloss';
+import { Vect } from 'gramoloss';
+import { resize_corner, resize_side, translate_by_canvas_vect } from '../board/resizable';
 
 
 // INTERACTOR SELECTION
 
-export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT]), 'default')
+export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION]), 'default')
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
 let vertex_center_shift = new CanvasVect(0,0);
+let opposite_coord = 0;
+let opposite_corner = new CanvasCoord(0,0);
 
 interactor_selection.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     previous_shift = new Vect(0,0);
@@ -31,6 +34,44 @@ interactor_selection.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord)
             const v = g.vertices.get(last_down_index);
             vertex_center_shift = CanvasVect.from_canvas_coords(e, v.canvas_pos);
         }
+    } else if (last_down === DOWN_TYPE.RESIZE){
+        const element = down_meta_element.element;
+        switch(down_meta_element.resize_type){
+            case RESIZE_TYPE.BOTTOM:{
+                opposite_coord = element.canvas_corner_top_left.y;
+                break;
+            }
+            case RESIZE_TYPE.TOP:{
+                opposite_coord = element.canvas_corner_bottom_left.y;
+                break;
+            }
+            case RESIZE_TYPE.LEFT:{
+                opposite_coord = element.canvas_corner_bottom_right.x;
+                break;
+            }
+            case RESIZE_TYPE.RIGHT:{
+                opposite_coord = element.canvas_corner_bottom_left.x;
+                break;
+            }
+            case RESIZE_TYPE.TOP_RIGHT: {
+                opposite_corner = element.canvas_corner_bottom_left.copy();
+                break;
+            }
+            case RESIZE_TYPE.BOTTOM_LEFT: {
+                opposite_corner = element.canvas_corner_top_right.copy();
+                break;
+            }
+            case RESIZE_TYPE.BOTTOM_RIGHT: {
+                opposite_corner = element.canvas_corner_top_left.copy();
+                break;
+            }
+            case RESIZE_TYPE.TOP_LEFT: {
+                opposite_corner = element.canvas_corner_bottom_right.copy();
+                break;
+            }
+        }
+    } else if ( last_down == DOWN_TYPE.REPRESENTATION){
+        previous_canvas_shift = new CanvasVect(0,0);
     }
 })
 
@@ -112,6 +153,23 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
             }
         }
 
+        case DOWN_TYPE.RESIZE: {
+            const element = down_meta_element.element;
+            if (down_meta_element.resize_type == RESIZE_TYPE.LEFT || down_meta_element.resize_type == RESIZE_TYPE.RIGHT ||down_meta_element.resize_type == RESIZE_TYPE.TOP ||down_meta_element.resize_type == RESIZE_TYPE.BOTTOM){
+                resize_side(element, e, opposite_coord, down_meta_element.resize_type, local_board.view)
+            } else {
+                resize_corner(element, e, opposite_corner, local_board.view);
+            }
+            return true;
+        }
+        case DOWN_TYPE.REPRESENTATION: {
+            const shift = CanvasVect.from_canvas_coords(down_coord,e);
+            const rep = down_meta_element.element;
+            rep.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view );
+            translate_by_canvas_vect(rep, shift.sub(previous_canvas_shift), local_board.view);
+            previous_canvas_shift.set_from(shift);
+            return true;
+        }
     }
 
 
