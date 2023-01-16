@@ -33,7 +33,7 @@ generator_action.trigger = () => {
 }
 
 // ----
-let modifyer_action = new Action("modifyer", "Show graph modifyers", "generator.svg", "");
+let modifyer_action = new Action("modifyer", "Show graph modifyers", "modifyer.svg", "");
 modifyer_action.trigger = () => {
     turn_on_modifyers_div();
 }
