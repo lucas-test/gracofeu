@@ -51,6 +51,12 @@ export class Parametor {
         this.has_info = has_info;
     }
 
+    static from_function(f: (g: ClientGraph, verbose: boolean) => string, name: string, id: string, short_name:string, title:string, is_live:boolean, is_boolean:boolean, sensibility:Array<SENSIBILITY>, has_info:boolean): Parametor {
+        let param = new Parametor(name, id, short_name, title, is_live, is_boolean, sensibility, has_info);
+        param.compute = f;
+        return param;
+    }
+
     is_sensible(s : Set<SENSIBILITY>){
         const intersection = new Set([...this.sensibility].filter(x=>s.has(x)));
         return intersection.size > 0;

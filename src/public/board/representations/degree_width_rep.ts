@@ -12,15 +12,45 @@ export class ClientDegreeWidthRep extends DegreeWidthRep {
     canvas_corner_bottom_right : CanvasCoord;
     canvas_corner_top_right : CanvasCoord;
 
-    constructor(g: ClientGraph, view: View){
-        super(g);
+    constructor(g: ClientGraph, c1: Coord, c2: Coord, view: View){
+        super(g,c1,c2);
         this.canvas_corner_top_left = view.create_canvas_coord(this.top_left_corner());
         this.canvas_corner_bottom_left = view.create_canvas_coord(this.bot_left_corner());
         this.canvas_corner_bottom_right = view.create_canvas_coord(this.bot_right_corner());
         this.canvas_corner_top_right = view.create_canvas_coord(this.top_right_corner());
     }
 
+    static from_embedding(g: ClientGraph, view: View): ClientDegreeWidthRep{
+        if ( g.vertices.size > 0){
+            let minX = NaN;
+            let maxX = NaN;
+            let minY = NaN;
+            let maxY = NaN;
+            for (const vertex of g.vertices.values()){
+                if ( isNaN(minX)){
+                    minX = vertex.pos.x;
+                    maxX = vertex.pos.x;
+                    minY = vertex.pos.y;
+                    maxY = vertex.pos.y;
+                }else {
+                    minX = Math.min(minX, vertex.pos.x );
+                    maxX = Math.max(maxX, vertex.pos.x );
+                    minY = Math.min(minY, vertex.pos.y );
+                    maxY = Math.max(maxY, vertex.pos.y );
+                }
+            }
+            const w = 20 + maxX - minX;
+            minX += w;
+            maxX += w;
+            return new ClientDegreeWidthRep(g, new Coord(minX, minY), new Coord(maxX, maxY), view);
+        } else {
+            return new ClientDegreeWidthRep(g, new Coord(0, 0), new Coord(100, 100), view);
+        }
+    }
+
     draw(ctx: CanvasRenderingContext2D, view: View){
+        const y = (this.c1.y + this.c2.y)/2;
+
         // draw border
         ctx.beginPath();
         ctx.strokeStyle = "blue";
@@ -35,13 +65,6 @@ export class ClientDegreeWidthRep extends DegreeWidthRep {
         ctx.fillStyle = "blue";
         ctx.fill();
         ctx.globalAlpha = 1;
-
-        // draw points
-        const y = (this.c1.y + this.c2.y)/2;
-        for (const x of this.x.values()){
-            const canvas_coord = view.create_canvas_coord(new Coord(x,y));
-            draw_circle(canvas_coord, "blue", 10, 1, ctx);
-        }
         
         // draw arcs
         for (const [index1, x1] of this.x.entries()){
@@ -59,6 +82,18 @@ export class ClientDegreeWidthRep extends DegreeWidthRep {
                     } 
                 }
             }
+        }
+
+        // draw points
+        for (const [index, x] of this.x.entries()){
+            const canvas_coord = view.create_canvas_coord(new Coord(x,y));
+            draw_circle(canvas_coord, "black", 14, 1, ctx);
+            draw_circle(canvas_coord, "blue", 12, 1, ctx);
+            draw_circle(canvas_coord, "black", 10, 1, ctx);
+            ctx.font = "17px Arial";
+            const measure = ctx.measureText(String(index));
+            ctx.fillStyle = "white";
+            ctx.fillText(String(index), canvas_coord.x - measure.width / 2, canvas_coord.y+ 5);
         }
 
         // compute dw
@@ -95,14 +130,14 @@ export class ClientDegreeWidthRep extends DegreeWidthRep {
             const measure = ctx.measureText(String(dwc));
             const pos = view.create_canvas_coord(new Coord(x1,y));
             if (dwc == dw){
-                draw_circle(new CanvasCoord(pos.x, pos.y + 20), "red", 10, 0.5, ctx);
+                draw_circle(new CanvasCoord(pos.x, pos.y + 25), "red", 10, 0.5, ctx);
             }
             if ( view.dark_mode){
                 ctx.fillStyle = "white";
             } else {
                 ctx.fillStyle = "black";
             }
-            ctx.fillText(String(dwc), pos.x - measure.width / 2, pos.y + 25);
+            ctx.fillText(String(dwc), pos.x - measure.width / 2, pos.y + 30);
         }
     }
 

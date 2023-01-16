@@ -1,3 +1,4 @@
+import { ClientBoard } from "../board/board";
 import { View } from "../board/camera";
 import { CanvasCoord } from "../board/vertex";
 import { set_clipboard } from "../clipboard";
@@ -10,7 +11,7 @@ let last_generator: GraphGenerator = null;
 
 
 
-export function setup_generators_div(canvas: HTMLCanvasElement, view: View) {
+export function setup_generators_div(canvas: HTMLCanvasElement, board: ClientBoard) {
     const main_div = create_popup("generators_div", "Generators");
     const popup_content = document.getElementById("generators_div_content");
     popup_content.style.display = "flex";
@@ -38,7 +39,7 @@ export function setup_generators_div(canvas: HTMLCanvasElement, view: View) {
         text.classList.add("generator_item");
         text.innerHTML = gen.name;
         text.onclick = () => {
-            activate_generator_div(canvas, gen, view);
+            activate_generator_div(canvas, gen, board);
         }
         generators_list.appendChild(text)
     }
@@ -52,7 +53,7 @@ export function turn_on_generators_div() {
     document.getElementById("generators_div").style.display = "block";
 }
 
-function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator, view: View) {
+function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator, board: ClientBoard) {
     const div = document.getElementById("generator_configuration");
     div.innerHTML = ""; // TODO clear better ??
 
@@ -61,11 +62,12 @@ function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator, 
     div.appendChild(title);
 
     for (const attribute of gen.attributes) {
+        attribute.reset_inputs(board);
         const attribute_div = document.createElement("div");
         const label = document.createElement("label");
         label.innerText = attribute.name + ": ";
         attribute_div.appendChild(label);
-        attribute_div.appendChild(attribute.create_input_element());
+        attribute_div.appendChild(attribute.div);
         div.appendChild(attribute_div);
     }
 
@@ -73,11 +75,11 @@ function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator, 
     generate_button.textContent = "generate";
     generate_button.onclick = (e) => {
         for( const attribute of gen.attributes.values() ){
-            if( attribute.input.classList.contains("invalid")){
+            if( attribute.div.classList.contains("invalid")){
                 return;
             }
         }
-        set_clipboard(gen.generate(new CanvasCoord(e.pageX, e.pageY), view), new CanvasCoord(e.pageX, e.pageY) , true, canvas);
+        set_clipboard(gen.generate(new CanvasCoord(e.pageX, e.pageY), board.view), new CanvasCoord(e.pageX, e.pageY) , true, canvas);
         last_generator = gen;
         turn_off_generators_div();
     }

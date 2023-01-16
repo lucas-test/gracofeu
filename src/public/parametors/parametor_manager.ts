@@ -1,5 +1,5 @@
 import { draw } from '../draw';
-import { param_average_degree, param_diameter, param_has_cycle, param_has_directed_cycle, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo, param_wdin2, param_weighted_distance_identification } from './some_parametors';
+import { param_average_degree, param_diameter, param_has_cycle, param_has_directed_cycle, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_min_indegree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo, param_wdin2, param_weighted_distance_identification } from './some_parametors';
 import { Parametor, SENSIBILITY } from './parametor';
 import { ClientGraph } from '../board/graph';
 import { ClientArea } from '../board/area';
@@ -23,6 +23,8 @@ export function setup_parametors_available() {
         param_number_geo,
         param_min_degree,
         param_max_degree,
+        param_min_indegree,
+        Parametor.from_function((g: ClientGraph, verbose: boolean) => String(g.min_outdegree()), "Minimum out-degree", "min_out_degree", "min_out_degree", "Minimum out-degree", true, false, new Array(SENSIBILITY.ELEMENT), false  ),
         param_average_degree,
         param_has_proper_coloring,
         param_diameter,
@@ -117,6 +119,7 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
 
 
 export function update_params_loaded(g:ClientGraph, sensibilities:Set<SENSIBILITY>, force_compute?:boolean) {
+    console.log("update_params_loaded ", sensibilities);
     if(force_compute === undefined){
         force_compute = false;
     }

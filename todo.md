@@ -131,12 +131,16 @@
     - [ ] prévisualisation du rendu ??
     - [X] en faire plusieurs à la suite avec Ctrl
     - [ ] import à partir de Gramoloss
+    - implémenter :
+        - [ ] random_graph(n,p) et directed
+        - [ ] random_tournament(n)
+        - [ ] Paley
 
 - text interactor
     - [X] link weight
     - [X] vertex weight
     - [X] text zone
-    - [ ] manually positioning
+    - [ ] manually positioning labels
     - [X] automatically positioning
     - [X] improve performance by saving the generated image
     - [X] latex
@@ -195,8 +199,8 @@
 
 - control Z Optimizations and refactorizations 
     - [X] adapt CanvasVect and ServerVect to translation of CPs and vertices
-    - [ ] translate_control_points : just send cps not all graph
-    - [ ] get modifications out of graph, so that Modification has a method "implement" and "undo" on a graph
+    - [X] translate_control_points : just send cps not all graph
+    - [X] get modifications out of graph, so that Modification has a method "implement" and "undo" on a graph
 
 - [ ] exporter Latex
 - [ ] exporter pdf
@@ -207,15 +211,16 @@
 - parametre
     - [ ] attributs
     - [ ] déplacer les calculs dans le serveur ??
+    - [ ] fix update
 
 
 - modifyer
     - [X] structure
     - [X] attributs
-    - classiques :
-        - [ ] random_graph(n,p) et directed
-        - [ ] random_tournament(n)
-        - [ ] Paley
+    - [ ] server
+    - implémenter :
+        - [ ] into_tournament
+
 
 - graph moving modifyer
     - modifie automatiquement le graphe en fonction du placement des sommets

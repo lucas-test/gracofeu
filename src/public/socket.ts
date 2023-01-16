@@ -205,6 +205,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 const weight = data.element.weight as string;
                 const new_vertex = new ClientVertex(x, y, weight, local_board.view );
                 local_board.graph.vertices.set(data.index, new_vertex);
+                update_params_loaded(g, new Set([SENSIBILITY.ELEMENT]), false);
             } else if (data.kind == "Link"){
                 const start_index = data.element.start_vertex as number;
                 const end_index = data.element.end_vertex as number;
@@ -217,6 +218,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 const weight = data.element.weight as string;
                 const new_link = new ClientLink(start_index, end_index, cp, orient, color, weight, local_board.view);
                 local_board.graph.links.set(data.index, new_link);
+                update_params_loaded(g, new Set([SENSIBILITY.ELEMENT]), false);
             }
         }
         
@@ -240,6 +242,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     vertex.weight_div.remove();
                 }
                 local_board.graph.delete_vertex(element[1]);
+                update_params_loaded(g, new Set([SENSIBILITY.ELEMENT]), false);
             } else if (element[0] == "Link"){
                 if ( local_board.graph.links.has(element[1])){
                     const link = local_board.graph.links.get(element[1]);
@@ -248,6 +251,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     }
                     local_board.graph.links.delete(element[1]);
                 }
+                update_params_loaded(g, new Set([SENSIBILITY.ELEMENT]), false);
             }
         }
         requestAnimationFrame(function () {draw(canvas, ctx, g) });

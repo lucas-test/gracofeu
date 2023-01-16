@@ -4,7 +4,7 @@ import { ClientGraph } from "../board/graph";
 import { ClientLink } from "../board/link";
 import { CanvasCoord, ClientVertex } from "../board/vertex";
 import { local_board } from "../setup";
-import { Integer, Percentage } from "./attribute";
+import { AreaIndex, Integer, Percentage } from "./attribute";
 import { GraphGenerator } from "./generator";
 
 // ----------------------------
@@ -14,6 +14,9 @@ import { GraphGenerator } from "./generator";
  generate_random_independent.generate = (pos: CanvasCoord, view: View) => {
     const graph = new ClientGraph();
     const n = generate_random_independent.attributes[0].value;
+    if (typeof n == "string"){
+        return graph;
+    }
     const r = 50;
     const center = view.create_canvas_coord(pos);
     const cx = center.x; 
@@ -31,7 +34,10 @@ import { GraphGenerator } from "./generator";
 
  random_clique.generate = (pos: CanvasCoord, view: View) => {
     const graph = new ClientGraph();
-    const n = random_clique.attributes[0].value;
+    const n = generate_random_independent.attributes[0].value;
+    if (typeof n == "string"){
+        return graph;
+    }
     const r = 50;
     const center = view.create_canvas_coord(pos);
     const cx = center.x; 
@@ -57,6 +63,9 @@ import { GraphGenerator } from "./generator";
  random_tournament.generate = (pos: CanvasCoord, view: View) => {
     const graph = new ClientGraph();
     const n = random_tournament.attributes[0].value;
+    if (typeof n == "string"){
+        return graph;
+    }
     const r = 50;
     const center = view.create_canvas_coord(pos);
     const cx = center.x; 
@@ -87,6 +96,9 @@ import { GraphGenerator } from "./generator";
     const graph = new ClientGraph();
     const n = random_GNP.attributes[0].value;
     const p = random_GNP.attributes[1].value;
+    if (typeof n == "string" || typeof p == "string"){
+        return graph;
+    }
     const center = view.create_canvas_coord(pos);
     const cx = center.x; 
     const cy = center.y;
@@ -116,6 +128,9 @@ let random_star = new GraphGenerator("star", [new Integer("n", 3)])
 random_star.generate = (pos: CanvasCoord, view : View) => {
    const graph = new ClientGraph();
    const n = random_star.attributes[0].value;
+   if (typeof n == "string"){
+    return graph;
+}
    const r = 50;
    const center = view.create_canvas_coord(pos);
    const cx = center.x; 
@@ -144,6 +159,9 @@ complete_bipartite.generate = (pos: CanvasCoord, view: View) => {
     const graph = new ClientGraph();
     const n = complete_bipartite.attributes[0].value;
     const m = complete_bipartite.attributes[1].value;
+    if (typeof n == "string"){
+        return graph;
+    }
     const center = view.create_canvas_coord(pos);
 
     for ( let i = 0 ; i < n ; i ++){
@@ -173,6 +191,9 @@ grid.generate = (pos: CanvasCoord, view: View) => {
     const graph = new ClientGraph();
     const n = grid.attributes[0].value;
     const m = grid.attributes[1].value;
+    if (typeof n == "string" || typeof m == "string"){
+        return graph;
+    }
     const center = view.create_canvas_coord(pos);
     
     for ( let i = 0 ; i < n ; i++){

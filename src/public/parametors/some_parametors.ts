@@ -146,6 +146,15 @@ param_min_degree.compute = ((g: ClientGraph, verbose) => {
     return String(data.min_value);
 });
 
+export let param_min_indegree = new Parametor("Mininum indegree", "min_indegree", "min_indegree", "Minimum indegree", true, false, new Array(SENSIBILITY.ELEMENT), false);
+
+param_min_indegree.compute = ((g: ClientGraph, verbose) => {
+    const md = g.min_indegree();
+    return String(md);
+});
+
+
+
 
 export let param_max_degree = new Parametor("Maximum degree", "max_degree", "max degree", "Print the minimum degree", true, false, [SENSIBILITY.ELEMENT], true);
 

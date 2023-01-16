@@ -41,7 +41,7 @@ function setup() {
     select_interactor(interactor_edge, canvas, ctx, local_board.graph, null);
 
     setup_actions_div(canvas, ctx, local_board.graph);
-    setup_generators_div(canvas, local_board.view);
+    setup_generators_div(canvas, local_board);
     setup_modifyers_div(canvas, local_board.view);
 
     setup_parametors_available();

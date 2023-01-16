@@ -68,8 +68,9 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
         if (document.activeElement.nodeName == "BODY") { // otherwise focus is on a text
             if (e.key == "d"){
                 console.log("add dw representation");
-                const dw_rep = new ClientDegreeWidthRep(local_board.graph, local_board.view);
+                const dw_rep = ClientDegreeWidthRep.from_embedding(local_board.graph, local_board.view);
                 local_board.representations.set(0, dw_rep);
+                requestAnimationFrame(function () { draw(canvas, ctx, g) });
             }
             
             if (e.key == "Delete") {

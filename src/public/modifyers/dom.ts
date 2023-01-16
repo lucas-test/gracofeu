@@ -1,5 +1,6 @@
 import { View } from "../board/camera";
 import { create_popup } from "../popup";
+import { local_board } from "../setup";
 import { modifyer_into_tournament } from "./implementations/into_tournament";
 import { GraphModifyer } from "./modifyer";
 
@@ -61,11 +62,12 @@ function activate_modifyer_div(canvas: HTMLCanvasElement, mod: GraphModifyer, vi
     div.appendChild(title);
 
     for (const attribute of mod.attributes) {
+        attribute.reset_inputs(local_board);
         const attribute_div = document.createElement("div");
         const label = document.createElement("label");
         label.innerText = attribute.name + ": ";
         attribute_div.appendChild(label);
-        attribute_div.appendChild(attribute.create_input_element());
+        attribute_div.appendChild(attribute.div);
         div.appendChild(attribute_div);
     }
 
@@ -73,11 +75,11 @@ function activate_modifyer_div(canvas: HTMLCanvasElement, mod: GraphModifyer, vi
     modify_button.textContent = "modify";
     modify_button.onclick = (e) => {
         for( const attribute of mod.attributes.values() ){
-            if( attribute.input.classList.contains("invalid")){
+            if( attribute.div.classList.contains("invalid")){
                 return;
             }
         }
-        mod.modify("");
+        mod.modify();
         turn_off_modifyers_div();
     }
     div.appendChild(modify_button);

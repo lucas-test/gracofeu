@@ -5,7 +5,7 @@ import { AttributesArray } from "../generators/attribute";
 export class GraphModifyer {
     name: string;
     attributes: AttributesArray;
-    modify: (index: string | number) => void;
+    modify: () => void;
 
     constructor(name: string, attributes: AttributesArray) {
         this.name = name;
