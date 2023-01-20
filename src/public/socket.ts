@@ -209,7 +209,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             } else if (data.kind == "Link"){
                 const start_index = data.element.start_vertex as number;
                 const end_index = data.element.end_vertex as number;
-                const cp = new Coord(data.element.cp.x, data.element.cp.y);
+                const cp = typeof data.element.cp == "string" ? "" : new Coord(data.element.cp.x, data.element.cp.y);
                 let orient = ORIENTATION.UNDIRECTED;
                 if (data.element.orientation == "DIRECTED"){
                     orient = ORIENTATION.DIRECTED;
@@ -286,6 +286,15 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             } else if (data.param == "weight"){
                 const weight = data.value as string;
                 link.update_weight(weight, data.index);
+                local_board.graph.automatic_weight_position(data.index);
+            } else if (data.param == "cp"){
+                if (typeof data.value == "string"){
+                    link.cp = "";
+                    link.cp_canvas_pos = "";
+                } else {
+                    const new_cp = new Coord(data.value.x, data.value.y);
+                    link.set_cp(new_cp, local_board.view);
+                }
                 local_board.graph.automatic_weight_position(data.index);
             }
         }else if (data.kind == "Stroke"){
@@ -448,7 +457,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     orient = ORIENTATION.DIRECTED
                     break;
             }
-            const cp = new Coord(data[1].cp.x, data[1].cp.y);
+            const cp = typeof data[1].cp == "string" ? "" : new Coord(data[1].cp.x, data[1].cp.y);
             const new_link = new ClientLink(data[1].start_vertex, data[1].end_vertex, cp, orient, data[1].color, data[1].weight, local_board.view);
             new_link.update_weight(data[1].weight, data[0]);
             g.links.set(data[0], new_link);

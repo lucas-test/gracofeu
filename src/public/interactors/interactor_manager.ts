@@ -21,6 +21,7 @@ import { ClientGraph } from '../board/graph';
 import { CanvasVect } from '../board/vect';
 import { DegreeWidthRep } from 'gramoloss';
 import { ClientDegreeWidthRep } from '../board/representations/degree_width_rep';
+import { interactor_control_point } from './implementations/control_point';
 
 // INTERACTOR MANAGER
 
@@ -34,6 +35,7 @@ export let last_down_index: number = null;
 export let has_moved: boolean = false;
 export let mouse_pos = new CanvasCoord(0, 0);
 export let key_states = new Map<string, boolean>();
+export let mouse_buttons: string | number = "";
 let previous_canvas_shift = new CanvasVect(0,0);
 
 // key states
@@ -154,16 +156,15 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     });
 
     canvas.addEventListener('mouseup', function (e) {
-        if (e.which == 1) { // left click
-            const click_pos = new CanvasCoord(e.pageX, e.pageY);
-            interactor_loaded.mouseup(canvas, ctx, g, click_pos);
-            down_coord = null;
-            last_down = null;
-            last_down_index = null;
-            local_board.view.alignement_horizontal = false;
-            local_board.view.alignement_vertical = false;
-            requestAnimationFrame(function () { draw(canvas, ctx, g) });
-        }
+        const click_pos = new CanvasCoord(e.pageX, e.pageY);
+        interactor_loaded.mouseup(canvas, ctx, g, click_pos);
+        down_coord = null;
+        last_down = null;
+        last_down_index = null;
+        local_board.view.alignement_horizontal = false;
+        local_board.view.alignement_vertical = false;
+        requestAnimationFrame(function () { draw(canvas, ctx, g) });
+        mouse_buttons = "";
     })
 
     canvas.addEventListener('mousemove', function (e) {
@@ -189,31 +190,31 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     })
 
     canvas.addEventListener('mousedown', function (e) {
-        previous_canvas_shift = new CanvasVect(0,0);
-        if (e.which == 1) { // Left click 
-            down_coord = new CanvasCoord(e.pageX, e.pageY);
-            has_moved = false;
 
-            if (graph_clipboard != null) {
-                paste_generated_graph();
-                if( key_states.get("Control") ){
-                    if (clipboard_comes_from_generator){
-                        regenerate_graph(e, canvas, local_board.view);
-                    }                    
-                }else {
-                    clear_clipboard(canvas);
-                }
-                draw(canvas, ctx, g);
-            } else {
-                const element = local_board.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
-                console.log(element);
-                last_down = element.type;
-                last_down_index = element.index;
-                down_meta_element = element;
-                interactor_loaded.mousedown(canvas, ctx, g, down_coord)
-                if (element.type != DOWN_TYPE.EMPTY) {
-                    requestAnimationFrame(function () { draw(canvas, ctx, g) });
-                }
+        previous_canvas_shift = new CanvasVect(0,0);
+        mouse_buttons = e.buttons;
+        down_coord = new CanvasCoord(e.pageX, e.pageY);
+        has_moved = false;
+
+        if (graph_clipboard != null) {
+            paste_generated_graph();
+            if( key_states.get("Control") ){
+                if (clipboard_comes_from_generator){
+                    regenerate_graph(e, canvas, local_board.view);
+                }                    
+            }else {
+                clear_clipboard(canvas);
+            }
+            draw(canvas, ctx, g);
+        } else {
+            const element = local_board.get_element_nearby(down_coord, interactor_loaded.interactable_element_type);
+            console.log(element);
+            last_down = element.type;
+            last_down_index = element.index;
+            down_meta_element = element;
+            interactor_loaded.mousedown(canvas, ctx, g, down_coord)
+            if (element.type != DOWN_TYPE.EMPTY) {
+                requestAnimationFrame(function () { draw(canvas, ctx, g) });
             }
         }
     })
@@ -272,7 +273,7 @@ if (ENV.mode == "dev") {
     interactors_available.push(interactor_detector);
 }
 
-interactors_available.push(interactor_selection, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area)
+interactors_available.push(interactor_selection, interactor_control_point, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area)
 
 
 

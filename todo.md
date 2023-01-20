@@ -1,6 +1,4 @@
-# todo
-
-
+# TODO
 
 ## V0.1
 
@@ -68,6 +66,9 @@
 
 ## V0.5 Chercheurs proches
 
+- control point interactor
+    - [X] it works
+
 - couleur
     - [X] sommet
     - [X] arête
@@ -133,7 +134,7 @@
     - [ ] import à partir de Gramoloss
     - implémenter :
         - [ ] random_graph(n,p) et directed
-        - [ ] random_tournament(n)
+        - [X] random_tournament(n)
         - [ ] Paley
 
 - text interactor

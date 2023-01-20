@@ -1,9 +1,8 @@
-import { middle, ORIENTATION } from "gramoloss";
+import { ORIENTATION } from "gramoloss";
 import { View } from "../board/camera";
 import { ClientGraph } from "../board/graph";
 import { ClientLink } from "../board/link";
 import { CanvasCoord, ClientVertex } from "../board/vertex";
-import { local_board } from "../setup";
 import { AreaIndex, Integer, Percentage } from "./attribute";
 import { GraphGenerator } from "./generator";
 
@@ -34,7 +33,7 @@ import { GraphGenerator } from "./generator";
 
  random_clique.generate = (pos: CanvasCoord, view: View) => {
     const graph = new ClientGraph();
-    const n = generate_random_independent.attributes[0].value;
+    const n = random_clique.attributes[0].value;
     if (typeof n == "string"){
         return graph;
     }
@@ -46,9 +45,7 @@ import { GraphGenerator } from "./generator";
         const v = new ClientVertex(cx +  r*Math.cos( (2*Math.PI*i) /n), cy + r*Math.sin( (2*Math.PI*i) /n), "", view);
         graph.add_vertex(v);
         for ( let j = 0 ; j < i ; j ++ ){
-            const vj = graph.vertices.get(j);
-            const cp = middle(v.pos, vj.pos);
-            const link = new ClientLink(j,i, cp, ORIENTATION.UNDIRECTED, "black", "", view);
+            const link = new ClientLink(j,i, "", ORIENTATION.UNDIRECTED, "black", "", view);
             graph.add_link(link);
         }
     }
@@ -74,13 +71,11 @@ import { GraphGenerator } from "./generator";
         const v = new ClientVertex(cx +  r*Math.cos( (2*Math.PI*i) /n), cy + r*Math.sin( (2*Math.PI*i) /n), "", view);
         graph.add_vertex(v);
         for ( let j = 0 ; j < i ; j ++ ){
-            const vj = graph.vertices.get(j);
-            const cp = middle(v.pos, vj.pos);
             if ( Math.random() < 0.5 ){
-                const link = new ClientLink(j,i, cp, ORIENTATION.DIRECTED, "black", "", view);
+                const link = new ClientLink(j,i, "", ORIENTATION.DIRECTED, "black", "", view);
                 graph.add_link(link);
             }else {
-                const link = new ClientLink(i,j, cp, ORIENTATION.DIRECTED, "black", "", view);
+                const link = new ClientLink(i,j, "", ORIENTATION.DIRECTED, "black", "", view);
                 graph.add_link(link);
             }
         }
@@ -108,9 +103,7 @@ import { GraphGenerator } from "./generator";
         graph.add_vertex(v);
         for ( let j = 0 ; j < i ; j ++ ){
             if ( Math.random() < p){
-                const vj = graph.vertices.get(j);
-                const cp = middle(v.pos, vj.pos);
-                const link = new ClientLink(j,i, cp, ORIENTATION.UNDIRECTED, "black", "", view);
+                const link = new ClientLink(j,i, "", ORIENTATION.UNDIRECTED, "black", "", view);
                 graph.add_link(link);
             }
             
@@ -142,8 +135,7 @@ random_star.generate = (pos: CanvasCoord, view : View) => {
         for ( let i = 0 ; i < n ; i ++){
             const v = new ClientVertex(cx +  r*Math.cos( (2*Math.PI*i) /(n-1)), cy + r*Math.sin( (2*Math.PI*i) /(n-1)), "", view);
             graph.add_vertex(v);
-            const cp = middle(vcenter.pos, v.pos);
-            const link = new ClientLink(0,i, cp, ORIENTATION.UNDIRECTED, "black", "", view);
+            const link = new ClientLink(0,i, "", ORIENTATION.UNDIRECTED, "black", "", view);
             graph.add_link(link);
         }
     }

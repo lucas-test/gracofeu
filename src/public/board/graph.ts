@@ -312,10 +312,7 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
     }
 
     add_edge(index1: number, index2: number, view: View ){
-        const v1 = this.vertices.get(index1);
-        const v2 = this.vertices.get(index2);
-        const cp = middle(v1.pos, v2.pos);
-        const link = new ClientLink(index1, index2, cp, ORIENTATION.UNDIRECTED, "black", "", view);
+        const link = new ClientLink(index1, index2, "", ORIENTATION.UNDIRECTED, "black", "", view);
         this.add_link(link);
     }
 

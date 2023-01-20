@@ -30,6 +30,11 @@ export class ClientLink extends Link {
         this.weight_position = new Coord(0,0);
     }
 
+    set_cp(new_cp: Coord, view: View){
+        this.cp = new_cp;
+        this.cp_canvas_pos = view.create_canvas_coord(new_cp);
+    }
+
     is_in_rect(c1: CanvasCoord, c2: CanvasCoord) {
         //V1: is in rect if one of its extremities is in the rectangle
         //TODO: be more clever and select also when there is an intersection between the edge and the rectangle

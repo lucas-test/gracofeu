@@ -258,10 +258,11 @@ io.sockets.on('connection', function (client) {
                     orient = ORIENTATION.DIRECTED
                     break;
             }
-            const start_vertex = board.graph.vertices.get(data.start_index);
-            const end_vertex = board.graph.vertices.get(data.end_index);
-            new_element = new Link(data.start_index, data.end_index, middle(start_vertex.pos, end_vertex.pos) , orient, "black", "");
-        }else {
+            // const start_vertex = board.graph.vertices.get(data.start_index);
+            // const end_vertex = board.graph.vertices.get(data.end_index);
+            // new_element = new Link(data.start_index, data.end_index, middle(start_vertex.pos, end_vertex.pos) , orient, "black", "");
+            new_element = new Link(data.start_index, data.end_index, "", orient, "black", "");
+        } else {
             console.log("kind is not supported: ", kind);
             return
         }
@@ -323,6 +324,11 @@ io.sockets.on('connection', function (client) {
     function handle_update_element(kind: string, index: number, param: string, new_value){
         // console.log("handle_update_element", kind, index, param, new_value);
         const old_value = board.get_value(kind, index, param);
+        if (param == "cp"){
+            if (typeof new_value != "string"){
+                new_value = new Coord(new_value.x, new_value.y);
+            }
+        }
         const modif = new UpdateElement(index, kind, param, new_value, old_value )
         const r = board.try_push_new_modification(modif);
         if (typeof r === "string"){
@@ -609,7 +615,7 @@ io.sockets.on('connection', function (client) {
             }
             const start_index = vertex_indices_transformation.get(data[1].start_vertex);
             const end_index = vertex_indices_transformation.get(data[1].end_vertex);
-            const cp = new Coord(data[1].cp.x, data[1].cp.y);
+            const cp = typeof data[1].cp == "string" ? "" : new Coord(data[1].cp.x, data[1].cp.y);
             const link = new Link(start_index, end_index, cp, orient, data[1].color, data[1].weight);
 
             added_links.set(new_link_indices[j], link);
@@ -633,59 +639,7 @@ io.sockets.on('connection', function (client) {
         }
     }
 
-    // function handle_delete_selected_elements(data) {
-    //     const deleted_vertices = new Map();
-    //     const deleted_links = new Map();
-    //     const deleted_strokes = new Map();
-    //     const deleted_areas = new Map();
-
-    //     for (const e of data) {
-    //         if (e.type == "vertex") {
-    //             if (g.vertices.has(e.index)) {
-    //                 const vertex = g.vertices.get(e.index);
-    //                 deleted_vertices.set(e.index, vertex);
-    //                 g.links.forEach((link, link_index) => {
-    //                     if (link.end_vertex === e.index || link.start_vertex === e.index) {
-    //                         deleted_links.set(link_index, link);
-    //                     }
-    //                 })
-    //             }
-    //         }
-    //         else if (e.type == "link") {
-    //             if (g.links.has(e.index)) {
-    //                 const link = g.links.get(e.index);
-    //                 deleted_links.set(e.index, link);
-    //             }
-    //         }
-    //         else if (e.type == "stroke") {
-    //             if (g.strokes.has(e.index)) {
-    //                 const stroke = g.strokes.get(e.index);
-    //                 deleted_strokes.set(e.index, stroke);
-    //             }
-    //         }
-    //         else if (e.type == "area") {
-    //             if (g.areas.has(e.index)) {
-    //                 const area = g.areas.get(e.index);
-    //                 deleted_areas.set(e.index, area);
-    //             }
-    //         }
-    //     }
-
-    //     const modif = new DeleteElements(deleted_vertices, deleted_links, deleted_strokes, deleted_areas);
-    //     const triggered_sensibilities = g.try_implement_new_modification(modif);
-
-    //     if (deleted_vertices.size > 0 || deleted_links.size > 0) {
-    //         emit_graph_to_room(triggered_sensibilities);
-    //     }
-
-    //     if (deleted_strokes.size > 0) {
-    //         emit_strokes_to_room();
-    //     }
-
-    //     if (deleted_areas.size > 0) {
-    //         emit_areas_to_room();
-    //     }
-    // }
+    
 })
 
 
