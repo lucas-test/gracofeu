@@ -1,6 +1,7 @@
 import { View } from "../board/camera";
 import { create_popup } from "../popup";
 import { local_board } from "../setup";
+import { socket } from "../socket";
 import { modifyer_into_tournament } from "./implementations/into_tournament";
 import { GraphModifyer } from "./modifyer";
 
@@ -79,7 +80,12 @@ function activate_modifyer_div(canvas: HTMLCanvasElement, mod: GraphModifyer, vi
                 return;
             }
         }
-        mod.modify();
+        // mod.modify();
+        const attributes_data = new Array();
+        for (const attribute of mod.attributes){
+            attributes_data.push(attribute.value);
+        }
+        socket.emit("apply_modifyer", mod.name, attributes_data );
         turn_off_modifyers_div();
     }
     div.appendChild(modify_button);

@@ -197,6 +197,7 @@
     - [ ] une autre repré : planaire y en a plein
     - [ ] param: dw, is_sparse, glouton, fas
     - [ ] collabiser les représ
+    - [ ] annulable
 
 - control Z Optimizations and refactorizations 
     - [X] adapt CanvasVect and ServerVect to translation of CPs and vertices
@@ -218,9 +219,9 @@
 - modifyer
     - [X] structure
     - [X] attributs
-    - [ ] server
+    - [X] server
     - implémenter :
-        - [ ] into_tournament
+        - [X] into_tournament
 
 
 - graph moving modifyer
