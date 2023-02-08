@@ -1,6 +1,8 @@
 import express, { text } from 'express';
-import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area, AreaMoveCorner, AreaMoveSide, DeleteElements, ELEMENT_TYPE, GraphPaste, VerticesMerge, middle, Vect, TextZone, HistBoard, UpdateElement, AddElement, TranslateElements, Representation, ApplyModifyer} from "gramoloss";
+import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area,  ELEMENT_TYPE,  middle, Vect, TextZone, Representation} from "gramoloss";
 import ENV from './.env.json';
+import { AddElement, ApplyModifyer, AreaMoveCorner, AreaMoveSide, DeleteElements, GraphPaste, TranslateElements, UpdateElement, VerticesMerge } from './board_modification';
+import { HistBoard } from './hist_board';
 import { getRandomColor, User, users } from './user';
 import { eq_indices, makeid } from './utils';
 
@@ -15,7 +17,7 @@ console.log('Server started at http://localhost:' + port);
 
 // gestion des rooms
 
-const room_boards = new Map<string, HistBoard<Vertex, Link, Stroke, Area, TextZone, Representation>>();
+const room_boards = new Map<string, HistBoard>();
 const room_graphs = new Map<string, Graph<Vertex,Link, Stroke, Area>>();
 const clientRooms = {};
 
@@ -337,7 +339,7 @@ io.sockets.on('connection', function (client) {
         if ( board.modifications_stack.length > 0 ){
             const last_modif = board.modifications_stack[board.modifications_stack.length-1];
             if (last_modif.constructor  == TranslateElements ){
-                const last_modif2 = last_modif as TranslateElements<Vertex,Link,Stroke,Area,TextZone,Representation>;
+                const last_modif2 = last_modif as TranslateElements;
                 if (eq_indices(last_modif2.indices, indices )){
                     shift.translate(last_modif2.shift);
                     last_modif2.deimplement(board);
@@ -397,22 +399,22 @@ io.sockets.on('connection', function (client) {
         }else {
             switch(r.constructor){
                 case TranslateElements: {
-                    const modif = r as TranslateElements<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as TranslateElements;
                     broadcast("translate_elements",  {indices: modif.indices, shift: modif.shift.opposite()}, new Set());
                     break;
                 }
                 case UpdateElement: {
-                    const modif = r as UpdateElement<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as UpdateElement;
                     broadcast("update_element",  {index: modif.index, kind: modif.kind, param: modif.param, value: modif.old_value}, new Set());
                     break;
                 }
                 case AddElement: {
-                    const modif = r as AddElement<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as AddElement;
                     broadcast("delete_elements",  [[ modif.kind, modif.index]], new Set());
                     break;
                 }
                 case GraphPaste: {
-                    const modif = r as GraphPaste<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as GraphPaste;
                     const indices = new Array();
                     for (const [index, vertex] of modif.added_vertices){
                         indices.push(["Vertex", index]);
@@ -424,7 +426,7 @@ io.sockets.on('connection', function (client) {
                     break;
                 }
                 case DeleteElements: {
-                    const modif = r as DeleteElements<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as DeleteElements;
                     const removed = new Array();
                     for (const [index, vertex] of modif.vertices.entries()){
                         removed.push({kind: "Vertex", index: index, element: vertex});
@@ -445,13 +447,13 @@ io.sockets.on('connection', function (client) {
                     break;
                 }
                 case AreaMoveCorner: {
-                    const modif = r as AreaMoveCorner<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as AreaMoveCorner;
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.previous_c1}, new Set());
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.previous_c2}, new Set());
                     break;
                 }
                 case AreaMoveSide: {
-                    const modif = r as AreaMoveSide<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as AreaMoveSide;
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.previous_c1}, new Set());
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.previous_c2}, new Set());
                     break;
@@ -483,22 +485,22 @@ io.sockets.on('connection', function (client) {
         }else {
             switch(r.constructor){
                 case TranslateElements: {
-                    const modif = r as TranslateElements<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as TranslateElements;
                     broadcast("translate_elements",  {indices: modif.indices, shift: modif.shift}, new Set());
                     break;
                 }
                 case UpdateElement: {
-                    const modif = r as UpdateElement<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as UpdateElement;
                     broadcast("update_element",  {index: modif.index, kind: modif.kind, param: modif.param, value: modif.new_value}, new Set());
                     break;
                 }
                 case AddElement: {
-                    const modif = r as AddElement<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as AddElement;
                     broadcast("add_elements",  [{kind: modif.kind, index: modif.index, element: modif.element}], new Set());
                     break;
                 }
                 case GraphPaste: {
-                    const modif = r as GraphPaste<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as GraphPaste;
                     const elements = new Array();
                     for (const [index, vertex] of modif.added_vertices){
                         elements.push({kind: "Vertex", index: index, element: vertex});
@@ -510,7 +512,7 @@ io.sockets.on('connection', function (client) {
                     break;
                 }
                 case DeleteElements: {
-                    const modif = r as DeleteElements<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as DeleteElements;
                     const indices = new Array();
                     for (const index of modif.vertices.keys()){
                         indices.push(["Vertex", index]);
@@ -531,13 +533,13 @@ io.sockets.on('connection', function (client) {
                     break;
                 }
                 case AreaMoveCorner: {
-                    const modif = r as AreaMoveCorner<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as AreaMoveCorner;
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.new_c1}, new Set());
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.new_c2}, new Set());
                     break;
                 }
                 case AreaMoveSide: {
-                    const modif = r as AreaMoveSide<Vertex, Link, Stroke, Area, TextZone,Representation>;
+                    const modif = r as AreaMoveSide;
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.new_c1}, new Set());
                     broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.new_c2}, new Set());
                     break;
