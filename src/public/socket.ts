@@ -50,7 +50,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             // console.log("Following......")
             local_board.view.camera = new Coord(x, y);
             local_board.view.zoom = zoom;
-            g.update_canvas_pos(local_board.view);
+            local_board.update_canvas_pos(local_board.view);
             update_users_canvas_pos(local_board.view);
             requestAnimationFrame(function () { draw(canvas, ctx, g) });
         }
@@ -154,12 +154,12 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 const text_zone = local_board.text_zones.get(index);
                 text_zone.translate(cshift, local_board.view);
             } else if ( kind == "Stroke"){
-                const stroke = local_board.graph.strokes.get(index);
+                const stroke = local_board.strokes.get(index);
                 stroke.translate_by_canvas_vect(cshift, local_board.view);
             } else if ( kind == "Area"){
-                const area = local_board.graph.areas.get(index);
+                const area = local_board.areas.get(index);
                 const vertices_contained = g.vertices_contained_by_area(area);
-                g.translate_area(cshift, index,vertices_contained , local_board.view);
+                local_board.translate_area(cshift, index,vertices_contained , local_board.view);
                 g.set_automatic_weight_positions();
             } else if (kind == "Vertex"){
                 g.translate_vertex_by_canvas_vect(index, cshift, local_board.view);
@@ -186,7 +186,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     positions.push(new Coord(e.x, e.y));
                 });
                 const new_stroke = new ClientStroke(positions, data.element.color, data.element.width, local_board.view);
-                local_board.graph.strokes.set(data.index, new_stroke);
+                local_board.strokes.set(data.index, new_stroke);
             } else if (data.kind == "TextZone"){
                 const pos = new Coord(data.element.pos.x, data.element.pos.y);
                 const width = data.element.width as number;
@@ -197,7 +197,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 const c1 = new Coord(data.element.c1.x, data.element.c1.y);
                 const c2 = new Coord(data.element.c2.x,data.element.c2.y);
                 const new_area = new ClientArea( data.element.label, c1, c2, data.element.color, local_board.view);
-                local_board.graph.areas.set(data.index, new_area);
+                local_board.areas.set(data.index, new_area);
                 init_list_parametors_for_area(board, data.index, canvas, ctx);
             } else if (data.kind == "Vertex"){
                 const x = data.element.pos.x as number;
@@ -229,13 +229,13 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         console.log("handle_delete_elements", data);
         for ( const element of data){
             if (element[0] == "Stroke"){
-                local_board.graph.strokes.delete(element[1]);
+                local_board.strokes.delete(element[1]);
             } else if (element[0] == "TextZone"){
                 const text_zone = local_board.text_zones.get(element[1]);
                 text_zone.div.remove();
                 local_board.text_zones.delete(element[1]);
             } else if (element[0] == "Area"){
-                local_board.graph.areas.delete(element[1]);
+                local_board.areas.delete(element[1]);
             } else if (element[0] == "Vertex"){
                 const vertex = local_board.graph.vertices.get(element[1]);
                 if (vertex.weight_div != null){
@@ -298,13 +298,13 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 local_board.graph.automatic_weight_position(data.index);
             }
         }else if (data.kind == "Stroke"){
-            const stroke = local_board.graph.strokes.get(data.index);
+            const stroke = local_board.strokes.get(data.index);
             if(data.param == "color"){
                 const color = data.value as string;
                 stroke.color = color;
             }
         } else if (data.kind == "Area"){
-            const area = local_board.graph.areas.get(data.index);
+            const area = local_board.areas.get(data.index);
             if(data.param == "c1"){
                 const new_c1 = new Coord(data.value.x , data.value.y);
                 area.c1 = new_c1;
@@ -340,14 +340,14 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function handle_strokes(data){
         // console.log(data);
-        g.strokes.clear();
+        local_board.strokes.clear();
         for(const s of data){
             const positions = new Array<Coord>();
             s[1].positions.forEach(e => {
                 positions.push(new Coord(e.x, e.y));
             });
             const new_stroke = new ClientStroke(positions, s[1].color, s[1].width, local_board.view);
-            g.strokes.set(s[0], new_stroke);
+            local_board.strokes.set(s[0], new_stroke);
         }
         // update_params_loaded(g,false);
         requestAnimationFrame(function () { 
@@ -360,21 +360,21 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
     function handle_areas(data){
         let old_area_ids = new Set<number>();
-        for ( const index of g.areas.keys()){
+        for ( const index of local_board.areas.keys()){
             old_area_ids.add(index);
         }
 
-        g.areas.clear();
+        local_board.areas.clear();
         for(const s of data){
             const c1 = new Coord(s[1].c1.x, s[1].c1.y);
             const c2 = new Coord(s[1].c2.x, s[1].c2.y);
             const new_area = new ClientArea( s[1].label, c1, c2, s[1].color, local_board.view);
-            g.areas.set(s[0], new_area);
+            local_board.areas.set(s[0], new_area);
             init_list_parametors_for_area(board, s[0], canvas, ctx);
         }
 
         let new_area_ids = new Set<number>();
-        for ( const index of g.areas.keys()){
+        for ( const index of local_board.areas.keys()){
             new_area_ids.add(index);
         }
 

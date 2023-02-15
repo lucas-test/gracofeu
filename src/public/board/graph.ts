@@ -10,7 +10,7 @@ import { CanvasVect } from "./vect";
 
 
 
-export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, ClientArea> {
+export class ClientGraph extends Graph<ClientVertex, ClientLink> {
  
     constructor() {
         super();
@@ -41,17 +41,9 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
         });
     } 
     
-    deselect_all_strokes() {
-        this.strokes.forEach(s => {
-            s.is_selected = false;
-        });
-    }
+    
 
-    clear_all_selections() {
-        this.deselect_all_vertices();
-        this.deselect_all_links();
-        this.deselect_all_strokes();
-    }
+
 
     
 
@@ -183,22 +175,7 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
         return set;
     }
 
-    update_canvas_pos(view: View) {
-        for (const v of this.vertices.values()) {
-            v.update_after_view_modification(view);
-        }
-        for (const link of this.links.values()) {
-            link.update_after_view_modification(view);
-        }
-        for (const area of this.areas.values()){
-            area.update_canvas_pos(view);
-        }
-        for( const stroke of this.strokes.values()){
-            stroke.update_canvas_pos(view);
-        }
-        this.set_automatic_weight_positions();
-        
-    }
+
 
 
     get_induced_subgraph_from_selection(view: View): ClientGraph{
@@ -221,40 +198,7 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink, ClientStroke, C
         return subgraph;
     }
 
-    translate_area(shift: CanvasVect, area_index: number, vertices_contained: Set<number>, view: View){
-        if( this.areas.has(area_index)){
-            const area = this.areas.get(area_index);
-            this.vertices.forEach((vertex, vertex_index) => {
-                if (vertices_contained.has(vertex_index)){
-                    vertex.translate_by_canvas_vect(shift, view);
-                }
-            })
-            for( const link of this.links.values()){
-                if ( typeof link.cp != "string"){
-                    const v1 = this.vertices.get(link.start_vertex);
-                    const v2 = this.vertices.get(link.end_vertex);
-                    if(vertices_contained.has(link.start_vertex) && vertices_contained.has(link.end_vertex)){
-                        link.translate_cp_by_canvas_vect(shift, view);
-                    }
-                    else if(vertices_contained.has(link.start_vertex)){ // and thus not v2
-                        const new_pos = v1.pos;
-                        const previous_pos = view.create_server_coord_from_subtranslated(v1.canvas_pos, shift);
-                        const fixed_pos = v2.pos;
-                        link.transform_cp(new_pos, previous_pos, fixed_pos);
-                        link.cp_canvas_pos = view.create_canvas_coord(link.cp);
-                    }else if(vertices_contained.has(link.end_vertex)) { // and thus not v1
-                        const new_pos = v2.pos;
-                        const previous_pos = view.create_server_coord_from_subtranslated(v2.canvas_pos, shift);
-                        const fixed_pos = v1.pos;
-                        link.transform_cp(new_pos, previous_pos, fixed_pos);
-                        link.cp_canvas_pos = view.create_canvas_coord(link.cp);
-                    }
-                }
-            }
-            area.translate_by_canvas_vect(shift, view);
-            
-        }
-    }
+    
 
     automatic_weight_position(link_index: number){
         const link = this.links.get(link_index);

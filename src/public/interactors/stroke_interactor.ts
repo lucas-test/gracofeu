@@ -23,18 +23,18 @@ interactor_stroke.mousedown = ((  canvas, ctx, g: ClientGraph, e: CanvasCoord) =
 
     // TO CHANGE
     let index = 0;
-    while (g.strokes.has(index)) {
+    while (local_board.strokes.has(index)) {
         index += 1;
     }
     index_last_stroke = index;
-    g.strokes.set(index_last_stroke, last_stroke);
+    local_board.strokes.set(index_last_stroke, last_stroke);
 })
 
 interactor_stroke.mousemove = ((canvas, ctx, g, e) => {
     if(last_stroke !== null){
         gap_refresh++ ;
         if(gap_refresh % sample_period === 0){
-            g.strokes.get(index_last_stroke).push(e, local_board.view);
+            local_board.strokes.get(index_last_stroke).push(e, local_board.view);
             return true;
         }
     }
@@ -43,9 +43,9 @@ interactor_stroke.mousemove = ((canvas, ctx, g, e) => {
 })
 
 interactor_stroke.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
-    g.strokes.get(index_last_stroke).push(e, local_board.view);
+    local_board.strokes.get(index_last_stroke).push(e, local_board.view);
 
-    const s = g.strokes.get(index_last_stroke);
+    const s = local_board.strokes.get(index_last_stroke);
 
     // const data_socket = new Array();
     // data_socket.push({ 

@@ -115,7 +115,7 @@ export class AreaIndex {
         this.div.appendChild(everything_div);
 
         // for every area add a radio input
-        for( const [index, area] of board.graph.areas.entries()){
+        for( const [index, area] of board.areas.entries()){
             const new_input = document.createElement("input");
             new_input.name = this.name;
             new_input.type = "radio";

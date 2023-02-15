@@ -86,18 +86,18 @@ export class AddElement implements BoardModification {
                 }
             }
         }else if (this.kind == "Stroke"){
-            if ( board.graph.strokes.has(this.index) ){
+            if ( board.strokes.has(this.index) ){
                 return "index " + String(this.index) + " already exists in strokes";
             } else {
                 const element = this.element as Stroke;
-                board.graph.strokes.set(this.index, element);
+                board.strokes.set(this.index, element);
             }
         }else if (this.kind == "Area"){
-            if ( board.graph.areas.has(this.index) ){
+            if ( board.areas.has(this.index) ){
                 return "index " + String(this.index) + " already exists in areas";
             } else {
                 const element = this.element as Area;
-                board.graph.areas.set(this.index, element);
+                board.areas.set(this.index, element);
             }
         }
         return new Set();
@@ -107,9 +107,9 @@ export class AddElement implements BoardModification {
         if ( this.kind == "TextZone"){
             board.text_zones.delete(this.index);
         } else if (this.kind == "Stroke"){
-            board.graph.strokes.delete(this.index);
+            board.strokes.delete(this.index);
         } else if (this.kind == "Area"){
-            board.graph.areas.delete(this.index);
+            board.areas.delete(this.index);
         } else if (this.kind == "Vertex"){
             board.graph.delete_vertex(this.index);
         } else if (this.kind == "Link"){
@@ -144,11 +144,11 @@ export class UpdateElement implements BoardModification {
         }else if (this.kind == "Link" && board.graph.links.has(this.index)){
             board.graph.links.get(this.index)[this.param] = this.new_value;
             return new Set()
-        }else if (this.kind == "Stroke" && board.graph.strokes.has(this.index)){
-            board.graph.strokes.get(this.index)[this.param] = this.new_value;
+        }else if (this.kind == "Stroke" && board.strokes.has(this.index)){
+            board.strokes.get(this.index)[this.param] = this.new_value;
             return new Set()
-        }else if (this.kind == "Area" && board.graph.areas.has(this.index)){
-            board.graph.areas.get(this.index)[this.param] = this.new_value;
+        }else if (this.kind == "Area" && board.areas.has(this.index)){
+            board.areas.get(this.index)[this.param] = this.new_value;
             return new Set()
         }else {
             return "Error: index not in text_zones";
@@ -165,11 +165,11 @@ export class UpdateElement implements BoardModification {
         }else if (this.kind == "Link" && board.graph.links.has(this.index)){
             board.graph.links.get(this.index)[this.param] = this.old_value;
             return new Set()
-        }else if (this.kind == "Stroke" && board.graph.strokes.has(this.index)){
-            board.graph.strokes.get(this.index)[this.param] = this.old_value;
+        }else if (this.kind == "Stroke" && board.strokes.has(this.index)){
+            board.strokes.get(this.index)[this.param] = this.old_value;
             return new Set()
-        }else if (this.kind == "Area" && board.graph.areas.has(this.index)){
-            board.graph.areas.get(this.index)[this.param] = this.old_value;
+        }else if (this.kind == "Area" && board.areas.has(this.index)){
+            board.areas.get(this.index)[this.param] = this.old_value;
             return new Set()
         }
         return new Set();
@@ -195,14 +195,14 @@ export class TranslateElements implements BoardModification {
                     return "Error: index not in text_zones";
                 }
             } else if (kind == "Stroke"){
-                if (board.graph.strokes.has(index)){
-                    board.graph.strokes.get(index).translate(this.shift);
+                if (board.strokes.has(index)){
+                    board.strokes.get(index).translate(this.shift);
                 }else {
                     return "Error: index not in strokes";
                 }
             } else if (kind == "Area"){
-                if (board.graph.areas.has(index)){
-                    board.graph.translate_areas(new Set([index]), this.shift);
+                if (board.areas.has(index)){
+                    board.translate_areas(new Set([index]), this.shift);
                 }else {
                     return "Error: index not in areas";
                 }
@@ -233,12 +233,12 @@ export class TranslateElements implements BoardModification {
                     board.text_zones.get(index).pos.rtranslate(this.shift);
                 }
             } else if (kind == "Stroke"){
-                if (board.graph.strokes.has(index)){
-                    board.graph.strokes.get(index).rtranslate(this.shift);
+                if (board.strokes.has(index)){
+                    board.strokes.get(index).rtranslate(this.shift);
                 }
             } else if (kind == "Area"){
-                if (board.graph.areas.has(index)){
-                    board.graph.translate_areas(new Set([index]), this.shift.opposite());               
+                if (board.areas.has(index)){
+                    board.translate_areas(new Set([index]), this.shift.opposite());               
                 }
             } else if (kind == "ControlPoint"){
                 if (board.graph.links.has(index)){
@@ -324,9 +324,9 @@ export class DeleteElements implements BoardModification {
             } else if (kind == "Link"){
                 links.set(index, board.graph.links.get(index));
             } else if (kind == "Stroke"){
-                strokes.set(index, board.graph.strokes.get(index));
+                strokes.set(index, board.strokes.get(index));
             } else if (kind == "Area"){
-                areas.set(index, board.graph.areas.get(index));
+                areas.set(index, board.areas.get(index));
             } else if (kind == "TextZone"){
                 text_zones.set(index, board.text_zones.get(index));
             } else {
@@ -344,10 +344,10 @@ export class DeleteElements implements BoardModification {
             board.graph.delete_link(index);
         }
         for (const index of this.strokes.keys()) {
-            board.graph.delete_stroke(index);
+            board.delete_stroke(index);
         }
         for (const index of this.areas.keys()) {
-            board.graph.delete_area(index);
+            board.delete_area(index);
         }
         for (const index of this.text_zones.keys()){
             board.text_zones.delete(index);
@@ -365,10 +365,10 @@ export class DeleteElements implements BoardModification {
             board.graph.links.set(index, link);
         }
         for (const [index, stroke] of this.strokes.entries()) {
-            board.graph.strokes.set(index, stroke);
+            board.strokes.set(index, stroke);
         }
         for (const [index, area] of this.areas.entries()) {
-            board.graph.areas.set(index, area);
+            board.areas.set(index, area);
         }
         for (const [index, text_zone] of this.text_zones.entries()){
             board.text_zones.set(index, text_zone);
@@ -431,8 +431,8 @@ export class AreaMoveCorner implements BoardModification {
 
 
     try_implement(board: ServerBoard): Set<SENSIBILITY> | string{
-        if (board.graph.areas.has(this.index)){
-            const area = board.graph.areas.get(this.index);
+        if (board.areas.has(this.index)){
+            const area = board.areas.get(this.index);
             area.c1 = this.new_c1;
             area.c2 = this.new_c2;
             return new Set([]);
@@ -442,7 +442,7 @@ export class AreaMoveCorner implements BoardModification {
     }
 
     deimplement(board: ServerBoard): Set<SENSIBILITY>{
-        const area = board.graph.areas.get(this.index);
+        const area = board.areas.get(this.index);
         area.c1 = this.previous_c1;
         area.c2 = this.previous_c2;
         return new Set([]);
@@ -516,7 +516,7 @@ export class VerticesMerge implements BoardModification {
     // does not modify the graph
     // any link between fixed and remove are deleted
     // any link such that one of its endpoints is "remove", is either deleted either modified
-    static from_graph<V extends Vertex,L extends Link, S extends Stroke, A extends Area, T extends TextZone, R extends Representation>(graph: Graph<Vertex,Link,Stroke,Area>, vertex_index_fixed: number, vertex_index_to_remove: number ): VerticesMerge{
+    static from_graph<V extends Vertex,L extends Link, S extends Stroke, A extends Area, T extends TextZone, R extends Representation>(graph: Graph<Vertex,Link>, vertex_index_fixed: number, vertex_index_to_remove: number ): VerticesMerge{
         const v_to_remove = graph.vertices.get(vertex_index_to_remove);
         const deleted_links = new Map();
         const modified_links_indices = new Array();
@@ -574,8 +574,8 @@ export class AreaMoveSide implements BoardModification {
     }
 
     try_implement(board: ServerBoard): Set<SENSIBILITY> | string{
-        if (board.graph.areas.has(this.index)){
-            const area = board.graph.areas.get(this.index);
+        if (board.areas.has(this.index)){
+            const area = board.areas.get(this.index);
             area.c1 = this.new_c1;
             area.c2 = this.new_c2;
             return new Set([]);
@@ -585,7 +585,7 @@ export class AreaMoveSide implements BoardModification {
     }
 
     deimplement(board: ServerBoard): Set<SENSIBILITY>{
-        const area = board.graph.areas.get(this.index);
+        const area = board.areas.get(this.index);
         area.c1 = this.previous_c1;
         area.c2 = this.previous_c2;
         return new Set([]);

@@ -20,10 +20,10 @@ export function make_list_areas(canvas: HTMLCanvasElement, ctx: CanvasRenderingC
     const list_area_DOM = document.getElementById("area_list_container");
     if(list_area_DOM){
         list_area_DOM.innerHTML = "";
-        for(const [area_index, a] of g.areas.entries()){
-            const span_area = get_title_span_for_area(g, area_index);
+        for(const [area_index, a] of board.areas.entries()){
+            const span_area = get_title_span_for_area(board, area_index);
             span_area.addEventListener("click", (e)=>{
-                center_canvas_on_rectangle(view, a.canvas_corner_top_left, a.canvas_corner_bottom_right, canvas, g);
+                center_canvas_on_rectangle(view, a.canvas_corner_top_left, a.canvas_corner_bottom_right, canvas, board);
                 requestAnimationFrame(function () { 
                     draw(canvas, ctx, g) 
                 });
@@ -194,12 +194,12 @@ export function init_parametor_div(param:Parametor, area_id: number, board: Clie
 }
 
 
-export function get_title_span_for_area(g: ClientGraph, area_id: number):HTMLSpanElement{
+export function get_title_span_for_area(board: ClientBoard, area_id: number):HTMLSpanElement{
     const span_area = document.createElement('span');
     span_area.classList.add("span_area_name_parametor");
 
     if(area_id >= 0){
-        const a = g.areas.get(area_id);
+        const a = board.areas.get(area_id);
         span_area.textContent = a.label;
         span_area.style.background = a.color;
         // TODO span_area.style.color = a.multicolor.contrast;
@@ -244,15 +244,15 @@ export function init_list_parametors_for_area(board: ClientBoard, area_id: numbe
             
             let titleDOM = document.getElementById("title_area_"+ area_id);
             if(titleDOM === null){
-                titleDOM = get_title_span_for_area(g, area_id);
+                titleDOM = get_title_span_for_area(board, area_id);
                 titleDOM.id = "title_area_"+ area_id;
                 title_area_container.appendChild(titleDOM);
     
                 if(area_id >= 0){
                     // Center on the area on click
                     titleDOM.addEventListener("click",  (e)=>{
-                        const area = local_board.graph.areas.get(area_id); // It seems we have to reget the area since the corners may have change
-                        center_canvas_on_rectangle(view, area.canvas_corner_top_left, area.canvas_corner_bottom_right, canvas, g);
+                        const area = local_board.areas.get(area_id); // It seems we have to reget the area since the corners may have change
+                        center_canvas_on_rectangle(view, area.canvas_corner_top_left, area.canvas_corner_bottom_right, canvas, board);
                         requestAnimationFrame(function () { 
                             draw(canvas, ctx, g) 
                         });
@@ -291,7 +291,7 @@ export function init_list_parametors_for_area(board: ClientBoard, area_id: numbe
                             bot_right_corner = new CanvasCoord(xMax, yMax);
                         }
     
-                        center_canvas_on_rectangle(view, top_left_corner, bot_right_corner, canvas, g);
+                        center_canvas_on_rectangle(view, top_left_corner, bot_right_corner, canvas, board);
                         requestAnimationFrame(function () { 
                             draw(canvas, ctx, g) 
                         });

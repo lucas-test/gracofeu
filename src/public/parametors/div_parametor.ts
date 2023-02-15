@@ -1,4 +1,5 @@
 import { ClientGraph } from '../board/graph';
+import { local_board } from '../setup';
 import { Parametor } from './parametor';
 import { load_param, params_available, params_loaded } from './parametor_manager';
 
@@ -65,7 +66,7 @@ export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRend
         div.addEventListener('click', (e)=> toggle_list_graph_option(param, canvas, ctx, g));
 
 
-        if(g.areas.size == 0){
+        if(local_board.areas.size == 0){
             // console.log("NO AREA", div);
         }
         else{ // If we have areas, we add a list of the subgraphs
@@ -92,7 +93,7 @@ export function update_options_graphs(canvas: HTMLCanvasElement, ctx: CanvasRend
             });
 
             // Div for each area
-            for(const [area_index, a] of g.areas.entries()){
+            for(const [area_index, a] of local_board.areas.entries()){
                 let aDiv = document.createElement("div");
                 aDiv.classList.add("subgraph_option");
                 aDiv.textContent = a.label;
@@ -123,7 +124,7 @@ function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx
 
 
     // if there is no area, click on the parametor just computes it on the full graph
-    if(g.areas.size == 0){
+    if(local_board.areas.size == 0){
         load_param(param, canvas, ctx, g, -1);
         params_available_turn_off_div(); 
     }

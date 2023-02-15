@@ -1,10 +1,9 @@
-import { Coord, Graph, ORIENTATION, Vect } from "gramoloss";
+import { Coord, ORIENTATION, Vect } from "gramoloss";
 import { update_users_canvas_pos } from "../user";
+import { ClientBoard } from "./board";
 import { ClientGraph } from "./graph";
-import { ClientLink } from "./link";
-import { ClientStroke } from "./stroke";
 import { CanvasVect } from "./vect";
-import { CanvasCoord, ClientVertex } from "./vertex";
+import { CanvasCoord } from "./vertex";
 
 export enum INDEX_TYPE {
     NONE,
@@ -140,7 +139,7 @@ export class View {
 
 
 
-export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, g:ClientGraph){
+export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot_right:CanvasCoord, canvas: HTMLCanvasElement, board: ClientBoard){
     const w = bot_right.x - top_left.x;
     const h = bot_right.y - top_left.y;
     const shift_x = (canvas.width - w)/2 - top_left.x;
@@ -149,7 +148,7 @@ export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot
     view.translate_camera(new Vect(shift_x, shift_y));
 
     if ( w <= 0 || h <= 0 ){
-        g.update_canvas_pos(view);
+        board.update_canvas_pos(view);
         update_users_canvas_pos(view);
         return;
     }
@@ -159,7 +158,7 @@ export function center_canvas_on_rectangle(view: View, top_left:CanvasCoord, bot
 
     const center = new CanvasCoord(canvas.width/2, canvas.height/2);
     view.apply_zoom_to_center(center, Math.min(ratio_h, ratio_w)*0.8);
-    g.update_canvas_pos(view);
+    board.update_canvas_pos(view);
     update_users_canvas_pos(view);
 }
 

@@ -88,7 +88,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                         data_socket.push([ "Link", index]);
                     }
                 })
-                g.strokes.forEach((s, index) => {
+                local_board.strokes.forEach((s, index) => {
                     if (s.is_selected) {
                         data_socket.push(["Stroke", index]);
                     }
@@ -143,7 +143,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             local_board.view.apply_zoom_to_center(new CanvasCoord(e.pageX, e.pageY), 1.1);
         }
         local_board.update_after_camera_change();
-        g.update_canvas_pos(local_board.view);
+        local_board.update_canvas_pos(local_board.view);
         update_users_canvas_pos(local_board.view);
 
 

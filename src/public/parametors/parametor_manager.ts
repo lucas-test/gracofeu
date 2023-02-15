@@ -5,6 +5,7 @@ import { ClientGraph } from '../board/graph';
 import { ClientArea } from '../board/area';
 import { get_title_span_for_area } from '../board/area_div';
 import { create_popup } from '../popup';
+import { local_board } from '../setup';
 
 
 
@@ -149,8 +150,8 @@ export function update_parametor(g:ClientGraph, param){
         update_result_span(result, param.parametor, result_span);
     }
     else{
-        if(g.areas.has(param.area_id)){
-            var result = param.parametor.compute(g.get_subgraph_from_area(param.area_id), true);
+        if(local_board.areas.has(param.area_id)){
+            var result = param.parametor.compute(local_board.get_subgraph_from_area(param.area_id), true);
             update_result_span(result, param.parametor, result_span);
         }
         else{

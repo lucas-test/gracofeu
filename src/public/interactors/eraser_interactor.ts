@@ -17,7 +17,7 @@ export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new S
 
 // return true if somethin has been erased
 function erase_at(g: ClientGraph, e: CanvasCoord) : boolean{
-    for (const [index, s] of g.strokes.entries()) {
+    for (const [index, s] of local_board.strokes.entries()) {
         if (s.is_nearby(e, local_board.view) !== false) {
             socket.emit("delete_elements", [["Stroke", index]]);
             return true;
@@ -35,7 +35,7 @@ function erase_at(g: ClientGraph, e: CanvasCoord) : boolean{
             return true;
         }
     }
-    for(const [index,area] of g.areas.entries()){
+    for(const [index,area] of local_board.areas.entries()){
         if( area.is_nearby(e)){
             socket.emit("delete_elements", [["Area", index]]);
             return true;

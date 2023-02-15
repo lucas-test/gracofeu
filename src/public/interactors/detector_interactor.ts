@@ -47,7 +47,7 @@ function turn_off_infobox() {
 interactor_detector.mousedown = ((canvas, ctx, g, e) => { });
 
 interactor_detector.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
-    g.clear_all_selections();
+    local_board.clear_all_selections();
     const element = local_board.get_element_nearby(e, interactor_detector.interactable_element_type);
     switch (element.type) {
         case DOWN_TYPE.VERTEX:
@@ -56,7 +56,7 @@ interactor_detector.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) =
             vertex.is_selected = true;
             return true;
         case DOWN_TYPE.STROKE:
-            const stroke = g.strokes.get(element.index);
+            const stroke = local_board.strokes.get(element.index);
             stroke.is_selected = true;
             return true;
         case DOWN_TYPE.LINK:

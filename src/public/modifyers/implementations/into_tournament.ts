@@ -14,7 +14,7 @@ modifyer_into_tournament.modify = () => {
         }
         local_board.graph.complete_subgraph_into_tournament(all_vertices_indices, (x,y) => { return new ClientLink(x,y, "", ORIENTATION.DIRECTED,"black", "", local_board.view)} )
     }else {
-        const area = local_board.graph.areas.get(area_index);
+        const area = local_board.areas.get(area_index);
         const vertices_indices = local_board.graph.vertices_contained_by_area(area);
         local_board.graph.complete_subgraph_into_tournament(vertices_indices, (x,y) => { return new ClientLink(x,y, "", ORIENTATION.DIRECTED,"black", "", local_board.view)});
     }

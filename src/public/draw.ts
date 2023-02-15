@@ -427,7 +427,7 @@ function draw_stroke(ctx: CanvasRenderingContext2D, s:ClientStroke){
 
 
 function draw_strokes(ctx: CanvasRenderingContext2D, g:ClientGraph){
-    g.strokes.forEach(s => {
+    local_board.strokes.forEach(s => {
         draw_stroke(ctx, s);
     });
 }
@@ -498,7 +498,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:ClientArea){
 
 function draw_areas(ctx:CanvasRenderingContext2D, g:ClientGraph)
 {
-    g.areas.forEach(a => {
+    local_board.areas.forEach(a => {
         draw_area(ctx, a);
     });
 }

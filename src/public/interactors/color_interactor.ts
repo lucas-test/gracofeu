@@ -156,7 +156,7 @@ color_interactor.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => 
         }
     }
     else if (last_down == DOWN_TYPE.STROKE){
-        if ( g.strokes.has(last_down_index) && g.strokes.get(last_down_index).color != color_selected){
+        if ( local_board.strokes.has(last_down_index) && local_board.strokes.get(last_down_index).color != color_selected){
             // socket.emit("update_colors", 
             //     [{ type: "stroke", index: last_down_index, color: color_selected }]
             // );
@@ -189,7 +189,7 @@ color_interactor.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
             return true;
         }
         else if (elt.type == DOWN_TYPE.STROKE){
-            if ( g.strokes.has(elt.index) && g.strokes.get(elt.index).color != color_selected){
+            if ( local_board.strokes.has(elt.index) && local_board.strokes.get(elt.index).color != color_selected){
                 // socket.emit("update_colors", 
                 // [{ type: "stroke", index: elt.index, color: color_selected }]
                 // );

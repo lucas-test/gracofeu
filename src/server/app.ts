@@ -18,7 +18,7 @@ console.log('Server started at http://localhost:' + port);
 // gestion des rooms
 
 const room_boards = new Map<string, HistBoard>();
-const room_graphs = new Map<string, Graph<Vertex,Link, Stroke, Area>>();
+const room_graphs = new Map<string, Graph<Vertex,Link>>();
 const clientRooms = {};
 
 
@@ -51,7 +51,8 @@ io.sockets.on('connection', function (client) {
     clientRooms[client.id] = room_id;
     client.emit('room_id', room_id); // useless ? TODO remove
     console.log("new room : ", room_id);
-    let g = new Graph();
+    let g = new Graph(); // TODO remove and use the graph of board
+    let board = new HistBoard();
     g.set_vertex(0, new Vertex(200,100,""));
     room_graphs.set(room_id, g);
     emit_graph_to_room(new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]));
@@ -59,7 +60,7 @@ io.sockets.on('connection', function (client) {
     emit_areas_to_room();
     emit_users_to_client();
 
-    let board = new HistBoard();
+  
     board.graph = g;
     room_boards.set(room_id, board);
 
@@ -90,11 +91,11 @@ io.sockets.on('connection', function (client) {
     }
 
     function emit_strokes_to_room() {
-        io.sockets.in(room_id).emit('strokes', [...g.strokes.entries()]);
+        io.sockets.in(room_id).emit('strokes', [...board.strokes.entries()]);
     }
 
     function emit_areas_to_room() {
-        io.sockets.in(room_id).emit('areas', [...g.areas.entries()])
+        io.sockets.in(room_id).emit('areas', [...board.areas.entries()])
     }
 
     function emit_users_to_client() {
@@ -249,7 +250,7 @@ io.sockets.on('connection', function (client) {
                 }
                 board.graph.complete_subgraph_into_tournament(all_vertices_indices, (x,y) => { return new Link(x,y, "", ORIENTATION.DIRECTED,"black", "")} )
             }else {
-                const area = board.graph.areas.get(area_index);
+                const area = board.areas.get(area_index);
                 const vertices_indices = board.graph.vertices_contained_by_area(area);
                 board.graph.complete_subgraph_into_tournament(vertices_indices, (x,y) => { return new Link(x,y, "", ORIENTATION.DIRECTED,"black", "")});
             }
@@ -565,8 +566,8 @@ io.sockets.on('connection', function (client) {
     // AREAS 
     function handle_move_side_area(index: number, x: number, y: number, side_number: number) {
         console.log("Receive Request: move_side_area");
-        if (g.areas.has(index)) {
-            const area = g.areas.get(index);
+        if (board.areas.has(index)) {
+            const area = board.areas.get(index);
             const new_modif = AreaMoveSide.from_area(index, area, x, y, side_number);
             const r = board.try_push_new_modification(new_modif);
             if (typeof r === "string"){
@@ -584,8 +585,8 @@ io.sockets.on('connection', function (client) {
 
     function handle_move_corner_area(index: number, x: number, y: number, corner_number: number) {
         console.log("handle_move_corner_area");
-        if (g.areas.has(index)) {
-            const area = g.areas.get(index);
+        if (board.areas.has(index)) {
+            const area = board.areas.get(index);
             const new_modif = AreaMoveCorner.from_area(index, area, x, y, corner_number);
             const r = board.try_push_new_modification(new_modif);
             if (typeof r === "string"){

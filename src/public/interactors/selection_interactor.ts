@@ -112,7 +112,7 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
                 local_board.view.translate_camera(shift.sub(previous_canvas_shift));
                 previous_canvas_shift.set_from(shift);
                 local_board.update_after_camera_change();
-                g.update_canvas_pos(local_board.view);
+                local_board.update_canvas_pos(local_board.view);
                 update_users_canvas_pos(local_board.view);
  
                 
@@ -135,8 +135,8 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
             return false;
         }
         case DOWN_TYPE.STROKE:{
-            if ( g.strokes.has(last_down_index)){
-                const stroke = g.strokes.get(last_down_index);
+            if ( local_board.strokes.has(last_down_index)){
+                const stroke = local_board.strokes.get(last_down_index);
                 const shift = CanvasVect.from_canvas_coords(down_coord,e);
                 stroke.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view);
                 previous_canvas_shift.set_from(shift);
@@ -189,7 +189,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                     g.vertices.get(last_down_index).is_selected = true;
                 }
                 else {
-                    g.clear_all_selections();
+                    local_board.clear_all_selections();
                     g.vertices.get(last_down_index).is_selected = true;
                 }
             }
@@ -216,7 +216,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                     g.links.get(last_down_index).is_selected = true;
                 }
                 else {
-                    g.clear_all_selections();
+                    local_board.clear_all_selections();
                     g.links.get(last_down_index).is_selected = true;
                 }
             }
@@ -226,25 +226,25 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
     else if (last_down === DOWN_TYPE.STROKE)
     {
         if (has_moved === false) {
-            if (g.strokes.get(last_down_index).is_selected) {
+            if (local_board.strokes.get(last_down_index).is_selected) {
                 if (key_states.get("Control")) { 
-                    g.strokes.get(last_down_index).is_selected = false;
+                    local_board.strokes.get(last_down_index).is_selected = false;
                 }
             }
             else {
                 if (key_states.get("Control")) { 
-                    g.strokes.get(last_down_index).is_selected = true;
+                    local_board.strokes.get(last_down_index).is_selected = true;
                 }
                 else {
-                    g.clear_all_selections();
-                    g.strokes.get(last_down_index).is_selected = true;
+                    local_board.clear_all_selections();
+                    local_board.strokes.get(last_down_index).is_selected = true;
                 }
             }
         } else {
             const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
             const shift = local_board.view.server_vect(canvas_shift);
             // socket.emit("translate_strokes", [last_down_index], shift.x, shift.y);
-            g.strokes.get(last_down_index).translate_by_canvas_vect(canvas_shift.opposite(), local_board.view);
+            local_board.strokes.get(last_down_index).translate_by_canvas_vect(canvas_shift.opposite(), local_board.view);
             socket.emit("translate_elements", [["Stroke", last_down_index]], shift);
         }
     }
@@ -255,7 +255,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
             g.select_links_in_rect(local_board.view.selection_corner_1, local_board.view.selection_corner_2);
 
         } else {
-            g.clear_all_selections();
+            local_board.clear_all_selections();
         }
 
     } else if (last_down == DOWN_TYPE.REPRESENTATION_ELEMENT){
