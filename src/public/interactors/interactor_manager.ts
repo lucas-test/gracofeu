@@ -22,6 +22,7 @@ import { CanvasVect } from '../board/vect';
 import { DegreeWidthRep } from 'gramoloss';
 import { ClientDegreeWidthRep } from '../board/representations/degree_width_rep';
 import { interactor_control_point } from './implementations/control_point';
+import { interactor_rectangle } from './implementations/rectangle_interactor';
 
 // INTERACTOR MANAGER
 
@@ -273,7 +274,7 @@ if (ENV.mode == "dev") {
     interactors_available.push(interactor_detector);
 }
 
-interactors_available.push(interactor_selection, interactor_control_point, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area)
+interactors_available.push(interactor_selection, interactor_control_point, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area, interactor_rectangle);
 
 
 

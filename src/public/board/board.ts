@@ -6,6 +6,7 @@ import { AREA_CORNER, AREA_SIDE, ClientArea } from "./area";
 import { View } from "./camera";
 import { ClientGraph } from "./graph";
 import { ClientLink } from "./link";
+import { ClientRectangle } from "./rectangle";
 import { ClientRepresentation } from "./representations/client_representation";
 import { is_click_over, resize_type_nearby } from "./resizable";
 import { ClientStroke } from "./stroke";
@@ -14,8 +15,7 @@ import { CanvasVect } from "./vect";
 import { CanvasCoord, ClientVertex } from "./vertex";
 
 
-
-export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, ClientArea, ClientTextZone, ClientRepresentation> {
+export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, ClientArea, ClientTextZone, ClientRepresentation, ClientRectangle> {
     view: View;
     graph: ClientGraph;
 
@@ -28,6 +28,10 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
     draw(ctx: CanvasRenderingContext2D) {
         for (const rep of this.representations.values()){
             rep.draw(ctx, this.view);
+        }
+
+        for (const rect of this.rectangles.values()){
+            rect.draw(ctx, this.view);
         }
     }
 
