@@ -15,6 +15,7 @@ export function create_popup(id: string, title: string){
     const title_div = document.createElement("div");
     title_div.classList.add("popup_header");
     const title_h2 = document.createElement("h2");
+    title_h2.classList.add("popup_title");
     title_h2.textContent = title;
     title_div.appendChild(title_h2);
     div.appendChild(title_div);

@@ -1,7 +1,7 @@
-import { Area, Board, Coord, Graph, Link, Representation, SENSIBILITY, Stroke, TextZone, Vect, Vertex } from "gramoloss";
+import { Area, Board, Coord, Graph, Link, Rectangle, Representation, SENSIBILITY, Stroke, TextZone, Vect, Vertex } from "gramoloss";
 import { eqSet } from "./utils";
 
-export class ServerBoard extends Board<Vertex, Link, Stroke, Area, TextZone, Representation>{
+export class ServerBoard extends Board<Vertex, Link, Stroke, Area, TextZone, Representation, Rectangle>{
     
 }
 

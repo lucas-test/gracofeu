@@ -16,6 +16,7 @@ export function setup_modifyers_div(canvas: HTMLCanvasElement, view: View) {
     const main_div = create_popup("modifyers_div", "Modifyers");
     const popup_content = document.getElementById("modifyers_div_content");
     popup_content.style.display = "flex";
+    popup_content.classList.add("scrolling_y","non_scrolling_bar");
 
     const modifyers_list = document.createElement("div");
     modifyers_list.id = "modifyers_list";

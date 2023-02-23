@@ -1,8 +1,17 @@
-input.search_filter{
-    background-color: #1e1e1e;
-    color: white;
-    width: 100%;
-    padding: 12px 20px 12px 40px; 
-    border: 1px solid #ddd; 
-    margin-bottom: 12px; 
+input.search_filter {
+    background-color: #f2f2f2;
+    /* color: white; */
+    width: 70%;
+    padding: 12px 20px 12px 40px;
+    /* border: 1px solid #ddd; */
+    margin-bottom: 12px;
+    border-radius: 5px;
+    font-family: system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+    position: sticky;
+    top: 10px;
+    border: none;
+}
+
+input.search_filter:focus {
+    outline: none;
 }

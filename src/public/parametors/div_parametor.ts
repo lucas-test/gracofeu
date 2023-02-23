@@ -6,12 +6,13 @@ import { load_param, params_available, params_loaded } from './parametor_manager
 export function update_params_available_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
     const div = document.getElementById("params_available_content");
 
+
     const search_input = document.createElement("input");
     search_input.classList.add("search_filter");
     search_input.type = "text";
     search_input.id = "param_search_input";
     search_input.onkeyup = handle_search_onkeyup;
-    search_input.placeholder = "Search for names..";
+    search_input.placeholder = "Search for names...";
     div.appendChild(search_input);
 
     for (let param of params_available) {
