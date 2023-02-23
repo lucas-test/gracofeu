@@ -13,6 +13,7 @@ export class User {
     multicolor: Multicolor;
     pos: Coord;
     canvas_pos: CanvasCoord;
+    timer_refresh : number;
 
     constructor(id: string, label: string, color: string, view: View, pos?: Coord) {
         this.id = id;
@@ -27,9 +28,13 @@ export class User {
             this.pos = null;
             this.canvas_pos = null;
         }
+        this.timer_refresh = Date.now();
     }
 
     set_pos(x: number, y: number, view: View) {
+        if(this.pos.x != x || this.pos.y != y){
+            this.timer_refresh = Date.now();
+        }
         this.pos.x = x;
         this.pos.y = y;
         this.canvas_pos = view.create_canvas_coord(this.pos);

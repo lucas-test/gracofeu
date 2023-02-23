@@ -135,7 +135,9 @@ export function draw_vertex(index: number, g: ClientGraph, ctx: CanvasRenderingC
     }
 }
 
-function draw_user_label(x:number, y:number, label:string, multicolor:Multicolor, ctx: CanvasRenderingContext2D){
+function draw_user_label(x:number, y:number, label:string, multicolor:Multicolor, timer_refresh:number, ctx: CanvasRenderingContext2D){
+    
+    ctx.globalAlpha = Math.max(0, 1 - (Date.now() - timer_refresh)/2000); 
     ctx.font = "400 17px Arial";
     const text = ctx.measureText(label);
     ctx.strokeStyle = multicolor.color;
@@ -148,6 +150,8 @@ function draw_user_label(x:number, y:number, label:string, multicolor:Multicolor
     ctx.fillStyle = multicolor.contrast;
     ctx.fillText(label,  x + 5, y + 16);
     ctx.fill();
+
+    ctx.globalAlpha = 1;
 }
 
 
@@ -237,7 +241,8 @@ export function draw_user(user: User, canvas: HTMLCanvasElement, ctx: CanvasRend
     }
     else{
         // DRAW USERNAME 
-        draw_user_label(user.canvas_pos.x + 10, user.canvas_pos.y + 17, user.label, user.multicolor, ctx);
+        draw_user_label(user.canvas_pos.x + 10, user.canvas_pos.y + 17, user.label, user.multicolor, user.timer_refresh, ctx);
+    
 
         // DRAW ARROW
         draw_user_arrow(user, ctx);
