@@ -1,6 +1,6 @@
 #generators_list {
     /* background-color: rgb(54, 54, 54); */
-    padding: 20px;
+    padding: 0 20px 20px 20px;
     width: 85%;
 }
 
@@ -51,8 +51,9 @@
     width: 90%;
     padding: 6px 10px 6px 20px;
     margin-bottom: 1px;
-    font-family: serif;
     text-transform: capitalize;
+    font-family: 'Open Sans';
+    font-size: 13px;
 }
 
 .generator_item:hover {

@@ -20,13 +20,19 @@ export function setup_generators_div(canvas: HTMLCanvasElement, board: ClientBoa
     const generators_list_container = document.createElement("div");
     generators_list_container.id = "generators_list_container";
     generators_list_container.classList.add("scrolling_y","non_scrolling_bar");
+
+    const search_input_container = document.createElement("div");
+    search_input_container.classList.add("search_filter_container");
+    generators_list_container.appendChild(search_input_container);
+
+
     const search_input = document.createElement("input");
-    search_input.classList.add("search_filter");
+    search_input.classList.add("search_filter");    
     search_input.type = "text";
     search_input.id = "generator_search_input";
     search_input.onkeyup = handle_search_onkeyup;
     search_input.placeholder = "Search for names...";
-    generators_list_container.appendChild(search_input);
+    search_input_container.appendChild(search_input);
 
     const generators_list = document.createElement("div");
     generators_list.id = "generators_list";
@@ -58,7 +64,7 @@ function turn_off_generators_div() {
 }
 
 export function turn_on_generators_div() {
-    document.getElementById("generators_div").style.display = "block";
+    document.getElementById("generators_div").style.display = "flex";
 }
 
 function activate_generator_div(canvas: HTMLCanvasElement, gen: GraphGenerator, board: ClientBoard) {

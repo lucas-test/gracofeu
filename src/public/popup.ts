@@ -12,13 +12,13 @@ export function create_popup(id: string, title: string){
     });
 
     // Title -----
+    const title_div_container = document.createElement("div");
+    title_div_container.classList.add("popup_header");
     const title_div = document.createElement("div");
-    title_div.classList.add("popup_header");
-    const title_h2 = document.createElement("h2");
-    title_h2.classList.add("popup_title");
-    title_h2.textContent = title;
-    title_div.appendChild(title_h2);
-    div.appendChild(title_div);
+    title_div.classList.add("popup_title");
+    title_div.textContent = title;
+    title_div_container.appendChild(title_div);
+    div.appendChild(title_div_container);
 
     // Close button ------
     const close_button = document.createElement("div");

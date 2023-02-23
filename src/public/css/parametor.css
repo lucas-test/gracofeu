@@ -13,7 +13,6 @@
     display: flex;
 }
 
-
 #params_available .param {
     display: block;
 }
@@ -33,8 +32,15 @@
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
-    font-size: 15px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 12px;
     /* border: 1px solid; */
+    transition: all 0.1s ease-in-out;
+}
+
+.param:hover {
+    background-color: var(--background_color_div);
+    color: var(--color_div);
 }
 
 .parametor_printed {
@@ -187,12 +193,36 @@ align-items: center; */
 }
 
 .subgraph_option {
-    cursor: pointer;
+    /* cursor: pointer;
     margin: 2px;
     font-weight: initial;
     border: 1px solid;
-    margin: 3px 8px;
+    margin: 3px 8px; */
+    /* cursor: pointer;
+    font-weight: initial;
+    border: 1px solid var(--color_div);
+    margin: 1px 2px;
+    text-align: center;
+    background: var(--background_color_div);
+    font-size: 14px; */
     /* display: none; */
+    text-align: center;
+    border: 2px solid var(--background_color_div);
+    cursor: pointer;
+    width: 70px;
+    background: #d20006;
+    border-radius: 8px;
+    margin: 2px;
+    padding: 4px 12px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Open Sans, Helvetica Neue, sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--background_color_div);
+}
+
+.subgraph_option:hover {
+    background: var(--background_color_div);
+    color: var(--background_color_page);
 }
 
 
@@ -211,6 +241,8 @@ align-items: center; */
 
 .param_div_list_graph_container {
     display: none;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
 }
 
 #area_list_container {
@@ -354,3 +386,13 @@ align-items: center; */
     color: #bf7979;
 }
 
+#params_available_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.param_container {
+    width: 60%;
+}

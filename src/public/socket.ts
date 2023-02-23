@@ -199,6 +199,9 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 const new_area = new ClientArea( data.element.label, c1, c2, data.element.color, local_board.view);
                 local_board.areas.set(data.index, new_area);
                 init_list_parametors_for_area(board, data.index, canvas, ctx);
+                //TO CHECK: I added this line here because the panels were not updated when creating a new area. Is it still how we are supposed to do it now ? 
+                update_options_graphs(canvas, ctx, g);
+       
             } else if (data.kind == "Vertex"){
                 const x = data.element.pos.x as number;
                 const y = data.element.pos.y as number;
@@ -386,6 +389,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
         
         update_params_loaded(g, new Set([SENSIBILITY.ELEMENT, SENSIBILITY.COLOR, SENSIBILITY.GEOMETRIC]), false);
         update_options_graphs(canvas, ctx, g);
+        // console.log("update???")
         // make_list_areas(canvas, ctx, g);
         requestAnimationFrame(function () { 
             draw(canvas, ctx, g) 

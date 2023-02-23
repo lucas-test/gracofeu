@@ -6,6 +6,10 @@ import { load_param, params_available, params_loaded } from './parametor_manager
 export function update_params_available_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
     const div = document.getElementById("params_available_content");
 
+    const search_input_container = document.createElement("div");
+    search_input_container.classList.add("search_filter_container");
+    div.appendChild(search_input_container);
+
 
     const search_input = document.createElement("input");
     search_input.classList.add("search_filter");
@@ -13,11 +17,12 @@ export function update_params_available_div(canvas: HTMLCanvasElement, ctx: Canv
     search_input.id = "param_search_input";
     search_input.onkeyup = handle_search_onkeyup;
     search_input.placeholder = "Search for names...";
-    div.appendChild(search_input);
+    search_input_container.appendChild(search_input);
 
     for (let param of params_available) {
         const param_div = document.createElement("div");
         param_div.id = `param_div_${param.id}`;
+        param_div.classList.add("param_container");
         const param_label_div = document.createElement("div");
         param_label_div.classList.add("param")
         param_label_div.id = `param_div_label_${param.id}`;
@@ -134,10 +139,11 @@ function toggle_list_graph_option(param:Parametor, canvas:HTMLCanvasElement, ctx
         // We get the container of the list
         const containerDOM = document.getElementById(`param_div_${param.id}_list_graph_container`);
 
+
         // We toggle its visibility
         // console.log("AVANT", containerDOM.style.display)
-        if(containerDOM.style.display != "block"){
-            containerDOM.style.display = "block"
+        if(containerDOM.style.display != "flex"){
+            containerDOM.style.display = "flex"
         }
         else{
             containerDOM.style.display = "none"
