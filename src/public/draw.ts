@@ -235,7 +235,9 @@ export function draw_user(user: User, canvas: HTMLCanvasElement, ctx: CanvasRend
             }
         }
 
-        draw_user_label(x + shift_x, y + shift_y, user.label, user.multicolor, ctx);
+        // Date.now() is to prevent the label to fade when shown on the side of the screen
+        // TODO: Change this.
+        draw_user_label(x + shift_x, y + shift_y, user.label, user.multicolor, Date.now(), ctx);
 
 
     }
