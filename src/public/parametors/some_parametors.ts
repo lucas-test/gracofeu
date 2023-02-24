@@ -1,8 +1,7 @@
 
 import { ClientGraph } from '../board/graph';
 import { Parametor, SENSIBILITY } from './parametor';
-import { is_segments_intersection, is_triangles_intersection } from '../utils';
-import { Graph, ORIENTATION } from 'gramoloss';
+import { Coord, Graph, is_triangles_intersection, ORIENTATION } from 'gramoloss';
 import { ClientLink } from '../board/link';
 
 export let param_has_cycle = new Parametor("Has cycle?", "has_cycle", "?has_cycle", "Check if the graph has an undirected cycle", true, true, [SENSIBILITY.ELEMENT], false);
@@ -97,35 +96,15 @@ param_number_colors.compute = ((g: ClientGraph) => {
 });
 
 
-export let param_number_geo = new Parametor("Is currently planar?", "planar_current", "planar_current", "Return true iff currently planar", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC], true);
+export let param_is_drawing_planar = new Parametor("Is drawing planar?", "is_drawing_planar", "is_drawing_planar", "Return true iff drawing is planar", true, true, [SENSIBILITY.ELEMENT, SENSIBILITY.GEOMETRIC], true);
 
-param_number_geo.compute = ((g: ClientGraph) => {
-
-    for (const link_index of g.links.keys()) {
-        const link1 = g.links.get(link_index);
-        const v1 = g.vertices.get(link1.start_vertex);
-        const w1 = g.vertices.get(link1.end_vertex);
-        let z1 = v1.pos.middle(w1.pos);
-        if (typeof link1.cp != "string"){
-            z1 = link1.cp;
-        }
-        for (const link_index2 of g.links.keys()) {
-            const link2 = g.links.get(link_index2);
-            const v2 = g.vertices.get(link2.start_vertex);
-            const w2 = g.vertices.get(link2.end_vertex);
-            let z2 = v2.pos.middle(w2.pos);
-            if (typeof link2.cp != "string"){
-                z2 = link2.cp;
-            }
-            if (link_index2 != link_index &&
-                //is_segments_intersection(v1.pos, w1.pos, v2.pos, w2.pos)
-                is_triangles_intersection(v1.pos, w1.pos, z1, v2.pos, w2.pos, z2)
-            ) {
-                return "false";
-            }
-        }
+param_is_drawing_planar.compute = ((g: ClientGraph) => {
+    console.log("is drawing planar update");
+    if (g.is_drawing_planar()){
+        return "true";
+    } else {
+        return "false";
     }
-    return "true";
 });
 
 

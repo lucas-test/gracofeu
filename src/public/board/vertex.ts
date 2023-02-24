@@ -1,10 +1,10 @@
-import { Coord, Vect, Vertex } from "gramoloss";
+import { bezierValue, Coord, Vect, Vertex } from "gramoloss";
 import katex from "katex";
 import { COLOR_INNER_VERTEX_DEFAULT } from "../draw";
 import { DOWN_TYPE } from "../interactors/interactor";
 import { interactor_loaded } from "../interactors/interactor_manager";
 import { display_weight_input, validate_weight } from "../interactors/text";
-import { bezierValue, solutionQuadratic } from "../utils";
+import { solutionQuadratic } from "../utils";
 import { View } from "./camera";
 import { CanvasVect } from "./vect";
 

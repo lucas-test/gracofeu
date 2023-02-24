@@ -1,9 +1,7 @@
 import { draw } from '../draw';
-import { param_average_degree, param_diameter, param_has_cycle, param_has_directed_cycle, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_min_indegree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_number_geo, param_wdin2, param_weighted_distance_identification } from './some_parametors';
+import { param_average_degree, param_diameter, param_has_cycle, param_has_directed_cycle, param_has_proper_coloring, param_is_connected, param_is_good_weight, param_max_degree, param_min_degree, param_min_indegree, param_nb_edges, param_nb_vertices, param_number_colors, param_number_connected_comp, param_is_drawing_planar, param_wdin2, param_weighted_distance_identification } from './some_parametors';
 import { Parametor, SENSIBILITY } from './parametor';
 import { ClientGraph } from '../board/graph';
-import { ClientArea } from '../board/area';
-import { get_title_span_for_area } from '../board/area_div';
 import { create_popup } from '../popup';
 import { local_board } from '../setup';
 
@@ -21,7 +19,7 @@ export function setup_parametors_available() {
         param_is_connected,
         param_number_connected_comp,
         param_number_colors,
-        param_number_geo,
+        param_is_drawing_planar,
         param_min_degree,
         param_max_degree,
         param_min_indegree,
