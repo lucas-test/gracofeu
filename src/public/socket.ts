@@ -147,6 +147,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
     socket.on("translate_elements", handle_translate_elements);
 
     function handle_translate_elements(data, sensibilities){
+        // console.log("handle_translate_elements");
         const shift = new Vect(data.shift.x, data.shift.y);
         const cshift = local_board.view.create_canvas_vect(shift);
         for (const [kind, index] of data.indices){
@@ -164,6 +165,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             } else if (kind == "Vertex"){
                 g.translate_vertex_by_canvas_vect(index, cshift, local_board.view);
                 g.automatic_link_weight_position_from_vertex(index);
+                update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
             } else if (kind == "ControlPoint"){
                 const link = g.links.get(index);
                 if ( typeof link.cp != "string" && typeof link.cp_canvas_pos != "string"){
@@ -171,9 +173,10 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                     link.cp_canvas_pos.translate_by_canvas_vect(cshift);
                 }
                 g.automatic_weight_position(index);
+                update_params_loaded(g, new Set([SENSIBILITY.GEOMETRIC]), false);
             }
         }
-
+        
         requestAnimationFrame(function () {draw(canvas, ctx, g) });
     }
 
