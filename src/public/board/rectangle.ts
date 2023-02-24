@@ -1,5 +1,6 @@
 import { Coord, Rectangle } from "gramoloss";
 import { View } from "./camera";
+import { CanvasVect } from "./vect";
 import { CanvasCoord } from "./vertex";
 
 export class ClientRectangle extends Rectangle {
@@ -46,5 +47,15 @@ export class ClientRectangle extends Rectangle {
         this.canvas_corner_bottom_right.y = Math.max(c1.y, c2.y);
         this.canvas_corner_bottom_left.x = Math.min(c1.x, c2.x);
         this.canvas_corner_bottom_left.y = Math.max(c1.y, c2.y);
+    }
+
+    update_after_camera_change(view: View){
+        this.canvas_corner_top_left = view.create_canvas_coord(this.top_left_corner());
+        this.canvas_corner_bottom_left = view.create_canvas_coord(this.bot_left_corner());
+        this.canvas_corner_bottom_right = view.create_canvas_coord(this.bot_right_corner());
+        this.canvas_corner_top_right = view.create_canvas_coord(this.top_right_corner());
+    }
+    
+    translate_by_canvas_vect(cshift: CanvasVect, view: View){
     }
 }

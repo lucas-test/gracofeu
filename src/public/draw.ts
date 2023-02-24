@@ -137,7 +137,14 @@ export function draw_vertex(index: number, g: ClientGraph, ctx: CanvasRenderingC
 
 function draw_user_label(x:number, y:number, label:string, multicolor:Multicolor, timer_refresh:number, ctx: CanvasRenderingContext2D){
     
-    ctx.globalAlpha = Math.max(0, 1 - (Date.now() - timer_refresh)/2000); 
+    // We set up a two second delay before starting to fade
+    if(Date.now() - timer_refresh > 2000){
+        ctx.globalAlpha = Math.max(0, 1 - (Date.now() - timer_refresh - 2000 )/2000);
+    }
+    else{
+        ctx.globalAlpha = 1;
+    }
+
     ctx.font = "400 17px Arial";
     const text = ctx.measureText(label);
     ctx.strokeStyle = multicolor.color;

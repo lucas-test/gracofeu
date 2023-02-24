@@ -12,7 +12,7 @@ import { resize_corner, resize_side, translate_by_canvas_vect } from '../board/r
 
 // INTERACTOR SELECTION
 
-export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION]), 'default')
+export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION, DOWN_TYPE.RECTANGLE]), 'default')
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
@@ -71,6 +71,8 @@ interactor_selection.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord)
             }
         }
     } else if ( last_down == DOWN_TYPE.REPRESENTATION){
+        previous_canvas_shift = new CanvasVect(0,0);
+    } else if ( last_down == DOWN_TYPE.RECTANGLE){
         previous_canvas_shift = new CanvasVect(0,0);
     }
 })
@@ -167,6 +169,14 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
             const rep = down_meta_element.element;
             rep.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view );
             translate_by_canvas_vect(rep, shift.sub(previous_canvas_shift), local_board.view);
+            previous_canvas_shift.set_from(shift);
+            return true;
+        }
+        case DOWN_TYPE.RECTANGLE: {
+            const shift = CanvasVect.from_canvas_coords(down_coord,e);
+            const rect = down_meta_element.element;
+            rect.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view );
+            translate_by_canvas_vect(rect, shift.sub(previous_canvas_shift), local_board.view);
             previous_canvas_shift.set_from(shift);
             return true;
         }

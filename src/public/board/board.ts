@@ -44,10 +44,13 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
 
     update_after_camera_change(){
         for ( const text_zone of this.text_zones.values()){
-            text_zone.update_after_camera_change( this.view);
+            text_zone.update_after_camera_change(this.view);
         }
         for (const rep of this.representations.values()){
             rep.update_after_camera_change(this.view);
+        }
+        for (const rect of this.rectangles.values()){
+            rect.update_after_camera_change(this.view);
         }
     }
 
@@ -126,6 +129,22 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
                     return { type: DOWN_TYPE.REPRESENTATION,  element: rep, index: index};
                 }
             }
+        }
+
+        if (interactable_element_type.has(DOWN_TYPE.RECTANGLE)){
+            for (const [index, rect] of this.rectangles.entries()){
+                const resize_type = resize_type_nearby(rect, pos, 10);
+                if (typeof resize_type != "number"){
+                    return {type: DOWN_TYPE.RESIZE, element_type: "RECTANGLE", element: rect, index: index,  resize_type: resize_type};
+                }
+            }
+            
+            for (const [index, rect] of this.rectangles.entries()){
+                if ( is_click_over(rect, pos)){
+                    return { type: DOWN_TYPE.RECTANGLE,  element: rect, index: index};
+                }
+            }
+
         }
 
         if (interactable_element_type.has(DOWN_TYPE.VERTEX)) {

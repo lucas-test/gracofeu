@@ -1,7 +1,7 @@
 import { Coord } from "gramoloss";
 import { View } from "./board/camera";
 import { CanvasCoord } from "./board/vertex";
-import { COLOR_BACKGROUND} from "./draw";
+import { COLOR_BACKGROUND, draw, draw_user} from "./draw";
 import { Multicolor } from "./multicolor";
 import { local_board } from "./setup";
 import { socket } from "./socket";
@@ -13,13 +13,14 @@ export class User {
     multicolor: Multicolor;
     pos: Coord;
     canvas_pos: CanvasCoord;
-    timer_refresh : number;
+    timer_refresh : number; // Date since the last change of position
+    id_timeout : NodeJS.Timeout | string; // Id of the time_out to kill when position is changed, "" if empty. 
 
     constructor(id: string, label: string, color: string, view: View, pos?: Coord) {
         this.id = id;
         this.label = label;
         this.multicolor = new Multicolor(color);
-        
+         
         if (typeof pos !== 'undefined') {
             this.pos = pos;
             this.canvas_pos = view.create_canvas_coord(this.pos);
@@ -29,11 +30,29 @@ export class User {
             this.canvas_pos = null;
         }
         this.timer_refresh = Date.now();
+        this.id_timeout = "";
     }
 
     set_pos(x: number, y: number, view: View) {
-        if(this.pos.x != x || this.pos.y != y){
+        if(this.pos.x != x || this.pos.y != y){ // If the user position is updated
             this.timer_refresh = Date.now();
+            if(typeof this.id_timeout !== "string"){
+                clearTimeout(this.id_timeout); // We clear the current timeout 
+            }
+            // We set a new timeout that starts after 2 seconds. 
+            this.id_timeout = setTimeout(() => {
+                // We draw the canvas every 100ms
+                const interval_id = setInterval(()=>{
+                    const canvas = document.getElementById('main') as HTMLCanvasElement;
+                    const ctx = canvas.getContext('2d');
+                    requestAnimationFrame(function () { draw(canvas, ctx, local_board.graph) });
+
+                    if(Date.now() - this.timer_refresh > 4000){
+                        // THe interval kill itself after the user does not move for 4secs 
+                        clearInterval(interval_id); 
+                    }
+                }, 100);
+            }, 2000);
         }
         this.pos.x = x;
         this.pos.y = y;
@@ -43,7 +62,6 @@ export class User {
     set_color(color:string){
         this.multicolor.set_color(color);
     }
-
     
 
 }
