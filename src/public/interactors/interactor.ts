@@ -3,6 +3,9 @@ import { CanvasCoord } from "../board/vertex";
 
 
 
+
+
+
 export enum DOWN_TYPE {
     EMPTY = "EMPTY",
     VERTEX = "VERTEX",
@@ -17,7 +20,8 @@ export enum DOWN_TYPE {
     TEXT_ZONE = "TEXT_ZONE",
     REPRESENTATION_ELEMENT = "REPRESENTATION_ELEMENT",
     RESIZE = "RESIZE",
-    REPRESENTATION = "REPRESENTATION"
+    REPRESENTATION = "REPRESENTATION",
+    RECTANGLE = "RECTANGLE"
 }
 
 export enum RESIZE_TYPE {
