@@ -175,7 +175,7 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
         case DOWN_TYPE.RECTANGLE: {
             const shift = CanvasVect.from_canvas_coords(down_coord,e);
             const rect = down_meta_element.element;
-            rect.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view );
+            rect.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view);
             translate_by_canvas_vect(rect, shift.sub(previous_canvas_shift), local_board.view);
             previous_canvas_shift.set_from(shift);
             return true;
