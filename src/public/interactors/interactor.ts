@@ -42,6 +42,8 @@ export class Interactor {
     img_src: string;
     interactable_element_type: Set<DOWN_TYPE>;
     cursor_style: string;
+    subinteractors: Array<Interactor>;
+    
     mousedown: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, e: CanvasCoord) => void;
     mousemove: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, e: CanvasCoord) => boolean;
     mouseup: (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, e: CanvasCoord) => void;
@@ -58,6 +60,7 @@ export class Interactor {
         this.trigger = (e, g) => { };
         this.onleave = () => {};
         this.draw = () => {};
+        this.subinteractors = new Array<Interactor>();
     }
 }
 

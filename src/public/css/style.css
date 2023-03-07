@@ -52,6 +52,13 @@ body {
     cursor: default;
 }
 
+#subinteractor_bar {
+    border-radius: 5px;
+    background-color: var(--background_color_div);
+    position: fixed;
+    height: 52px;
+}
+
 #interaction_mode_selector {
     border-radius: 5px;
     background-color: var(--background_color_div);

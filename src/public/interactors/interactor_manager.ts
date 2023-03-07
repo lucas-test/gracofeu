@@ -23,6 +23,7 @@ import { DegreeWidthRep } from 'gramoloss';
 import { ClientDegreeWidthRep } from '../board/representations/degree_width_rep';
 import { interactor_control_point } from './implementations/control_point';
 import { interactor_rectangle } from './implementations/rectangle_interactor';
+import { interactor_tool_edge } from './edge_tool_interactor';
 
 // INTERACTOR MANAGER
 
@@ -48,12 +49,16 @@ export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElem
     if (interactor_loaded != null && interactor_loaded != interactor) {
         interactor_loaded.onleave();
     }
-    interactor_loaded = interactor;
-    canvas.style.cursor = interactor.cursor_style;
+
+    const interactor_to_load = (interactor.subinteractors.length === 0)?interactor:interactor.subinteractors.at(0);
+    
+    interactor_loaded = interactor_to_load;
+    canvas.style.cursor = interactor_to_load.cursor_style;
     local_board.view.is_creating_vertex = false;
-    interactor.trigger(pos,g);
-    select_interactor_div(interactor);
+    interactor_to_load.trigger(pos,g);
+    select_interactor_div(interactor_to_load);
     requestAnimationFrame(function () { draw(canvas, ctx, g) });
+
 }
 
 
@@ -274,13 +279,26 @@ if (ENV.mode == "dev") {
     interactors_available.push(interactor_detector);
 }
 
-interactors_available.push(interactor_selection, interactor_control_point, interactor_edge, interactor_arc, color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area, interactor_rectangle);
+interactors_available.push(interactor_selection, 
+    interactor_tool_edge,
+    //interactor_control_point, interactor_edge, interactor_arc,
+     color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area, interactor_rectangle );
 
 
 
 function deselect_all_interactor_div() {
     for (let div of document.getElementsByClassName("interactor")) {
         div.classList.remove("selected");
+    }
+
+    
+}
+
+function deselect_subinteractor_bar_div(){
+
+    let subinteractor_bar_container = document.getElementById("subinteractor_bar");
+    if( subinteractor_bar_container != null){
+        subinteractor_bar_container.innerHTML = "";
     }
 }
 
@@ -297,7 +315,14 @@ function select_interactor_div(interactor: Interactor) {
 
 
 export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
-    let interactors_div = document.getElementById("interaction_mode_selector");
+    let subinteractor_bar_container = document.getElementById("subinteractor_bar");
+    if( subinteractor_bar_container == null){
+        subinteractor_bar_container = document.createElement("div");
+        subinteractor_bar_container.id = "subinteractor_bar";
+        document.body.appendChild(subinteractor_bar_container);
+    }
+
+    const interactors_div = document.getElementById("interaction_mode_selector");
     for (let interactor of interactors_available) {
         let newDiv = document.createElement("div");
         newDiv.classList.add("interactor");
@@ -310,21 +335,130 @@ export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRend
         div_recap.innerHTML = interactor.name + " <span class='shortcut'>" + interactor.shortcut + "</span>";
         document.body.appendChild(div_recap);
 
+        let time_out_id : NodeJS.Timeout | string = "";
+
         newDiv.onmouseenter = function () {
-            var offsets = newDiv.getBoundingClientRect();
-            div_recap.style.display = "block"
-            div_recap.style.left = "70px"; // String(e.clientX + 30)
-            div_recap.style.top = String(offsets.top) + "px"; //String(e.clientY - 16)
+
+            if(interactor.subinteractors.length === 0){
+                var offsets = newDiv.getBoundingClientRect();
+                div_recap.style.display = "block"
+                div_recap.style.left = "70px"; // String(e.clientX + 30)
+                div_recap.style.top = String(offsets.top) + "px"; //String(e.clientY - 16)
+            }
+            else{
+                // We reset the bar 
+                subinteractor_bar_container.innerHTML = "";
+
+                // We stop the timer.
+                if(time_out_id !== "")
+                {
+                    clearTimeout(time_out_id);
+                    time_out_id = "";
+                }
+
+                // Set the new bar on the left to the button
+                const offsets = newDiv.getBoundingClientRect();
+                subinteractor_bar_container.style.display = "flex";
+                subinteractor_bar_container.style.left = String(offsets.left + 53 ) + "px"; 
+                subinteractor_bar_container.style.top = String(offsets.top - 4) + "px";
+
+                subinteractor_bar_container.onmouseenter = function(){
+                    // We reset the fading timer 
+                    if(time_out_id !== "")
+                    {
+                        clearTimeout(time_out_id);
+                        time_out_id = "";
+                    }
+                }
+                
+                subinteractor_bar_container.onmouseleave = function () {
+                    // We initiate the fading of the div
+                    if(interactor.subinteractors.length !== 0){
+                        time_out_id = setTimeout(()=>{
+                            subinteractor_bar_container.innerHTML = "";
+                        }, 500);
+                    }
+                }
+
+                for(const subinteractor of interactor.subinteractors){
+                    // We create the div
+                    const new_subinteractor_div = document.createElement("div");
+                    new_subinteractor_div.classList.add("interactor");
+                    new_subinteractor_div.id = subinteractor.name;
+                    new_subinteractor_div.innerHTML = '<img src="img/interactor/' + subinteractor.img_src + '" width="27px" />';
+                    subinteractor_bar_container.appendChild(new_subinteractor_div);
+
+                    new_subinteractor_div.onclick = function (){
+                        // We select the interactor and we change the image 
+                        deselect_all_interactor_div();
+                        deselect_subinteractor_bar_div();
+                        newDiv.innerHTML = '<img src="img/interactor/' + subinteractor.img_src + '" width="27px" />';
+                        select_interactor(subinteractor, canvas, ctx, g, mouse_pos);
+                        newDiv.classList.add("selected");
+                        return;
+                    }
+                }
+            }
         }
 
         newDiv.onmouseleave = function () {
-            div_recap.style.display = "none"
+            div_recap.style.display = "none";
+
+            // We start the timer of the fading
+            if(interactor.subinteractors.length !== 0){
+                time_out_id = setTimeout(()=>{
+                    subinteractor_bar_container.innerHTML = "";
+                },500);
+            }
         }
 
         newDiv.onclick = function () {
             select_interactor(interactor, canvas, ctx, g, null);
             div_recap.style.display = "none";
         };
+
+
+        //  // SUBACTIONS
+        // const new_subinteractions_div = document.createElement("div");
+        // new_subinteractions_div.classList.add("subinteractions_container");
+        // new_subinteractions_div.id = interactor.name + "_subinteractions";
+        // new_subinteractions_div.style.display = "none";
+        // new_subinteractions_div.addEventListener("mouseleave", (event) => {
+        //     const target = event.target as HTMLDivElement;
+        //     target.style.display = "none";
+        // })
+
+        // newDiv.onclick = function () {
+        //     new_subinteractions_div.style.display = "block";
+        //     interactor.trigger();
+        //     requestAnimationFrame(function () { draw(canvas, ctx, g) });
+        // };
+        // //newDiv.innerHTML = '<img src="img/actions/' + action.img_src + '" width="30px" />';
+        // //actions_div.appendChild(newDiv);
+
+
+
+        // for (const subinteractor of interactor.subactions) {
+        //     const new_subinteractor_div = document.createElement("div");
+        //     new_subinteractor_div.classList.add("subaction");
+        //     new_subinteractor_div.id = subinteractor.name;
+        //     new_subinteractor_div.innerHTML = '<img src="img/interactor/' + subinteractor.img_src + '" width="27px" />';
+        //     new_subinteractor_div.onclick = function () {
+        //         new_subinteractor_div.style.display = "none";
+        //         subinteractor.trigger();
+        //         requestAnimationFrame(function () { draw(canvas, ctx, g) });
+        //     };
+        //     new_subinteractions_div.appendChild(new_subinteractor_div);
+
+        //     //add_recap_div(subaction, new_subaction_div, 130);
+        // }
+
+        // //add_recap_div(action, newDiv, 70);
+       
+
+
+        // // APPEND TO DOCUMENT
+        // document.body.appendChild(new_subinteractions_div);
     }
 }
 
