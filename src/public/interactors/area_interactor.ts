@@ -108,7 +108,7 @@ interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
             moving_area.resize_corner_area(e, opposite_corner, local_board.view);
         } else if ( last_down == DOWN_TYPE.AREA){
             const shift = CanvasVect.from_canvas_coords(down_coord,e);
-            local_board.translate_area(shift.sub(previous_canvas_shift), last_down_index, vertices_contained, local_board.view);
+            local_board.translate_area(shift.sub(previous_canvas_shift), last_down_index, vertices_contained);
             previous_canvas_shift.set_from(shift);
         }
         return true;
@@ -119,7 +119,7 @@ interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
         for (const a of local_board.areas.values()) {
             const corner_number = a.is_nearby_corner(e);
             const side_number = a.is_nearby_side(e, undefined, true);
-            const is_on_label = a.is_nearby(e);
+            const is_on_label = a.is_on_label(e);
 
             if(corner_number === AREA_CORNER.NONE && side_number === AREA_SIDE.NONE && !is_on_label){
                 continue;
@@ -207,7 +207,7 @@ interactor_area.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
         const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
         const shift = local_board.view.server_vect(canvas_shift);
         // socket.emit("translate_areas", [last_down_index], shift.x, shift.y);
-        local_board.translate_area(canvas_shift.opposite(), last_down_index, vertices_contained, local_board.view);
+        local_board.translate_area(canvas_shift.opposite(), last_down_index, vertices_contained);
         socket.emit("translate_elements",[["Area", last_down_index]], shift);
         is_moving_area = false;
     }

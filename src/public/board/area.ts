@@ -34,7 +34,7 @@ export class ClientArea extends Area{
         this.canvas_corner_top_right = view.create_canvas_coord(this.top_right_corner());
     }
 
-    is_nearby(pos:CanvasCoord, r?:number){ 
+    is_on_label(pos:CanvasCoord, r?:number){ 
         // ____________________
         // |                   |
         // |__       KO        |
@@ -103,23 +103,6 @@ export class ClientArea extends Area{
         return AREA_SIDE.NONE;
     }
 
-    /*
-    top_left_canvas_corner(): CanvasCoord{
-        return new CanvasCoord(Math.min(this.c1_canvas_pos.x, this.c2_canvas_pos.x), Math.min(this.c1_canvas_pos.y, this.c2_canvas_pos.y))
-    }
-
-    top_right_canvas_corner(): CanvasCoord{
-        return new CanvasCoord(Math.max(this.c1_canvas_pos.x, this.c2_canvas_pos.x), Math.min(this.c1_canvas_pos.y, this.c2_canvas_pos.y))
-    }
-    
-    bot_left_canvas_corner(): Coord{
-        return new CanvasCoord(Math.min(this.c1_canvas_pos.x, this.c2_canvas_pos.x), Math.max(this.c1_canvas_pos.y, this.c2_canvas_pos.y))
-    }
-
-    bot_right_canvas_corner(): Coord{
-        return new CanvasCoord(Math.max(this.c1_canvas_pos.x, this.c2_canvas_pos.x), Math.max(this.c1_canvas_pos.y, this.c2_canvas_pos.y))
-    }
-    */
 
 
     is_nearby_top_left_corner(pos:CanvasCoord, s?:number){      
@@ -204,15 +187,22 @@ export class ClientArea extends Area{
     }
 
     translate_by_canvas_vect(shift: CanvasVect, view: View){
-        this.canvas_corner_bottom_left.translate_by_canvas_vect(shift);
-        this.canvas_corner_bottom_right.translate_by_canvas_vect(shift);
-        this.canvas_corner_top_left.translate_by_canvas_vect(shift);
-        this.canvas_corner_top_right.translate_by_canvas_vect(shift);
-        this.c1.translate(view.server_vect(shift));
-        this.c2.translate(view.server_vect(shift));
+        // this.canvas_corner_bottom_left.translate_by_canvas_vect(shift);
+        // this.canvas_corner_bottom_right.translate_by_canvas_vect(shift);
+        // this.canvas_corner_top_left.translate_by_canvas_vect(shift);
+        // this.canvas_corner_top_right.translate_by_canvas_vect(shift);
+        // this.c1.translate(view.server_vect(shift));
+        // this.c2.translate(view.server_vect(shift));
     }
 
     update_canvas_pos(view: View){
+        this.canvas_corner_top_left = view.create_canvas_coord(this.top_left_corner());
+        this.canvas_corner_bottom_left = view.create_canvas_coord(this.bot_left_corner());
+        this.canvas_corner_bottom_right = view.create_canvas_coord(this.bot_right_corner());
+        this.canvas_corner_top_right = view.create_canvas_coord(this.top_right_corner());
+    }
+
+    update_after_camera_change(view: View){
         this.canvas_corner_top_left = view.create_canvas_coord(this.top_left_corner());
         this.canvas_corner_bottom_left = view.create_canvas_coord(this.bot_left_corner());
         this.canvas_corner_bottom_right = view.create_canvas_coord(this.bot_right_corner());

@@ -12,13 +12,14 @@ import { resize_corner, resize_side, translate_by_canvas_vect } from '../board/r
 
 // INTERACTOR SELECTION
 
-export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION, DOWN_TYPE.RECTANGLE]), 'default')
+export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION, DOWN_TYPE.RECTANGLE, DOWN_TYPE.AREA]), 'default')
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
 let vertex_center_shift = new CanvasVect(0,0);
 let opposite_coord = 0;
 let opposite_corner = new CanvasCoord(0,0);
+let vertices_contained = new Set<number>();
 
 interactor_selection.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     previous_shift = new Vect(0,0);
@@ -74,6 +75,15 @@ interactor_selection.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord)
         previous_canvas_shift = new CanvasVect(0,0);
     } else if ( last_down == DOWN_TYPE.RECTANGLE){
         previous_canvas_shift = new CanvasVect(0,0);
+    } else if ( last_down == DOWN_TYPE.AREA){
+        previous_canvas_shift = new CanvasVect(0,0);
+        const area = local_board.areas.get(last_down_index);
+        vertices_contained = new Set();
+        for (const [vertex_index, vertex] of g.vertices.entries()){
+            if ( area.is_containing(vertex)){
+                vertices_contained.add(vertex_index);
+            }
+        }
     }
 })
 
@@ -177,6 +187,12 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
             const rect = down_meta_element.element;
             rect.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view);
             translate_by_canvas_vect(rect, shift.sub(previous_canvas_shift), local_board.view);
+            previous_canvas_shift.set_from(shift);
+            return true;
+        }
+        case DOWN_TYPE.AREA: {
+            const shift = CanvasVect.from_canvas_coords(down_coord,e);
+            local_board.translate_area(shift.sub(previous_canvas_shift), down_meta_element.index, vertices_contained);
             previous_canvas_shift.set_from(shift);
             return true;
         }

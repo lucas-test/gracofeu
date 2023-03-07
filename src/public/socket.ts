@@ -160,7 +160,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
             } else if ( kind == "Area"){
                 const area = local_board.areas.get(index);
                 const vertices_contained = g.vertices_contained_by_area(area);
-                local_board.translate_area(cshift, index,vertices_contained , local_board.view);
+                local_board.translate_area(cshift, index,vertices_contained);
                 g.set_automatic_weight_positions();
             } else if (kind == "Vertex"){
                 g.translate_vertex_by_canvas_vect(index, cshift, local_board.view);

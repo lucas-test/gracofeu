@@ -6,6 +6,7 @@ import { VERTEX_RADIUS } from '../draw';
 import { ClientGraph } from '../board/graph';
 import { CanvasCoord } from '../board/vertex';
 import { local_board } from '../setup';
+import { is_click_over } from '../board/resizable';
 
 
 // INTERACTOR ERASER
@@ -36,7 +37,7 @@ function erase_at(g: ClientGraph, e: CanvasCoord) : boolean{
         }
     }
     for(const [index,area] of local_board.areas.entries()){
-        if( area.is_nearby(e)){
+        if( is_click_over(area,e) ){
             socket.emit("delete_elements", [["Area", index]]);
             return true;
         }

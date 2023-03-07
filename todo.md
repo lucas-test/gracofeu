@@ -215,6 +215,12 @@
     - [ ] déplacer les calculs dans le serveur ??
     - [ ] fix update
 
+- Resizable
+    - [ ] area doit utiliser cette interface
+    - [X] déplacer avec selection
+    - [ ] resize
+    - [ ] emit changements
+
 
 - modifyer
     - [X] structure
