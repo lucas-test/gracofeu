@@ -23,6 +23,7 @@ export class Action {
         this.subactions = new Array<Action>();
         this.shortcut = shortcut;
         this.trigger = () => { };
+        
     }
 }
 
