@@ -7,7 +7,7 @@ import { DOWN_TYPE, Interactor } from "../interactor";
 import { last_down } from "../interactor_manager";
 
 
-export var interactor_rectangle = new Interactor("rectangle", "r", "area.svg", new Set([]), 'default')
+export var interactor_rectangle = new Interactor("rectangle", "r", "rectangle.svg", new Set([]), 'default')
 
 // let is_creating_area : boolean;
 // let last_created_area_index: number = null;
