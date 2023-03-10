@@ -12,7 +12,7 @@ import { resize_corner, resize_side, translate_by_canvas_vect } from '../board/r
 
 // INTERACTOR SELECTION
 
-export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION, DOWN_TYPE.RECTANGLE, DOWN_TYPE.AREA]), 'default')
+export var interactor_selection = new Interactor("selection", "s", "selection.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION, DOWN_TYPE.RECTANGLE, DOWN_TYPE.AREA, DOWN_TYPE.RESIZE]), 'default')
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
@@ -289,6 +289,14 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
             const rep = local_board.representations.get(last_down_index);
             rep.onmouseup(local_board.view);
         }
+    } else if (last_down == DOWN_TYPE.AREA){
+        const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
+        const shift = local_board.view.server_vect(canvas_shift);
+        local_board.translate_area(canvas_shift.opposite(), last_down_index, vertices_contained);
+        socket.emit("translate_elements",[["Area", last_down_index]], shift);
+    } else if (last_down == DOWN_TYPE.RESIZE){
+        const esc  = local_board.view.create_server_coord(e);
+        socket.emit("resize_element", down_meta_element.element_type, down_meta_element.index, esc.x, esc.y, down_meta_element.resize_type);
     }
 })
 

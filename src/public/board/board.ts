@@ -90,12 +90,9 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
             window.setTimeout(() => text_zone_input.focus(), 0); // without timeout does not focus
             text_zone_input.onkeyup = (e) => {
                 if (e.key == " "){
-                    // socket.emit("update_text_text_zone", index, text_zone_input.value);
                     socket.emit("update_element", "TextZone", index, "text", text_zone_input.value);
                 } 
                 if (e.key == "Enter" && key_states.get("Control")) {
-                    // text_zone.update_text(text_zone_input.value);
-                    // socket.emit("update_text_text_zone", index, text_zone_input.value);
                     socket.emit("update_element", "TextZone", index, "text", text_zone_input.value);
                     text_zone_input.value = "";
                     text_zone_input.style.display = "none";
@@ -116,11 +113,11 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
             for (const [index, rep] of this.representations.entries()){
                 const resize_type = resize_type_nearby(rep, pos, 10);
                 if (typeof resize_type != "number"){
-                    return {type: DOWN_TYPE.RESIZE, element_type: "REPRESENTATION", element: rep, index: index,  resize_type: resize_type};
+                    return {type: DOWN_TYPE.RESIZE, element_type: "Representation", element: rep, index: index,  resize_type: resize_type};
                 }
                 const r = rep.click_over(pos, this.view);
                 if (typeof r != "string"){
-                    return { type: DOWN_TYPE.REPRESENTATION_ELEMENT, element_type: "REPRESENTATION",  element: rep, index: index, element_index: r};
+                    return { type: DOWN_TYPE.REPRESENTATION_ELEMENT, element_type: "Representation",  element: rep, index: index, element_index: r};
                 }
             }
         }
@@ -137,7 +134,7 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
             for (const [index, rect] of this.rectangles.entries()){
                 const resize_type = resize_type_nearby(rect, pos, 10);
                 if (typeof resize_type != "number"){
-                    return {type: DOWN_TYPE.RESIZE, element_type: "RECTANGLE", element: rect, index: index,  resize_type: resize_type};
+                    return {type: DOWN_TYPE.RESIZE, element_type: "Rectangle", element: rect, index: index,  resize_type: resize_type};
                 }
             }
             
@@ -169,20 +166,19 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
             }
         }
 
+        if(interactable_element_type.has(DOWN_TYPE.RESIZE)){
+            for (const [index, area] of this.areas.entries()){
+                const resize_type = resize_type_nearby(area, pos, 10);
+                if (typeof resize_type != "number"){
+                    return {type: DOWN_TYPE.RESIZE, element_type: "Area", element: area, index: index,  resize_type: resize_type};
+                }
+            }
+        }        
+
         for(const [index,a] of this.areas.entries()){
             if(interactable_element_type.has(DOWN_TYPE.AREA) && is_click_over(a,pos)){
                 return{ type: DOWN_TYPE.AREA, element: a, index: index };
             }
-            const corner_index = a.is_nearby_corner(pos);
-            console.log("CORNER INDEX", corner_index, corner_index!=0);
-            if(interactable_element_type.has(DOWN_TYPE.AREA_CORNER) && corner_index != AREA_CORNER.NONE){
-                return{ type: DOWN_TYPE.AREA_CORNER, index: index, corner: corner_index };
-            }
-
-            const side_index = a.is_nearby_side(pos, 5);
-            if(interactable_element_type.has(DOWN_TYPE.AREA_SIDE) && side_index != AREA_SIDE.NONE){
-                 return{ type: DOWN_TYPE.AREA_SIDE, index: index, side: side_index };
-             }
         }
 
         if (interactable_element_type.has(DOWN_TYPE.STROKE)) {

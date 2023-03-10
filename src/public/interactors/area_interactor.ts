@@ -1,6 +1,6 @@
-import { Interactor, DOWN_TYPE } from './interactor'
+import { Interactor, DOWN_TYPE, RESIZE_TYPE } from './interactor'
 import { socket } from '../socket';
-import { ClientArea, AREA_CORNER, AREA_SIDE } from '../board/area';
+import { AREA_CORNER, AREA_SIDE } from '../board/area';
 import { down_coord, last_down, last_down_index } from './interactor_manager';
 import { local_board } from '../setup';
 import { CanvasVect } from '../board/vect';
@@ -9,7 +9,7 @@ import { CanvasCoord } from '../board/vertex';
 import { Coord } from 'gramoloss';
 
 
-export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA, DOWN_TYPE.AREA_CORNER, DOWN_TYPE.AREA_SIDE]), 'default')
+export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA]), 'default')
 
 let is_creating_area : boolean;
 let last_created_area_index: number = null;
@@ -32,50 +32,6 @@ interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
         // (response: number) => { last_created_area_index = response });
         socket.emit("add_element", "Area", {c1: first_corner, c2: first_corner, label: "G", color:"" }, (response: number) => { console.log("hey", response); last_created_area_index = response })
         opposite_corner = e.copy();
-    } else if (last_down === DOWN_TYPE.AREA_CORNER){
-        const area = local_board.areas.get(last_down_index);
-        corner_number = area.is_nearby_corner(e);
-        switch(corner_number) {
-            case AREA_CORNER.TOP_RIGHT: {
-                opposite_corner = area.canvas_corner_bottom_left.copy();
-                break;
-            }
-            case AREA_CORNER.BOT_LEFT: {
-                opposite_corner = area.canvas_corner_top_right.copy();
-                break;
-            }
-            case AREA_CORNER.BOT_RIGHT: {
-                opposite_corner = area.canvas_corner_top_left.copy();
-                break;
-            }
-            case AREA_CORNER.TOP_LEFT: {
-                opposite_corner = area.canvas_corner_bottom_right.copy();
-                break;
-            }
-        }
-        is_moving_area = true;
-    } else  if (last_down === DOWN_TYPE.AREA_SIDE){
-        const area = local_board.areas.get(last_down_index);
-        side_number = area.is_nearby_side(e);
-        switch(side_number){
-            case AREA_SIDE.BOT:{
-                opposite_coord = area.canvas_corner_top_left.y;
-                break;
-            }
-            case AREA_SIDE.TOP:{
-                opposite_coord = area.canvas_corner_bottom_left.y;
-                break;
-            }
-            case AREA_SIDE.LEFT:{
-                opposite_coord = area.canvas_corner_bottom_right.x;
-                break;
-            }
-            case AREA_SIDE.RIGHT:{
-                opposite_coord = area.canvas_corner_bottom_left.x;
-                break;
-            }
-        }
-        is_moving_area = true;
     } else if ( last_down == DOWN_TYPE.AREA){
         const area = local_board.areas.get(last_down_index);
         previous_canvas_shift = new CanvasVect(0,0);
@@ -189,19 +145,9 @@ interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
 interactor_area.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     const esc  = local_board.view.create_server_coord(e);
     if (last_down === DOWN_TYPE.EMPTY) {
-        socket.emit("area_move_corner", last_created_area_index, esc.x, esc.y, AREA_CORNER.TOP_RIGHT);
+        socket.emit("resize_element", "Area", last_created_area_index, esc.x, esc.y, RESIZE_TYPE.TOP_RIGHT);
         is_creating_area = false;
         first_corner = null;
-    }
-    else if (last_down === DOWN_TYPE.AREA_SIDE){
-        socket.emit("area_move_side", last_down_index, esc.x, esc.y, side_number);      
-        side_number = null;
-        is_moving_area = false;
-    }
-    else if (last_down === DOWN_TYPE.AREA_CORNER){
-        socket.emit("area_move_corner", last_down_index, esc.x, esc.y, corner_number);  
-        corner_number = null;
-        is_moving_area = false;
     }
     else if ( last_down == DOWN_TYPE.AREA){
         const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);

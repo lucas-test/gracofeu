@@ -179,15 +179,16 @@
     - [X] update_colors
     - [ ] load_json
 
-    - mettre tout dans gracofeu pour simplifier les broadcast
+    - [X] mettre tout dans gracofeu pour simplifier les broadcast
 
 - server API
-    - [ ] put all modifications from gramoloss to gracofeu (le but c'est de simplifier les sensibilities qui sont fausses)
-    - [ ] add_elements
-    - [ ] update_elements (used for coloring several elements)
-    - [ ] broadcast enum type
+    - [X] put all modifications from gramoloss to gracofeu (le but c'est de simplifier les sensibilities qui sont fausses)
+    - [ ] fix sensibilities and Return of Modifications
+    - [X] add_elements
+    - [X] update_elements (used for coloring several elements)
+    - [ ] classes for emit (so that it checks the type of the emitted elements)
 
-- dw representation
+- Representations
     - [ ] le recadagre d'une représentation devrait être la même que pour area et une forme rectangulaire
     - [X] créer des tournois facilement à partir des backarcs
     - [ ] mise à jour de la repré
@@ -216,10 +217,12 @@
     - [ ] fix update
 
 - Resizable
-    - [ ] area doit utiliser cette interface
+    - [X] area doit utiliser cette interface
     - [X] déplacer avec selection
-    - [ ] resize
-    - [ ] emit changements
+    - [X] resize
+    - [X] emit changements
+    - [ ] nettoyer area_interactor pour les curseurs
+    - [ ] afficher les curseurs lorsque Resize est autorisé
 
 
 - modifyer

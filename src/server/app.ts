@@ -1,8 +1,9 @@
 import express, { text } from 'express';
 import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area,  ELEMENT_TYPE,  middle, Vect, TextZone, Representation} from "gramoloss";
 import ENV from './.env.json';
-import { AddElement, ApplyModifyer, AreaMoveCorner, AreaMoveSide, DeleteElements, GraphPaste, TranslateElements, UpdateElement, VerticesMerge } from './board_modification';
+import { AddElement, ApplyModifyer, DeleteElements, GraphPaste, RESIZE_TYPE, TranslateElements, UpdateElement, VerticesMerge } from './board_modification';
 import { HistBoard } from './hist_board';
+import { ResizeElement } from './modifications/implementations/resize_element';
 import { getRandomColor, User, users } from './user';
 import { eq_indices, makeid } from './utils';
 
@@ -203,10 +204,8 @@ io.sockets.on('connection', function (client) {
     client.on('paste_graph', handle_paste_graph);
     client.on('vertices_merge', handle_vertices_merge);
     client.on("apply_modifyer", handle_apply_modifyer);
-    // Area
-    client.on('area_move_side', handle_move_side_area);
-    client.on('area_move_corner', handle_move_corner_area);
     // Meta
+    client.on("resize_element", handle_resize_element);
     client.on("update_element", handle_update_element);
     client.on("add_element", handle_add_element);
     client.on("translate_elements", handle_translate_elements);
@@ -447,24 +446,18 @@ io.sockets.on('connection', function (client) {
                     broadcast("add_elements", removed, new Set() );
                     break;
                 }
-                case AreaMoveCorner: {
-                    const modif = r as AreaMoveCorner;
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.previous_c1}, new Set());
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.previous_c2}, new Set());
-                    break;
-                }
-                case AreaMoveSide: {
-                    const modif = r as AreaMoveSide;
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.previous_c1}, new Set());
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.previous_c2}, new Set());
-                    break;
-                }
                 case VerticesMerge: {
                     emit_graph_to_room(new Set());
                     break;
                 }
                 case ApplyModifyer: {
                     emit_graph_to_room(new Set());
+                    break;
+                }
+                case ResizeElement: {
+                    const modif = r as ResizeElement;
+                    broadcast("update_element",  {index: modif.index, kind: modif.kind, param: "c1", value: modif.previous_c1}, new Set());
+                    broadcast("update_element",  {index: modif.index, kind: modif.kind, param: "c2", value: modif.previous_c2}, new Set());
                     break;
                 }
             }
@@ -533,24 +526,18 @@ io.sockets.on('connection', function (client) {
                     broadcast("delete_elements", indices, new Set());
                     break;
                 }
-                case AreaMoveCorner: {
-                    const modif = r as AreaMoveCorner;
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.new_c1}, new Set());
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.new_c2}, new Set());
-                    break;
-                }
-                case AreaMoveSide: {
-                    const modif = r as AreaMoveSide;
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c1", value: modif.new_c1}, new Set());
-                    broadcast("update_element",  {index: modif.index, kind: "Area", param: "c2", value: modif.new_c2}, new Set());
-                    break;
-                }
                 case VerticesMerge: {
                     emit_graph_to_room(new Set());
                     break;
                 }
                 case ApplyModifyer: {
                     emit_graph_to_room(new Set());
+                    break;
+                }
+                case ResizeElement: {
+                    const modif = r as ResizeElement;
+                    broadcast("update_element",  {index: modif.index, kind: modif.kind, param: "c1", value: modif.new_c1}, new Set());
+                    broadcast("update_element",  {index: modif.index, kind: modif.kind, param: "c2", value: modif.new_c2}, new Set());
                     break;
                 }
             }
@@ -563,44 +550,45 @@ io.sockets.on('connection', function (client) {
         // emit_areas_to_room();
     }
 
-    // AREAS 
-    function handle_move_side_area(index: number, x: number, y: number, side_number: number) {
-        console.log("Receive Request: move_side_area");
-        if (board.areas.has(index)) {
-            const area = board.areas.get(index);
-            const new_modif = AreaMoveSide.from_area(index, area, x, y, side_number);
-            const r = board.try_push_new_modification(new_modif);
-            if (typeof r === "string"){
-                console.log(r);
-            }else {
-                broadcast("update_element",  {index: index, kind: "Area", param: "c1", value: new_modif.new_c1}, new Set());
-                broadcast("update_element",  {index: index, kind: "Area", param: "c2", value: new_modif.new_c2}, new Set());
+    function handle_resize_element(type: string, index: number, x: number, y: number, raw_resize_type: string) {
+        console.log("Receive Request: resize_element");
+        let element = null;
+        if (type == "Area"){
+            if (board.areas.has(index) == false){
+                console.log("Error : Area index %d does not exist", index);
+                return;
             }
-        } else {
-            console.log("Error: area index does not exist", index);
+            element = board.areas.get(index);
+        } else if (type == "Rectangle"){
+            if (board.rectangles.has(index) == false){
+                console.log("Error : Rectangle index %d does not exist", index);
+                return;
+            }
+            element = board.rectangles.get(index);
+        } else if (type == "Representation"){
+            if (board.representations.has(index) == false){
+                console.log("Error : Representations index %d does not exist", index);
+                return;
+            }
+            element = board.representations.get(index);
+        }
+        if (element == null){
+            console.log("Error : Type ", type, " is unsupported");
+            return;
+        }
+
+        const resize_type = raw_resize_type as RESIZE_TYPE;
+        const new_modif = ResizeElement.from_element(element, index, type, x, y, resize_type);
+        const r = board.try_push_new_modification(new_modif);
+        if (typeof r === "string"){
+            console.log(r);
+        }else {
+            broadcast("update_element",  {index: index, kind: type, param: "c1", value: new_modif.new_c1}, new Set());
+            broadcast("update_element",  {index: index, kind: type, param: "c2", value: new_modif.new_c2}, new Set());
         }
     }
 
-
-
-    function handle_move_corner_area(index: number, x: number, y: number, corner_number: number) {
-        console.log("handle_move_corner_area");
-        if (board.areas.has(index)) {
-            const area = board.areas.get(index);
-            const new_modif = AreaMoveCorner.from_area(index, area, x, y, corner_number);
-            const r = board.try_push_new_modification(new_modif);
-            if (typeof r === "string"){
-                console.log(r);
-            }else {
-                broadcast("update_element",  {index: index, kind: "Area", param: "c1", value: new_modif.new_c1}, new Set());
-                broadcast("update_element",  {index: index, kind: "Area", param: "c2", value: new_modif.new_c2}, new Set());
-            }
-        } else {
-            console.log("Error: area index does not exist", index);
-        }
-    }
-
-    
+       
 
 
     // JSON

@@ -1,6 +1,17 @@
 import { Area, Board, Coord, Graph, Link, Rectangle, Representation, SENSIBILITY, Stroke, TextZone, Vect, Vertex } from "gramoloss";
 import { eqSet } from "./utils";
 
+export enum RESIZE_TYPE {
+    BOTTOM = "BOTTOM",
+    TOP = "TOP",
+    LEFT = "LEFT",
+    RIGHT = "RIGHT",
+    TOP_RIGHT = "TOP_RIGHT",
+    TOP_LEFT = "TOP_LEFT",
+    BOTTOM_RIGHT = "BOTTOM_RIGHT",
+    BOTTOM_LEFT = "BOTTOM_LEFT"
+}
+
 export class ServerBoard extends Board<Vertex, Link, Stroke, Area, TextZone, Representation, Rectangle>{
     
 }
@@ -380,76 +391,6 @@ export class DeleteElements implements BoardModification {
 
 
 
-export class AreaMoveCorner implements BoardModification {
-    index: number;
-    previous_c1: Coord;
-    previous_c2: Coord;
-    new_c1: Coord;
-    new_c2: Coord;
-
-    constructor(index: number, previous_c1: Coord, previous_c2: Coord, new_c1: Coord, new_c2: Coord) {
-        this.index = index;
-        this.previous_c1 = previous_c1;
-        this.previous_c2 = previous_c2;
-        this.new_c1 = new_c1;
-        this.new_c2 = new_c2;
-    }
-
-    static from_area<V extends Vertex,L extends Link, S extends Stroke, A extends Area, T extends TextZone, R extends Representation>(index: number, area: A, x: number, y: number, corner_number: number): AreaMoveCorner {
-        const new_c1 = area.c1.copy();
-        const new_c2 = area.c2.copy();
-
-        switch (corner_number) {
-            case 1:
-                if (area.c1.x < area.c2.x) { new_c1.x = x; }
-                else { new_c2.x = x; }
-                if (area.c1.y > area.c2.y) { new_c2.y = y; }
-                else { new_c1.y = y; }
-                break;
-            case 2:
-                if (area.c1.x > area.c2.x) { new_c1.x = x; }
-                else { new_c2.x = x; }
-                if (area.c1.y > area.c2.y) { new_c2.y = y; }
-                else { new_c1.y = y; }
-                break;
-            case 3:
-                if (area.c1.x > area.c2.x) { new_c1.x = x; }
-                else { new_c2.x = x; }
-                if (area.c1.y < area.c2.y) { new_c2.y = y; }
-                else { new_c1.y = y; }
-                break;
-            case 4:
-                if (area.c1.x < area.c2.x) { new_c1.x = x; }
-                else { new_c2.x = x; }
-                if (area.c1.y < area.c2.y) { new_c2.y = y; }
-                else { new_c1.y = y; }
-                break;
-        }
-
-        return new AreaMoveCorner(index, area.c1, area.c2, new_c1, new_c2);
-    }
-
-
-    try_implement(board: ServerBoard): Set<SENSIBILITY> | string{
-        if (board.areas.has(this.index)){
-            const area = board.areas.get(this.index);
-            area.c1 = this.new_c1;
-            area.c2 = this.new_c2;
-            return new Set([]);
-        } else {
-            return "Error: index not in areas" + String(this.index);
-        }
-    }
-
-    deimplement(board: ServerBoard): Set<SENSIBILITY>{
-        const area = board.areas.get(this.index);
-        area.c1 = this.previous_c1;
-        area.c2 = this.previous_c2;
-        return new Set([]);
-    }
-}
-
-
 export class VerticesMerge implements BoardModification {
     index_vertex_fixed: number;
     index_vertex_to_remove: number;
@@ -557,63 +498,3 @@ export class VerticesMerge implements BoardModification {
 }
 
 
-
-export class AreaMoveSide implements BoardModification {
-    index: number;
-    previous_c1: Coord;
-    previous_c2: Coord;
-    new_c1: Coord;
-    new_c2: Coord;
-
-    constructor(index: number, previous_c1: Coord, previous_c2: Coord, new_c1: Coord, new_c2: Coord) {
-        this.index = index;
-        this.previous_c1 = previous_c1;
-        this.previous_c2 = previous_c2;
-        this.new_c1 = new_c1;
-        this.new_c2 = new_c2;
-    }
-
-    try_implement(board: ServerBoard): Set<SENSIBILITY> | string{
-        if (board.areas.has(this.index)){
-            const area = board.areas.get(this.index);
-            area.c1 = this.new_c1;
-            area.c2 = this.new_c2;
-            return new Set([]);
-        } else {
-            return "Error: index not in areas" + String(this.index);
-        }
-    }
-
-    deimplement(board: ServerBoard): Set<SENSIBILITY>{
-        const area = board.areas.get(this.index);
-        area.c1 = this.previous_c1;
-        area.c2 = this.previous_c2;
-        return new Set([]);
-    }
-
-    static from_area<V extends Vertex,L extends Link, S extends Stroke, A extends Area, T extends TextZone, R extends Representation>(index: number, area: Area, x: number, y: number, side_number: number): AreaMoveSide{
-        const new_c1 = area.c1.copy();
-        const new_c2 = area.c2.copy();
-
-        switch (side_number) {
-            case 1:
-                if (area.c1.y > area.c2.y) { new_c2.y = y; }
-                else { new_c1.y = y; }
-                break;
-            case 2:
-                if (area.c1.x > area.c2.x) { new_c1.x = x; }
-                else { new_c2.x = x; }
-                break;
-            case 3:
-                if (area.c1.y < area.c2.y) { new_c2.y = y; }
-                else { new_c1.y = y; }
-                break;
-            case 4:
-                if (area.c1.x < area.c2.x) { new_c1.x = x; }
-                else { new_c2.x = x; }
-                break;
-        }
-
-        return new AreaMoveSide(index, area.c1, area.c2, new_c1, new_c2);
-    }
-}
