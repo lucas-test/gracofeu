@@ -1,5 +1,5 @@
 import { SENSIBILITY } from "gramoloss";
-import { BoardModification, ServerBoard } from "./board_modification";
+import { ServerBoard, BoardModification } from "./modifications/modification";
 
 export class HistBoard extends ServerBoard {
     modifications_stack: Array<BoardModification> = new Array();

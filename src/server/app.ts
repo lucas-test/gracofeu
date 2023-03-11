@@ -1,9 +1,16 @@
-import express, { text } from 'express';
+import express from 'express';
 import {Graph, SENSIBILITY, Vertex, Coord, Link, ORIENTATION, Stroke, Area,  ELEMENT_TYPE,  middle, Vect, TextZone, Representation} from "gramoloss";
 import ENV from './.env.json';
-import { AddElement, ApplyModifyer, DeleteElements, GraphPaste, RESIZE_TYPE, TranslateElements, UpdateElement, VerticesMerge } from './board_modification';
 import { HistBoard } from './hist_board';
+import { AddElement } from './modifications/implementations/add_element';
+import { ApplyModifyer } from './modifications/implementations/apply_modifyer';
+import { DeleteElements } from './modifications/implementations/delete_elements';
+import { GraphPaste } from './modifications/implementations/graph_paste';
+import { MergeVertices } from './modifications/implementations/merge_vertices';
 import { ResizeElement } from './modifications/implementations/resize_element';
+import { TranslateElements } from './modifications/implementations/translate_elements';
+import { UpdateElement } from './modifications/implementations/update_element';
+import { RESIZE_TYPE } from './modifications/modification';
 import { getRandomColor, User, users } from './user';
 import { eq_indices, makeid } from './utils';
 
@@ -446,7 +453,7 @@ io.sockets.on('connection', function (client) {
                     broadcast("add_elements", removed, new Set() );
                     break;
                 }
-                case VerticesMerge: {
+                case MergeVertices: {
                     emit_graph_to_room(new Set());
                     break;
                 }
@@ -526,7 +533,7 @@ io.sockets.on('connection', function (client) {
                     broadcast("delete_elements", indices, new Set());
                     break;
                 }
-                case VerticesMerge: {
+                case MergeVertices: {
                     emit_graph_to_room(new Set());
                     break;
                 }
@@ -624,7 +631,7 @@ io.sockets.on('connection', function (client) {
         console.log("Receive Request: vertices_merge");
         if (g.vertices.has(vertex_index_fixed) && g.vertices.has(vertex_index_to_remove)) {
             board.cancel_last_modification(); // TODO its not necessarily the last which is a translate
-            const modif = VerticesMerge.from_graph(g, vertex_index_fixed, vertex_index_to_remove);
+            const modif = MergeVertices.from_graph(g, vertex_index_fixed, vertex_index_to_remove);
             const r = board.try_push_new_modification(modif);
             if (typeof r === "string"){
                 console.log(r);
