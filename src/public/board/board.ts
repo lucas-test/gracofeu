@@ -1,5 +1,5 @@
 import { Board } from "gramoloss";
-import { DOWN_TYPE } from "../interactors/interactor";
+import { DOWN_TYPE, RESIZE_TYPE } from "../interactors/interactor";
 import { interactor_loaded, key_states } from "../interactors/interactor_manager";
 import { socket } from "../socket";
 import { AREA_CORNER, AREA_SIDE, ClientArea } from "./area";

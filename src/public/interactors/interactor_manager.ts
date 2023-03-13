@@ -1,4 +1,4 @@
-import { Interactor, DOWN_TYPE } from './interactor'
+import { Interactor, DOWN_TYPE, RESIZE_TYPE } from './interactor'
 import { interactor_selection } from './selection_interactor';
 import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
@@ -184,6 +184,12 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             previous_canvas_shift.set_from(shift);
             draw(canvas, ctx, g);
         } else {
+            if (interactor_loaded.interactable_element_type.has(DOWN_TYPE.RESIZE)){
+                const element = local_board.get_element_nearby(click_pos, interactor_loaded.interactable_element_type);
+                canvas.style.cursor = RESIZE_TYPE.to_cursor(element.resize_type);
+            } else {
+                canvas.style.cursor = "default";
+            }
             if (interactor_loaded.mousemove(canvas, ctx, g, click_pos)) {
                 requestAnimationFrame(function () {
                     draw(canvas, ctx, g)

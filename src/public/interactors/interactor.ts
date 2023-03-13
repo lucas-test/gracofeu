@@ -33,6 +33,31 @@ export enum RESIZE_TYPE {
     BOTTOM_LEFT = "BOTTOM_LEFT"
 }
 
+export namespace RESIZE_TYPE {
+    export function to_cursor(resize_type: RESIZE_TYPE): string {
+        switch(resize_type){
+            case RESIZE_TYPE.TOP_LEFT:
+                return "nw-resize";
+            case RESIZE_TYPE.TOP_RIGHT:
+                return "ne-resize";
+            case RESIZE_TYPE.BOTTOM_RIGHT:
+                return "se-resize";
+            case RESIZE_TYPE.BOTTOM_LEFT:
+                return "sw-resize";
+            case RESIZE_TYPE.RIGHT:
+                return "e-resize";
+            case RESIZE_TYPE.LEFT:
+                return "w-resize";
+            case RESIZE_TYPE.TOP:
+                return "n-resize";
+            case RESIZE_TYPE.BOTTOM:
+                return "s-resize";
+            default:
+                return "default";
+        }
+    }
+}
+
 
 export class Interactor {
     name: string;

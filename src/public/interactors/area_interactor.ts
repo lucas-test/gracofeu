@@ -88,49 +88,6 @@ interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
                 canvas.style.cursor="grab";
                 break;
             }
-
-            if(corner_number === AREA_CORNER.TOP_LEFT)
-            {
-                canvas.style.cursor = "nw-resize";
-                break;
-            }
-            if(corner_number === AREA_CORNER.BOT_RIGHT)
-            {
-                canvas.style.cursor = "se-resize";
-                break;
-            }
-            if(corner_number === AREA_CORNER.TOP_RIGHT)
-            {
-                canvas.style.cursor = "ne-resize";
-                break;
-            }
-            if(corner_number === AREA_CORNER.BOT_LEFT)
-            {
-                canvas.style.cursor = "sw-resize";
-                break;
-            }
-    
-            if(side_number === AREA_SIDE.TOP){
-                canvas.style.cursor = "n-resize";
-                break;
-            }
-            if(side_number === AREA_SIDE.BOT)
-            {
-                canvas.style.cursor = "s-resize";
-                break;
-            }
-
-            if(side_number === AREA_SIDE.LEFT){
-                canvas.style.cursor = "w-resize";
-                break;
-            }
-            if(side_number === AREA_SIDE.RIGHT)
-            {
-                canvas.style.cursor = "e-resize";
-                break;
-            }
-    
-    
         }
         if(!cursor_changed){
             canvas.style.cursor = "default";
