@@ -65,4 +65,20 @@ export class ClientStroke extends Stroke{
         this.canvas_corner_top_left.translate_by_canvas_vect(shift);
         this.canvas_corner_bottom_right.translate_by_canvas_vect(shift);
     }
+
+    update_after_camera_change(view: View){
+        this.canvas_corner_top_left = view.create_canvas_coord(this.top_left);
+        this.canvas_corner_bottom_right = view.create_canvas_coord(this.bot_right);
+    }
+
+    // Test if a stroke is in a Canvas Rectangle defined by two corners.
+    // TODO: improve this function by considering that the rectangle intersect the stroke with its segments
+    is_in_rect(corner1: CanvasCoord, corner2: CanvasCoord): boolean {
+        for (const point of this.canvas_positions){
+            if (point.is_in_rect(corner1, corner2)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

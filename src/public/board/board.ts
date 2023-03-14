@@ -43,6 +43,9 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
     }
 
     update_after_camera_change(){
+        for (const stroke of this.strokes.values()){
+            stroke.update_after_camera_change(this.view);
+        }
         for ( const text_zone of this.text_zones.values()){
             text_zone.update_after_camera_change(this.view);
         }
@@ -54,6 +57,17 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
         }
         for (const area of this.areas.values()){
             area.update_after_camera_change(this.view);
+        }
+    }
+
+    select_elements_in_rect(corner1: CanvasCoord, corner2: CanvasCoord) {
+        this.graph.select_vertices_in_rect(corner1, corner2);
+        this.graph.select_links_in_rect(corner1, corner2);
+
+        for (const stroke of this.strokes.values()){
+            if (stroke.is_in_rect(corner1,corner2)){
+                stroke.is_selected = true;   
+            }
         }
     }
 
