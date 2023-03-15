@@ -6,7 +6,7 @@ import { local_board } from '../setup';
 import { CanvasVect } from '../board/vect';
 import { CanvasCoord } from '../board/vertex';
 import { ClientGraph } from '../board/graph';
-import { Vect } from 'gramoloss';
+import { Board, Vect } from 'gramoloss';
 import { resize_corner, resize_side, translate_by_canvas_vect } from '../board/resizable';
 
 
@@ -98,6 +98,11 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
                 for( const index of selected_vertices){
                     indices.push(["Vertex", index]);
                 }
+                for (const [stroke_index, stroke] of local_board.strokes.entries()){
+                    if (stroke.is_selected){
+                        indices.push(["Stroke", stroke_index]);
+                    }
+                }
                 e.translate_by_canvas_vect(vertex_center_shift);
                 e = g.align_position(e, selected_vertices, canvas, local_board.view);
                 e.translate_by_canvas_vect(vertex_center_shift.opposite());
@@ -126,7 +131,6 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
                 local_board.update_after_camera_change();
                 local_board.update_canvas_pos(local_board.view);
                 update_users_canvas_pos(local_board.view);
- 
                 
                 if(local_board.view.following !== null){
                     self_user.unfollow(local_board.view.following);
@@ -150,7 +154,23 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
             if ( local_board.strokes.has(last_down_index)){
                 const stroke = local_board.strokes.get(last_down_index);
                 const shift = CanvasVect.from_canvas_coords(down_coord,e);
-                stroke.translate_by_canvas_vect(shift.sub(previous_canvas_shift), local_board.view);
+                const mini_shift = shift.sub(previous_canvas_shift);
+
+                if (stroke.is_selected){
+                    for (const vertex of local_board.graph.vertices.values()){
+                        if (vertex.is_selected){
+                            vertex.translate_by_canvas_vect(mini_shift, local_board.view);
+                        }
+                    }
+                    for (const other_stroke of local_board.strokes.values()){
+                        if (other_stroke.is_selected){
+                            other_stroke.translate_by_canvas_vect(mini_shift, local_board.view);
+                        }
+                    }
+                } else {
+                    stroke.translate_by_canvas_vect(mini_shift, local_board.view);
+                }
+                
                 previous_canvas_shift.set_from(shift);
                 return true;
             }
@@ -267,19 +287,41 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                 }
             }
         } else {
+            let indices = new Array<[string,number]>();
+            let elements_to_translate = new Array();
+            
+            if (local_board.strokes.get(last_down_index).is_selected) {
+                for (const [vertex_index, vertex] of local_board.graph.vertices.entries()){
+                    if (vertex.is_selected){
+                        indices.push(["Vertex", vertex_index]);
+                        elements_to_translate.push(vertex);
+                    }
+                }
+                for (const [stroke_index, stroke] of local_board.strokes.entries()){
+                    if (stroke.is_selected){
+                        indices.push(["Stroke", stroke_index]);
+                        elements_to_translate.push(stroke);
+                    }
+                }
+            }
+            else {
+                indices.push(["Stroke",last_down_index]);
+                const stroke = local_board.strokes.get(last_down_index);
+                elements_to_translate.push(stroke);
+            }
+            
             const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
             const shift = local_board.view.server_vect(canvas_shift);
-            // socket.emit("translate_strokes", [last_down_index], shift.x, shift.y);
-            local_board.strokes.get(last_down_index).translate_by_canvas_vect(canvas_shift.opposite(), local_board.view);
-            socket.emit("translate_elements", [["Stroke", last_down_index]], shift);
+            for (const element of elements_to_translate){
+                element.translate_by_canvas_vect(canvas_shift.opposite(), local_board.view);
+            }
+            socket.emit("translate_elements", indices, shift);
         }
     }
     else if (last_down === DOWN_TYPE.EMPTY) {
         if (local_board.view.is_rectangular_selecting) {
             local_board.view.is_rectangular_selecting = false;
-            g.select_vertices_in_rect(local_board.view.selection_corner_1, local_board.view.selection_corner_2);
-            g.select_links_in_rect(local_board.view.selection_corner_1, local_board.view.selection_corner_2);
-
+            local_board.select_elements_in_rect(local_board.view.selection_corner_1, local_board.view.selection_corner_2);
         } else {
             local_board.clear_all_selections();
         }

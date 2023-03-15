@@ -133,7 +133,7 @@
     - [X] en faire plusieurs à la suite avec Ctrl
     - [ ] import à partir de Gramoloss
     - implémenter :
-        - [ ] random_graph(n,p) et directed
+        - [X] random_graph(n,p) et directed
         - [X] random_tournament(n)
         - [ ] Paley
 
@@ -221,8 +221,8 @@
     - [X] déplacer avec selection
     - [X] resize
     - [X] emit changements
-    - [ ] nettoyer area_interactor pour les curseurs
-    - [ ] afficher les curseurs lorsque Resize est autorisé
+    - [X] nettoyer area_interactor pour les curseurs
+    - [X] afficher les curseurs lorsque Resize est autorisé
 
 
 - modifyer
@@ -241,6 +241,8 @@
         
 - [X] webhook
 
+- [ ] loop
+
 ## V2 DMANET
 
 - [ ] code break dans les compute function (voir la note dans le fichier parametor.ts)
@@ -248,7 +250,6 @@
 - [ ] turoriel
 - [ ] multi-arêtes
 - [ ] multi control point
-- [ ] loop
 - [ ] insertion de parametres ou modifiyer perso
 - [ ] chat vocal
 - [ ] chat écrit
