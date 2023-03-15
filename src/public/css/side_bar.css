@@ -1,0 +1,104 @@
+.side_bar {
+    border-radius: 5px;
+    background-color: var(--background_color_div);
+    position: fixed;
+    /* top: 50%;
+left: 7px;
+transform: translateY(calc(-50% + 27px)); */
+    display: flex;
+}
+
+.side_bar_vertical {
+    flex-direction: column;
+    align-items: flex-start;
+    column-gap: 5px;
+}
+
+.side_bar_horizontal {
+    flex-direction: row;
+    align-items: flex-start;
+    column-gap: 5px;
+}
+
+.side_bar_element {
+    width: 45px;
+    height: 45px;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    margin: 5px;
+    padding: 0px;
+    transition: all .25s;
+    display: flex;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.side_bar_item:hover {
+    background: lightcoral;
+    border: 1px solid #c7c7c7;
+    border-top: none;
+    border-bottom: 3px solid #000;
+    transition: all .1s;
+}
+
+.side_bar_item:hover>img {
+    scale: 1.2;
+    transition: all .2s ease-in-out;
+}
+
+.side_bar_element_img {
+    width: 27px;
+    height: 27px;
+}
+
+.side_bar_folder::before {
+    content: "";
+    position: absolute;
+}
+
+.side_bar_folder_expand_top:not(.side_bar_expanded_folder):before {
+    height: 1px;
+    width: 13px;
+    border-top: 3px solid var(--background_color_page);
+    top: -3px;
+}
+
+.side_bar_folder_expand_left:not(.side_bar_expanded_folder):before {
+    height: 13px;
+    width: 1px;
+    border-left: 3px solid var(--background_color_page);
+    left: -3px;
+}
+
+.side_bar_folder_expand_bottom:not(.side_bar_expanded_folder):before {
+    height: 1px;
+    width: 13px;
+    border-bottom: 3px solid var(--background_color_page);
+    bottom: -3px;
+}
+
+.side_bar_folder_expand_right:not(.side_bar_expanded_folder):before {
+    height: 13px;
+    width: 1px;
+    border-right: 3px solid var(--background_color_page);
+    right: -3px;
+}
+
+.side_bar_expanded_folder {
+    /* border: 1px solid #c7c7c7;
+    border-bottom: 3px solid black;
+    border-top: none;
+    transform: translateY(-3px);
+    transition: all 0.1s; */
+    border: 1px solid #c7c7c7;
+    border-top: none;
+    border-bottom: 3px solid #000;
+    background: lightcoral;
+    transition: all .2s;
+}
+
+.side_bar_expanded_folder>img {
+    scale: 1.2;
+    transition: all 0.2s ease-in-out;
+}

@@ -9,36 +9,35 @@
     color: white;
 }
 
-.text_zone{
+.text_zone {
     position: fixed;
     color: white;
-    min-width:100px;
+    min-width: 100px;
     display: flex;
 }
 
-.text_zone_content{
+.text_zone_content {
     width: 100%;
     padding: 5px;
     user-select: none;
+    -webkit-user-select: none;
 }
 
-.text_zone_content:hover{
+.text_zone_content:hover {
     background-color: rgba(189, 189, 189, 0.11);
-    cursor:grab;
+    cursor: grab;
 }
 
-.text_zone_sidebar{
+.text_zone_sidebar {
     width: 15px;
 }
 
-.text_zone_sidebar:hover{
+.text_zone_sidebar:hover {
     background-color: rgba(189, 189, 189, 0.11);
-    cursor:ew-resize;
+    cursor: ew-resize;
 }
 
-
-
-#text_zone_input{
+#text_zone_input {
     position: fixed;
     z-index: 1;
     color: white;
