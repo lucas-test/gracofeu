@@ -1,9 +1,9 @@
 import {Interactor,DOWN_TYPE} from './interactor'
-import {socket} from '../socket';
 import { local_board } from '../setup';
 import { ClientGraph } from '../board/graph';
 import { CanvasCoord } from '../board/vertex';
 import { ClientStroke } from '../board/stroke';
+import { Stroke } from 'gramoloss';
 
 
 // INTERACTOR STROKE
@@ -46,22 +46,7 @@ interactor_stroke.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     local_board.strokes.get(index_last_stroke).push(e, local_board.view);
 
     const s = local_board.strokes.get(index_last_stroke);
-
-    // const data_socket = new Array();
-    // data_socket.push({ 
-    //     positions: [... s.positions.entries()], 
-    //     old_pos: s.old_pos, 
-    //     color: s.color, 
-    //     width : s.width, 
-    //     min_x : s.min_x, 
-    //     max_x : s.max_x, 
-    //     min_y : s.min_y,
-    //     max_y : s.max_y
-    // });
-    // socket.emit("add_stroke", data_socket);
-
-    // socket.emit("add_stroke", [... s.positions.entries()], s.color, s.width, s.top_left, s.bot_right);
-    socket.emit("add_element", "Stroke", {points: [... s.positions.entries()], color: s.color, width: s.width}, (response: number) => { })
+    local_board.emit_add_element( s, (response: number) => { })
 
     last_stroke = null;
     index_last_stroke = null;

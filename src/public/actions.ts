@@ -7,6 +7,7 @@ import { local_board } from "./setup";
 import BASIC_COLORS from "./basic_colors.json";
 import { turn_on_generators_div } from "./generators/dom";
 import { turn_on_modifyers_div } from "./modifyers/dom";
+import { SocketMsgType } from "./board/board";
 
 export class Action {
     name: string;
@@ -97,7 +98,7 @@ save_tikz_file.trigger = () => {
 
 const save_gco_file = new Action("export_gco", "Export to .gco", "export_gco.svg", "");
 save_gco_file.trigger = () => {
-    socket.emit("get_json", (response: string) => {
+    socket.emit(SocketMsgType.GET_JSON, (response: string) => {
         const a = document.createElement("a");
         a.href = window.URL.createObjectURL(new Blob([response], { type: "text/plain" }));
         a.download = "file.gco";
@@ -128,7 +129,7 @@ load_file_action.trigger = () => {
             let reader = new FileReader();
             reader.readAsText(input);
             reader.onload = function () {
-                socket.emit('load_json', reader.result);
+                socket.emit(SocketMsgType.LOAD_JSON, reader.result);
             };
         }
         subactions_div.appendChild(file_input);

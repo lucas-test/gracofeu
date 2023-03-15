@@ -118,14 +118,14 @@ io.sockets.on('connection', function (client) {
 
 
     // SETUP NON GRAPH ACTIONS
-    client.on('moving_cursor', update_user);
-    client.on('disconnect', handle_disconnect);
-    client.on('change_room_to', handle_change_room_to);
-    client.on('get_room_id', (callback) => { callback(handle_get_room_id()) });
-    client.on('update_self_user', handle_update_self_user);
-    client.on('follow', add_follower);
-    client.on('unfollow', remove_follower);
-    client.on('my_view', send_view_to_followers);
+    client.on("moving_cursor", update_user);
+    client.on("disconnect", handle_disconnect);
+    client.on("change_room_to", handle_change_room_to);
+    client.on("get_room_id", (callback) => { callback(handle_get_room_id()) });
+    client.on("update_self_user", handle_update_self_user);
+    client.on("follow", add_follower);
+    client.on("unfollow", remove_follower);
+    client.on("my_view", send_view_to_followers);
 
     function handle_update_self_user(label: string, color: string) {
         if (users.has(client.id)) {
@@ -208,8 +208,8 @@ io.sockets.on('connection', function (client) {
     // ------------------------
 
     // Elementary Actions
-    client.on('paste_graph', handle_paste_graph);
-    client.on('vertices_merge', handle_vertices_merge);
+    client.on("paste_graph", handle_paste_graph);
+    client.on("vertices_merge", handle_vertices_merge);
     client.on("apply_modifyer", handle_apply_modifyer);
     // Meta
     client.on("resize_element", handle_resize_element);
@@ -219,11 +219,11 @@ io.sockets.on('connection', function (client) {
     client.on("delete_elements", handle_delete_elements);
     // translate_elements // ne regarde pas écraser la dernière modif // TODO
     // Not Elementary Actions
-    client.on('undo', handle_undo);
-    client.on('redo', handle_redo);
-    client.on('load_json', handle_load_json); // TODO undoable
+    client.on("undo", handle_undo);
+    client.on("redo", handle_redo);
+    client.on("load_json", handle_load_json); // TODO undoable
     // No modification on the graph
-    client.on('get_json', handle_get_json);
+    client.on("get_json", handle_get_json);
 
     // ------------------------
     //
@@ -311,10 +311,10 @@ io.sockets.on('connection', function (client) {
             new_index = board.graph.get_next_available_index_links();
             let orient = ORIENTATION.UNDIRECTED;
             switch (data.orientation) {
-                case "undirected":
+                case "UNDIRECTED":
                     orient = ORIENTATION.UNDIRECTED
                     break;
-                case "directed":
+                case "DIRECTED":
                     orient = ORIENTATION.DIRECTED
                     break;
             }

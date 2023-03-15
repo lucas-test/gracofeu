@@ -1,5 +1,6 @@
 import { ClientGraph } from "./board/graph";
 import { CanvasCoord } from "./board/vertex";
+import { local_board } from "./setup";
 import { socket } from "./socket";
 
 export let graph_clipboard: ClientGraph = null;
@@ -15,7 +16,7 @@ export function set_clipboard(graph: ClientGraph, pos_at_click: CanvasCoord, is_
 }
 
 export function paste_generated_graph() {
-    socket.emit("paste_graph", [...graph_clipboard.vertices.entries()], [...graph_clipboard.links.entries()]);
+    local_board.emit_paste_graph(graph_clipboard);
 }
 
 export function clear_clipboard(canvas: HTMLCanvasElement){

@@ -1,8 +1,10 @@
-import { Board } from "gramoloss";
+import { Area, Board, Coord, Graph, Link, Stroke, TextZone, Vect, Vertex } from "gramoloss";
 import { DOWN_TYPE, RESIZE_TYPE } from "../interactors/interactor";
 import { interactor_loaded, key_states } from "../interactors/interactor_manager";
+import { GraphModifyer } from "../modifyers/modifyer";
+import { local_board } from "../setup";
 import { socket } from "../socket";
-import { AREA_CORNER, AREA_SIDE, ClientArea } from "./area";
+import { ClientArea } from "./area";
 import { View } from "./camera";
 import { ClientGraph } from "./graph";
 import { ClientLink } from "./link";
@@ -13,6 +15,35 @@ import { ClientStroke } from "./stroke";
 import { ClientTextZone } from "./text_zone";
 import { CanvasVect } from "./vect";
 import { CanvasCoord, ClientVertex } from "./vertex";
+
+export enum BoardElementType {
+    Vertex = "Vertex",
+    Link = "Link",
+    ControlPoint = "ControlPoint",
+    TextZone = "TextZone",
+    Area = "Area",
+    Stroke = "Stroke",
+    Rectangle = "Rectangle",
+    Representation = "Representation"
+}
+
+// These constants must correspond to the API of the server
+
+export enum SocketMsgType {
+    ADD_ELEMENT = "add_element",
+    DELETE_ELEMENTS = "delete_elements",
+    UPDATE_ELEMENT = "update_element",
+    TRANSLATE_ELEMENTS = "translate_elements",
+    RESIZE_ELEMENT = "resize_element",
+    MERGE_VERTICES = "vertices_merge",
+    PASTE_GRAPH = "paste_graph",
+    APPLY_MODIFYER = "apply_modifyer",
+    UNDO = "undo",
+    REDO = "redo",
+    LOAD_JSON = "load_json",
+    GET_JSON = "get_json"
+}
+
 
 
 export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, ClientArea, ClientTextZone, ClientRepresentation, ClientRectangle> {
@@ -104,10 +135,10 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
             window.setTimeout(() => text_zone_input.focus(), 0); // without timeout does not focus
             text_zone_input.onkeyup = (e) => {
                 if (e.key == " "){
-                    socket.emit("update_element", "TextZone", index, "text", text_zone_input.value);
+                    local_board.emit_update_element( BoardElementType.TextZone, index, "text", text_zone_input.value);
                 } 
                 if (e.key == "Enter" && key_states.get("Control")) {
-                    socket.emit("update_element", "TextZone", index, "text", text_zone_input.value);
+                    local_board.emit_update_element(BoardElementType.TextZone, index, "text", text_zone_input.value);
                     text_zone_input.value = "";
                     text_zone_input.style.display = "none";
                     text_zone_input.blur();
@@ -274,6 +305,80 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
                 }
             }
             translate_by_canvas_vect(area, shift, this.view);
+        }
+    }
+
+
+    emit_redo() {
+        socket.emit(SocketMsgType.REDO);
+    }
+
+    emit_undo() {
+        socket.emit(SocketMsgType.UNDO);
+    }
+
+    emit_translate_elements(indices: Array<[BoardElementType,number]>, shift: Vect){
+        socket.emit(SocketMsgType.TRANSLATE_ELEMENTS, indices, shift);
+    }
+
+    emit_delete_elements(indices: Array<[BoardElementType,number]>){
+        socket.emit(SocketMsgType.DELETE_ELEMENTS, indices);
+    }
+
+    emit_update_element(type: BoardElementType, index: number, attribute: string, value: any){
+        socket.emit(SocketMsgType.UPDATE_ELEMENT, type, index, attribute, value);
+    }
+
+    emit_vertices_merge(index1: number, index2: number){
+        socket.emit(SocketMsgType.MERGE_VERTICES, index1, index2);
+    }
+
+    emit_paste_graph(graph: Graph<Vertex, Link>){
+        socket.emit(SocketMsgType.PASTE_GRAPH, [...graph.vertices.entries()], [...graph.links.entries()]);
+    }
+
+    emit_resize_element(type: BoardElementType, index: number, pos: Coord, resize_type: RESIZE_TYPE){
+        socket.emit(SocketMsgType.RESIZE_ELEMENT, type, index, pos.x, pos.y, resize_type);
+    }
+
+    emit_apply_modifyer(modifyer: GraphModifyer){
+        const attributes_data = new Array<string | number>();
+        for (const attribute of modifyer.attributes){
+            attributes_data.push(attribute.value);
+        }
+        socket.emit(SocketMsgType.APPLY_MODIFYER, modifyer.name, attributes_data);
+    }
+
+    // Note: sometimes element is a server class, sometimes a client
+    // Normally it should be only server
+    // TODO: improve that
+    emit_add_element(element: Vertex | Link | ClientStroke | Area | TextZone, callback: (response: number) => void  ){
+        switch(element.constructor){
+            case Vertex: {
+                const vertex = element as Vertex;
+                socket.emit(SocketMsgType.ADD_ELEMENT, BoardElementType.Vertex, {pos: vertex.pos}, callback);
+                break;
+            }
+            case Link: {
+                const link = element as Link;
+                socket.emit(SocketMsgType.ADD_ELEMENT, BoardElementType.Link, {start_index: link.start_vertex, end_index: link.end_vertex, orientation: link.orientation}, callback);
+                break;
+            }
+            case ClientStroke: {
+                const stroke = element as ClientStroke;
+                socket.emit(SocketMsgType.ADD_ELEMENT , BoardElementType.Stroke, {points: [... stroke.positions.entries()], color: stroke.color, width: stroke.width}, callback);
+                break;
+            }
+            case TextZone: {
+                const text_zone = element as TextZone;
+                socket.emit(SocketMsgType.ADD_ELEMENT, BoardElementType.TextZone, {pos: text_zone.pos}, callback);
+                break;
+            }
+            case Area: {
+                const area = element as Area;
+                socket.emit(SocketMsgType.ADD_ELEMENT, BoardElementType.Area, {c1: area.c1, c2: area.c2, label: area.label, color: area.color }, callback);
+                break;
+            }
         }
     }
 
