@@ -5,6 +5,7 @@ import { interactor_loaded } from "../interactors/interactor_manager";
 import { display_weight_input, validate_weight } from "../interactors/text";
 import { local_board } from "../setup";
 import { socket } from "../socket";
+import { BoardElementType } from "./board";
 import { View } from "./camera";
 import { CanvasVect } from "./vect";
 import { CanvasCoord, ClientVertex } from "./vertex";
@@ -95,9 +96,9 @@ export class ClientLink extends Link {
             const weight_value = parseInt(link.weight);
             if ( isNaN(weight_value) == false){
                 if (e.deltaY < 0) {
-                    socket.emit("update_element", "Link", link_index, "weight", String(weight_value+1));
+                    local_board.emit_update_element( BoardElementType.Link, link_index, "weight", String(weight_value+1));
                 }else {
-                    socket.emit("update_update", "Link", link_index, "weight", String(weight_value-1));
+                    local_board.emit_update_element(  BoardElementType.Link, link_index, "weight", String(weight_value-1));
                 }
             }
         })

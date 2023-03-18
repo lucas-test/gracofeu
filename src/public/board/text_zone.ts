@@ -6,6 +6,7 @@ import renderMathInElement, { RenderOptions } from "../katex-auto-render/auto-re
 import { load_param } from "../parametors/parametor_manager";
 import { local_board } from "../setup";
 import { socket } from "../socket";
+import { BoardElementType } from "./board";
 import { View } from "./camera";
 import { CanvasVect } from "./vect";
 import { CanvasCoord } from "./vertex";
@@ -48,7 +49,7 @@ export class ClientTextZone extends TextZone {
                 }
                 window.addEventListener("mousemove", move_div);
                 function stop_event(){
-                    socket.emit("update_element", "TextZone", index, "width", text_zone.width);
+                    local_board.emit_update_element( BoardElementType.TextZone, index, "width", text_zone.width);
                     window.removeEventListener("mouseup", stop_event);
                     window.removeEventListener("mousemove", move_div);
                 }
@@ -63,8 +64,7 @@ export class ClientTextZone extends TextZone {
                         const new_mouse_pos = new CanvasCoord(e.pageX, e.pageY);
                         const cshift = CanvasVect.from_canvas_coords(text_zone.last_mouse_pos, new_mouse_pos);
                         const shift = local_board.view.server_vect(cshift);
-                        // socket.emit("translate_text_zone", index, shift );
-                        socket.emit("translate_elements", [["TextZone", index]], shift)
+                        local_board.emit_translate_elements([[BoardElementType.TextZone, index]], shift);
                         text_zone.last_mouse_pos = new_mouse_pos;
                     }
                     window.addEventListener("mousemove", move_div);
@@ -74,7 +74,7 @@ export class ClientTextZone extends TextZone {
                     }
                     window.addEventListener("mouseup", stop_event);
                 } else if (interactor_loaded.name == "eraser"){
-                    socket.emit("delete_elements", [["TextZone", index]]);
+                    local_board.emit_delete_elements([[BoardElementType.TextZone, index]]);
                 }
             }
 

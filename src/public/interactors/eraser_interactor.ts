@@ -7,6 +7,7 @@ import { ClientGraph } from '../board/graph';
 import { CanvasCoord } from '../board/vertex';
 import { local_board } from '../setup';
 import { is_click_over } from '../board/resizable';
+import { BoardElementType } from '../board/board';
 
 
 // INTERACTOR ERASER
@@ -20,25 +21,25 @@ export var interactor_eraser = new Interactor("eraser", "r", "eraser.svg", new S
 function erase_at(g: ClientGraph, e: CanvasCoord) : boolean{
     for (const [index, s] of local_board.strokes.entries()) {
         if (s.is_nearby(e, local_board.view) !== false) {
-            socket.emit("delete_elements", [["Stroke", index]]);
+            local_board.emit_delete_elements([[BoardElementType.Stroke, index]]);
             return true;
         }
     }
     for (const [index, vertex] of g.vertices.entries()) {
         if (vertex.is_nearby(e, Math.pow(erase_distance + VERTEX_RADIUS, 2))) {
-            socket.emit("delete_elements", [["Vertex", index]]);
+            local_board.emit_delete_elements([[BoardElementType.Vertex, index]]);
             return true;
         }
     }
     for (const index of g.links.keys()) {
         if (g.is_click_over_link(index, e, local_board.view)) {
-            socket.emit("delete_elements", [["Link", index]]);
+            local_board.emit_delete_elements([[BoardElementType.Link, index]]);
             return true;
         }
     }
     for(const [index,area] of local_board.areas.entries()){
         if( is_click_over(area,e) ){
-            socket.emit("delete_elements", [["Area", index]]);
+            local_board.emit_delete_elements([[BoardElementType.Area, index]]);
             return true;
         }
     }

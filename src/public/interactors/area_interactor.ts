@@ -6,7 +6,8 @@ import { local_board } from '../setup';
 import { CanvasVect } from '../board/vect';
 import { ClientGraph } from '../board/graph';
 import { CanvasCoord } from '../board/vertex';
-import { Coord } from 'gramoloss';
+import { Area, Board, Coord } from 'gramoloss';
+import { BoardElementType } from '../board/board';
 
 
 export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA]), 'default')
@@ -28,9 +29,7 @@ interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
         first_corner = local_board.view.create_server_coord(e);
-        // socket.emit("add_area", first_corner.x, first_corner.y, first_corner.x, first_corner.y, "G", "", 
-        // (response: number) => { last_created_area_index = response });
-        socket.emit("add_element", "Area", {c1: first_corner, c2: first_corner, label: "G", color:"" }, (response: number) => { console.log("hey", response); last_created_area_index = response })
+        local_board.emit_add_element(new Area("G", first_corner, first_corner, ""), (response: number) => { last_created_area_index = response });
         opposite_corner = e.copy();
     } else if ( last_down == DOWN_TYPE.AREA){
         const area = local_board.areas.get(last_down_index);
@@ -102,16 +101,15 @@ interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
 interactor_area.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     const esc  = local_board.view.create_server_coord(e);
     if (last_down === DOWN_TYPE.EMPTY) {
-        socket.emit("resize_element", "Area", last_created_area_index, esc.x, esc.y, RESIZE_TYPE.TOP_RIGHT);
+        local_board.emit_resize_element(BoardElementType.Area, last_created_area_index, esc, RESIZE_TYPE.TOP_RIGHT);
         is_creating_area = false;
         first_corner = null;
     }
     else if ( last_down == DOWN_TYPE.AREA){
         const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
         const shift = local_board.view.server_vect(canvas_shift);
-        // socket.emit("translate_areas", [last_down_index], shift.x, shift.y);
         local_board.translate_area(canvas_shift.opposite(), last_down_index, vertices_contained);
-        socket.emit("translate_elements",[["Area", last_down_index]], shift);
+        local_board.emit_translate_elements([[BoardElementType.Area, last_down_index]], shift);
         is_moving_area = false;
     }
 })

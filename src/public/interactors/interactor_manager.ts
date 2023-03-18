@@ -24,6 +24,7 @@ import { ClientDegreeWidthRep } from '../board/representations/degree_width_rep'
 import { interactor_control_point } from './implementations/control_point';
 import { interactor_rectangle } from './implementations/rectangle_interactor';
 import { interactor_tool_edge } from './edge_tool_interactor';
+import { BoardElementType } from '../board/board';
 
 // INTERACTOR MANAGER
 
@@ -86,21 +87,21 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 for (const index of g.vertices.keys()) {
                     const v = g.vertices.get(index);
                     if (v.is_selected) {
-                        data_socket.push(["Vertex", index]);
+                        data_socket.push([BoardElementType.Vertex, index]);
                     }
                 }
                 g.links.forEach((link, index) => {
                     if (link.is_selected) {
-                        data_socket.push([ "Link", index]);
+                        data_socket.push([ BoardElementType.Link, index]);
                     }
                 })
                 local_board.strokes.forEach((s, index) => {
                     if (s.is_selected) {
-                        data_socket.push(["Stroke", index]);
+                        data_socket.push([BoardElementType.Stroke, index]);
                     }
                 })
 
-                socket.emit("delete_elements", data_socket);
+                local_board.emit_delete_elements(data_socket);
                 return;
             }
             if ( key_states.get("Control") && e.key.toLowerCase() == "c" ){
@@ -112,11 +113,11 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
             }
             if (key_states.get("Control") && e.key.toLowerCase() == "z") {
                 console.log("Request: undo");
-                socket.emit("undo");
+                local_board.emit_undo();
             }
             if (key_states.get("Control") && e.key.toLowerCase() == "y") {
                 console.log("Request: redo");
-                socket.emit("redo");
+                local_board.emit_redo();
             }
             for (let interactor of interactors_available) {
                 if (interactor.shortcut == e.key.toLowerCase()) {

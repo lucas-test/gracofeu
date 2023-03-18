@@ -28,7 +28,6 @@ interactor_rectangle.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord)
     if (last_down === DOWN_TYPE.EMPTY) {
         // is_creating_area = true;
         first_corner = local_board.view.create_server_coord(e);
-        // socket.emit("add_element", "Area", {c1: first_corner, c2: first_corner, label: "G", color:"" }, (response: number) => { console.log("hey", response); last_created_area_index = response })
         opposite_corner = e.copy();
         index_rectangle = local_board.get_next_available_index_rectangle();
         const client_rectangle = new ClientRectangle(first_corner, first_corner, local_board.view);

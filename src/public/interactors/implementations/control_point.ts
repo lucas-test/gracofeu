@@ -11,6 +11,7 @@ Features :
 
 
 import { Vect } from "gramoloss";
+import { BoardElementType } from "../../board/board";
 import { ClientGraph } from "../../board/graph";
 import { CanvasVect } from "../../board/vect";
 import { CanvasCoord } from "../../board/vertex";
@@ -34,12 +35,12 @@ interactor_control_point.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCo
                 const v1 = g.vertices.get(link.start_vertex);
                 const v2 = g.vertices.get(link.end_vertex);
                 const new_cp = v1.pos.middle(v2.pos);
-                socket.emit("update_element", "Link", last_down_index, "cp", new_cp);
+                local_board.emit_update_element( BoardElementType.Link, last_down_index, "cp", new_cp);
             }
         }
         case DOWN_TYPE.CONTROL_POINT: {
             if (mouse_buttons == 2){
-                socket.emit("update_element", "Link", last_down_index, "cp", "");
+                local_board.emit_update_element( BoardElementType.Link, last_down_index, "cp", "");
             }
         }
     }
@@ -62,11 +63,11 @@ interactor_control_point.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoo
                     const down_coord_server = local_board.view.create_server_coord(down_coord);
 
                     const shift = Vect.from_coords(down_coord_server, projection);
-                    socket.emit("translate_elements", [["ControlPoint", last_down_index]], shift.sub(previous_shift));
+                    local_board.emit_translate_elements([[BoardElementType.ControlPoint, last_down_index]], shift.sub(previous_shift));
                     previous_shift.set_from(shift);
                 } else {
                     const shift = local_board.view.server_vect(CanvasVect.from_canvas_coords(down_coord,e));
-                    socket.emit("translate_elements", [["ControlPoint", last_down_index]], shift.sub(previous_shift));
+                    local_board.emit_translate_elements([[BoardElementType.ControlPoint, last_down_index]], shift.sub(previous_shift));
                     previous_shift.set_from(shift);
                 }
             }

@@ -1,4 +1,5 @@
-import { Graph } from "gramoloss";
+import { Graph, TextZone } from "gramoloss";
+import { BoardElementType } from "../board/board";
 import { ClientGraph } from "../board/graph";
 import { ClientLink } from "../board/link";
 import { CanvasCoord, ClientVertex } from "../board/vertex";
@@ -49,8 +50,7 @@ interactor_text.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if ( last_down == DOWN_TYPE.EMPTY){
         if (text_zone_input.style.display == "none"){
             const coord = local_board.view.create_server_coord(e);
-            // socket.emit("create_text_zone", coord);
-            socket.emit("add_element", "TextZone", {pos: coord}, (response: number) => { })
+            local_board.emit_add_element(new TextZone(coord, 100, ""),(response: number) => { } );
             // const new_index = local_board.create_text_zone(e);
             // local_board.display_text_zone_input(new_index);
         }else {
@@ -107,9 +107,9 @@ export function validate_weight() {
     console.log("validate_weight");
     if (current_index != null ) {
         if ( current_element_type == DOWN_TYPE.VERTEX && local_board.graph.vertices.has(current_index)){
-            socket.emit("update_element", "Vertex", current_index, "weight", input.value);
+            local_board.emit_update_element( BoardElementType.Vertex, current_index, "weight", input.value);
         } else if ( current_element_type == DOWN_TYPE.LINK && local_board.graph.links.has(current_index)){
-            socket.emit("update_element", "Link", current_index, "weight", input.value);
+            local_board.emit_update_element( BoardElementType.Link, current_index, "weight", input.value);
         }
     }
     current_index = null;

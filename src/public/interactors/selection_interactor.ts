@@ -8,6 +8,7 @@ import { CanvasCoord } from '../board/vertex';
 import { ClientGraph } from '../board/graph';
 import { Board, Vect } from 'gramoloss';
 import { resize_corner, resize_side, translate_by_canvas_vect } from '../board/resizable';
+import { BoardElementType } from '../board/board';
 
 
 // INTERACTOR SELECTION
@@ -91,16 +92,16 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
     switch (last_down) {
         case DOWN_TYPE.VERTEX:
             const v = g.vertices.get(last_down_index)
-            let indices = new Array<[string,number]>();
+            let indices = new Array<[BoardElementType,number]>();
             
             if (g.vertices.get(last_down_index).is_selected) {
                 const selected_vertices = g.get_selected_vertices();
                 for( const index of selected_vertices){
-                    indices.push(["Vertex", index]);
+                    indices.push([BoardElementType.Vertex, index]);
                 }
                 for (const [stroke_index, stroke] of local_board.strokes.entries()){
                     if (stroke.is_selected){
-                        indices.push(["Stroke", stroke_index]);
+                        indices.push([BoardElementType.Stroke, stroke_index]);
                     }
                 }
                 e.translate_by_canvas_vect(vertex_center_shift);
@@ -111,12 +112,11 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
                 e.translate_by_canvas_vect(vertex_center_shift);
                 e = g.align_position(e, new Set([last_down_index]), canvas, local_board.view);
                 e.translate_by_canvas_vect(vertex_center_shift.opposite());
-                indices.push(["Vertex",last_down_index]);
+                indices.push([BoardElementType.Vertex,last_down_index]);
             }
             
             const shift = local_board.view.server_vect(CanvasVect.from_canvas_coords(down_coord,e));
-            // socket.emit("translate_vertices", indices, shift.x-previous_shift.x, shift.y-previous_shift.y);
-            socket.emit("translate_elements", indices, shift.sub(previous_shift) )
+            local_board.emit_translate_elements(indices, shift.sub(previous_shift));
             previous_shift.set_from(shift);
             return true;
             break;
@@ -142,9 +142,8 @@ interactor_selection.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) 
 
         case DOWN_TYPE.CONTROL_POINT:{
             if ( g.links.has(last_down_index)){
-                let indices = [last_down_index];
                 const shift = local_board.view.server_vect(CanvasVect.from_canvas_coords(down_coord,e));
-                socket.emit("translate_elements", [["ControlPoint", last_down_index]], shift.sub(previous_shift));
+                local_board.emit_translate_elements([[BoardElementType.ControlPoint, last_down_index]], shift.sub(previous_shift));
                 previous_shift.set_from(shift);
                 return true;
             }
@@ -244,7 +243,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
             const vertex_moved = g.vertices.get(last_down_index);
             for( const [index,v] of g.vertices.entries()){
                 if( index != last_down_index && vertex_moved.is_nearby(v.canvas_pos, 100)){
-                    socket.emit("vertices_merge", index, last_down_index);
+                    local_board.emit_vertices_merge(index, last_down_index);
                     break;
                 }
             }
@@ -287,25 +286,25 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
                 }
             }
         } else {
-            let indices = new Array<[string,number]>();
+            let indices = new Array<[BoardElementType,number]>();
             let elements_to_translate = new Array();
             
             if (local_board.strokes.get(last_down_index).is_selected) {
                 for (const [vertex_index, vertex] of local_board.graph.vertices.entries()){
                     if (vertex.is_selected){
-                        indices.push(["Vertex", vertex_index]);
+                        indices.push([BoardElementType.Vertex, vertex_index]);
                         elements_to_translate.push(vertex);
                     }
                 }
                 for (const [stroke_index, stroke] of local_board.strokes.entries()){
                     if (stroke.is_selected){
-                        indices.push(["Stroke", stroke_index]);
+                        indices.push([BoardElementType.Stroke, stroke_index]);
                         elements_to_translate.push(stroke);
                     }
                 }
             }
             else {
-                indices.push(["Stroke",last_down_index]);
+                indices.push([BoardElementType.Stroke,last_down_index]);
                 const stroke = local_board.strokes.get(last_down_index);
                 elements_to_translate.push(stroke);
             }
@@ -315,7 +314,7 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
             for (const element of elements_to_translate){
                 element.translate_by_canvas_vect(canvas_shift.opposite(), local_board.view);
             }
-            socket.emit("translate_elements", indices, shift);
+            local_board.emit_translate_elements( indices, shift);
         }
     }
     else if (last_down === DOWN_TYPE.EMPTY) {
@@ -335,10 +334,10 @@ interactor_selection.mouseup = ((canvas, ctx, g, e) => {
         const canvas_shift = CanvasVect.from_canvas_coords(down_coord, e);
         const shift = local_board.view.server_vect(canvas_shift);
         local_board.translate_area(canvas_shift.opposite(), last_down_index, vertices_contained);
-        socket.emit("translate_elements",[["Area", last_down_index]], shift);
+        local_board.emit_translate_elements([[BoardElementType.Area, last_down_index]], shift);
     } else if (last_down == DOWN_TYPE.RESIZE){
         const esc  = local_board.view.create_server_coord(e);
-        socket.emit("resize_element", down_meta_element.element_type, down_meta_element.index, esc.x, esc.y, down_meta_element.resize_type);
+        local_board.emit_resize_element(down_meta_element.element_type, down_meta_element.index, esc, down_meta_element.resize_type);
     }
 })
 

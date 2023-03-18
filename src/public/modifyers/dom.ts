@@ -82,11 +82,7 @@ function activate_modifyer_div(canvas: HTMLCanvasElement, mod: GraphModifyer, vi
             }
         }
         // mod.modify();
-        const attributes_data = new Array();
-        for (const attribute of mod.attributes){
-            attributes_data.push(attribute.value);
-        }
-        socket.emit("apply_modifyer", mod.name, attributes_data );
+        local_board.emit_apply_modifyer(mod);
         turn_off_modifyers_div();
     }
     div.appendChild(modify_button);
