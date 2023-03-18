@@ -66,7 +66,7 @@ export class SideBar {
 
             // We check if the element is not already in the sidebar
             if(args[i].my_sidebar != this){
-                args[i].setup_specifics(this);
+                args[i].render(this);
             }
         }
 

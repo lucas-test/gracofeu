@@ -9,7 +9,7 @@ import { setup_generators_div } from "./generators/dom";
 import { ClientBoard } from "./board/board";
 import { setup_modifyers_div } from "./modifyers/dom";
 import { SideBar } from "./side_bar/side_bar";
-import { ORIENTATION_SIDE_BAR } from "./side_bar/element_side_bar";
+import { ORIENTATION_INFO, ORIENTATION_SIDE_BAR } from "./side_bar/element_side_bar";
 import { ItemSideBar } from "./side_bar/item_side_bar";
 import { FolderSideBar, FOLDER_EXPAND_DIRECTION } from "./side_bar/folder_side_bar";
 
@@ -69,38 +69,38 @@ function setup() {
 
 
     const b2 = new SideBar("b2", ORIENTATION_SIDE_BAR.HORIZONTAL);
-    const e3 = new ItemSideBar("e3", "Test info", "K", "img/interactor/arc.svg","pointer"); 
-    const e4 = new ItemSideBar("e4", "Test info", "K", "img/interactor/color.svg","pointer"); 
+    const e3 = new ItemSideBar("e3", "Test info", "K", ORIENTATION_INFO.TOP, "img/interactor/arc.svg","pointer"); 
+    const e4 = new ItemSideBar("e4", "Test info", "K", ORIENTATION_INFO.TOP, "img/interactor/color.svg","pointer"); 
 
     b2.add_elements(e3, e4);
     // b2.dom.style.bottom = "50px";
 
     
-    const f1 = new FolderSideBar("f1", "bla", "", "img/interactor/detector.svg", "default", b2, FOLDER_EXPAND_DIRECTION.TOP);
+    const f1 = new FolderSideBar("f1", "bla", "",ORIENTATION_INFO.TOP, "img/interactor/detector.svg", "default", b2, FOLDER_EXPAND_DIRECTION.TOP);
 
 
     const b3 = new SideBar("b3", ORIENTATION_SIDE_BAR.HORIZONTAL);
-    const e7 = new ItemSideBar("e7", "Test info", "K", "img/interactor/color.svg","pointer"); 
-    const e5 = new ItemSideBar("e5", "Test info", "K", "img/interactor/arc.svg","pointer"); 
-    const e6 = new ItemSideBar("e6", "Test info", "K", "img/interactor/color.svg","pointer"); 
+    const e7 = new ItemSideBar("e7", "Test info", "K",ORIENTATION_INFO.TOP, "img/interactor/color.svg","pointer"); 
+    const e5 = new ItemSideBar("e5", "Test info", "K",ORIENTATION_INFO.TOP, "img/interactor/arc.svg","pointer"); 
+    const e6 = new ItemSideBar("e6", "Test info", "K",ORIENTATION_INFO.TOP, "img/interactor/color.svg","pointer"); 
 
     b3.add_elements(e7, e5, e6);
 
     
-    const f2 = new FolderSideBar("f2", "bla", "", "img/interactor/detector.svg", "default", b3, FOLDER_EXPAND_DIRECTION.TOP);
+    const f2 = new FolderSideBar("f2", "bla", "",ORIENTATION_INFO.TOP, "img/interactor/detector.svg", "default", b3, FOLDER_EXPAND_DIRECTION.TOP);
 
 
     
-    const e1 = new ItemSideBar("e1", "Test info", "K", "img/interactor/arc.svg","pointer"); 
-    const e2 = new ItemSideBar("e2", "Test info", "K", "img/interactor/color.svg","pointer" ); 
+    const e1 = new ItemSideBar("e1", "Test info", "K",ORIENTATION_INFO.TOP, "img/interactor/arc.svg","pointer"); 
+    const e2 = new ItemSideBar("e2", "Test info", "K",ORIENTATION_INFO.TOP, "img/interactor/color.svg","pointer" ); 
     bottom_side_bar.add_elements(e1, e2, f1, f2);
 
     bottom_side_bar.dom.style.bottom = "0px";
 
 
     const b4 = new SideBar("b4", ORIENTATION_SIDE_BAR.HORIZONTAL);
-    const e8 = new ItemSideBar("e8", "", "", "img/interactor/color.svg","pointer"); 
-    const f4 = new FolderSideBar("f4", "", "", "img/interactor/color.svg", "pointer", b4, FOLDER_EXPAND_DIRECTION.TOP);
+    const e8 = new ItemSideBar("e8", "A", "Test info",ORIENTATION_INFO.TOP, "img/interactor/color.svg","pointer"); 
+    const f4 = new FolderSideBar("f4", "", "",ORIENTATION_INFO.TOP, "img/interactor/color.svg", "pointer", b4, FOLDER_EXPAND_DIRECTION.TOP);
 
     b2.add_elements(f4);
     b4.add_elements(e8);
@@ -116,30 +116,30 @@ function setup() {
 
 
     const b5 = new SideBar("b5", ORIENTATION_SIDE_BAR.VERTICAL);
-    const e9 = new ItemSideBar("e9", "Test info", "K", "img/interactor/arc.svg","pointer"); 
-    const e10 = new ItemSideBar("e10", "Test info", "K", "img/interactor/color.svg","pointer"); 
+    const e9 = new ItemSideBar("e9", "Test info", "K", ORIENTATION_INFO.LEFT, "img/interactor/arc.svg","pointer"); 
+    const e10 = new ItemSideBar("e10", "Test info", "K", ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer"); 
 
     b5.add_elements(e9, e10);
     // b2.dom.style.bottom = "50px";
 
     
-    const f5 = new FolderSideBar("f5", "bla", "", "img/interactor/detector.svg", "default", b5, FOLDER_EXPAND_DIRECTION.LEFT);
+    const f5 = new FolderSideBar("f5", "bla", "", ORIENTATION_INFO.LEFT, "img/interactor/detector.svg", "default", b5, FOLDER_EXPAND_DIRECTION.LEFT);
 
 
     const b6 = new SideBar("b6", ORIENTATION_SIDE_BAR.VERTICAL);
-    const e11 = new ItemSideBar("e11", "Test info", "K", "img/interactor/color.svg","pointer"); 
-    const e12 = new ItemSideBar("e12", "Test info", "K", "img/interactor/arc.svg","pointer"); 
-    const e13 = new ItemSideBar("e13", "Test info", "K", "img/interactor/color.svg","pointer"); 
+    const e11 = new ItemSideBar("e11", "Test info", "K", ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer"); 
+    const e12 = new ItemSideBar("e12", "Test info", "K", ORIENTATION_INFO.LEFT, "img/interactor/arc.svg","pointer"); 
+    const e13 = new ItemSideBar("e13", "Test info", "K",ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer"); 
 
     b6.add_elements(e11, e12, e13);
 
     
-    const f6 = new FolderSideBar("f6", "bla", "", "img/interactor/detector.svg", "default", b6, FOLDER_EXPAND_DIRECTION.LEFT);
+    const f6 = new FolderSideBar("f6", "bla", "",ORIENTATION_INFO.LEFT, "img/interactor/detector.svg", "default", b6, FOLDER_EXPAND_DIRECTION.LEFT);
 
 
     
-    const e14 = new ItemSideBar("e14", "Test info", "K", "img/interactor/arc.svg","pointer"); 
-    const e15 = new ItemSideBar("e15", "Test info", "K", "img/interactor/color.svg","pointer" ); 
+    const e14 = new ItemSideBar("e14", "Test info", "K",ORIENTATION_INFO.LEFT, "img/interactor/arc.svg","pointer"); 
+    const e15 = new ItemSideBar("e15", "Test info", "K",ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer" ); 
     right_side_bar.add_elements(e14, e15, f5, f6);
 
     right_side_bar.dom.style.right = "0px";
@@ -147,8 +147,8 @@ function setup() {
 
 
     const b7 = new SideBar("b7", ORIENTATION_SIDE_BAR.VERTICAL);
-    const e16 = new ItemSideBar("e16", "", "", "img/interactor/color.svg","pointer"); 
-    const f7 = new FolderSideBar("f7", "", "", "img/interactor/color.svg", "pointer", b7, FOLDER_EXPAND_DIRECTION.LEFT);
+    const e16 = new ItemSideBar("e16", "", "",ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer"); 
+    const f7 = new FolderSideBar("f7", "", "",ORIENTATION_INFO.LEFT, "img/interactor/color.svg", "pointer", b7, FOLDER_EXPAND_DIRECTION.LEFT);
 
     b5.add_elements(f7);
     b7.add_elements(e16);

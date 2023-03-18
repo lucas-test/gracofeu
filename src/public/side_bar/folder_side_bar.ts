@@ -1,5 +1,5 @@
 import { CanvasCoord } from "../board/vertex";
-import { ElementSideBar, ORIENTATION_SIDE_BAR } from "./element_side_bar";
+import { ElementSideBar, ORIENTATION_INFO, ORIENTATION_SIDE_BAR } from "./element_side_bar";
 import { SideBar } from "./side_bar";
 
 export enum FOLDER_EXPAND_DIRECTION{
@@ -17,20 +17,11 @@ export class FolderSideBar extends ElementSideBar{
     expand_direction : FOLDER_EXPAND_DIRECTION;
     expand : (mouse_pos : CanvasCoord) => void;
 
-    constructor(id:string, info: string, shortcut: string, img_src: string, cursor_style: string,  next_sidebar:SideBar, expand_direction : FOLDER_EXPAND_DIRECTION, my_sidebar?:SideBar) {
-        super(id, info, shortcut, img_src, cursor_style, my_sidebar); 
+    constructor(id:string, info: string, shortcut: string, orientation_info: ORIENTATION_INFO, img_src: string, cursor_style: string,  next_sidebar:SideBar, expand_direction : FOLDER_EXPAND_DIRECTION, my_sidebar?:SideBar) {
+        super(id, info, shortcut, orientation_info, img_src, cursor_style, my_sidebar); 
         this.expand = (e) => { };
         this.expand_direction = expand_direction;
         this.next_sidebar = next_sidebar;
-
-        if(my_sidebar !== undefined){
-            this.my_sidebar = my_sidebar;
-            this.setup_specifics(my_sidebar);
-        }
-        else{
-            this.my_sidebar = null;
-        }
-        
     }
 
     /**
@@ -38,9 +29,9 @@ export class FolderSideBar extends ElementSideBar{
      * Note: calls setup_element 
      * @param my_sidebar The sidebar the folder belongs
      */
-    setup_specifics(my_sidebar:SideBar){
+    render(my_sidebar:SideBar){
         // set up the common div 
-        this.setup_element(my_sidebar);
+        super.render(my_sidebar);
 
         // append the sidebar contained in the folder, and hide it
         this.dom.appendChild(this.next_sidebar.dom);
@@ -56,18 +47,11 @@ export class FolderSideBar extends ElementSideBar{
             this.next_sidebar.toggle();
         });
 
-        // this.img_dom.onclick = () => {
-        //     this.my_sidebar.unselect_all_elements();
-        //     this.dom.classList.toggle("side_bar_expanded_folder");
-
-        //     this.next_sidebar.toggle();
-        // };
 
         // We set up everything depending on the direction the folder expands
         switch(this.expand_direction){
             case(FOLDER_EXPAND_DIRECTION.TOP):
                 this.dom.classList.add("side_bar_folder_expand_top");
-
                 // We find the position of the sidebar the folder belongs
                 const bottom = this.my_sidebar.dom.style.bottom===""?0:parseInt(this.my_sidebar.dom.style.bottom);
                 // We set the next sidebar shifted by 60 px
@@ -85,7 +69,6 @@ export class FolderSideBar extends ElementSideBar{
                 break;
             case(FOLDER_EXPAND_DIRECTION.RIGHT):
                 this.dom.classList.add("side_bar_folder_expand_right");
-                
                 const left = this.my_sidebar.dom.style.left===""?0:parseInt(this.my_sidebar.dom.style.left);
                 this.next_sidebar.dom.style.left = String(left+ 60) + "px";
                 break;
@@ -107,10 +90,9 @@ export class FolderSideBar extends ElementSideBar{
             }
         }
 
-        if(reset===true){
+        if(reset){
             // We reset the image to its default value
             this.reset_img();
         }
     }
-
 }
