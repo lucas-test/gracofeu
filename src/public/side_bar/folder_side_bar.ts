@@ -3,10 +3,10 @@ import { ElementSideBar, ORIENTATION_INFO, ORIENTATION_SIDE_BAR } from "./elemen
 import { SideBar } from "./side_bar";
 
 export enum FOLDER_EXPAND_DIRECTION{
-    TOP = 1,
-    LEFT = 2,
-    BOTTOM = 3,
-    RIGHT = 4
+    TOP = "TOP",
+    LEFT = "LEFT",
+    BOTTOM = "BOTTOM",
+    RIGHT = "RIGHT"
 }
 
 

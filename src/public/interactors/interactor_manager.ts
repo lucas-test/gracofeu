@@ -25,13 +25,14 @@ import { interactor_control_point } from './implementations/control_point';
 import { interactor_rectangle } from './implementations/rectangle_interactor';
 import { interactor_tool_edge } from './edge_tool_interactor';
 import { BoardElementType } from '../board/board';
+import { InteractorV2 } from '../side_bar/interactor_side_bar';
 
 // INTERACTOR MANAGER
 
 
 
 export let down_meta_element: any = "";
-export let interactor_loaded: Interactor = null;
+export let interactor_loaded: Interactor | InteractorV2 = null;
 export let down_coord: CanvasCoord = null;
 export let last_down: DOWN_TYPE = null;
 export let last_down_index: number = null;
@@ -309,7 +310,7 @@ function deselect_subinteractor_bar_div(){
     }
 }
 
-function select_interactor_div(interactor: Interactor) {
+function select_interactor_div(interactor: Interactor ) {
     for (let div of document.getElementsByClassName("interactor")) {
         if (div.id == interactor.name) {
             div.classList.add("selected");
@@ -469,3 +470,36 @@ export function setup_interactors_div(canvas: HTMLCanvasElement, ctx: CanvasRend
     }
 }
 
+
+
+// ------------------------------------------------------
+
+
+
+
+export function select_interactorV2(interactor: InteractorV2, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, pos: CanvasCoord) {
+    if (interactor_loaded != null && interactor_loaded != interactor) {
+        interactor_loaded.onleave();
+    }
+
+    
+    interactor_loaded = interactor;
+    canvas.style.cursor = interactor.cursor_style;
+    local_board.view.is_creating_vertex = false;
+    interactor.trigger(pos);
+    select_interactor_divV2(interactor);
+    requestAnimationFrame(function () { draw(canvas, ctx, g) });
+
+}
+
+
+function select_interactor_divV2(interactor: InteractorV2 ) {
+    for (let div of document.getElementsByClassName("interactor")) {
+        if (div.id == interactor.id) {
+            div.classList.add("selected");
+        }
+        else {
+            div.classList.remove("selected");
+        }
+    }
+}

@@ -61,12 +61,12 @@ export class SideBar {
      * @param args Arbitrary list of elements.
      */
     add_elements(...args: ElementSideBar[]){
-        for (var i = 0; i < args.length; i++) {
-            this.elements.push(args[i]);
+        for (const arg of args){ 
+            this.elements.push(arg);
 
             // We check if the element is not already in the sidebar
-            if(args[i].my_sidebar != this){
-                args[i].render(this);
+            if(arg.my_sidebar != this){
+                arg.render(this);
             }
         }
 

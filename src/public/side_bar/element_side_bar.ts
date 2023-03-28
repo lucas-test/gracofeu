@@ -6,10 +6,10 @@ export enum ORIENTATION_SIDE_BAR{
 }
 
 export enum ORIENTATION_INFO{
-    TOP = 1,
-    BOTTOM = 2,
-    LEFT = 3,
-    RIGHT = 4
+    TOP = "TOP",
+    BOTTOM = "BOTTOM",
+    LEFT = "LEFT",
+    RIGHT = "RIGHT"
 }
 
 
