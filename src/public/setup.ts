@@ -14,6 +14,8 @@ import { ItemSideBar } from "./side_bar/item_side_bar";
 import { FolderSideBar, FOLDER_EXPAND_DIRECTION } from "./side_bar/folder_side_bar";
 import { InteractorV2 } from "./side_bar/interactor_side_bar";
 import { SwitchSideBar } from "./side_bar/switch_side_bar";
+import { selectionV2 } from "./side_bar/interactors/selection";
+import { edge_interactorV2 } from "./side_bar/interactors/edge";
 
 
 export const local_board = new ClientBoard();
@@ -118,6 +120,8 @@ function setup() {
     // RIGHT SIDE BAR TEST
 
     const right_side_bar = new SideBar("right_sidebar_test", ORIENTATION_SIDE_BAR.VERTICAL, true);  
+
+    right_side_bar.add_elements(selectionV2, edge_interactorV2);
 
     const s1 = new SwitchSideBar("s1", "test switch", "K", ORIENTATION_INFO.LEFT, "img/actions/grid.svg", "pointer", right_side_bar);
     s1.trigger = () => { 

@@ -482,24 +482,10 @@ export function select_interactorV2(interactor: InteractorV2, canvas: HTMLCanvas
         interactor_loaded.onleave();
     }
 
-    
     interactor_loaded = interactor;
     canvas.style.cursor = interactor.cursor_style;
     local_board.view.is_creating_vertex = false;
     interactor.trigger(pos);
-    select_interactor_divV2(interactor);
     requestAnimationFrame(function () { draw(canvas, ctx, g) });
-
 }
 
-
-function select_interactor_divV2(interactor: InteractorV2 ) {
-    for (let div of document.getElementsByClassName("interactor")) {
-        if (div.id == interactor.id) {
-            div.classList.add("selected");
-        }
-        else {
-            div.classList.remove("selected");
-        }
-    }
-}

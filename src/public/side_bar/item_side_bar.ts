@@ -36,15 +36,16 @@ export abstract class ItemSideBar extends ElementSideBar {
         this.dom.classList.add("side_bar_item");
         this.img_dom.classList.add("side_bar_item_img");
         this.dom.addEventListener("mousedown", (e) => {
-            this.common_trigger();
-            this.trigger(new CanvasCoord(e.pageX, e.pageY));
+            const pos = new CanvasCoord(e.pageX, e.pageY);
+            this.common_trigger(pos);
+            this.trigger(pos);
             const canvas = document.getElementById('main') as HTMLCanvasElement;
             const ctx = canvas.getContext('2d');
             requestAnimationFrame(function () { draw(canvas, ctx, local_board.graph) });
             }
         )
     }
-    abstract common_trigger();
+    abstract common_trigger(mouse_pos:CanvasCoord);
 
 
 }

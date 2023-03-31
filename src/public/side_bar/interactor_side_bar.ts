@@ -1,6 +1,8 @@
 import { ClientGraph } from "../board/graph";
 import { CanvasCoord } from "../board/vertex";
 import { DOWN_TYPE, Interactor } from "../interactors/interactor";
+import { interactor_loaded, select_interactorV2 } from "../interactors/interactor_manager";
+import { local_board } from "../setup";
 import { ORIENTATION_INFO } from "./element_side_bar";
 import { ItemSideBar } from "./item_side_bar";
 import { SideBar } from "./side_bar";
@@ -31,12 +33,14 @@ export class InteractorV2 extends ItemSideBar {
         this.dom.classList.add("interactor");
     }
 
-    common_trigger(){
+    common_trigger(pos: CanvasCoord){
         document.querySelectorAll(".interactor").forEach(interactor => {
             interactor.classList.remove("selected");
         });
         this.dom.classList.add("selected");
-        console.log(this.id);
+        const canvas = document.getElementById('main') as HTMLCanvasElement;
+        const ctx = canvas.getContext('2d');
+        select_interactorV2(this, canvas, ctx, local_board.graph, pos);
     }
 
 }
