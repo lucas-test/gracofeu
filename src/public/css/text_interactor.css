@@ -11,7 +11,7 @@
 
 .text_zone {
     position: fixed;
-    color: white;
+    /* color: white; */
     min-width: 100px;
     display: flex;
 }

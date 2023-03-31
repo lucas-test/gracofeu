@@ -1,5 +1,5 @@
 import { Coord, TextZone } from "gramoloss";
-import katex from "katex";
+import hljs from "highlight.js";
 import { interactor_loaded, mouse_pos, select_interactor } from "../interactors/interactor_manager";
 import { interactor_text } from "../interactors/text";
 import renderMathInElement, { RenderOptions } from "../katex-auto-render/auto-render";
@@ -27,10 +27,21 @@ export class ClientTextZone extends TextZone {
             this.div.classList.add("text_zone");
             this.div.style.width = String(this.width) + "px";
 
+            
+
             const content = document.createElement("div");
-            content.classList.add("text_zone_content");
-            content.innerHTML = text;
+            const content_pre = document.createElement("pre");
+            const content_code = document.createElement("code");
+            content_code.contentEditable = "true";
+
+            content_pre.appendChild(content_code);
+            content.appendChild(content_pre);
             this.div.appendChild(content);
+
+            content_code.classList.add("text_zone_content");
+            content_code.innerHTML = text;
+
+
             
 
             const sidebar = document.createElement("div");
@@ -94,13 +105,14 @@ export class ClientTextZone extends TextZone {
 
 
     update_text(new_text: string){
-        new_text = new_text.replace(/(\r\n|\r|\n)/g, "<br>");
+        //new_text = new_text.replace(/(\r\n|\r|\n)/g, "<br>");
         this.text = new_text;
          for (const content of this.div.getElementsByClassName("text_zone_content")){
             content.innerHTML = new_text;// katex.renderToString(text);
             renderMathInElement(content as HTMLElement);
          }
         this.reset_div_pos();
+        hljs.highlightAll();
     }
 
     reset_div_pos(){

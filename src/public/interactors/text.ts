@@ -22,9 +22,14 @@ input.type = "text";
 document.body.appendChild(input);
 
 const text_zone_input = document.createElement("textarea");
+const text_zone_input_pre = document.createElement("pre");
+const text_zone_input_code = document.createElement("code");
+text_zone_input_pre.appendChild(text_zone_input_code);
+text_zone_input_code.appendChild(text_zone_input);
+
 text_zone_input.id = "text_zone_input";
 text_zone_input.style.display = "none";
-document.body.appendChild(text_zone_input);
+document.body.appendChild(text_zone_input_pre);
 
 // --------------
 
