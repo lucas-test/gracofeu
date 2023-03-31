@@ -312,7 +312,7 @@ function deselect_subinteractor_bar_div(){
 
 function select_interactor_div(interactor: Interactor ) {
     for (let div of document.getElementsByClassName("interactor")) {
-        if (div.id == interactor.name) {
+        if (div.id == interactor.id) {
             div.classList.add("selected");
         }
         else {

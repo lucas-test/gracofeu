@@ -112,7 +112,7 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
         const text_zone = new ClientTextZone(pos, 200, "salut", this.view, index);
         this.text_zones.set(index, text_zone);
         text_zone.div.onclick = (e) => {
-            if( interactor_loaded.name == "text"){
+            if( interactor_loaded.id == "text"){
                 // validate_weight();
                 this.display_text_zone_input(index);
             }

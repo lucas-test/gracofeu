@@ -1,5 +1,6 @@
 import { ClientGraph } from "../board/graph";
 import { CanvasCoord } from "../board/vertex";
+import { draw } from "../draw";
 import { interactor_loaded, select_interactor } from "../interactors/interactor_manager";
 import { local_board } from "../setup";
 import { ElementSideBar, ORIENTATION_INFO } from "./element_side_bar";
@@ -37,6 +38,9 @@ export abstract class ItemSideBar extends ElementSideBar {
         this.dom.addEventListener("mousedown", (e) => {
             this.common_trigger();
             this.trigger(new CanvasCoord(e.pageX, e.pageY));
+            const canvas = document.getElementById('main') as HTMLCanvasElement;
+            const ctx = canvas.getContext('2d');
+            requestAnimationFrame(function () { draw(canvas, ctx, local_board.graph) });
             }
         )
     }

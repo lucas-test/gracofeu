@@ -54,7 +54,7 @@ function turn_off_color_picker_div() {
 }
 
 function move_back_color_picker_div() {
-    const color_interactor_div = document.getElementById(color_interactor.name);
+    const color_interactor_div = document.getElementById(color_interactor.id);
     const offsets = color_interactor_div.getBoundingClientRect();
     color_picker_div.style.top = String(offsets.top) + "px";
     color_picker_div.style.left = "70" + "px";

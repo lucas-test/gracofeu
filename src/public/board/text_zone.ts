@@ -1,11 +1,10 @@
 import { Coord, TextZone } from "gramoloss";
-import katex from "katex";
-import { interactor_loaded, mouse_pos, select_interactor } from "../interactors/interactor_manager";
+import { interactor_eraser } from "../interactors/eraser_interactor";
+import { interactor_loaded, select_interactor } from "../interactors/interactor_manager";
+import { interactor_selection } from "../interactors/selection_interactor";
 import { interactor_text } from "../interactors/text";
 import renderMathInElement, { RenderOptions } from "../katex-auto-render/auto-render";
-import { load_param } from "../parametors/parametor_manager";
 import { local_board } from "../setup";
-import { socket } from "../socket";
 import { BoardElementType } from "./board";
 import { View } from "./camera";
 import { CanvasVect } from "./vect";
@@ -59,7 +58,7 @@ export class ClientTextZone extends TextZone {
 
             content.onmousedown = (e: MouseEvent) => {
                 this.last_mouse_pos = new CanvasCoord(e.pageX, e.pageY);
-                if (interactor_loaded.name == "selection"){
+                if (interactor_loaded.id == interactor_selection.id){
                     function move_div(e: MouseEvent){
                         const new_mouse_pos = new CanvasCoord(e.pageX, e.pageY);
                         const cshift = CanvasVect.from_canvas_coords(text_zone.last_mouse_pos, new_mouse_pos);
@@ -73,7 +72,7 @@ export class ClientTextZone extends TextZone {
                         window.removeEventListener("mousemove", move_div);
                     }
                     window.addEventListener("mouseup", stop_event);
-                } else if (interactor_loaded.name == "eraser"){
+                } else if (interactor_loaded.id == interactor_eraser.id){
                     local_board.emit_delete_elements([[BoardElementType.TextZone, index]]);
                 }
             }

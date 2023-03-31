@@ -3,7 +3,7 @@ import katex from "katex";
 import { COLOR_INNER_VERTEX_DEFAULT } from "../draw";
 import { DOWN_TYPE } from "../interactors/interactor";
 import { interactor_loaded } from "../interactors/interactor_manager";
-import { display_weight_input, validate_weight } from "../interactors/text";
+import { display_weight_input, interactor_text, validate_weight } from "../interactors/text";
 import { solutionQuadratic } from "../utils";
 import { View } from "./camera";
 import { CanvasVect } from "./vect";
@@ -154,7 +154,7 @@ export class ClientVertex extends Vertex {
     init_weight_interactors(this_index: number) {
         // TODO check if null
         this.weight_div.onclick = (e) => {
-            if( interactor_loaded.name == "text"){
+            if( interactor_loaded.id == interactor_text.id){
                 validate_weight();
                 display_weight_input(this_index, new CanvasCoord(this.canvas_pos.x , this.canvas_pos.y+20),DOWN_TYPE.VERTEX);
             }

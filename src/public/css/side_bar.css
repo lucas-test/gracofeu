@@ -34,6 +34,10 @@ transform: translateY(calc(-50% + 27px)); */
     box-sizing: border-box;
 }
 
+.side_bar_element.selected {
+    background-color: rgb(19, 117, 229);
+}
+
 .side_bar_item:hover {
     background: lightcoral;
     border: 1px solid #c7c7c7;
