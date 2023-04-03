@@ -243,6 +243,17 @@
 
 - [ ] loop
 
+
+- SideBars and InteractorV2
+    - [ ] rename InteractorV2 to Interactor
+    - [ ] move right_side_bar to left
+    - [ ] shortcut
+    - [ ] select interactor in folder
+    - [ ] fix color interactor
+    - [ ] fix cursors ( color_interactorV2 and pen)
+    - [ ] bottom_side_bar
+    - [ ] change label action to graph modifyer
+
 ## V2 DMANET
 
 - [ ] code break dans les compute function (voir la note dans le fichier parametor.ts)
