@@ -16,7 +16,6 @@ import { interactor_loaded } from './interactors/interactor_manager';
 import { DOWN_TYPE } from './interactors/interactor';
 import { clamp } from './utils';
 import { Multicolor } from './multicolor';
-import { interactor_area } from './interactors/area_interactor';
 import { local_board } from './setup';
 import { drawRoundRect, draw_circle, draw_head, draw_line, real_color } from './draw_basics';
 import { real_color2 } from './basic_colors';
@@ -480,7 +479,7 @@ function draw_area(ctx: CanvasRenderingContext2D, a:ClientArea){
 
 
 
-    if(interactor_loaded && interactor_loaded === interactor_area){
+    if(interactor_loaded && interactor_loaded.id === "area"){
         const top_left = a.canvas_corner_top_left;
         const top_right = a.canvas_corner_top_right;
         const bot_right = a.canvas_corner_bottom_right;

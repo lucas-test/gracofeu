@@ -1,29 +1,20 @@
 import { Interactor, DOWN_TYPE, RESIZE_TYPE } from './interactor'
 import { interactor_selection } from './selection_interactor';
-import { interactor_edge } from './edge_interactor';
 import { draw } from '../draw';
 import { socket } from '../socket';
-import { interactor_arc } from './arc_interactor';
 import { color_interactor } from './color_interactor';
 import { interactor_stroke } from './stroke_interactor';
 import { interactor_eraser } from './eraser_interactor';
-import { interactor_area } from './area_interactor';
 import { actions_available, select_action } from '../actions';
 import { self_user, update_users_canvas_pos } from '../user';
 import { local_board } from '../setup';
-import { interactor_detector } from './detector_interactor';
-import ENV from '../.env.json';
 import { regenerate_graph } from '../generators/dom';
 import { interactor_text } from './text';
 import { clear_clipboard, clipboard_comes_from_generator, graph_clipboard, mouse_position_at_generation, paste_generated_graph, set_clipboard } from '../clipboard';
 import { CanvasCoord } from '../board/vertex';
 import { ClientGraph } from '../board/graph';
 import { CanvasVect } from '../board/vect';
-import { DegreeWidthRep } from 'gramoloss';
 import { ClientDegreeWidthRep } from '../board/representations/degree_width_rep';
-import { interactor_control_point } from './implementations/control_point';
-import { interactor_rectangle } from './implementations/rectangle_interactor';
-import { interactor_tool_edge } from './edge_tool_interactor';
 import { BoardElementType } from '../board/board';
 import { InteractorV2 } from '../side_bar/interactor_side_bar';
 
@@ -47,12 +38,13 @@ key_states.set("Control", false);
 key_states.set("Shift", false);
 
 
-export function select_interactor(interactor: Interactor, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, pos: CanvasCoord) {
+export function select_interactor(interactor: Interactor | InteractorV2, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, pos: CanvasCoord) {
     if (interactor_loaded != null && interactor_loaded != interactor) {
         interactor_loaded.onleave();
     }
 
-    const interactor_to_load = (interactor.subinteractors.length === 0)?interactor:interactor.subinteractors.at(0);
+    const interactor_to_load = interactor;
+    // const interactor_to_load = (interactor.subinteractors.length === 0)?interactor:interactor.subinteractors.at(0);
     
     interactor_loaded = interactor_to_load;
     canvas.style.cursor = interactor_to_load.cursor_style;
@@ -283,14 +275,12 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 let interactors_available = [];
 
-if (ENV.mode == "dev") {
-    interactors_available.push(interactor_detector);
-}
+
 
 interactors_available.push(interactor_selection, 
-    interactor_tool_edge,
-    //interactor_control_point, interactor_edge, interactor_arc,
-     color_interactor, interactor_stroke, interactor_eraser, interactor_text, interactor_area, interactor_rectangle );
+     color_interactor,
+      interactor_stroke,
+       interactor_text );
 
 
 
@@ -310,7 +300,7 @@ function deselect_subinteractor_bar_div(){
     }
 }
 
-function select_interactor_div(interactor: Interactor ) {
+function select_interactor_div(interactor: Interactor | InteractorV2 ) {
     for (let div of document.getElementsByClassName("interactor")) {
         if (div.id == interactor.id) {
             div.classList.add("selected");

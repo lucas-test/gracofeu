@@ -1,6 +1,5 @@
 import { setup_actions_div } from "./actions";
 import { draw, resizeCanvas } from "./draw";
-import { interactor_edge } from "./interactors/edge_interactor";
 import { setup_interactions, select_interactor, setup_interactors_div } from "./interactors/interactor_manager";
 import { params_available_turn_off_div, params_available_turn_on_div, update_params_available_div } from "./parametors/div_parametor";
 import { setup_parametors_available } from "./parametors/parametor_manager";
@@ -16,6 +15,13 @@ import { InteractorV2 } from "./side_bar/interactor_side_bar";
 import { SwitchSideBar } from "./side_bar/switch_side_bar";
 import { selectionV2 } from "./side_bar/interactors/selection";
 import { edge_interactorV2 } from "./side_bar/interactors/edge";
+import { detector_interactorV2 } from "./side_bar/interactors/detector";
+import { arc_interactorV2 } from "./side_bar/interactors/arc";
+import { control_point_interactorV2 } from "./side_bar/interactors/control_points";
+import { stroke_interactorV2 } from "./side_bar/interactors/stroke";
+import { rectangle_interactorV2 } from "./side_bar/interactors/rectangle";
+import { area_interactorV2 } from "./side_bar/interactors/area";
+import { eraser_interactorV2 } from "./side_bar/interactors/eraser";
 
 
 export const local_board = new ClientBoard();
@@ -46,7 +52,7 @@ function setup() {
     document.addEventListener('contextmenu', event => event.preventDefault());
     setup_interactions(canvas, ctx, local_board.graph);
     setup_interactors_div(canvas, ctx, local_board.graph);
-    select_interactor(interactor_edge, canvas, ctx, local_board.graph, null);
+    select_interactor(edge_interactorV2, canvas, ctx, local_board.graph, null);
 
     setup_actions_div(canvas, ctx, local_board.graph);
     setup_generators_div(canvas, local_board);
@@ -121,7 +127,22 @@ function setup() {
 
     const right_side_bar = new SideBar("right_sidebar_test", ORIENTATION_SIDE_BAR.VERTICAL, true);  
 
-    right_side_bar.add_elements(selectionV2, edge_interactorV2);
+    const edge_side_bar = new SideBar("b5", ORIENTATION_SIDE_BAR.VERTICAL);
+
+    const edge_folder = new FolderSideBar("edge_folder", "Link interactors", "", ORIENTATION_INFO.LEFT, "img/interactors/edition.svg", "default", edge_side_bar, FOLDER_EXPAND_DIRECTION.LEFT);
+
+    edge_side_bar.add_elements(edge_interactorV2, arc_interactorV2, control_point_interactorV2);
+
+    right_side_bar.add_elements(
+        selectionV2,
+        edge_folder, 
+        detector_interactorV2, 
+        stroke_interactorV2, 
+        area_interactorV2,
+        rectangle_interactorV2,
+        eraser_interactorV2 );
+
+    // old part
 
     const s1 = new SwitchSideBar("s1", "test switch", "K", ORIENTATION_INFO.LEFT, "img/actions/grid.svg", "pointer", right_side_bar);
     s1.trigger = () => { 

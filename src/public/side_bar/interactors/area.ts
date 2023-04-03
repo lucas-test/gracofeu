@@ -1,16 +1,17 @@
-import { Interactor, DOWN_TYPE, RESIZE_TYPE } from './interactor'
-import { socket } from '../socket';
-import { AREA_CORNER, AREA_SIDE } from '../board/area';
-import { down_coord, last_down, last_down_index } from './interactor_manager';
-import { local_board } from '../setup';
-import { CanvasVect } from '../board/vect';
-import { ClientGraph } from '../board/graph';
-import { CanvasCoord } from '../board/vertex';
-import { Area, Board, Coord } from 'gramoloss';
-import { BoardElementType } from '../board/board';
+import { Area, Coord } from 'gramoloss';
+import { AREA_CORNER, AREA_SIDE } from '../../board/area';
+import { BoardElementType } from '../../board/board';
+import { ClientGraph } from '../../board/graph';
+import { CanvasVect } from '../../board/vect';
+import { CanvasCoord } from '../../board/vertex';
+import { DOWN_TYPE, RESIZE_TYPE } from '../../interactors/interactor';
+import { last_down, last_down_index, down_coord } from '../../interactors/interactor_manager';
+import { local_board } from '../../setup';
+import { ORIENTATION_INFO } from '../element_side_bar';
+import { InteractorV2 } from '../interactor_side_bar';
 
 
-export var interactor_area = new Interactor("area", "g", "area.svg", new Set([DOWN_TYPE.AREA]), 'default')
+export const area_interactorV2 = new InteractorV2("area", "Create areas", "g", ORIENTATION_INFO.LEFT, "img/interactors/area.svg", "default", new Set([DOWN_TYPE.AREA]));
 
 let is_creating_area : boolean;
 let last_created_area_index: number = null;
@@ -25,7 +26,7 @@ let opposite_corner = new CanvasCoord(0,0);
 let opposite_coord = 0;
 
 
-interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+area_interactorV2.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down === DOWN_TYPE.EMPTY) {
         is_creating_area = true;
         first_corner = local_board.view.create_server_coord(e);
@@ -44,7 +45,7 @@ interactor_area.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     }
 })
 
-interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+area_interactorV2.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
 
     if(is_creating_area){
         if( last_created_area_index != null && local_board.areas.has(last_created_area_index)){
@@ -98,7 +99,7 @@ interactor_area.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
    
 })
 
-interactor_area.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+area_interactorV2.mouseup = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     const esc  = local_board.view.create_server_coord(e);
     if (last_down === DOWN_TYPE.EMPTY) {
         local_board.emit_resize_element(BoardElementType.Area, last_created_area_index, esc, RESIZE_TYPE.TOP_RIGHT);

@@ -15,17 +15,18 @@ import { BoardElementType } from "../../board/board";
 import { ClientGraph } from "../../board/graph";
 import { CanvasVect } from "../../board/vect";
 import { CanvasCoord } from "../../board/vertex";
+import { DOWN_TYPE } from "../../interactors/interactor";
+import { down_coord, key_states, last_down, last_down_index, mouse_buttons } from "../../interactors/interactor_manager";
 import { local_board } from "../../setup";
-import { socket } from "../../socket";
-import { DOWN_TYPE, Interactor } from "../interactor";
-import { down_coord, key_states, last_down, last_down_index, mouse_buttons } from "../interactor_manager";
+import { ORIENTATION_INFO } from "../element_side_bar";
+import { InteractorV2 } from "../interactor_side_bar";
 
-export const interactor_control_point = new Interactor("control_point", "h", "control_point.svg", new Set([DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT]), 'default')
+export const control_point_interactorV2 = new InteractorV2("control_point", "Edit control points", "h", ORIENTATION_INFO.LEFT, "img/interactors/control_point.svg", "default", new Set([DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT]));
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
 
-interactor_control_point.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+control_point_interactorV2.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     previous_shift = new Vect(0,0);
     previous_canvas_shift = new CanvasVect(0,0);
     switch (last_down) {
@@ -46,7 +47,7 @@ interactor_control_point.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCo
     }
 })
 
-interactor_control_point.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+control_point_interactorV2.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     switch (last_down) {
         case DOWN_TYPE.CONTROL_POINT:{
             if ( g.links.has(last_down_index)){
@@ -77,8 +78,5 @@ interactor_control_point.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoo
     return false;
 })
 
-interactor_control_point.mouseup = ((canvas, ctx, g, e) => {
-    
-})
 
 

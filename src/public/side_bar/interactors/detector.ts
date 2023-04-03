@@ -1,13 +1,15 @@
 import { Coord } from 'gramoloss';
-import { ClientGraph } from '../board/graph';
-import { ClientLink } from '../board/link';
-import { CanvasCoord, ClientVertex } from '../board/vertex';
-import { local_board } from '../setup';
-import { Interactor, DOWN_TYPE } from './interactor'
+import { ClientGraph } from '../../board/graph';
+import { ClientLink } from '../../board/link';
+import { CanvasCoord, ClientVertex } from '../../board/vertex';
+import { DOWN_TYPE } from '../../interactors/interactor';
+import { local_board } from '../../setup';
+import { ORIENTATION_INFO } from '../element_side_bar';
+import { InteractorV2 } from '../interactor_side_bar';
 
 // INTERACTOR DETECTOR
 
-export const interactor_detector = new Interactor("detector", "d", "detector.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]), 'default')
+export const detector_interactorV2 = new InteractorV2("detector", "DEV Tool", "d", ORIENTATION_INFO.LEFT, "img/interactors/detector.svg", "default", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]));
 
 const infobox = document.createElement("div");
 infobox.id = "the_infobox";
@@ -44,11 +46,10 @@ function turn_off_infobox() {
 }
 
 
-interactor_detector.mousedown = ((canvas, ctx, g, e) => { });
 
-interactor_detector.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+detector_interactorV2.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     local_board.clear_all_selections();
-    const element = local_board.get_element_nearby(e, interactor_detector.interactable_element_type);
+    const element = local_board.get_element_nearby(e, detector_interactorV2.interactable_element_type);
     switch (element.type) {
         case DOWN_TYPE.VERTEX:
             const vertex = g.vertices.get(element.index);
@@ -68,5 +69,3 @@ interactor_detector.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) =
     turn_off_infobox();
     return true;
 });
-
-interactor_detector.mouseup = ((canvas, ctx, g, e) => { });
