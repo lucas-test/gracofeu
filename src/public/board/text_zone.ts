@@ -1,10 +1,10 @@
 import { Coord, TextZone } from "gramoloss";
-import { interactor_eraser } from "../interactors/eraser_interactor";
 import { interactor_loaded, select_interactor } from "../interactors/interactor_manager";
-import { interactor_selection } from "../interactors/selection_interactor";
-import { interactor_text } from "../interactors/text";
+import { selectionV2 } from "../side_bar/interactors/selection";
+import { text_interactorV2 } from "../side_bar/interactors/text";
 import renderMathInElement, { RenderOptions } from "../katex-auto-render/auto-render";
 import { local_board } from "../setup";
+import { eraser_interactorV2 } from "../side_bar/interactors/eraser";
 import { BoardElementType } from "./board";
 import { View } from "./camera";
 import { CanvasVect } from "./vect";
@@ -58,7 +58,7 @@ export class ClientTextZone extends TextZone {
 
             content.onmousedown = (e: MouseEvent) => {
                 this.last_mouse_pos = new CanvasCoord(e.pageX, e.pageY);
-                if (interactor_loaded.id == interactor_selection.id){
+                if (interactor_loaded.id == selectionV2.id){
                     function move_div(e: MouseEvent){
                         const new_mouse_pos = new CanvasCoord(e.pageX, e.pageY);
                         const cshift = CanvasVect.from_canvas_coords(text_zone.last_mouse_pos, new_mouse_pos);
@@ -72,7 +72,7 @@ export class ClientTextZone extends TextZone {
                         window.removeEventListener("mousemove", move_div);
                     }
                     window.addEventListener("mouseup", stop_event);
-                } else if (interactor_loaded.id == interactor_eraser.id){
+                } else if (interactor_loaded.id == eraser_interactorV2.id){
                     local_board.emit_delete_elements([[BoardElementType.TextZone, index]]);
                 }
             }
@@ -80,7 +80,7 @@ export class ClientTextZone extends TextZone {
             content.ondblclick = (e) => {
                 const canvas = document.getElementById("main") as HTMLCanvasElement;
                 const ctx = canvas.getContext("2d");
-                select_interactor(interactor_text, canvas, ctx, local_board.graph, null);
+                select_interactor(text_interactorV2, canvas, ctx, local_board.graph, null);
                 local_board.display_text_zone_input(index);
             }
     }

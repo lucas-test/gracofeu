@@ -22,7 +22,7 @@ let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
 let vertex_center_shift = new CanvasVect(0,0);
 let opposite_coord = 0;
-let opposite_corner = new CanvasCoord(0,0);
+let opposite_corner: CanvasCoord;
 let vertices_contained = new Set<number>();
 
 selectionV2.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {

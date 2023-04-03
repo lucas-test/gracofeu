@@ -1,14 +1,14 @@
-import { Graph, TextZone } from "gramoloss";
-import { BoardElementType } from "../board/board";
-import { ClientGraph } from "../board/graph";
-import { ClientLink } from "../board/link";
-import { CanvasCoord, ClientVertex } from "../board/vertex";
-import { local_board } from "../setup";
-import { socket } from "../socket";
-import { DOWN_TYPE, Interactor } from "./interactor";
-import { last_down, last_down_index } from "./interactor_manager";
+import { TextZone } from "gramoloss";
+import { BoardElementType } from "../../board/board";
+import { ClientGraph } from "../../board/graph";
+import { CanvasCoord } from "../../board/vertex";
+import { DOWN_TYPE } from "../../interactors/interactor";
+import { last_down, last_down_index } from "../../interactors/interactor_manager";
+import { local_board } from "../../setup";
+import { ORIENTATION_INFO } from "../element_side_bar";
+import { InteractorV2 } from "../interactor_side_bar";
 
-export var interactor_text = new Interactor("text", "t", "text.svg", new Set([DOWN_TYPE.LINK, DOWN_TYPE.LINK_WEIGHT, DOWN_TYPE.VERTEX, DOWN_TYPE.VERTEX_WEIGHT, DOWN_TYPE.TEXT_ZONE]), 'default')
+export const text_interactorV2 = new InteractorV2("text", "Create and edit text zones", "t", ORIENTATION_INFO.LEFT, "img/interactors/text.svg", "default", new Set([DOWN_TYPE.LINK, DOWN_TYPE.LINK_WEIGHT, DOWN_TYPE.VERTEX, DOWN_TYPE.VERTEX_WEIGHT, DOWN_TYPE.TEXT_ZONE]));
 
 // --------------
 
@@ -28,7 +28,7 @@ document.body.appendChild(text_zone_input);
 
 // --------------
 
-interactor_text.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+text_interactorV2.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     validate_weight();
 
     if (last_down == DOWN_TYPE.LINK || last_down == DOWN_TYPE.LINK_WEIGHT) {
@@ -64,21 +64,17 @@ interactor_text.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     }
 })
 
-interactor_text.mousemove = ((canvas, ctx, g, e) => {
+text_interactorV2.mousemove = ((canvas, ctx, g, e) => {
     return false;
 })
 
-interactor_text.mouseup = ((canvas, ctx, g, e) => {
-})
 
-interactor_text.onleave = () => {
+text_interactorV2.onleave = () => {
     current_index = null;
     turn_off_weight_input();
 }
 
-interactor_text.trigger = (mouse_pos, g: ClientGraph) => {
-    
-}
+
 
 // ---------- SPECIFIC FUNCTIONS
 

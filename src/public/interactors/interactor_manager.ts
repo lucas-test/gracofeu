@@ -1,15 +1,10 @@
 import { Interactor, DOWN_TYPE, RESIZE_TYPE } from './interactor'
-import { interactor_selection } from './selection_interactor';
 import { draw } from '../draw';
 import { socket } from '../socket';
-import { color_interactor } from './color_interactor';
-import { interactor_stroke } from './stroke_interactor';
-import { interactor_eraser } from './eraser_interactor';
 import { actions_available, select_action } from '../actions';
 import { self_user, update_users_canvas_pos } from '../user';
 import { local_board } from '../setup';
 import { regenerate_graph } from '../generators/dom';
-import { interactor_text } from './text';
 import { clear_clipboard, clipboard_comes_from_generator, graph_clipboard, mouse_position_at_generation, paste_generated_graph, set_clipboard } from '../clipboard';
 import { CanvasCoord } from '../board/vertex';
 import { ClientGraph } from '../board/graph';
@@ -23,7 +18,7 @@ import { InteractorV2 } from '../side_bar/interactor_side_bar';
 
 
 export let down_meta_element: any = "";
-export let interactor_loaded: Interactor | InteractorV2 = null;
+export let interactor_loaded: InteractorV2 = null;
 export let down_coord: CanvasCoord = null;
 export let last_down: DOWN_TYPE = null;
 export let last_down_index: number = null;
@@ -38,7 +33,7 @@ key_states.set("Control", false);
 key_states.set("Shift", false);
 
 
-export function select_interactor(interactor: Interactor | InteractorV2, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, pos: CanvasCoord) {
+export function select_interactor(interactor: InteractorV2, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph, pos: CanvasCoord) {
     if (interactor_loaded != null && interactor_loaded != interactor) {
         interactor_loaded.onleave();
     }
@@ -49,7 +44,7 @@ export function select_interactor(interactor: Interactor | InteractorV2, canvas:
     interactor_loaded = interactor_to_load;
     canvas.style.cursor = interactor_to_load.cursor_style;
     local_board.view.is_creating_vertex = false;
-    interactor_to_load.trigger(pos,g);
+    interactor_to_load.trigger(pos);
     select_interactor_div(interactor_to_load);
     requestAnimationFrame(function () { draw(canvas, ctx, g) });
 
@@ -112,6 +107,9 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                 console.log("Request: redo");
                 local_board.emit_redo();
             }
+            document.querySelectorAll(".interactor").forEach(interactor => {
+                interactor.classList.remove("selected");
+            });
             for (let interactor of interactors_available) {
                 if (interactor.shortcut == e.key.toLowerCase()) {
                     deselect_all_interactor_div()
@@ -270,17 +268,8 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
 
 
-
-
-
 let interactors_available = [];
 
-
-
-interactors_available.push(interactor_selection, 
-     color_interactor,
-      interactor_stroke,
-       interactor_text );
 
 
 

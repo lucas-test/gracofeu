@@ -1,14 +1,14 @@
+import { BoardElementType } from "../../board/board";
+import { ClientGraph } from "../../board/graph";
+import { CanvasCoord } from "../../board/vertex";
+import { DOWN_TYPE } from "../../interactors/interactor";
+import { key_states, last_down, last_down_index } from "../../interactors/interactor_manager";
+import { local_board } from "../../setup";
+import { ORIENTATION_INFO } from "../element_side_bar";
+import { InteractorV2 } from "../interactor_side_bar";
+import BASIC_COLORS from '../../basic_colors.json';
 
-import { socket } from '../socket';
-import { Interactor, DOWN_TYPE } from './interactor'
-import { key_states, last_down, last_down_index } from './interactor_manager';
-import BASIC_COLORS from '../basic_colors.json';
-import { CanvasCoord } from '../board/vertex';
-import { ClientGraph } from '../board/graph';
-import { local_board } from '../setup';
-import { BoardElementType } from '../board/board';
-
-export let color_interactor = new Interactor("color", "c", "color.svg", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]), 'url("../img/cursors/color.svg"), auto');
+export const color_interactorV2 = new InteractorV2("color", "Edit colors", "c", ORIENTATION_INFO.LEFT, "img/interactors/color.svg", 'url("../img/cursors/color.svg"), auto', new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]));
 
 // Local variables
 let color_selected = "red";
@@ -54,7 +54,7 @@ function turn_off_color_picker_div() {
 }
 
 function move_back_color_picker_div() {
-    const color_interactor_div = document.getElementById(color_interactor.id);
+    const color_interactor_div = document.getElementById(color_interactorV2.id);
     const offsets = color_interactor_div.getBoundingClientRect();
     color_picker_div.style.top = String(offsets.top) + "px";
     color_picker_div.style.left = "70" + "px";
@@ -122,7 +122,7 @@ function select_previous_color() {
 
 // Interactors methods
 
-color_interactor.trigger = (mouse_pos: CanvasCoord) => {
+color_interactorV2.trigger = (mouse_pos: CanvasCoord) => {
     turn_on_color_picker_div();
     move_back_color_picker_div();
     if (color_picker_div.style.display == "block") {
@@ -135,12 +135,12 @@ color_interactor.trigger = (mouse_pos: CanvasCoord) => {
     }
 }
 
-color_interactor.onleave = () => {
+color_interactorV2.onleave = () => {
     turn_off_color_picker_div();
 }
 
 
-color_interactor.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+color_interactorV2.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down == DOWN_TYPE.VERTEX) {
         if ( g.vertices.has(last_down_index) && g.vertices.get(last_down_index).color != color_selected){
             // const data_socket = new Array();
@@ -161,9 +161,9 @@ color_interactor.mousedown = (( canvas, ctx, g: ClientGraph, e: CanvasCoord) => 
 })
 
 
-color_interactor.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
+color_interactorV2.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     if (last_down != null) {
-        const elt = local_board.get_element_nearby(e, color_interactor.interactable_element_type);
+        const elt = local_board.get_element_nearby(e, color_interactorV2.interactable_element_type);
         if (elt.type == DOWN_TYPE.VERTEX) {
             if ( g.vertices.has(elt.index) && g.vertices.get(elt.index).color != color_selected){
                 local_board.emit_update_element( BoardElementType.Vertex, elt.index, "color", color_selected);
@@ -187,7 +187,3 @@ color_interactor.mousemove = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
 })
 
 
-
-color_interactor.mouseup = ((canvas, ctx, g, e) => {
-
-})

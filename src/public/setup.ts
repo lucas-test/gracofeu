@@ -22,7 +22,9 @@ import { stroke_interactorV2 } from "./side_bar/interactors/stroke";
 import { rectangle_interactorV2 } from "./side_bar/interactors/rectangle";
 import { area_interactorV2 } from "./side_bar/interactors/area";
 import { eraser_interactorV2 } from "./side_bar/interactors/eraser";
-
+import { text_interactorV2 } from "./side_bar/interactors/text";
+import { color_interactorV2 } from "./side_bar/interactors/color";
+import ENV from './.env.json';
 
 export const local_board = new ClientBoard();
 
@@ -133,60 +135,27 @@ function setup() {
 
     edge_side_bar.add_elements(edge_interactorV2, arc_interactorV2, control_point_interactorV2);
 
+    if (ENV.mode == "dev"){
+        right_side_bar.add_elements(detector_interactorV2);
+    }
+
     right_side_bar.add_elements(
         selectionV2,
         edge_folder, 
-        detector_interactorV2, 
         stroke_interactorV2, 
+        color_interactorV2,
         area_interactorV2,
         rectangle_interactorV2,
+        text_interactorV2,
         eraser_interactorV2 );
-
-    // old part
 
     const s1 = new SwitchSideBar("s1", "test switch", "K", ORIENTATION_INFO.LEFT, "img/actions/grid.svg", "pointer", right_side_bar);
     s1.trigger = () => { 
         local_board.view.grid_show = s1.state;
     };
 
-    const b5 = new SideBar("b5", ORIENTATION_SIDE_BAR.VERTICAL);
-    const e9 = new InteractorV2("e9", "Test info",  "K", ORIENTATION_INFO.LEFT, "img/interactor/arc.svg","pointer", new Set()); 
-    const e10 = new InteractorV2("e10", "Test info", "K", ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer", new Set()); 
-    const s2 = new SwitchSideBar("s2", "test switch", "K", ORIENTATION_INFO.LEFT, "img/actions/grid.svg", "pointer", b5);
-
-    b5.add_elements(e9, e10);
-    // b2.dom.style.bottom = "50px";
-
-    
-    const f5 = new FolderSideBar("f5", "bla", "", ORIENTATION_INFO.LEFT, "img/interactor/detector.svg", "default", b5, FOLDER_EXPAND_DIRECTION.LEFT);
-
-
-    const b6 = new SideBar("b6", ORIENTATION_SIDE_BAR.VERTICAL);
-    const e11 = new InteractorV2("e11", "Test info", "K", ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer", new Set()); 
-    const e12 = new InteractorV2("e12", "Test info", "K", ORIENTATION_INFO.LEFT, "img/interactor/arc.svg","pointer", new Set()); 
-    const e13 = new InteractorV2("e13", "Test info", "K",ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer", new Set()); 
-
-    b6.add_elements(e11, e12, e13);
-
-    
-    const f6 = new FolderSideBar("f6", "bla", "",ORIENTATION_INFO.LEFT, "img/interactor/detector.svg", "default", b6, FOLDER_EXPAND_DIRECTION.LEFT);
-
-
-    
-    const e14 = new InteractorV2("e14", "Test info", "K",ORIENTATION_INFO.LEFT, "img/interactor/arc.svg","pointer", new Set()); 
-    const e15 = new InteractorV2("e15", "Test info", "K",ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer" , new Set()); 
-    right_side_bar.add_elements(e14, e15, f5, f6);
-
     right_side_bar.dom.style.right = "0px";
     right_side_bar.dom.style.top = "300px";
-
-
-    const b7 = new SideBar("b7", ORIENTATION_SIDE_BAR.VERTICAL);
-    const e16 = new InteractorV2("e16", "", "",ORIENTATION_INFO.LEFT, "img/interactor/color.svg","pointer", new Set()); 
-    const f7 = new FolderSideBar("f7", "", "",ORIENTATION_INFO.LEFT, "img/interactor/color.svg", "pointer", b7, FOLDER_EXPAND_DIRECTION.LEFT);
-
-    b5.add_elements(f7);
-    b7.add_elements(e16);
 
     document.body.appendChild(right_side_bar.dom);
 
