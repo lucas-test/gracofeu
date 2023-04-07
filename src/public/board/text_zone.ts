@@ -1,19 +1,19 @@
 import { Coord, TextZone } from "gramoloss";
 import { interactor_loaded, key_states, select_interactor } from "../interactors/interactor_manager";
 import { selectionV2 } from "../side_bar/interactors/selection";
-import { text_interactorV2 } from "../side_bar/interactors/text";
-import renderMathInElement, { RenderOptions } from "../katex-auto-render/auto-render";
+import renderMathInElement from "../katex-auto-render/auto-render";
 import { local_board } from "../setup";
 import { eraser_interactorV2 } from "../side_bar/interactors/eraser";
 import { BoardElementType } from "./board";
 import { View } from "./camera";
 import { CanvasVect } from "./vect";
 import { CanvasCoord } from "./vertex";
+import { marked } from "marked";
 
 export class ClientTextZone extends TextZone {
     canvas_pos: CanvasCoord;
     div: HTMLDivElement;
-    content_div: HTMLPreElement;
+    content_div: HTMLDivElement;
     last_mouse_pos: CanvasCoord;
 
     constructor(pos: Coord, width: number, text: string, view: View, index: number){
@@ -28,7 +28,7 @@ export class ClientTextZone extends TextZone {
             this.div.classList.add("text_zone");
             this.div.style.width = String(this.width) + "px";
 
-            const content = document.createElement("pre");
+            const content = document.createElement("div");
             content.id = "text_zone_content_" + index;
             content.classList.add("text_zone_content");
             content.innerHTML = text;
@@ -151,8 +151,11 @@ export class ClientTextZone extends TextZone {
         // new_text = new_text.replace(/\n/g, "<br>");
         // new_text = new_text.replace(/\r/g, "");
         //  for (const content of this.div.getElementsByClassName("text_zone_content")){
-        this.content_div.innerText = new_text;// katex.renderToString(text);
+        // this.content_div.innerText = new_text;// katex.renderToString(text);
+        const test = marked.parse(new_text);
+        this.content_div.innerHTML = test;
         renderMathInElement(this.content_div);
+
         //  }
         this.reset_div_pos();
     }

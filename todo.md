@@ -153,7 +153,7 @@
     - [ ] issue: two <Enter> gives 3 <br> ...
     - [ ] security:  exclude html tag (like <br>)
     - [X] latex auto generating
-    - [ ] md auto-generating
+    - [X] md auto-generating
     - [ ] mutex: two clients should not edit textZone simultaneously
     - [ ] highlight
     - [ ] set carret to the position of the click (difficulty: hard)
