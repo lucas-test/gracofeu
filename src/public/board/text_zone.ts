@@ -1,5 +1,5 @@
 import { Coord, TextZone } from "gramoloss";
-import { interactor_loaded, select_interactor } from "../interactors/interactor_manager";
+import { interactor_loaded, key_states, select_interactor } from "../interactors/interactor_manager";
 import { selectionV2 } from "../side_bar/interactors/selection";
 import { text_interactorV2 } from "../side_bar/interactors/text";
 import renderMathInElement, { RenderOptions } from "../katex-auto-render/auto-render";
@@ -13,6 +13,7 @@ import { CanvasCoord } from "./vertex";
 export class ClientTextZone extends TextZone {
     canvas_pos: CanvasCoord;
     div: HTMLDivElement;
+    content_div: HTMLPreElement;
     last_mouse_pos: CanvasCoord;
 
     constructor(pos: Coord, width: number, text: string, view: View, index: number){
@@ -21,15 +22,19 @@ export class ClientTextZone extends TextZone {
         this.last_mouse_pos = new CanvasCoord(0,0);
 
             this.div = document.createElement("div");
+            this.div.id = "text_zone_" + index;
             this.reset_div_pos();
             document.body.appendChild(this.div);
             this.div.classList.add("text_zone");
             this.div.style.width = String(this.width) + "px";
 
-            const content = document.createElement("div");
+            const content = document.createElement("pre");
+            content.id = "text_zone_content_" + index;
             content.classList.add("text_zone_content");
             content.innerHTML = text;
+            content.contentEditable = "true";
             this.div.appendChild(content);
+            this.content_div = content;
             
 
             const sidebar = document.createElement("div");
@@ -56,6 +61,13 @@ export class ClientTextZone extends TextZone {
                 return;
             }
 
+            content.onmousemove = () => {
+                if (interactor_loaded.id == selectionV2.id){
+                    const s = window.getSelection();
+                    s.removeAllRanges();
+                }
+            }
+
             content.onmousedown = (e: MouseEvent) => {
                 this.last_mouse_pos = new CanvasCoord(e.pageX, e.pageY);
                 if (interactor_loaded.id == selectionV2.id){
@@ -77,12 +89,53 @@ export class ClientTextZone extends TextZone {
                 }
             }
 
-            content.ondblclick = (e) => {
-                const canvas = document.getElementById("main") as HTMLCanvasElement;
-                const ctx = canvas.getContext("2d");
-                select_interactor(text_interactorV2, canvas, ctx, local_board.graph, null);
-                local_board.display_text_zone_input(index);
+            content.onfocus = (e) => {
+                if ( interactor_loaded.id != selectionV2.id){
+                    content.innerText = this.text;
+                    restoreSelection(content.id);
+                } else {
+                    content.blur();
+                }
             }
+
+            content.onblur = (e) => {
+                onDivBlur();
+                local_board.emit_update_element(BoardElementType.TextZone, index, "text", this.text);
+            }
+
+
+            content.oninput = (e) => {
+                this.text = content.innerText;
+            }
+
+            content.onkeydown = (e) => {
+                if (e.key == "Tab") { // tab key
+                    console.log("tab");
+                    e.preventDefault(); 
+
+                    const sel = window.getSelection();
+                    const range = sel.getRangeAt(0);
+                    // \u0009 = Tab but not displayed in div
+                    // \u00a0 = Space
+                    const tabNode = document.createTextNode("\u00a0");
+                    range.insertNode(tabNode);
+                    range.setStartAfter(tabNode);
+                    range.setEndAfter(tabNode); 
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+
+            content.onkeyup = (e) => {
+                saveSelection();
+                local_board.emit_update_element(BoardElementType.TextZone, index, "text", this.text);
+
+                if (e.key == "Enter" && key_states.get("Control")) {
+                    content.blur();
+                }
+            }
+
+        this.update_text(text);
     }
 
     translate(shift: CanvasVect, view: View) {
@@ -93,12 +146,14 @@ export class ClientTextZone extends TextZone {
 
 
     update_text(new_text: string){
-        new_text = new_text.replace(/(\r\n|\r|\n)/g, "<br>");
         this.text = new_text;
-         for (const content of this.div.getElementsByClassName("text_zone_content")){
-            content.innerHTML = new_text;// katex.renderToString(text);
-            renderMathInElement(content as HTMLElement);
-         }
+        // new_text = new_text.replace(/(\r\n)/g, "<br>");
+        // new_text = new_text.replace(/\n/g, "<br>");
+        // new_text = new_text.replace(/\r/g, "");
+        //  for (const content of this.div.getElementsByClassName("text_zone_content")){
+        this.content_div.innerText = new_text;// katex.renderToString(text);
+        renderMathInElement(this.content_div);
+        //  }
         this.reset_div_pos();
     }
 
@@ -115,4 +170,39 @@ export class ClientTextZone extends TextZone {
         this.canvas_pos = view.create_canvas_coord(this.pos);
         this.reset_div_pos();
     }
+}
+
+
+
+// Saving caret position when editing
+
+
+let savedRange: Range = null;
+
+function saveSelection() {
+    if(window.getSelection)//non IE Browsers
+    {
+        savedRange = window.getSelection().getRangeAt(0);
+    }
+}
+
+function restoreSelection(div_id: string) {
+    document.getElementById(div_id).focus();
+    if (savedRange != null) {
+        if (window.getSelection)//non IE and there is already a selection
+        {
+            const s = window.getSelection();
+            if (s.rangeCount > 0) 
+                s.removeAllRanges();
+            s.addRange(savedRange);
+        }
+        else if (document.createRange)//non IE and no selection
+        {
+            window.getSelection().addRange(savedRange);
+        }
+    }
+}
+
+function onDivBlur() {
+    savedRange = null;
 }

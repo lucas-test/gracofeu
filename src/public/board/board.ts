@@ -111,45 +111,10 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
         const pos = this.view.create_server_coord(canvas_pos);
         const text_zone = new ClientTextZone(pos, 200, "salut", this.view, index);
         this.text_zones.set(index, text_zone);
-        text_zone.div.onclick = (e) => {
-            if( interactor_loaded.id == "text"){
-                // validate_weight();
-                this.display_text_zone_input(index);
-            }
-        }
         return index;
     }
 
-    display_text_zone_input(index: number) {
-        //current_index = index;
-        // current_element_type = element_type;
-        if (this.text_zones.has(index)){
-            const text_zone = this.text_zones.get(index);
-            const text_zone_input = document.getElementById("text_zone_input") as HTMLTextAreaElement;
-            text_zone_input.style.width = String(text_zone.width) + "px";
-            text_zone_input.style.height = String(text_zone.div.clientHeight) + "px";
-            text_zone_input.value = text_zone.text.replace(/<br\s*\/?>/mg, "\n");
-            text_zone_input.style.display = "block";
-            text_zone_input.style.top = String(text_zone.canvas_pos.y) + "px";
-            text_zone_input.style.left = String(text_zone.canvas_pos.x) + "px";
-            window.setTimeout(() => text_zone_input.focus(), 0); // without timeout does not focus
-            text_zone_input.onkeyup = (e) => {
-                if (e.key == " "){
-                    local_board.emit_update_element( BoardElementType.TextZone, index, "text", text_zone_input.value);
-                } 
-                if (e.key == "Enter" && key_states.get("Control")) {
-                    local_board.emit_update_element(BoardElementType.TextZone, index, "text", text_zone_input.value);
-                    text_zone_input.value = "";
-                    text_zone_input.style.display = "none";
-                    text_zone_input.blur();
-                }else {
-                    text_zone_input.style.height = "1px";
-                    text_zone_input.style.height = String(text_zone_input.scrollHeight) + "px";
-                }
-            }
-        }
-        
-    }
+    
 
 
     get_element_nearby(pos: CanvasCoord, interactable_element_type: Set<DOWN_TYPE>) {

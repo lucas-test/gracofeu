@@ -118,7 +118,7 @@ export function load_param(param: Parametor, canvas: HTMLCanvasElement, ctx: Can
 
 
 export function update_params_loaded(g:ClientGraph, sensibilities:Set<SENSIBILITY>, force_compute?:boolean) {
-    console.log("update_params_loaded ", sensibilities);
+    // console.log("update_params_loaded ", sensibilities);
     if(force_compute === undefined){
         force_compute = false;
     }

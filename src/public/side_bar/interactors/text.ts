@@ -21,10 +21,6 @@ input.id = "weight_input";
 input.type = "text";
 document.body.appendChild(input);
 
-const text_zone_input = document.createElement("textarea");
-text_zone_input.id = "text_zone_input";
-text_zone_input.style.display = "none";
-document.body.appendChild(text_zone_input);
 
 // --------------
 
@@ -48,24 +44,14 @@ text_interactorV2.mousedown = ((canvas, ctx, g: ClientGraph, e: CanvasCoord) => 
         }
     }
     if ( last_down == DOWN_TYPE.EMPTY){
-        if (text_zone_input.style.display == "none"){
-            const coord = local_board.view.create_server_coord(e);
-            local_board.emit_add_element(new TextZone(coord, 100, ""),(response: number) => { } );
-            // const new_index = local_board.create_text_zone(e);
-            // local_board.display_text_zone_input(new_index);
-        }else {
-            text_zone_input.value = "";
-            text_zone_input.style.display = "none";
-            text_zone_input.blur();
-        }
+        const coord = local_board.view.create_server_coord(e);
+        local_board.emit_add_element(new TextZone(coord, 100, ""),(response: number) => { 
+            setTimeout(() => {
+                const text_zone = local_board.text_zones.get(response);
+                text_zone.content_div.focus();
+            }, 50);
+        } );
     }
-    if ( last_down == DOWN_TYPE.TEXT_ZONE){
-        local_board.display_text_zone_input(last_down_index);
-    }
-})
-
-text_interactorV2.mousemove = ((canvas, ctx, g, e) => {
-    return false;
 })
 
 

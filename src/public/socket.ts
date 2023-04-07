@@ -266,7 +266,7 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 
 
     function handle_update_element(data){
-        console.log("handle_update_element", data);
+        // console.log("handle_update_element", data);
         if (data.kind == "TextZone"){
             const text_zone = local_board.text_zones.get(data.index);
             if (data.param == "width"){
@@ -275,8 +275,11 @@ export function setup_socket(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
                 text_zone.div.style.width = String(width) + "px";
             }
             if (data.param == "text"){
-                const text = data.value as string;
-                text_zone.update_text(text);
+                if (document.activeElement.id != ("text_zone_content_" + data.index)){
+                    console.log("update text zone : ", data.index);
+                    const text = data.value as string;
+                    text_zone.update_text(text);
+                }
             }
         } else if (data.kind == "Vertex"){
             const vertex = local_board.graph.vertices.get(data.index);
