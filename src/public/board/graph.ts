@@ -4,8 +4,10 @@ import { DOWN_TYPE } from "../interactors/interactor";
 import { ClientStroke } from "./stroke";
 import { CanvasCoord, ClientVertex } from "./vertex";
 import { ClientLink } from "./link";
-import { Graph, Link, middle, ORIENTATION } from "gramoloss";
+import { Coord, Graph, Link, middle, ORIENTATION, Vect } from "gramoloss";
 import { CanvasVect } from "./vect";
+import { draw_circle } from "../draw_basics";
+import { draw } from "../draw";
 
 
 
@@ -161,6 +163,64 @@ export class ClientGraph extends Graph<ClientVertex, ClientLink> {
                     break;
                 }
             }
+        }
+        if (view.display_triangular_grid) {
+            const grid_size = view.grid_size;
+            const h = grid_size*Math.sqrt(3)/2;
+
+            // find the corners of the quadrilateral containing the point
+            const px = ((pos_to_align.x-view.camera.x)- (pos_to_align.y-view.camera.y)/Math.sqrt(3))/grid_size;
+            const py = (pos_to_align.y-view.camera.y)/h;
+            const i = Math.floor(px);
+            const j = Math.floor(py);
+            const corners = [
+                new Coord(i*grid_size + j*grid_size/2, Math.sqrt(3)*j*grid_size/2), // top left
+                new Coord((i+1)*grid_size + j*grid_size/2, Math.sqrt(3)*j*grid_size/2), // top right
+                new Coord(i*grid_size + (j+1)*grid_size/2, Math.sqrt(3)*(j+1)*grid_size/2), // bottom left
+                new Coord((i+1)*grid_size + (j+1)*grid_size/2, Math.sqrt(3)*(j+1)*grid_size/2) // bottom right
+            ]
+            
+            // align on the corners if the point is near enough
+            for (let corner of corners){
+                corner = corner.add(view.camera);
+                if (Math.sqrt(corner.dist2(pos_to_align)) <= 2*15){
+                    aligned_pos.x = corner.x;
+                    aligned_pos.y = corner.y;
+                    return aligned_pos;
+                }
+            }
+
+            // projection on the \ diagonal starting at the top left corner
+            const projection1 = pos_to_align.orthogonal_projection(corners[0], new Vect(1 , Math.sqrt(3))) ; 
+            if (projection1.dist2(pos_to_align) <= 15*15){
+                aligned_pos.x = projection1.x;
+                aligned_pos.y = projection1.y;
+            }
+
+            // projection on the \ diagonal starting at the top right corner
+            const projection2 = pos_to_align.orthogonal_projection(corners[1], new Vect(1 , Math.sqrt(3))) ; 
+            if (projection2.dist2(pos_to_align) <= 15*15){
+                aligned_pos.x = projection2.x;
+                aligned_pos.y = projection2.y;
+            }
+
+            // projection on the / diagonal starting at the top right corner
+            const projection = pos_to_align.orthogonal_projection(corners[1], new Vect(-1 , Math.sqrt(3))) ; 
+            if (projection.dist2(pos_to_align) <= 15*15){
+                aligned_pos.x = projection.x;
+                aligned_pos.y = projection.y;
+            }
+
+            // align on the horizontal lines
+            for (let k of [0,3]){ // 0 and 3 are the indices of the top left and bottom right corner
+                // of the quadrilateral containing the point
+                let y = corners[k].y;
+                if (Math.abs(y - pos_to_align.y) <= 15) {
+                    aligned_pos.y = y;
+                    break;
+                }
+            }
+            
         }
         return aligned_pos;
     }

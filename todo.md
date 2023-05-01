@@ -106,7 +106,11 @@
     - [ ] verbose
     - [ ] import à partir d'une fonction de gramoloss
 
-
+- grid
+    - [X] triangular grid
+    - [ ] vertical triangular grid 
+    - [ ] polar grid
+    - [ ] hexagonal grid ???
 
 
 - [ ] gestion tablette

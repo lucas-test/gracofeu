@@ -22,6 +22,8 @@ export class View {
     grid_max_size: number;
     grid_initial_size: number;
     grid_show: boolean;
+
+    display_triangular_grid: boolean;
     
     is_link_creating: boolean;
     link_creating_type: ORIENTATION;
@@ -56,8 +58,8 @@ export class View {
         this.old_camera = new Coord(0, 0);
         this.zoom = 1.;
         this.grid_min_size = 40;
-        this.grid_max_size = 80;
-        this.grid_initial_size = 50;
+        this.grid_max_size = 100;
+        this.grid_initial_size = 70;
         this.grid_size = this.grid_initial_size;
         this.grid_show = false;
         this.is_link_creating = false;
@@ -76,6 +78,8 @@ export class View {
         this.is_drawing_interactor = true;
         // this.window_width = window.innerWidth;
         // this.window_height = window.innerHeight;
+
+        this.display_triangular_grid = false;
     }
 
    

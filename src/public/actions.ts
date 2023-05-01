@@ -188,22 +188,11 @@ align_action.trigger = () => {
 
 
 
-let grid_action = new Action("grid_mode", "Show Layout", "grid.svg", "l");
-grid_action.trigger = () => {
-    local_board.view.grid_show = !local_board.view.grid_show;
-    const grid_div = document.getElementById("grid_mode");
-    if (local_board.view.grid_show) {
-        grid_div.classList.add("action_activated");
-    }
-    else {
-        grid_div.classList.remove("action_activated");
-    }
-}
 
 
 
 export let actions_available = new Array<Action>();
-actions_available.push(generator_action, modifyer_action, grid_action, align_action, index_action, dark_mode_action, share_action, save_file_action, load_file_action)
+actions_available.push(generator_action, modifyer_action, align_action, index_action, dark_mode_action, share_action, save_file_action, load_file_action)
 
 export function select_action(action: Action, canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph){
     document.getElementById(action.name + "_subactions").style.display = "block";

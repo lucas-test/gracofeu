@@ -1,8 +1,7 @@
 import { Area, Board, Coord, Graph, Link, Stroke, TextZone, Vect, Vertex } from "gramoloss";
+import { GRID_COLOR } from "../draw";
 import { DOWN_TYPE, RESIZE_TYPE } from "../interactors/interactor";
-import { interactor_loaded, key_states } from "../interactors/interactor_manager";
 import { GraphModifyer } from "../modifyers/modifyer";
-import { local_board } from "../setup";
 import { socket } from "../socket";
 import { ClientArea } from "./area";
 import { View } from "./camera";
@@ -56,7 +55,80 @@ export class ClientBoard extends Board<ClientVertex, ClientLink, ClientStroke, C
         this.view = new View();
     }
 
+    /**
+     * Draw a triangular grid. 
+     * The length of the equilateral triangle is `grid_size` of view.
+     * @param canvas The sidebar the item belongs
+     * @param ctx The ctx of the canvas
+     */
+    draw_triangular_grid(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) {
+        const grid_size = this.view.grid_size;
+        const h = grid_size*Math.sqrt(3)/2;
+
+        //   \ diagonals
+        for (let x = (this.view.camera.x - this.view.camera.y/Math.sqrt(3)) % grid_size - Math.floor((canvas.width+canvas.height)/grid_size)*grid_size; x < canvas.width; x += grid_size) {
+            ctx.beginPath();
+            ctx.strokeStyle = GRID_COLOR;
+            ctx.lineWidth = 1;
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x + canvas.height , canvas.height*Math.sqrt(3));
+            ctx.stroke();
+        }
+
+        //   / diagonals
+        for (let x = (this.view.camera.x + this.view.camera.y/Math.sqrt(3)) % grid_size + Math.floor((canvas.width+canvas.height)/grid_size)*grid_size; x > 0 ; x -= grid_size) {
+            ctx.beginPath();
+            ctx.strokeStyle = GRID_COLOR;
+            ctx.lineWidth = 1;
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x - canvas.height , canvas.height*Math.sqrt(3));
+            ctx.stroke();
+        }
+
+        // horizontal lines
+        for (let y = this.view.camera.y % h; y < canvas.height; y += h) {
+            ctx.beginPath();
+            ctx.strokeStyle = GRID_COLOR;
+            ctx.lineWidth = 1;
+            ctx.moveTo(0, y);
+            ctx.lineTo(canvas.width, y);
+            ctx.stroke();
+        }
+
+        // debugging : draw the quadrilateral containing the point
+
+        // for (let i = 0 ; i < 10 ; i ++){
+        //     for (let j = 0 ; j < 10 ; j ++){
+        //         let pos = new Coord(i*grid_size + j*grid_size/2, Math.sqrt(3)*j*grid_size/2);
+        //         pos = pos.add(this.view.camera);
+        //         let cpos = new CanvasCoord(pos.x, pos.y);
+        //         draw_circle(cpos, "red", 10, 1, ctx);
+        //     }
+        // }
+
+
+        // const px = ((mouse_pos.x - this.view.camera.x) - (mouse_pos.y - this.view.camera.y)/Math.sqrt(3))/grid_size;
+        // const py = (mouse_pos.y - this.view.camera.y)/h;
+        // const i = Math.floor(px);
+        // const j = Math.floor(py);
+
+        // let pos = new Coord(i*grid_size + j*grid_size/2, Math.sqrt(3)*j*grid_size/2);
+        // pos = pos.add(this.view.camera);
+        // let cpos = new CanvasCoord(pos.x, pos.y);
+        // draw_circle(cpos, "blue", 10, 1, ctx);
+
+        // let pos2 = new Coord((i+1)*grid_size + (j+1)*grid_size/2, Math.sqrt(3)*(j+1)*grid_size/2);
+        // pos2 = pos2.add(this.view.camera);
+        // let cpos2 = new CanvasCoord(pos2.x, pos2.y);
+        // draw_circle(cpos2, "blue", 10, 1, ctx);
+
+
+    }
+
     draw(ctx: CanvasRenderingContext2D) {
+        if (this.view.display_triangular_grid){
+            this.draw_triangular_grid(document.getElementById("main") as HTMLCanvasElement, ctx);
+        }
         for (const rep of this.representations.values()){
             rep.draw(ctx, this.view);
         }

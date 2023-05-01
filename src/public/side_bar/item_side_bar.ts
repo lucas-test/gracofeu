@@ -1,10 +1,7 @@
-import { ClientGraph } from "../board/graph";
 import { CanvasCoord } from "../board/vertex";
 import { draw } from "../draw";
-import { interactor_loaded, select_interactor } from "../interactors/interactor_manager";
 import { local_board } from "../setup";
 import { ElementSideBar, ORIENTATION_INFO } from "./element_side_bar";
-import { InteractorV2 } from "./interactor_side_bar";
 import { SideBar } from "./side_bar";
 
 
@@ -19,6 +16,7 @@ export abstract class ItemSideBar extends ElementSideBar {
 
     unselect(reset?:boolean) {
         this.dom.classList.remove("bar_side_active_item");
+        this.dom.classList.remove("selected");
         
         if(reset){
             // We reset the image to its default value

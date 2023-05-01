@@ -79,6 +79,27 @@ function setup() {
 
     const bottom_side_bar = new SideBar("side_bar_bottom_test", ORIENTATION_SIDE_BAR.HORIZONTAL, true);  
 
+    const switch_button_triangular_grid = new SwitchSideBar("switch_button_triangular_grid", "Switch triangular grid", "", ORIENTATION_INFO.TOP, "img/actions/triangular_grid.svg", "pointer", bottom_side_bar);
+    const switch_button_rect_grid = new SwitchSideBar("switch_button_rect_grid", "Switch rectangular grid", "", ORIENTATION_INFO.TOP, "img/actions/grid.svg", "pointer", bottom_side_bar);
+    
+    switch_button_triangular_grid.trigger = () => { 
+        local_board.view.display_triangular_grid = switch_button_triangular_grid.state;
+        if (switch_button_triangular_grid.state){
+            local_board.view.grid_show = false;
+            switch_button_rect_grid.state = false;
+            switch_button_rect_grid.unselect();
+        }
+    };
+    
+    switch_button_rect_grid.trigger = () => { 
+        local_board.view.grid_show = switch_button_rect_grid.state;
+        if (switch_button_rect_grid.state){
+            local_board.view.display_triangular_grid = false;
+            switch_button_triangular_grid.state = false;
+            switch_button_triangular_grid.unselect();
+        }
+    };
+
 
     const b2 = new SideBar("b2", ORIENTATION_SIDE_BAR.HORIZONTAL);
     const e3 = new InteractorV2("e3", "Test info", "K", ORIENTATION_INFO.TOP, "img/interactor/arc.svg","pointer", new Set()); 
@@ -149,13 +170,10 @@ function setup() {
         text_interactorV2,
         eraser_interactorV2 );
 
-    const s1 = new SwitchSideBar("s1", "test switch", "K", ORIENTATION_INFO.LEFT, "img/actions/grid.svg", "pointer", right_side_bar);
-    s1.trigger = () => { 
-        local_board.view.grid_show = s1.state;
-    };
+
 
     right_side_bar.dom.style.right = "0px";
-    right_side_bar.dom.style.top = "300px";
+    right_side_bar.dom.style.top = "150px";
 
     document.body.appendChild(right_side_bar.dom);
 

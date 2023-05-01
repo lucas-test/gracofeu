@@ -1,6 +1,6 @@
 const SELECTION_COLOR = 'green' // avant c'était '#00ffff'
 export let COLOR_BACKGROUND = "#1e1e1e";
-const GRID_COLOR = '#777777';
+export const GRID_COLOR = '#777777';
 export const VERTEX_RADIUS = 8;
 const COLOR_ALIGNEMENT_LINE = "#555555";
 export let COLOR_BORDER_VERTEX = "#ffffff";
@@ -532,6 +532,9 @@ function draw_graph_generated(ctx: CanvasRenderingContext2D){
 
 export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g: ClientGraph) {
     draw_background(canvas, ctx);
+    
+    local_board.draw(ctx);
+
     draw_areas(ctx, g);
     draw_alignements(ctx);
     draw_strokes(ctx, g);
@@ -543,6 +546,6 @@ export function draw(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, g
     draw_graph_generated(ctx);
     // draw_following(ctx);
 
-    local_board.draw(ctx);
+    
 }
 
