@@ -15,7 +15,7 @@ import { InteractorV2 } from "../interactor_side_bar";
 let is_erasing = false;
 const erase_distance = 8;
 
-export const eraser_interactorV2 = new InteractorV2("eraser", "Erase objects", "r", ORIENTATION_INFO.LEFT, "img/interactors/eraser.svg", 'url("../img/cursors/eraser.svg"), auto', new Set([DOWN_TYPE.STROKE]));
+export const eraser_interactorV2 = new InteractorV2("eraser", "Erase objects", "r", ORIENTATION_INFO.RIGHT, "img/interactors/eraser.svg", 'url("../img/cursors/eraser.svg"), auto', new Set([DOWN_TYPE.STROKE]));
 
 // return true if somethin has been erased
 function erase_at(g: ClientGraph, e: CanvasCoord) : boolean{

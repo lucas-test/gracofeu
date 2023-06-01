@@ -8,7 +8,7 @@ import { local_board } from "../../setup";
 import { ORIENTATION_INFO } from "../element_side_bar";
 import { InteractorV2 } from "../interactor_side_bar";
 
-export var arc_interactorV2 = new InteractorV2("arc", "Arc creating", "a", ORIENTATION_INFO.LEFT, "img/interactors/arc.svg", "default", new Set([DOWN_TYPE.VERTEX]));
+export var arc_interactorV2 = new InteractorV2("arc", "Arc creating", "a", ORIENTATION_INFO.RIGHT, "img/interactors/arc.svg", "default", new Set([DOWN_TYPE.VERTEX]));
 
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 

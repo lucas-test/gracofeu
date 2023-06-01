@@ -8,7 +8,7 @@ import { local_board } from "../../setup";
 import { ORIENTATION_INFO } from "../element_side_bar";
 import { InteractorV2 } from "../interactor_side_bar";
 
-export const text_interactorV2 = new InteractorV2("text", "Create and edit text zones", "t", ORIENTATION_INFO.LEFT, "img/interactors/text.svg", "default", new Set([DOWN_TYPE.LINK, DOWN_TYPE.LINK_WEIGHT, DOWN_TYPE.VERTEX, DOWN_TYPE.VERTEX_WEIGHT, DOWN_TYPE.TEXT_ZONE]));
+export const text_interactorV2 = new InteractorV2("text", "Create and edit text zones", "t", ORIENTATION_INFO.RIGHT, "img/interactors/text.svg", "default", new Set([DOWN_TYPE.LINK, DOWN_TYPE.LINK_WEIGHT, DOWN_TYPE.VERTEX, DOWN_TYPE.VERTEX_WEIGHT, DOWN_TYPE.TEXT_ZONE]));
 
 // --------------
 

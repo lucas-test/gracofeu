@@ -8,7 +8,7 @@ import { ORIENTATION_INFO } from "../element_side_bar";
 import { InteractorV2 } from "../interactor_side_bar";
 import BASIC_COLORS from '../../basic_colors.json';
 
-export const color_interactorV2 = new InteractorV2("color", "Edit colors", "c", ORIENTATION_INFO.LEFT, "img/interactors/color.svg", 'url("../img/cursors/color.svg"), auto', new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]));
+export const color_interactorV2 = new InteractorV2("color", "Edit colors", "c", ORIENTATION_INFO.RIGHT, "img/interactors/color.svg", 'url("../img/cursors/color.svg"), auto', new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE]));
 
 // Local variables
 let color_selected = "red";

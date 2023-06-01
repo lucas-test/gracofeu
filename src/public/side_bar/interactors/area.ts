@@ -11,7 +11,7 @@ import { ORIENTATION_INFO } from '../element_side_bar';
 import { InteractorV2 } from '../interactor_side_bar';
 
 
-export const area_interactorV2 = new InteractorV2("area", "Create areas", "g", ORIENTATION_INFO.LEFT, "img/interactors/area.svg", "default", new Set([DOWN_TYPE.AREA]));
+export const area_interactorV2 = new InteractorV2("area", "Create areas", "g", ORIENTATION_INFO.RIGHT, "img/interactors/area.svg", "default", new Set([DOWN_TYPE.AREA]));
 
 let is_creating_area : boolean;
 let last_created_area_index: number = null;

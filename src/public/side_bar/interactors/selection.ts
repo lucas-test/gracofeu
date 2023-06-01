@@ -16,7 +16,7 @@ import { self_user, update_users_canvas_pos } from "../../user";
 import { ORIENTATION_INFO } from "../element_side_bar";
 import { InteractorV2 } from "../interactor_side_bar";
 
-export const selectionV2 = new InteractorV2("selection", "Selection tool", "s", ORIENTATION_INFO.LEFT, "img/interactors/selection.svg", "default", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION, DOWN_TYPE.RECTANGLE, DOWN_TYPE.AREA, DOWN_TYPE.RESIZE]))
+export const selectionV2 = new InteractorV2("selection", "Selection tool", "s", ORIENTATION_INFO.RIGHT, "img/interactors/selection.svg", "default", new Set([DOWN_TYPE.VERTEX, DOWN_TYPE.LINK, DOWN_TYPE.STROKE, DOWN_TYPE.REPRESENTATION_ELEMENT, DOWN_TYPE.REPRESENTATION, DOWN_TYPE.RECTANGLE, DOWN_TYPE.AREA, DOWN_TYPE.RESIZE]))
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);

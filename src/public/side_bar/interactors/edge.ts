@@ -13,7 +13,7 @@ import { InteractorV2 } from "../interactor_side_bar";
 var index_last_created_vertex = null; // est ce qu'on peut pas intégrer ça dans interactor_edge directement ?
 
 
-export const edge_interactorV2 = new InteractorV2("edge", "Creating edges", "e", ORIENTATION_INFO.LEFT, "img/interactors/edition.svg", "default", new Set([DOWN_TYPE.VERTEX]));
+export const edge_interactorV2 = new InteractorV2("edge", "Creating edges", "e", ORIENTATION_INFO.RIGHT, "img/interactors/edition.svg", "default", new Set([DOWN_TYPE.VERTEX]));
 
 edge_interactorV2.mousedown = ((canvas, ctx, g: ClientGraph, e) => {
     if (last_down == DOWN_TYPE.EMPTY) {

@@ -1,7 +1,6 @@
 import { Interactor, DOWN_TYPE, RESIZE_TYPE } from './interactor'
 import { draw } from '../draw';
 import { socket } from '../socket';
-import { actions_available, select_action } from '../actions';
 import { self_user, update_users_canvas_pos } from '../user';
 import { local_board } from '../setup';
 import { regenerate_graph } from '../generators/dom';
@@ -23,7 +22,7 @@ export let down_coord: CanvasCoord = null;
 export let last_down: DOWN_TYPE = null;
 export let last_down_index: number = null;
 export let has_moved: boolean = false;
-export let mouse_pos = new CanvasCoord(0, 0);
+export let mouse_pos: CanvasCoord = null;
 export let key_states = new Map<string, boolean>();
 export let mouse_buttons: string | number = "";
 let previous_canvas_shift = new CanvasVect(0,0);
@@ -117,11 +116,13 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
                     return;
                 }
             }
+            /*
             for (const action of actions_available) {
                 if (action.shortcut == e.key) {
                     select_action(action, canvas, ctx, g);
                 }
             }
+            */
         }
     });
 
@@ -167,8 +168,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
 
     canvas.addEventListener('mousemove', function (e) {
         const click_pos = new CanvasCoord(e.pageX, e.pageY);
-        mouse_pos.x = e.pageX;
-        mouse_pos.y = e.pageY;
+        mouse_pos = new CanvasCoord(e.pageX, e.pageY);
         has_moved = true;
         if (graph_clipboard != null) {
             const shift = CanvasVect.from_canvas_coords(mouse_position_at_generation,click_pos);
@@ -239,8 +239,7 @@ export function setup_interactions(canvas: HTMLCanvasElement, ctx: CanvasRenderi
     });
 
     canvas.addEventListener('touchmove', (e) => {
-        mouse_pos.x = e.touches[0].clientX;
-        mouse_pos.y = e.touches[0].clientY;
+        mouse_pos = new CanvasCoord(e.touches[0].clientX, e.touches[0].clientY);
         has_moved = true;
         if (interactor_loaded.mousemove(canvas, ctx, g, mouse_pos)) {
             requestAnimationFrame(function () {

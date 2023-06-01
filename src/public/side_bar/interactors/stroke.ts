@@ -17,7 +17,7 @@ let gap_refresh = 0;
 const sample_period = 3; // number of frames between two points, skipping the others; 3 is empirically a good value
 
 
-export const stroke_interactorV2 = new InteractorV2("pen", "Pen", "p", ORIENTATION_INFO.LEFT, "img/interactors/stroke.svg", "default", new Set([DOWN_TYPE.VERTEX]));
+export const stroke_interactorV2 = new InteractorV2("pen", "Pen", "p", ORIENTATION_INFO.RIGHT, "img/interactors/stroke.svg", "default", new Set([DOWN_TYPE.VERTEX]));
 
 stroke_interactorV2.mousedown = ((  canvas, ctx, g: ClientGraph, e: CanvasCoord) => {
     const server_pos = local_board.view.create_server_coord(e);

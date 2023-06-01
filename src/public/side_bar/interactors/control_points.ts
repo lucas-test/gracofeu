@@ -21,7 +21,7 @@ import { local_board } from "../../setup";
 import { ORIENTATION_INFO } from "../element_side_bar";
 import { InteractorV2 } from "../interactor_side_bar";
 
-export const control_point_interactorV2 = new InteractorV2("control_point", "Edit control points", "h", ORIENTATION_INFO.LEFT, "img/interactors/control_point.svg", "default", new Set([DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT]));
+export const control_point_interactorV2 = new InteractorV2("control_point", "Edit control points", "h", ORIENTATION_INFO.RIGHT, "img/interactors/control_point.svg", "default", new Set([DOWN_TYPE.LINK, DOWN_TYPE.CONTROL_POINT]));
 
 let previous_shift: Vect = new Vect(0,0);
 let previous_canvas_shift = new CanvasVect(0,0);
